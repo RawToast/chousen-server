@@ -59,11 +59,14 @@ case class GameLoop(playerName: String) {
     }
 
     def play(player:BaseCharacter, es:List[BaseCharacter]): List[BaseCharacter] = {
-      val e = es.head
-      val result: (Boolean, BaseCharacter) = innerLoop(player, e)
+      if (es.nonEmpty) {
+        val e = es.head
+        exclaim(s"A ${e.name} appears")
+        val result: (Boolean, BaseCharacter) = innerLoop(player, e)
 
-      if (result._1) play(result._2, es.tail)
-      else es
+        if (result._1) play(result._2, es.tail)
+        else es
+      } else Nil
     }
 
     if (play(p, enemies).nonEmpty) {
