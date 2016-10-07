@@ -10,9 +10,18 @@ abstract class BaseCharacter extends Nameable with Stats with Attack {
   val speed: Int = 8
 
   def takeDamage(damage: Int): BaseCharacter
+
+  def deathMessage: String = {
+    s"$name dies"
+  }
 }
 
-case class PlayerCharacter(name: String, maxHp: Int = 100, currentHp: Int = 100)
+case class PlayerCharacter(name: String, maxHp: Int = 100, currentHp: Int = 100,
+                           override val strength: Int = 8,
+                           override val dexterity: Int = 8,
+                           override val intellect: Int = 8,
+                           override val vitality: Int = 8,
+                           override val speed: Int = 8)
   extends BaseCharacter {
 
   override val isPlayer: Boolean = true

@@ -3,6 +3,8 @@
   */
 package object chousen {
 
+  def charToListChar: (BaseCharacter) => List[BaseCharacter] = (char:BaseCharacter) => List(char)
+
   def statement(string: String) = printer(string, None)
   def break() = printer("", Option("..."), true)
 

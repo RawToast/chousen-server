@@ -93,6 +93,14 @@ object Dice {
   def roll(sides: Int = 6, min: Int = 1): Int = min + Random.nextInt(sides - 1)
 }
 
+case class Actors(actor: BaseCharacter, cast: List[BaseCharacter])
+
+trait Action {
+  char: BaseCharacter =>
+
+
+}
+
 
 trait Attack {
   char: BaseCharacter =>
