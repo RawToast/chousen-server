@@ -15,6 +15,8 @@ object Main extends App {
   GameLoop(name).loop(player, someEnemies)
 }
 
+case class State(playerAlive: Boolean, cast: Actors)
+
 case class GameLoop(playerName: String) {
   story(s"$playerName has entered the dungeon")
   story(s"It was dark and smelly")
@@ -22,20 +24,23 @@ case class GameLoop(playerName: String) {
 
   def loop(p: BaseCharacter, enemies: List[BaseCharacter]) = {
 
+    // Need to place these elsewhere
+    implicit val convert = (b: BaseCharacter) => Set(b)
+
     break()
-    def innerLoop(player: BaseCharacter, enemy: BaseCharacter): (Boolean, BaseCharacter) = {
+    def innerLoop(actors:Actors): (Boolean, Actors) = {
 
-      def enemyAttack(): BaseCharacter = {
-        enemy.attack(player)
-      }
+      def enemyAttack(): Actors = actors.actor.attack(actors.player, None)
 
-      def playerAttack(): BaseCharacter = {
-        def turn(): BaseCharacter = {
+
+      def playerAttack(): Actors = {
+        val player = actors.player
+        def turn(): Actors = {
           statement("[A]ttack [M]agic")
           val choice = scala.io.StdIn.readLine().toLowerCase
 
           choice match {
-            case "a" => player.attack(enemy)
+            case "a" => player.attack(actors.cast, None)
             case "m" => statement(s"${player.name} does not know any magic"); turn()
             case _ => turn()
           }
@@ -45,31 +50,52 @@ case class GameLoop(playerName: String) {
         turn()
       }
 
-      // Move
-      val enmy = playerAttack()
-      val ply = if (enmy.currentHp > 0) enemyAttack() else player
+      def postAttack(a: Actors): State = {
+        val (alive: Set[BaseCharacter], dead: Set[BaseCharacter]) = a.cast.partition(cm => cm.currentHp > 0)
+        dead.foreach(cm => exclaim(cm.deathMessage))
+        val postActionCast = Actors(a.actor, alive)
 
-      if (ply.currentHp <= 0) {
-        exclaim(s"${ply.name} was killed by a ${enmy.name}")
-        (false, ply)
-      } else if (enmy.currentHp <= 0) {
-        exclaim(s"${ply.name} killed a ${enmy.name}")
-        (true, ply)
-      } else innerLoop(ply, enmy)
+        val playerAlive: Boolean = if (postActionCast.actor.isPlayer) true
+        else postActionCast.cast
+          .find(cm => cm.isPlayer)
+          .map(pc => pc.currentHp > 0).get
+
+        State(playerAlive, postActionCast)
+      }
+
+      // Move
+      val cast = if (actors.actor.isPlayer) playerAttack() else enemyAttack()
+      val eas = postAttack(cast)
+
+      if (!eas.playerAlive) {
+        (false, eas.cast)
+      } else if(!eas.cast.hasEnemies) {
+        (true, eas.cast)
+      } else {
+        innerLoop(eas.cast.changeTurn)
+      }
     }
 
-    def play(player:BaseCharacter, es:List[BaseCharacter]): List[BaseCharacter] = {
+    def play2(player: BaseCharacter, es: List[BaseCharacter]): List[BaseCharacter] = {
       if (es.nonEmpty) {
+        // Get first enemy/enemies
         val e = es.head
         exclaim(s"A ${e.name} appears")
-        val result: (Boolean, BaseCharacter) = innerLoop(player, e)
 
-        if (result._1) play(result._2, es.tail)
+        val act = Actors(player, e) // Implicit
+
+
+        // Fight
+        val result: (Boolean, Actors) = innerLoop(act)
+
+
+        // Conclude
+        if (result._1) play2(result._2.player, es.tail)
         else es
       } else Nil
     }
 
-    if (play(p, enemies).nonEmpty) {
+    if (play2(p, enemies).nonEmpty) {
       exclaim("Game over")
     } else {
       story(s"$playerName found a wooden chest")
@@ -93,22 +119,41 @@ object Dice {
   def roll(sides: Int = 6, min: Int = 1): Int = min + Random.nextInt(sides - 1)
 }
 
-case class Actors(actor: BaseCharacter, cast: List[BaseCharacter])
+case class Actors(actor: BaseCharacter, cast: Set[BaseCharacter]) {
+  // Very simple turn change
+  def changeTurn = {
+    val next = cast.head
+
+    Actors(next, cast + actor - next)
+  }
+
+  def player = cast.find(bc => bc.isPlayer).getOrElse(actor)
+  def hasEnemies = !actor.isPlayer || cast.exists(!_.isPlayer)
+}
 
 trait Action {
   char: BaseCharacter =>
 
-
+  def complete(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors
 }
 
-
-trait Attack {
+trait Attack extends Action {
   char: BaseCharacter =>
-  def attack(enemy: BaseCharacter): BaseCharacter = {
-    exclaim(s"${char.name} attacks")
-    val damage = Engine.calcDamage(char, enemy)
 
-    if (isPlayer) exclaim(s"${char.name} deals $damage to ${enemy.name}")
-    enemy.takeDamage(damage)
+  def attack(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors = {
+    if (target.size != 1) throw new RuntimeException("Cannot attack multiple targets")
+
+    exclaim(s"${char.name} attacks")
+
+    complete(target, bystanders)
+  }
+
+  override def complete(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors = {
+    val t = target.map { e =>
+      val damage = Engine.calcDamage(char, e)
+      if (isPlayer) exclaim(s"${char.name} deals $damage to ${e.name}")
+      e.takeDamage(damage)
+    }
+    Actors(char, t)
   }
 }
