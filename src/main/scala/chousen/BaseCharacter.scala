@@ -2,18 +2,15 @@ package chousen
 
 abstract class BaseCharacter extends Nameable with Stats with Attack {
   val isPlayer: Boolean
-  val strength: Int = 8
-  val dexterity: Int = 8
-  val intellect: Int = 8
-  val vitality: Int = 8
-
-  val speed: Int = 8
 
   def takeDamage(damage: Int): BaseCharacter
+
 
   def deathMessage: String = {
     s"$name dies"
   }
+
+  override def toString: String = name
 }
 
 case class PlayerCharacter(name: String, maxHp: Int = 100, currentHp: Int = 100,
@@ -64,24 +61,4 @@ object EnemyCharacter {
   def giantSlime() = EnemyCharacter("Giant Slime", 30, 30, strength = 18, vitality = 12)
 }
 
-trait Nameable {
-  val name: String
-}
 
-trait Stats {
-  // Health Status
-  val maxHp: Int
-  val currentHp: Int
-
-  val strength: Int
-  val dexterity: Int
-  val intellect: Int
-  val vitality: Int
-
-  val speed: Int
-}
-
-trait CanLevel {
-  stats: Stats =>
-  def levelUp(): Stats
-}
