@@ -1,6 +1,5 @@
 package chousen
 
-import scala.collection.immutable.Iterable
 import scala.util.Random
 
 
@@ -30,9 +29,10 @@ case class GameLoop(playerName: String) {
     implicit val convert = (b: BaseCharacter) => Set(b)
 
     break()
-    def innerLoop(actors:Actors): (Boolean, Actors) = {
+    def innerLoop(actors: Actors): (Boolean, Actors) = {
 
-      def enemyAttack(): Actors = actors.actor.attack(actors.player, None)
+      //FIXME
+      def enemyAttack(): Actors = actors.actor.attack(actors.player, Option(actors.cast - actors.player))
 
 
       def playerAttack(): Actors = {
@@ -43,12 +43,12 @@ case class GameLoop(playerName: String) {
 
           choice match {
             case "a" => player.attack(actors.cast, None)
-            case "m" => statement(s"${player.name} does not know any magic"); turn()
+            case "m" => statement(s"$player does not know any magic"); turn()
             case _ => turn()
           }
         }
 
-        statement(s"${player.name}'s turn")
+        statement(s"$player's turn")
         turn()
       }
 
@@ -71,7 +71,7 @@ case class GameLoop(playerName: String) {
 
       if (!eas.playerAlive) {
         (false, eas.cast)
-      } else if(!eas.cast.hasEnemies) {
+      } else if (!eas.cast.hasEnemies) {
         (true, eas.cast)
       } else {
         innerLoop(eas.cast.changeTurn)
@@ -83,7 +83,7 @@ case class GameLoop(playerName: String) {
         // Get first enemy/enemies
         val e = es.head
 
-        if (e.size == 1) exclaim(s"A ${e.head.name} appears")
+        if (e.size == 1) exclaim(s"A ${e.head} appears")
         else {
           e.map(en => en.name)
           exclaim(s"${e.toString()} appears")
@@ -135,6 +135,7 @@ case class Actors(actor: BaseCharacter, cast: Set[BaseCharacter]) {
   }
 
   def player = cast.find(bc => bc.isPlayer).getOrElse(actor)
+
   def hasEnemies = !actor.isPlayer || cast.exists(!_.isPlayer)
 }
 
@@ -147,44 +148,44 @@ trait Action {
 trait Attack extends Action {
   char: BaseCharacter =>
 
+  //TODO: Refactor
   def attack(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors = {
-    if (target.size != 1)
+    if (target.size != 1) {
       if (char.isPlayer) {
 
         statement("Select a target:")
 
-        val targets = target.foldLeft(Map.empty[String, BaseCharacter]){
-          (m, bc: BaseCharacter) => {
-            var count = 1
-            val newMap = m.+((s"$count", bc))
-            count = count + 1
-            newMap
-          }
-        }
-        //
-        val targetString = targets.map(kv => (kv._1, kv._2.name)).flatMap(kv => s"[${kv._1}]:${kv._2}").toString()
+        val targets = target.foldLeft(Map.empty[Int, BaseCharacter]) {
+          (m, bc: BaseCharacter) =>
+            if (m.isEmpty) m + ((1, bc))
+            else m.+((m.keySet.max + 1
+              , bc))
+        }.foldLeft(Map.empty[String, BaseCharacter])((m, bc) => m.+((bc._1.toString, bc._2)))
+
+        val targetString = targets.map(kv => (kv._1, kv._2)).flatMap(kv => s"[${kv._1}]:${kv._2} ").mkString
         statement(targetString)
 
         val choice = scala.io.StdIn.readLine().toLowerCase
 
-        //TODO: Take choice (if exists) and produce 2nd set w/o choice and pass into def(attack)
         targets.get(choice)
-
-
+          .map(bc =>
+            complete(Set(bc), Option(bystanders.getOrElse(Set()) ++ (target - bc))
+            )).getOrElse(attack(target, bystanders))
       }
       else throw new RuntimeException("Enemies cannot attack multiple targets")
+    } else {
+      exclaim(s"$char attacks")
 
-    exclaim(s"${char.name} attacks")
-
-    complete(target, bystanders)
+      complete(target, bystanders)
+    }
   }
 
   override def complete(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors = {
     val t = target.map { e =>
       val damage = Engine.calcDamage(char, e)
-      if (isPlayer) exclaim(s"${char.name} deals $damage to ${e.name}")
+      if (isPlayer) exclaim(s"$char deals $damage to $e")
       e.takeDamage(damage)
     }
-    Actors(char, t)
+    Actors(char, t ++ bystanders.getOrElse(Set.empty[BaseCharacter]))
   }
 }

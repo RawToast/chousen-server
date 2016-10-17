@@ -9,6 +9,8 @@ abstract class BaseCharacter extends Nameable with Stats with Attack {
   def deathMessage: String = {
     s"$name dies"
   }
+
+  override def toString: String = name
 }
 
 case class PlayerCharacter(name: String, maxHp: Int = 100, currentHp: Int = 100,

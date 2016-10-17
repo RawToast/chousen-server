@@ -20,7 +20,7 @@ package object chousen {
 
     def space() { Thread.sleep(20); print(" ") }
 
-    def sPrint(c: Char, sleep:Int=50) { Thread.sleep(sleep); print(c) }
+    def sPrint(c: Char, sleep:Int=40) { Thread.sleep(sleep); print(c) }
 
     def printString: (String) => Unit = {
       str => str.foreach(c => {
