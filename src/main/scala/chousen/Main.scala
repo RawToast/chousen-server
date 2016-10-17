@@ -2,12 +2,11 @@ package chousen
 
 import scala.util.Random
 
-
 object Main extends App {
 
   statement("Enter name: ")
   val name = scala.io.StdIn.readLine()
-  val player = PlayerCharacter(name)
+  val player = PlayerCharacter(name)()
   val someEnemies: List[Set[BaseCharacter]] = List(/*Set(EnemyCharacter.slime()),*/
     Set(EnemyCharacter.yellowSlime(), EnemyCharacter.slime()),
     Set(EnemyCharacter.giantSlime()))
@@ -91,10 +90,8 @@ case class GameLoop(playerName: String) {
 
         val act = Actors(player, e) // Implicit
 
-
         // Fight
         val result: (Boolean, Actors) = innerLoop(act)
-
 
         // Conclude
         if (result._1) play(result._2.player, es.tail)
