@@ -29,13 +29,12 @@ class ActorsTest extends WordSpec {
     }
 
     // Player will have 111, enemy 110 so player goes first.
-    val player = PlayerCharacter("Player", speed = 20)(position = 91)
-    val enemy = EnemyCharacter("Enemy", 100, 100, speed = 20)(position = 90)
+    val player = PlayerCharacter("Player", speed = 10)(position = 91)
+    val enemy = EnemyCharacter("Enemy", 100, 100, speed = 10)(position = 90)
     val preActors = Actors(player, Set(enemy))
     val turnOneActors = preActors.changeTurn
 
     "both reach the position goal" should {
-
 
       "the actor with the highest position takes precedence" in {
         // Player retains position
@@ -59,6 +58,17 @@ class ActorsTest extends WordSpec {
 
       "the other actors position increases" in assert(turnTwoActors.cast.head.position == 11)
     }
+
+    "both players reach the goal, with equal positon and speed" should {
+      // Player will have 111, enemy 110 so player goes first.
+      val player = PlayerCharacter("Player")()
+      val enemy = EnemyCharacter.yellowSlime()
+      val preActors = Actors(player, Set(enemy))
+      val turnOneActors = preActors.changeTurn
+      val turnTwoActors = turnOneActors.changeTurn
+
+      "have a different actor on the 2nd turn" in assert(turnOneActors.actor.name != turnTwoActors.actor.name)
+    }
   }
 
 
@@ -72,15 +82,15 @@ class ActorsTest extends WordSpec {
     // Calc x12 turns = (FP: 40, E: 35 SE: 20) - SE's turn
 
     // When two players with the same position score reach the goal, the faster actor is favoured
-    val fastestActor = PlayerCharacter("Fast Player", speed = 20)(position = 0)
-    val averageActor = EnemyCharacter("Enemy 1", 100, 100, speed = 10)(position = 15)
-    val slowestActor = EnemyCharacter("Enemy 2", 100, 100, speed = 10)(position = 0)
+    val fastestActor = PlayerCharacter("Fastest Actor", speed = 20)(position = 0)
+    val averageActor = EnemyCharacter("Average Actor", 100, 100, speed = 10)(position = 15)
+    val slowestActor = EnemyCharacter("SLowest Actor ", 100, 100, speed = 10)(position = 0)
 
     val preActors = Actors(fastestActor, Set(averageActor, slowestActor))
     val turnOneActors = preActors.changeTurn
-    val turnTwoActors = preActors.changeTurn
-    val turnThreeActors = preActors.changeTurn
-    val turnFourActors = preActors.changeTurn
+    val turnTwoActors = turnOneActors.changeTurn
+    val turnThreeActors = turnTwoActors.changeTurn
+    val turnFourActors = turnThreeActors.changeTurn
 
     "it is the end of the first turn" should {
       "be the turn of the fastest actor" in assert(turnOneActors.actor == fastestActor)

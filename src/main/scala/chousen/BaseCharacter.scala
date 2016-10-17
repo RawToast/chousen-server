@@ -1,15 +1,20 @@
 package chousen
 
-abstract class BaseCharacter extends Nameable with Stats with Attack {
+
+sealed abstract class BaseCharacter extends Nameable with Stats with Attack {
   val isPlayer: Boolean
   val position: Int
 
-  def takeDamage(damage: Int): BaseCharacter
+  val hasPosition:Boolean = position >= 100
+  val hadPosition:Boolean = hasPosition && ((position - speed) >= 100)
 
+  def takeDamage(damage: Int): BaseCharacter
 
   def deathMessage: String = {
     s"$name dies"
   }
+
+  def resetPosition: BaseCharacter
 
   override def toString: String = name
 }
@@ -31,6 +36,8 @@ case class PlayerCharacter(name: String, maxHp: Int = 100, currentHp: Int = 100,
     else statement(s"$name takes $damage and has ${currHp}HP left!")
     this.copy(currentHp = currHp)(this.position)
   }
+
+  def resetPosition = copy()(this.position - 100)
 }
 
 case class EnemyCharacter(name: String, maxHp: Int, currentHp: Int,
@@ -53,16 +60,16 @@ case class EnemyCharacter(name: String, maxHp: Int, currentHp: Int,
     val currHp = this.currentHp - damage
     this.copy(currentHp = currHp)(this.position)
   }
+
+  def resetPosition = copy()(this.position - 100)
 }
 
 object EnemyCharacter {
   def create(name: String, maxHp: Int) = new EnemyCharacter(name, maxHp)
 
-  def slime() = EnemyCharacter("Slime", 10, 10, strength = 4)()
+  def slime() = EnemyCharacter("Slime", 10, 10, strength = 4, speed = 7)()
 
   def yellowSlime() = EnemyCharacter("Yellow Slime", 15, 15, vitality = 2)()
 
-  def giantSlime() = EnemyCharacter("Giant Slime", 30, 30, strength = 18, vitality = 12)()
+  def giantSlime() = EnemyCharacter("Giant Slime", 30, 30, strength = 18, vitality = 12, speed = 6)()
 }
-
-

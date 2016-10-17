@@ -15,6 +15,10 @@ package object chousen {
   def enemy(string:String) = printer(string, Option("!"))
   def exclaim(string:String) = printer(string, Option("!"))
 
+  def requirePlayerInput = scala.io.StdIn.readLine().toLowerCase
+
+  def requireCaseSensitivePlayerInput = scala.io.StdIn.readLine()
+
 
   private def printer(string: String, break:Option[String]=None, newLine:Boolean=true) {
 
