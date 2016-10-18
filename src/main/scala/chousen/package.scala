@@ -1,3 +1,5 @@
+import chousen.character.BaseCharacter
+
 /**
   * Created by jim on 05/10/2016.
   */

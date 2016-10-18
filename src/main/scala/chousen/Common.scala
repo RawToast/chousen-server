@@ -5,16 +5,20 @@ trait Nameable {
 }
 
 trait Stats {
-  // Health Status
+
   val maxHp: Int
   val currentHp: Int
 
-  val strength: Int = 8
-  val dexterity: Int = 8
-  val intellect: Int = 8
-  val vitality: Int = 8
+  val strength: Int = Stats.DEFAULT_STAT
+  val dexterity: Int = Stats.DEFAULT_STAT
+  val intellect: Int = Stats.DEFAULT_INTELLECT
+  val vitality: Int = Stats.DEFAULT_STAT
 
-  val speed: Int = 8
+  val speed: Int = Stats.DEFAULT_STAT
+}
+object Stats {
+  val DEFAULT_STAT = 8
+  val DEFAULT_INTELLECT = DEFAULT_STAT
 }
 
 trait CanLevel {

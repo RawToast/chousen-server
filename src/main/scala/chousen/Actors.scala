@@ -1,5 +1,7 @@
 package chousen
 
+import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter}
+
 import scala.util.Random
 
 case class Actors(actor: BaseCharacter, cast: Set[BaseCharacter]) {
@@ -59,7 +61,7 @@ case class Actors(actor: BaseCharacter, cast: Set[BaseCharacter]) {
 
   def fullCast = cast + actor
 
-  def player = cast.find(bc => bc.isPlayer).getOrElse(actor)
+  def player: BaseCharacter = cast.find(bc => bc.isPlayer).getOrElse(actor)
 
   def hasEnemies = !actor.isPlayer || cast.exists(!_.isPlayer)
 

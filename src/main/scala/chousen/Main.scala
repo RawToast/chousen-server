@@ -1,19 +1,17 @@
 package chousen
 
-import scala.util.Random
+import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter}
 
 object Main extends App {
 
   statement("Enter name: ")
   val name = requireCaseSensitivePlayerInput
   val player = PlayerCharacter(name)()
-  val someEnemies: List[Set[BaseCharacter]] = List(/*Set(EnemyCharacter.slime()),*/
-    Set(EnemyCharacter.yellowSlime(), EnemyCharacter.slime()),
+  val someEnemies: List[Set[BaseCharacter]] = List(Set(EnemyCharacter.yellowSlime(), EnemyCharacter.slime()),
     Set(EnemyCharacter.giantSlime()))
 
   GameLoop(name).loop(player, someEnemies)
 }
-
 
 case class State(playerAlive: Boolean, cast: Actors)
 
@@ -30,7 +28,6 @@ case class GameLoop(playerName: String) {
     break()
     def innerLoop(actors: Actors): (Boolean, Actors) = {
 
-      //FIXME
       def enemyAttack(): Actors = actors.actor.attack(actors.player, Option(actors.fullCast - actors.player))
 
       def playerAttack(): Actors = {
@@ -109,59 +106,9 @@ case class GameLoop(playerName: String) {
   }
 }
 
-object Engine {
-  def calcDamage(a: BaseCharacter, d: BaseCharacter): Int = {
-    val atkPwr = Dice.roll() + ((a.strength + a.dexterity) / 2)
-    val defPwr: Int = d.vitality / 2
-    atkPwr - defPwr
-  }
-}
-
-object Dice {
-  def roll(sides: Int = 6, min: Int = 1): Int = min + Random.nextInt(sides - 1)
-}
 
 trait Action {
   char: BaseCharacter =>
 
   def complete(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors
-}
-
-trait Attack extends Action {
-  char: BaseCharacter =>
-
-  //TODO: Refactor
-  def attack(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors = {
-    if (target.size == 1) {
-      exclaim(s"$char attacks")
-
-      complete(target, bystanders)
-    } else {
-      statement("Select a target:")
-
-      val targets: Map[String, BaseCharacter] = target.foldLeft(Map.empty[Int, BaseCharacter]) {
-        (m, bc: BaseCharacter) =>
-          if (m.isEmpty) m + ((1, bc))
-          else m.+((m.keySet.max + 1, bc))
-      }.foldLeft(Map.empty[String, BaseCharacter])((m, bc) => m.+((bc._1.toString, bc._2)))
-
-      val targetString = targets.map(kv => s"[${kv._1}]:${kv._2} ").mkString
-      statement(targetString)
-
-      targets.get(requirePlayerInput)
-        .map(bc =>
-          complete(Set(bc),
-            Option(bystanders.getOrElse(Set.empty[BaseCharacter]) ++ targets.values.toSet - bc))
-          ).getOrElse(attack(target, bystanders))
-    }
-  }
-
-  override def complete(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors = {
-    val t = target.map { e =>
-      val damage = Engine.calcDamage(char, e)
-      if (isPlayer) exclaim(s"$char deals $damage to $e")
-      e.takeDamage(damage)
-    }
-    Actors(char, t ++ bystanders.getOrElse(Set.empty))
-  }
 }

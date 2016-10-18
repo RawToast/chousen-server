@@ -1,5 +1,6 @@
 package chousen
 
+import chousen.character.{EnemyCharacter, PlayerCharacter}
 import org.scalatest.WordSpec
 
 class ActorsTest extends WordSpec {

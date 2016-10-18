@@ -1,5 +1,6 @@
-package chousen
+package chousen.character
 
+import chousen._
 
 sealed abstract class BaseCharacter extends Nameable with Stats with Attack {
   val isPlayer: Boolean
