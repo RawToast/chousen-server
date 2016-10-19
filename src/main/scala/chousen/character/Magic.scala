@@ -1,5 +1,6 @@
 package chousen.character
 
+import chousen.engine.Engine
 import chousen.{Actors, _}
 
 trait Magic { char:BaseCharacter =>

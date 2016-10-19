@@ -1,6 +1,7 @@
 package chousen
 
 import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter}
+import chousen.engine.State
 
 import scala.util.Random
 
@@ -59,11 +60,25 @@ case class Actors(actor: BaseCharacter, cast: Set[BaseCharacter]) {
     calculateTurn(fullCast)
   }
 
+  def postAttackState: State = {
+    val postActionCast = removeDeadActors()
+
+    State.createFromActors(postActionCast)
+  }
+
+  def removeDeadActors(): Actors = {
+    val (alive: Set[BaseCharacter], dead: Set[BaseCharacter]) = this.cast.partition(cm => cm.currentHp > 0)
+    dead.foreach(cm => exclaim(cm.deathMessage))
+    Actors(this.actor, alive)
+  }
+
   def fullCast = cast + actor
+
+  def fullCastWithoutPlayer = cast + actor - player
 
   def player: BaseCharacter = cast.find(bc => bc.isPlayer).getOrElse(actor)
 
   def hasEnemies = !actor.isPlayer || cast.exists(!_.isPlayer)
 
-  def newLead(actor:BaseCharacter) = Actors(actor.resetPosition, fullCast - actor)
+  def newLead(actor: BaseCharacter) = Actors(actor.resetPosition, fullCast - actor)
 }

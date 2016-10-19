@@ -1,5 +1,6 @@
-package chousen
+package chousen.engine
 
+import chousen.Stats
 import chousen.character.{BaseCharacter, Spell}
 
 import scala.util.Random

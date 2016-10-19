@@ -1,6 +1,7 @@
 package chousen
 
 import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter, PlayerChoice}
+import chousen.engine.State
 
 import scala.annotation.tailrec
 
@@ -15,7 +16,6 @@ object Main extends App {
   GameLoop(name).loop(player, someEnemies)
 }
 
-case class State(playerAlive: Boolean, cast: Actors)
 
 case class GameLoop(playerName: String) {
   story(s"$playerName has entered the dungeon")
@@ -29,61 +29,39 @@ case class GameLoop(playerName: String) {
 
     break()
     @tailrec
-    def innerLoop(actors: Actors): (Boolean, Actors) = {
-
-      def enemyAttack(): Actors = actors.actor.attack(actors.player, Option(actors.fullCast - actors.player))
-
-      def postAttack(a: Actors): State = {
-        val (alive: Set[BaseCharacter], dead: Set[BaseCharacter]) = a.cast.partition(cm => cm.currentHp > 0)
-        dead.foreach(cm => exclaim(cm.deathMessage))
-        val postActionCast = Actors(a.actor, alive)
-
-        val playerAlive: Boolean = if (postActionCast.actor.isPlayer) true
-        else postActionCast.cast
-          .find(cm => cm.isPlayer)
-          .map(pc => pc.currentHp > 0).get
-
-        State(playerAlive, postActionCast)
-      }
+    def innerLoop(actors: Actors): State = {
 
       // Move
-
-      val cast = actors.actor match {
+      val postAttackActors = actors.actor match {
         case player: BaseCharacter with PlayerChoice => player.playerInput(actors)
-        case enemy: BaseCharacter => enemyAttack()
+        case enemy: BaseCharacter => enemy.attack(actors.player, Option(actors.fullCastWithoutPlayer))
       }
 
-      //val cast: Actors = if (actors.actor.isPlayer) playerAttack() else enemyAttack()
-      val eas = postAttack(cast)
+      val state = postAttackActors.postAttackState
 
-      if (!eas.playerAlive) {
-        (false, eas.cast)
-      } else if (!eas.cast.hasEnemies) {
-        (true, eas.cast)
-      } else {
-        innerLoop(eas.cast.changeTurn)
-      }
+      if (!state.playerAlive || !state.actors.hasEnemies) state
+      else innerLoop(state.actors.changeTurn)
     }
 
     @tailrec
     def play(player: BaseCharacter, es: List[Set[BaseCharacter]]): List[Set[BaseCharacter]] = {
       if (es.nonEmpty) {
         // Get first enemy/enemies
-        val e = es.head
+        val encounter = es.head
 
-        if (e.size == 1) exclaim(s"A ${e.head} appears")
+        if (encounter.size == 1) exclaim(s"A ${encounter.head} appears")
         else {
-          e.map(en => en.name)
-          exclaim(s"${e.toString()} appears")
+          encounter.map(en => en.name)
+          exclaim(s"${encounter.toString()} appears")
         }
 
-        val act = Actors(player, e)
+        val actors = Actors(player, encounter)
 
         // Fight
-        val result: (Boolean, Actors) = innerLoop(act.changeTurn)
+        val result: State = innerLoop(actors.changeTurn)
 
         // Conclude
-        if (result._1) play(result._2.player, es.tail)
+        if (result.playerAlive) play(result.actors.player, es.tail)
         else es
       } else Nil
     }
