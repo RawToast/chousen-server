@@ -1,6 +1,5 @@
 package chousen.character
 
-import cats.data.Xor
 import chousen._
 
 import scala.annotation.tailrec
@@ -65,7 +64,6 @@ case class EnemyCharacter(name: String, maxHp: Int, currentHp: Int,
                           override val vitality: Int = 8,
                           override val speed: Int = 8)(
                           override val position:Int = 0)
-
   extends BaseCharacter {
 
   override val isPlayer: Boolean = false
