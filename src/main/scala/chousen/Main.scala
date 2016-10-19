@@ -1,6 +1,8 @@
 package chousen
 
-import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter}
+import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter, PlayerChoice}
+
+import scala.annotation.tailrec
 
 object Main extends App {
 
@@ -26,25 +28,10 @@ case class GameLoop(playerName: String) {
     implicit val convert = (b: BaseCharacter) => Set(b)
 
     break()
+    @tailrec
     def innerLoop(actors: Actors): (Boolean, Actors) = {
 
       def enemyAttack(): Actors = actors.actor.attack(actors.player, Option(actors.fullCast - actors.player))
-
-      def playerAttack(): Actors = {
-        val player = actors.player
-        def turn(): Actors = {
-          statement("[A]ttack [M]agic")
-
-          requirePlayerInput match {
-            case "a" => player.attack(actors.cast, None)
-            case "m" => statement(s"$player does not know any magic"); turn()
-            case _ => turn()
-          }
-        }
-
-        statement(s"$player's turn")
-        turn()
-      }
 
       def postAttack(a: Actors): State = {
         val (alive: Set[BaseCharacter], dead: Set[BaseCharacter]) = a.cast.partition(cm => cm.currentHp > 0)
@@ -60,7 +47,13 @@ case class GameLoop(playerName: String) {
       }
 
       // Move
-      val cast: Actors = if (actors.actor.isPlayer) playerAttack() else enemyAttack()
+
+      val cast = actors.actor match {
+        case player: BaseCharacter with PlayerChoice => player.playerInput(actors)
+        case enemy: BaseCharacter => enemyAttack()
+      }
+
+      //val cast: Actors = if (actors.actor.isPlayer) playerAttack() else enemyAttack()
       val eas = postAttack(cast)
 
       if (!eas.playerAlive) {
@@ -72,6 +65,7 @@ case class GameLoop(playerName: String) {
       }
     }
 
+    @tailrec
     def play(player: BaseCharacter, es: List[Set[BaseCharacter]]): List[Set[BaseCharacter]] = {
       if (es.nonEmpty) {
         // Get first enemy/enemies

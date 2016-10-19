@@ -1,6 +1,9 @@
 package chousen.character
 
+import cats.data.Xor
 import chousen._
+
+import scala.annotation.tailrec
 
 sealed abstract class BaseCharacter extends Nameable with Stats with Attack {
   val isPlayer: Boolean
@@ -27,7 +30,7 @@ case class PlayerCharacter(name: String, maxHp: Int = 100, currentHp: Int = 100,
                            override val vitality: Int = 8,
                            override val speed: Int = 8)
                           (override val position:Int = 0)
-  extends BaseCharacter {
+  extends BaseCharacter with PlayerChoice {
 
   override val isPlayer: Boolean = true
 
@@ -39,6 +42,20 @@ case class PlayerCharacter(name: String, maxHp: Int = 100, currentHp: Int = 100,
   }
 
   def resetPosition = copy()(this.position - 100)
+}
+
+trait PlayerChoice { bc:BaseCharacter =>
+
+  @tailrec
+  final def playerInput(actors:Actors):Actors = {
+    statement("[A]ttack [M]agic")
+
+    requirePlayerInput match {
+      case "a" => bc.attack(actors.cast, None)
+      case "m" => statement(s"$bc does not know any magic"); playerInput(actors)
+      case _ => playerInput(actors)
+    }
+  }
 }
 
 case class EnemyCharacter(name: String, maxHp: Int, currentHp: Int,
