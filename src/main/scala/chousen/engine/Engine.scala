@@ -7,21 +7,22 @@ import scala.util.Random
 
 object Engine {
   def calcDamage(a: BaseCharacter, d: BaseCharacter): Int = {
+    /** Base stats calc:
+      * Atk: 1-6d + (4 + 4) / 2) = 5 - 10
+      * Def: 8 / 2 = 4
+      * Dmg: 1-6 + 3 = 4-9
+      */
     val atkPwr = Dice.roll() + ((a.strength + a.dexterity) / 2)
     val defPwr: Int = d.vitality / 2
-    atkPwr - defPwr
+    atkPwr - defPwr + 3
   }
 
   def calcMagic(s: Spell, a: BaseCharacter, d: BaseCharacter): Int = {
-    val intPwr = a.intellect - Stats.DEFAULT_INTELLECT
-
-    val atkPwr = s.baseDamage + Dice.roll(
-      sides = 2 + a.intellect,
-      min = if (intPwr > 2) intPwr - 2 else 0)
-
-    val defPwr = d.intellect - Stats.DEFAULT_INTELLECT
-
-    atkPwr - defPwr
+    /** Base stats fireball (3):
+      * 3 + (8 - 8) + 0-3d
+      * Dmg = 3-6
+      */
+    s.baseDamage + (a.intellect - d.intellect) + Dice.roll(sides = 4, min = 0)
   }
 }
 

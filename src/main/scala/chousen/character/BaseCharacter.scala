@@ -29,7 +29,9 @@ case class PlayerCharacter(name: String, maxHp: Int = 100, currentHp: Int = 100,
                            override val vitality: Int = 8,
                            override val speed: Int = 8)
                           (override val position:Int = 0)
-  extends BaseCharacter with PlayerChoice {
+  extends BaseCharacter with PlayerChoice with Magic {
+
+  override val spellBook = SpellBook.create.withSpell(new FireBall)
 
   override val isPlayer: Boolean = true
 
@@ -43,7 +45,7 @@ case class PlayerCharacter(name: String, maxHp: Int = 100, currentHp: Int = 100,
   def resetPosition = copy()(this.position - 100)
 }
 
-trait PlayerChoice { bc:BaseCharacter =>
+trait PlayerChoice { bc:BaseCharacter with Magic =>
 
   @tailrec
   final def playerInput(actors:Actors):Actors = {
@@ -51,10 +53,12 @@ trait PlayerChoice { bc:BaseCharacter =>
 
     requirePlayerInput match {
       case "a" => bc.attack(actors.cast, None)
-      case "m" => statement(s"$bc does not know any magic"); playerInput(actors)
+      case "m" => bc.useMagic(actors)
       case _ => playerInput(actors)
     }
   }
+
+
 }
 
 case class EnemyCharacter(name: String, maxHp: Int, currentHp: Int,
@@ -83,9 +87,9 @@ case class EnemyCharacter(name: String, maxHp: Int, currentHp: Int,
 object EnemyCharacter {
   def create(name: String, maxHp: Int) = new EnemyCharacter(name, maxHp)
 
-  def slime() = EnemyCharacter("Slime", 10, 10, strength = 4, speed = 7)()
+  def slime() = EnemyCharacter("Slime", 10, 10, strength = 4, intellect = 4, speed = 7)()
 
-  def yellowSlime() = EnemyCharacter("Yellow Slime", 15, 15, vitality = 2)()
+  def yellowSlime() = EnemyCharacter("Yellow Slime", 15, 15, intellect = 4, vitality = 2)()
 
-  def giantSlime() = EnemyCharacter("Giant Slime", 30, 30, strength = 18, vitality = 12, speed = 6)()
+  def giantSlime() = EnemyCharacter("Giant Slime", 30, 30, strength = 18, intellect = 4, vitality = 12, speed = 6)()
 }

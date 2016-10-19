@@ -1,6 +1,5 @@
 package chousen
 
-import cats.Show
 import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter, PlayerChoice}
 import chousen.engine.State
 
@@ -17,12 +16,6 @@ object Main extends App {
   val thirdEncounter = secondEncounter ++ firstEncounter
 
   val dungeon = Dungeon(List(firstEncounter, secondEncounter, thirdEncounter))
-
-  val someEnemies: List[Set[BaseCharacter]] = List(Set(EnemyCharacter.yellowSlime(), EnemyCharacter.slime()),
-    Set(EnemyCharacter.giantSlime()))
-
-  val s1: Set[BaseCharacter] = Set(EnemyCharacter.yellowSlime(), EnemyCharacter.slime())
-  val se2: List[Set[BaseCharacter]] = List(s1)
 
   GameLoop(name).loop(player, dungeon)
 }
