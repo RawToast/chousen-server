@@ -1,6 +1,6 @@
 package chousen.character
 
-import chousen.engine.Engine
+import chousen.engine.{Dice, Engine}
 import chousen.{Actors, _}
 
 trait Magic extends Action { char:BaseCharacter with PlayerChoice =>
@@ -14,7 +14,7 @@ trait Magic extends Action { char:BaseCharacter with PlayerChoice =>
         spellBook.spellMap.getOrElse(requirePlayerInput, selectSpell)
       }
 
-      selectSpell.cast(char, actors.cast)
+      selectSpell.complete(char, actors.cast)
     }
   }
 }
@@ -36,27 +36,25 @@ object SpellBook {
   def create = SpellBook(Set.empty)
 }
 
-trait Spell {
+
+trait CardAction {
   val name: String
   val description: String
-  val magicType: String
-
-  val baseDamage: Int
   val maxCopies: Int = 4
-
-  def cast(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]=None): Actors
 
   def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors
 }
 
-trait AoeSpell extends Spell {
-  override def cast(user:BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]=None): Actors = {
-    target.map(bc => bc.takeDamage(Engine.calcMagic(this, user, bc)))
-    complete(user, target, bystanders)
-  }
+
+trait Spell extends CardAction {
+
+  val magicType: String
+  val baseDamage: Int
+
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]=None): Actors
 }
 
-class FireBall extends AoeSpell {
+class FireBall extends Spell {
 
   val name = "Fireball"
 
@@ -66,13 +64,46 @@ class FireBall extends AoeSpell {
 
   val baseDamage: Int = 3
 
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors = {
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]=None): Actors = {
     val t = target.map { e:BaseCharacter =>
       val damage = Engine.calcMagic(this, user, e)
       exclaim(s"$user deals $damage $magicType damage to $e")
       e.takeDamage(damage)
     }
     Actors(user, t ++ bystanders.getOrElse(Set.empty))
+  }
+}
+
+trait Potion extends CardAction {
+
+  val drink: BaseCharacter => BaseCharacter
+
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]=None): Actors
+}
+
+class HealWounds extends Potion {
+
+  val name = "Heal Wounds"
+
+  val description: String = "Considerably Heals the user"
+
+  val drink: (BaseCharacter) => BaseCharacter =
+    bc => {
+      val variance = Dice.roll() + Dice.roll()
+
+      val hp: Int = bc.maxHp.min(bc.currentHp + bc.vitality + (bc.maxHp / 10) + variance)
+      val diff = hp - bc.currentHp
+
+      exclaim(s"$bc heals ${diff}HP to $hp")
+
+      bc match {
+        case poc: PlayerCharacter => poc.copy(currentHp = hp)(poc.position)
+        case emy: EnemyCharacter => emy.copy(currentHp = hp)(emy.position)
+      }
+    }
+
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]=None): Actors = {
+    Actors(drink(user), target ++ bystanders.getOrElse(Set.empty))
   }
 }
 
