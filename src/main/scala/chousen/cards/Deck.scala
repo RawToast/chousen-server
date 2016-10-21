@@ -1,16 +1,39 @@
 package chousen.cards
 
-import chousen.Actors
-import chousen.character._
+import cats.data.Xor
 
 import scala.util.Random
 
 case class Deck(cards: List[Card], discarded: List[Card] = List.empty) {
 
-  def deal: Hand = ???
+  def deal: (Hand, Deck) = {
+    val (handCards, remainingCards) = this.cards.splitAt(Hand.MAX_SIZE)
+    (Hand(handCards), this.copy(cards = remainingCards))
+  }
 
-  def shuffle: Deck = copy(cards=Random.shuffle(cards), discarded=discarded)
+  def draw: Xor[Deck, (Card, Deck)] = {
+    if (cards.isEmpty) Xor.Left(this)
+    else {
+      val h = cards.head
+      val ncs = cards.filterNot(c => c == h)
+      Xor.Right(h, copy(cards = ncs))
+    }
+  }
 
+  def shuffle: Deck = copy(cards = Random.shuffle(cards), discarded = discarded)
+
+  def discard(card: Card) = copy(discarded = card :: discarded)
+
+  def placeAtBottom(card: Card) = copy(cards = cards :+ card)
+
+  def removeTopDiscard: Xor[Deck, (Card, Deck)] = {
+    if (discarded.isEmpty) Xor.Left(this)
+    else Xor.Right(discarded.head,
+      copy(discarded = discarded.tail))
+  }
+
+  def moveTopDiscardToTopOfDeck: Xor[Deck, Deck] =
+    removeTopDiscard.map(cd => cd._2.copy(cards = cd._1 :: cd._2.cards))
 }
 
 object Deck {
@@ -24,25 +47,16 @@ object Deck {
   }
 }
 
-case class Hand(cards: List[Card])
+case class Hand(cards: List[Card]) {
+  lazy val size = cards.size
 
-trait Card {
-  val active: CardAction
+  def discard(card: Card) = this.copy(cards.filterNot(c => c == card))
 
-  def use(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors =
-    active.complete(user, target, bystanders)
+  def +(card: Card) = this.copy(cards = card :: cards)
 }
 
-trait SpellCard extends Card
+object Hand {
+  val MAX_SIZE = 7
 
-trait PotionCard extends Card
-
-class FireBallCard extends SpellCard {
-  val active = new FireBall
+  val emptyHand = Hand(List.empty)
 }
-
-class HealWoundsCard extends PotionCard {
-  val active = new HealWounds
-}
-
-

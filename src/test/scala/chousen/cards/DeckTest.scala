@@ -16,5 +16,18 @@ class DeckTest extends WordSpec with Matchers {
         deck.discarded should equal(shuffledDeck.discarded)
       }
     }
+    "dealt to a player" should {
+      val (hand, newDeck) = deck.deal
+
+      "give the player 7 cards" in {
+        hand.cards.size should equal(Hand.MAX_SIZE)
+      }
+
+      "be reduced in size" in {
+        newDeck.cards.size shouldNot equal(deck.cards.size)
+        newDeck.cards shouldNot equal(deck.cards)
+      }
+    }
   }
+
 }
