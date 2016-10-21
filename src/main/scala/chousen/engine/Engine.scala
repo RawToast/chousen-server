@@ -7,11 +7,13 @@ import scala.util.Random
 object Engine {
   def calcDamage(a: BaseCharacter, d: BaseCharacter): Int = {
     /** Base stats calc:
-      * Atk: 1-6d + (4 + 4) / 2) = 5 - 10
+      * Atk: 1-6d + (8 + 8) / 2) = (9-14)
       * Def: 8 / 2 = 4
-      * Dmg: 1-6 + 3 = 4-9
+      * Dmg: (9-14) - 4 = 5-10 + 3 = 8-13
       */
-    val atkPwr = Dice.roll() + ((a.strength + a.dexterity) / 2)
+    val dice = Dice.roll()
+    val atkPwr = dice + ((a.strength + a.dexterity) / 2)
+
     val defPwr: Int = d.vitality / 2
     atkPwr - defPwr + 3
   }
@@ -26,5 +28,5 @@ object Engine {
 }
 
 object Dice {
-  def roll(sides: Int = 6, min: Int = 1): Int = min + Random.nextInt(sides - 1)
+  def roll(sides: Int = 6, min: Int = 1): Int = min + Random.nextInt(sides)
 }

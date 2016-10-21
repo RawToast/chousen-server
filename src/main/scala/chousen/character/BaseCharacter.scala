@@ -87,9 +87,13 @@ case class EnemyCharacter(name: String, maxHp: Int, currentHp: Int,
 object EnemyCharacter {
   def create(name: String, maxHp: Int) = new EnemyCharacter(name, maxHp)
 
-  def slime() = EnemyCharacter("Slime", 10, 10, strength = 4, intellect = 4, speed = 7)()
+  def slime = EnemyCharacter("Slime", 10, 10, strength = 4, intellect = 4, speed = 7)()
 
-  def yellowSlime() = EnemyCharacter("Yellow Slime", 15, 15, intellect = 4, vitality = 2)()
+  def yellowSlime = EnemyCharacter("Yellow Slime", 15, 15, intellect = 4, vitality = 2)()
 
-  def giantSlime() = EnemyCharacter("Giant Slime", 30, 30, strength = 18, intellect = 4, vitality = 12, speed = 6)()
+  def giantSlime = EnemyCharacter("Giant Slime", 30, 30, strength = 18, intellect = 4, vitality = 12, speed = 6)()
+
+  def baseCharacter = EnemyCharacter.create("Scoundrel", 100)
+
+  def scoundrel = baseCharacter
 }

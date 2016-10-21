@@ -63,7 +63,7 @@ class ActorsTest extends WordSpec {
     "both players reach the goal, with equal positon and speed" should {
       // Player will have 111, enemy 110 so player goes first.
       val player = PlayerCharacter("Player")()
-      val enemy = EnemyCharacter.yellowSlime()
+      val enemy = EnemyCharacter.yellowSlime
       val preActors = Actors(player, Set(enemy))
       val turnOneActors = preActors.changeTurn
       val turnTwoActors = turnOneActors.changeTurn

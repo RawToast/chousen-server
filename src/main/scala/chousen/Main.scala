@@ -11,9 +11,9 @@ object Main extends App {
   val name = requireCaseSensitivePlayerInput
   val player = PlayerCharacter(name)()
 
-  val firstEncounter = Encounter.create(EnemyCharacter.yellowSlime()) + EnemyCharacter.slime()
-  val secondEncounter = Encounter.create(EnemyCharacter.giantSlime())
-  val thirdEncounter = secondEncounter ++ firstEncounter
+  val firstEncounter = Encounter.create(EnemyCharacter.yellowSlime) + EnemyCharacter.slime
+  val secondEncounter = firstEncounter + EnemyCharacter.giantSlime
+  val thirdEncounter = Encounter.create(EnemyCharacter.scoundrel)
 
   val dungeon = Dungeon(List(firstEncounter, secondEncounter, thirdEncounter))
 

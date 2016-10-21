@@ -29,5 +29,4 @@ class DeckTest extends WordSpec with Matchers {
       }
     }
   }
-
 }
