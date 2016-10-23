@@ -9,7 +9,7 @@ object State {
     val playerAlive = if (actors.actor.isPlayer) Option(true)
     else actors.cast
       .find(cm => cm.isPlayer)
-      .map(pc => pc.currentHp > 0)
+      .map(pc => pc.stats.currentHp > 0)
 
     State(playerAlive.getOrElse(false), actors)
   }

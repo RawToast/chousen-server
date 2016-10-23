@@ -1,5 +1,6 @@
 package chousen
 
+import chousen.cards.Deck
 import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter, PlayerChoice}
 import chousen.engine.State
 
@@ -9,7 +10,9 @@ object Main extends App {
 
   statement("Enter name: ")
   val name = requireCaseSensitivePlayerInput
-  val player = PlayerCharacter(name)()
+  val initDeck = Deck.create
+
+  val player = PlayerCharacter(name, CharStats.DEFAULT)()
 
   val firstEncounter = Encounter.create(EnemyCharacter.yellowSlime) + EnemyCharacter.slime
   val secondEncounter = firstEncounter + EnemyCharacter.giantSlime

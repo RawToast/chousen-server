@@ -14,8 +14,8 @@ case class Actors(actor: BaseCharacter, cast: Set[BaseCharacter]) {
 
       val postCalcActors: Set[BaseCharacter] = fc.map {
         // Good argument that the position increase should be one my the BC class
-        case p: PlayerCharacter => p.copy()(position = p.position + p.speed)
-        case e: EnemyCharacter => e.copy()(position = e.position + e.speed)
+        case p: PlayerCharacter => p.copy()(position = p.position + p.stats.speed)
+        case e: EnemyCharacter => e.copy()(position = e.position + e.stats.speed)
       }
 
       def actorsWith: ((BaseCharacter) => Boolean) => Set[BaseCharacter] =
@@ -46,7 +46,7 @@ case class Actors(actor: BaseCharacter, cast: Set[BaseCharacter]) {
                 val actor = actorsHadPosition.head
                 Actors(actor.resetPosition, postCalcActors - actor)
               case _ =>
-                val topSpeedCount = numActorsWith(bc => bc.speed == actorsWithPosition.maxBy(_.speed).speed)
+                val topSpeedCount = numActorsWith(bc => bc.stats.speed == actorsWithPosition.maxBy(_.stats.speed).stats.speed)
                 if (topSpeedCount == 1) calculateTurn(postCalcActors)
                 else {
                   val chosenOne = Random.shuffle(actorsWithPosition).head
@@ -67,7 +67,7 @@ case class Actors(actor: BaseCharacter, cast: Set[BaseCharacter]) {
   }
 
   def removeDeadActors(): Actors = {
-    val (alive: Set[BaseCharacter], dead: Set[BaseCharacter]) = this.cast.partition(cm => cm.currentHp > 0)
+    val (alive: Set[BaseCharacter], dead: Set[BaseCharacter]) = this.cast.partition(cm => cm.stats.currentHp > 0)
     dead.foreach(cm => exclaim(cm.deathMessage))
     Actors(this.actor, alive)
   }

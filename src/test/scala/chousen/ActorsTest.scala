@@ -5,13 +5,17 @@ import org.scalatest.WordSpec
 
 class ActorsTest extends WordSpec {
 
+  def speed10Char = CharStats(100, 100, speed = 10)
+  def speed8Char = CharStats(100, 100, speed = 8)
+
+
   "Two actors" when {
 
     "it is the end of the turn" should {
 
       // Note that the enemy is closer to their next turn
-      val player = PlayerCharacter("Player", speed = 8)(position = 0)
-      val enemy = EnemyCharacter("Enemy", 100, 100, speed = 8)(position = 50)
+      val player = PlayerCharacter("Player", speed8Char)(position = 0)
+      val enemy = EnemyCharacter("Enemy", speed8Char)(position = 50)
 
       val preActors = Actors(player, Set(enemy))
       val postActors = preActors.changeTurn
@@ -30,8 +34,9 @@ class ActorsTest extends WordSpec {
     }
 
     // Player will have 111, enemy 110 so player goes first.
-    val player = PlayerCharacter("Player", speed = 10)(position = 91)
-    val enemy = EnemyCharacter("Enemy", 100, 100, speed = 10)(position = 90)
+
+    val player = PlayerCharacter("Player", speed10Char)(position = 91)
+    val enemy = EnemyCharacter("Enemy", speed10Char)(position = 90)
     val preActors = Actors(player, Set(enemy))
     val turnOneActors = preActors.changeTurn
 
@@ -60,9 +65,9 @@ class ActorsTest extends WordSpec {
       "the other actors position increases" in assert(turnTwoActors.cast.head.position == 11)
     }
 
-    "both players reach the goal, with equal positon and speed" should {
+    "both players reach the goal, with equal position and speed" should {
       // Player will have 111, enemy 110 so player goes first.
-      val player = PlayerCharacter("Player")()
+      val player = PlayerCharacter("Player", speed8Char)()
       val enemy = EnemyCharacter.yellowSlime
       val preActors = Actors(player, Set(enemy))
       val turnOneActors = preActors.changeTurn
@@ -82,10 +87,12 @@ class ActorsTest extends WordSpec {
     // Calc x11 turns = (FP: 120, E: 25 SE: 110) - FP's turn
     // Calc x12 turns = (FP: 40, E: 35 SE: 20) - SE's turn
 
+    val fastestStats = CharStats(100, 100, speed = 20)
+
     // When two players with the same position score reach the goal, the faster actor is favoured
-    val fastestActor = PlayerCharacter("Fastest Actor", speed = 20)(position = 0)
-    val averageActor = EnemyCharacter("Average Actor", 100, 100, speed = 10)(position = 15)
-    val slowestActor = EnemyCharacter("SLowest Actor ", 100, 100, speed = 10)(position = 0)
+    val fastestActor = PlayerCharacter("Fastest Actor", fastestStats)(position = 0)
+    val averageActor = EnemyCharacter("Average Actor", speed10Char)(position = 15)
+    val slowestActor = EnemyCharacter("SLowest Actor ", speed10Char)(position = 0)
 
     val preActors = Actors(fastestActor, Set(averageActor, slowestActor))
     val turnOneActors = preActors.changeTurn

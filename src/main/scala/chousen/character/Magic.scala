@@ -3,11 +3,14 @@ package chousen.character
 import chousen.engine.{Dice, Engine}
 import chousen.{Actors, _}
 
-trait Magic extends Action { char:BaseCharacter with PlayerChoice =>
+trait Magic extends Action {
+  char: BaseCharacter with PlayerChoice =>
   val spellBook: SpellBook
 
-  def useMagic(actors: Actors):Actors = {
-    if (spellBook.availableSpells.isEmpty) {statement(s"$char does not know any more magic"); playerInput(actors)}
+  def useMagic(actors: Actors): Actors = {
+    if (spellBook.availableSpells.isEmpty) {
+      statement(s"$char does not know any more magic"); playerInput(actors)
+    }
     else {
       def selectSpell: Spell = {
         statement(s"Select spell: ${spellBook.spellList}")
@@ -19,17 +22,17 @@ trait Magic extends Action { char:BaseCharacter with PlayerChoice =>
   }
 }
 
-case class SpellBook(spells:Set[Spell]) {
+case class SpellBook(spells: Set[Spell]) {
 
   lazy val availableSpells = spells.toList.sortBy(_.name)
 
   val spellMap: Map[String, Spell] =
-      availableSpells.foldLeft(Map.empty[String, Spell])((m, s) =>
-        m + (((if (m.isEmpty) "a" else m.keySet.max.head + 1).toString, s)))
+    availableSpells.foldLeft(Map.empty[String, Spell])((m, s) =>
+      m + (((if (m.isEmpty) "a" else m.keySet.max.head + 1).toString, s)))
 
   val spellList = spellMap.map(kv => s"[${kv._1}]:${kv._2} ").mkString
 
-  def withSpell(spell:Spell) = this.copy(spells + spell)
+  def withSpell(spell: Spell) = this.copy(spells + spell)
 }
 
 object SpellBook {
@@ -51,7 +54,7 @@ trait Spell extends CardAction {
   val magicType: String
   val baseDamage: Int
 
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]=None): Actors
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Actors
 }
 
 class FireBall extends Spell {
@@ -64,8 +67,8 @@ class FireBall extends Spell {
 
   val baseDamage: Int = 3
 
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]=None): Actors = {
-    val t = target.map { e:BaseCharacter =>
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Actors = {
+    val t = target.map { e: BaseCharacter =>
       val damage = Engine.calcMagic(this, user, e)
       exclaim(s"$user deals $damage $magicType damage to $e")
       e.takeDamage(damage)
@@ -78,7 +81,7 @@ trait Potion extends CardAction {
 
   val drink: BaseCharacter => BaseCharacter
 
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]=None): Actors
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Actors
 }
 
 class HealWounds extends Potion {
@@ -91,18 +94,18 @@ class HealWounds extends Potion {
     bc => {
       val variance = Dice.roll() + Dice.roll()
 
-      val hp: Int = bc.maxHp.min(bc.currentHp + bc.vitality + (bc.maxHp / 10) + variance)
-      val diff = hp - bc.currentHp
+      val hp: Int = bc.stats.maxHp.min(bc.stats.currentHp + bc.stats.vitality + (bc.stats.maxHp / 10) + variance)
+      val diff = hp - bc.stats.currentHp
 
       exclaim(s"$bc heals ${diff}HP to $hp")
 
       bc match {
-        case poc: PlayerCharacter => poc.copy(currentHp = hp)(poc.position)
-        case emy: EnemyCharacter => emy.copy(currentHp = hp)(emy.position)
+        case poc: PlayerCharacter => PlayerCharacter.currentHp.set(hp)(poc)
+        case emy: EnemyCharacter => EnemyCharacter.currentHp.set(hp)(emy)
       }
     }
 
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]=None): Actors = {
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Actors = {
     Actors(drink(user), target ++ bystanders.getOrElse(Set.empty))
   }
 }
