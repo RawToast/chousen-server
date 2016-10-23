@@ -1,6 +1,6 @@
 package chousen
 
-import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter}
+import chousen.character.{BaseCharacter, EnemyCharacter, Magic, PlayerCharacter}
 import chousen.engine.State
 
 import scala.util.Random

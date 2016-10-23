@@ -1,6 +1,8 @@
 package chousen.character
 
+import cats.data.Xor
 import chousen._
+import chousen.cards.DeckManager
 import monocle.{Lens, PLens}
 
 import scala.annotation.tailrec
@@ -25,7 +27,7 @@ sealed abstract class BaseCharacter
 }
 
 case class PlayerCharacter(name: String, stats: CharStats)(override val position: Int = 0)
-  extends BaseCharacter with PlayerChoice with Magic {
+  extends BaseCharacter with PlayerChoice with Magic with UseCards {
 
   override val spellBook = SpellBook.create.withSpell(new FireBall)
 
@@ -56,20 +58,42 @@ object PlayerCharacter {
   val spd = _stats composeLens CharStats.speed
 }
 
-
 trait PlayerChoice {
-  bc: BaseCharacter with Magic =>
+  bc: BaseCharacter with Magic with UseCards =>
 
   @tailrec
-  final def playerInput(actors: Actors): Actors = {
-    statement("[A]ttack [M]agic")
+  final def playerInput(actors: Actors, deckManager: DeckManager): Actors = {
+    statement("[A]ttack [M]agic ")
 
     requirePlayerInput match {
       case "a" => bc.attack(actors.cast, None)
-      case "m" => bc.useMagic(actors)
-      case _ => playerInput(actors)
+      case "m" => bc.useMagic(actors, deckManager)
+      case _ => playerInput(actors, deckManager)
     }
   }
+}
+
+trait TopLevelBattleInput extends Choice {
+  bc: BaseCharacter with Magic with UseCards =>
+
+  @scala.annotation.tailrec
+  final def takeInput(io: UserInput, a: Actors, d: DeckManager): Xor[Choice, (Actors, DeckManager)] = {
+    io() match {
+      case "a" => Xor.Right(bc.attack(a.cast, None), d)
+      case "m" => Xor.Right(bc.useMagic(a, d), d) //FIXME
+      case _ => takeInput(io, a, d)
+    }
+  }
+}
+
+trait Choice extends RecursiveChoice[Actors, DeckManager]
+
+trait RecursiveChoice[A, D] {
+  def takeInput(io:UserInput, a:A, d: D): Xor[RecursiveChoice[A, D], (A, D)]
+}
+
+trait UseCards { bc: BaseCharacter =>
+
 }
 
 case class EnemyCharacter(name: String, stats: CharStats)(override val position: Int = 0)

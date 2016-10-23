@@ -1,6 +1,6 @@
 package chousen
 
-import chousen.cards.Deck
+import chousen.cards.{Deck, DeckManager}
 import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter, PlayerChoice}
 import chousen.engine.State
 
@@ -14,13 +14,15 @@ object Main extends App {
 
   val player = PlayerCharacter(name, CharStats.DEFAULT)()
 
+  val defautDeck = DeckManager.startNewGameWithDefaultDeck
+
   val firstEncounter = Encounter.create(EnemyCharacter.yellowSlime) + EnemyCharacter.slime
   val secondEncounter = firstEncounter + EnemyCharacter.giantSlime
   val thirdEncounter = Encounter.create(EnemyCharacter.scoundrel)
 
   val dungeon = Dungeon(List(firstEncounter, secondEncounter, thirdEncounter))
 
-  GameLoop(name).loop(player, dungeon)
+  GameLoop(name).loop(player, defautDeck, dungeon)
 }
 
 case class Dungeon(encounters: List[Encounter]) {
@@ -55,25 +57,25 @@ case class GameLoop(playerName: String) {
   story(s"It was dark and smelly")
   statement(s"Eventually $playerName finds a room with a chest!")
 
-  def loop(p: BaseCharacter, dungeon: Dungeon) = {
+  def loop(p: BaseCharacter, deckManager: DeckManager, dungeon: Dungeon) = {
 
     // Need to place these elsewhere
     implicit val convert = (b: BaseCharacter) => Set(b)
 
     break()
     @tailrec
-    def innerLoop(actors: Actors): State = {
+    def innerLoop(actors: Actors, dm: DeckManager): State = {
 
       // Move
-      val postAttackActors = actors.actor match {
-        case player: BaseCharacter with PlayerChoice => player.playerInput(actors)
-        case enemy: BaseCharacter => enemy.attack(actors.player, Option(actors.fullCastWithoutPlayer))
+      val (postAttackActors:Actors, nxtDm: DeckManager) = actors.actor match {
+        case player: BaseCharacter with PlayerChoice => player.playerInput(actors, dm)
+        case enemy: BaseCharacter => (enemy.attack(actors.player, Option(actors.fullCastWithoutPlayer)), dm)
       }
 
       val state = postAttackActors.postAttackState
 
       if (!state.playerAlive || !state.actors.hasEnemies) state
-      else innerLoop(state.actors.changeTurn)
+      else innerLoop(state.actors.changeTurn, dm)
     }
 
     @tailrec
@@ -86,7 +88,7 @@ case class GameLoop(playerName: String) {
       val actors = Actors(player, encounter.enemies)
 
       // Fight
-      val result: State = innerLoop(actors.changeTurn)
+      val result: State = innerLoop(actors.changeTurn, deckManager)
 
       // Conclude
       val newDungeon = d.progress

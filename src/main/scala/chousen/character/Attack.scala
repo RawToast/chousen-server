@@ -1,5 +1,7 @@
 package chousen.character
 
+import cats.data.Xor
+import chousen.cards.DeckManager
 import chousen.engine.Engine
 import chousen.{Actors, _}
 
@@ -41,3 +43,5 @@ trait Attack extends Action {
     Actors(char, t ++ bystanders.getOrElse(Set.empty))
   }
 }
+
+

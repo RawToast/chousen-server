@@ -4,6 +4,7 @@ import cats.data.Xor
 
 import scala.util.Random
 
+
 case class Deck(cards: List[Card], discarded: List[Card] = List.empty) {
 
   def deal: (Hand, Deck) = {

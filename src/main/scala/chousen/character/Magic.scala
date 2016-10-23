@@ -1,5 +1,6 @@
 package chousen.character
 
+import chousen.cards.DeckManager
 import chousen.engine.{Dice, Engine}
 import chousen.{Actors, _}
 
@@ -7,9 +8,9 @@ trait Magic extends Action {
   char: BaseCharacter with PlayerChoice =>
   val spellBook: SpellBook
 
-  def useMagic(actors: Actors): Actors = {
+  def useMagic(actors: Actors, dm: DeckManager): Actors = {
     if (spellBook.availableSpells.isEmpty) {
-      statement(s"$char does not know any more magic"); playerInput(actors)
+      statement(s"$char does not know any more magic"); playerInput(actors, dm)
     }
     else {
       def selectSpell: Spell = {
