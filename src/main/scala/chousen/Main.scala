@@ -1,7 +1,7 @@
 package chousen
 
 import chousen.cards.{Deck, DeckManager}
-import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter, PlayerChoice}
+import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter}
 import chousen.engine.State
 
 import scala.annotation.tailrec

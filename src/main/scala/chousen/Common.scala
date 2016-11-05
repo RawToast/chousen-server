@@ -1,7 +1,5 @@
 package chousen
 
-import chousen.cards.Card
-
 trait Nameable {
   val name: String
 }

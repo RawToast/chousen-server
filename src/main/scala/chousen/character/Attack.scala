@@ -1,7 +1,6 @@
 package chousen.character
 
 import chousen._
-import chousen.cards.DeckManager
 import chousen.engine.Engine
 
 trait Attack extends Action {

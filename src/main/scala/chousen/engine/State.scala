@@ -1,7 +1,6 @@
 package chousen.engine
 
 import chousen.Cast
-import chousen.cards.DeckManager
 
 case class State(playerAlive: Boolean, actors: Cast)
 

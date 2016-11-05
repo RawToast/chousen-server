@@ -150,21 +150,25 @@ case class EnemyCharacter(name: String, stats: CharStats)(override val position:
   def resetPosition = copy()(position = position - 100)
 
   override def updatePosition: EnemyCharacter = copy()(position + stats.speed)
+
 }
 
 
 object EnemyCharacter {
-  def create(name: String, maxHp: Int) = new EnemyCharacter(name, maxHp)
 
-  def slime = EnemyCharacter("Slime", CharStats(10, 10, strength = 4, intellect = 4, speed = 7))()
+  implicit val enemyCharacter: (EnemyBuilder) => EnemyCharacter = (eb:EnemyBuilder) => eb.e
 
-  def yellowSlime = EnemyCharacter("Yellow Slime", CharStats(15, 15, intellect = 4, vitality = 2))()
+  def create(name: String, maxHp: Int=100) = new EnemyCharacter(name, maxHp)
 
-  def giantSlime = EnemyCharacter("Giant Slime", CharStats(30, 30, strength = 18, intellect = 4, vitality = 12, speed = 6))()
+  lazy val slime: EnemyCharacter = EnemyBuilder.make("Slime") hp 10 str 4 int 4 spd 7
 
-  def baseCharacter = EnemyCharacter.create("Scoundrel", 100)
+  lazy val yellowSlime: EnemyCharacter = EnemyBuilder.make("Yellow Slime") hp 15 vit 2 int 4
 
-  def scoundrel = baseCharacter
+  lazy val giantSlime: EnemyCharacter = EnemyBuilder.make("Giant Slime") hp 30 str 18 vit 12 int 4 spd 6
+
+  lazy val baseCharacter: EnemyCharacter = EnemyCharacter.create("Scoundrel")
+
+  lazy val scoundrel = baseCharacter
 
 
   val _stats = Lens[EnemyCharacter, CharStats](_.stats) {
@@ -177,4 +181,21 @@ object EnemyCharacter {
   val int = _stats composeLens CharStats.intellect
   val vit = _stats composeLens CharStats.vitality
   val spd = _stats composeLens CharStats.speed
+}
+
+case class EnemyBuilder(e:EnemyCharacter) {
+
+  def hp(x:Int): EnemyBuilder = EnemyBuilder(
+    e.copy(stats = e.stats.copy(maxHp = x, currentHp = x))(e.position)
+  )
+
+  def str(x:Int): EnemyBuilder = EnemyBuilder(EnemyCharacter.str.set(x)(e))
+  def dex(x:Int): EnemyBuilder = EnemyBuilder(EnemyCharacter.dex.set(x)(e))
+  def vit(x:Int): EnemyBuilder = EnemyBuilder(EnemyCharacter.vit.set(x)(e))
+  def int(x:Int): EnemyBuilder = EnemyBuilder(EnemyCharacter.int.set(x)(e))
+  def spd(x:Int): EnemyBuilder = EnemyBuilder(EnemyCharacter.spd.set(x)(e))
+}
+
+object EnemyBuilder {
+  def make(name:String): EnemyBuilder = EnemyBuilder(EnemyCharacter.create(name))
 }

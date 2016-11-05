@@ -1,6 +1,6 @@
 package chousen.cards
 
-import chousen.{Actors, Cast}
+import chousen.Cast
 import chousen.character.{BaseCharacter, CardAction, FireBall, HealWounds}
 
 trait Card {
