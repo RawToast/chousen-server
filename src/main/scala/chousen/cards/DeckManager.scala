@@ -1,7 +1,5 @@
 package chousen.cards
 
-import cats.data.Xor
-
 //TODO the dm is passed around, but not used
 case class DeckManager(hand: Hand, deck: Deck) {
 
@@ -18,10 +16,10 @@ case class DeckManager(hand: Hand, deck: Deck) {
     * Returns right hand side if successful.
     * Returns left hand side if no cards are left to draw.
     */
-  def drawCard: Xor[DeckManager, DeckManager] = {
+  def drawCard: Either[DeckManager, DeckManager] = {
     deck.draw match {
-      case Xor.Left(d: Deck) => Xor.Left(this)
-      case Xor.Right((c: Card, d: Deck)) => Xor.Right(DeckManager(hand + c, d))
+      case Left(d: Deck) => Left(this)
+      case Right((c: Card, d: Deck)) => Right(DeckManager(hand + c, d))
     }
   }
 
@@ -29,7 +27,9 @@ case class DeckManager(hand: Hand, deck: Deck) {
     * Returns right hand side if successful.
     * Returns left hand side if no cards are in the discard pile.
     */
-  def populateFromDiscard: Xor[DeckManager, DeckManager] = {
+  def populateFromDiscard: Either[DeckManager, DeckManager] = {
+    import cats.syntax.either._
+
     deck.moveTopDiscardToTopOfDeck.bimap(fa => copy(deck=fa), fb => copy(deck=fb))
   }
 
@@ -51,5 +51,5 @@ object DeckManager {
   /**
     * Fetch the deck whatever the outcome was, sometimes we don't care if the action failed (e.g. tests)
     */
-  def get(dx: Xor[DeckManager, DeckManager]) = dx.fold(a => a, b => b)
+  def get(dx: Either[DeckManager, DeckManager]) = dx.fold(a => a, b => b)
 }

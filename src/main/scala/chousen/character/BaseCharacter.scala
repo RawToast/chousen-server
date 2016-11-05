@@ -1,6 +1,5 @@
 package chousen.character
 
-import cats.data.Xor
 import chousen._
 import chousen.cards.{Card, DeckManager}
 import monocle.{Lens, PLens}
@@ -56,6 +55,7 @@ case class PlayerCharacter(name: String, stats: CharStats)(override val position
 
 object PlayerCharacter {
 
+  import scala.language.implicitConversions
   implicit def toBaseCharacter(pc: PlayerCharacter): BaseCharacter = pc
 
   val _stats = Lens[PlayerCharacter, CharStats](_.stats)((cs: CharStats) => p => p.copy(stats = cs)(position = p.position))
@@ -89,10 +89,10 @@ trait TopLevelBattleInput extends Choice {
   bc: BaseCharacter with Magic with UseCards =>
 
   @scala.annotation.tailrec
-  final def takeInput(io: UserInput, a: Cast, d: DeckManager): Xor[Choice, (Cast, DeckManager)] = {
+  final def takeInput(io: UserInput, a: Cast, d: DeckManager): Either[Choice, (Cast, DeckManager)] = {
     io() match {
-      case "a" => Xor.Right(bc.attack(a.cast, None), d)
-      case "m" => Xor.Right(bc.useMagic(a, d))
+      case "a" => Right(bc.attack(a.cast, None) -> d)
+      case "m" => Right(bc.useMagic(a, d))
       case "c" => use(a, d)
       case _ => takeInput(io, a, d)
     }
@@ -102,13 +102,13 @@ trait TopLevelBattleInput extends Choice {
 trait Choice extends RecursiveChoice[Cast, DeckManager]
 
 trait RecursiveChoice[A, D] {
-  def takeInput(io: UserInput, a: A, d: D): Xor[RecursiveChoice[A, D], (A, D)]
+  def takeInput(io: UserInput, a: A, d: D): Either[RecursiveChoice[A, D], (A, D)]
 }
 
 trait UseCards {
   bc: BaseCharacter with TopLevelBattleInput =>
 
-  def use(actors: Cast, dm: DeckManager): Xor[Choice, (Cast, DeckManager)] = {
+  def use(actors: Cast, dm: DeckManager): Either[Choice, (Cast, DeckManager)] = {
 
     if (dm.hand.cards.isEmpty) {
       statement(s"Your hand is empty")
@@ -127,7 +127,7 @@ trait UseCards {
 
           val ndm = dm.discard(c)
 
-          Xor.Right(na, ndm)
+          Right(na -> ndm)
       }
     }
   }
