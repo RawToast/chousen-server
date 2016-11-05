@@ -8,7 +8,7 @@ trait Magic extends Action {
   char: BaseCharacter with PlayerChoice =>
   val spellBook: SpellBook
 
-  def useMagic(actors: Actors, dm: DeckManager): Actors = {
+  def useMagic(actors: Cast, dm: DeckManager): (Cast, DeckManager) = {
     if (spellBook.availableSpells.isEmpty) {
       statement(s"$char does not know any more magic"); playerInput(actors, dm)
     }
@@ -18,7 +18,7 @@ trait Magic extends Action {
         spellBook.spellMap.getOrElse(requirePlayerInput, selectSpell)
       }
 
-      selectSpell.complete(char, actors.cast)
+      (selectSpell.complete(char, actors.cast), dm)// TODO: Unused DeckManager
     }
   }
 }
@@ -46,7 +46,7 @@ trait CardAction {
   val description: String
   val maxCopies: Int = 4
 
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Cast
 }
 
 
@@ -55,7 +55,7 @@ trait Spell extends CardAction {
   val magicType: String
   val baseDamage: Int
 
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Actors
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Cast
 }
 
 class FireBall extends Spell {
@@ -68,7 +68,7 @@ class FireBall extends Spell {
 
   val baseDamage: Int = 3
 
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Actors = {
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None) = {
     val t = target.map { e: BaseCharacter =>
       val damage = Engine.calcMagic(this, user, e)
       exclaim(s"$user deals $damage $magicType damage to $e")
@@ -82,7 +82,7 @@ trait Potion extends CardAction {
 
   val drink: BaseCharacter => BaseCharacter
 
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Actors
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Cast
 }
 
 class HealWounds extends Potion {

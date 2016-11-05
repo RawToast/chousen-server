@@ -1,11 +1,12 @@
 package chousen.engine
 
-import chousen.Actors
+import chousen.Cast
+import chousen.cards.DeckManager
 
-case class State(playerAlive: Boolean, actors: Actors)
+case class State(playerAlive: Boolean, actors: Cast)
 
 object State {
-  def createFromActors(actors: Actors) = {
+  def createFromActors(actors: Cast) = {
     val playerAlive = if (actors.actor.isPlayer) Option(true)
     else actors.cast
       .find(cm => cm.isPlayer)

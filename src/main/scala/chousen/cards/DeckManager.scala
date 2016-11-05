@@ -2,6 +2,7 @@ package chousen.cards
 
 import cats.data.Xor
 
+//TODO the dm is passed around, but not used
 case class DeckManager(hand: Hand, deck: Deck) {
 
   def startGame: DeckManager = (DeckManager.apply _).tupled(this.deck.shuffle.deal)

@@ -1,6 +1,7 @@
 package chousen.cards
 
 import cats.data.Xor
+import chousen._
 
 import scala.util.Random
 
@@ -48,12 +49,18 @@ object Deck {
   }
 }
 
-case class Hand(cards: List[Card]) {
+case class Hand(cards: List[Card]) extends Options[Card] {
   lazy val size = cards.size
+  override val items = cards
 
   def discard(card: Card) = this.copy(cards.filterNot(c => c == card))
 
   def +(card: Card) = this.copy(cards = card :: cards)
+
+  def choices: Map[String, Card] = {
+    statement(optionString)
+    options
+  }
 }
 
 object Hand {
