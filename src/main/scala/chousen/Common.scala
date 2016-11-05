@@ -1,21 +1,25 @@
 package chousen
 
+import chousen.cards.Card
+
 trait Nameable {
   val name: String
 }
 
-case class CharStats (maxHp: Int, currentHp: Int,
-                 override val strength: Int = 8,
-                 override val dexterity: Int = 8,
-                 override val intellect: Int = 8,
-                 override val vitality: Int = 8,
-                 override val speed: Int = 8) extends BaseStats
+case class CharStats(maxHp: Int, currentHp: Int,
+                     override val strength: Int = 8,
+                     override val dexterity: Int = 8,
+                     override val intellect: Int = 8,
+                     override val vitality: Int = 8,
+                     override val speed: Int = 8) extends BaseStats
+
 object CharStats {
+
   import monocle.Lens
 
   val DEFAULT = CharStats(100, 100)
 
-  val company = Lens[CharStats, Int](_.currentHp)( c => e => e.copy(currentHp = c))
+  val company = Lens[CharStats, Int](_.currentHp)(c => e => e.copy(currentHp = c))
 
   val currentHp = Lens[CharStats, Int](_.currentHp)((hp: Int) => s => s.copy(currentHp = hp))
   val strength = Lens[CharStats, Int](_.strength)(str => s => s.copy(strength = str))
@@ -28,6 +32,7 @@ object CharStats {
 trait Stats {
   val stats: CharStats
 }
+
 trait BaseStats {
 
   val maxHp: Int
@@ -49,4 +54,18 @@ object BaseStats {
 trait CanLevel {
   stats: BaseStats =>
   def levelUp(): BaseStats
+}
+
+
+trait Options[T] {
+
+  val items: List[T]
+
+  lazy val options: Map[String, T] = items.foldLeft(Map.empty[Int, T]) {
+    (m, bc: T) =>
+      if (m.isEmpty) m + ((1, bc))
+      else m.+((m.keySet.max + 1, bc))
+  }.foldLeft(Map.empty[String, T])((m, bc) => m.+((bc._1.toString, bc._2)))
+
+  lazy val optionString = options.map(kv => s"[${kv._1}]:${kv._2} ").mkString
 }

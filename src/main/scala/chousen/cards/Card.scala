@@ -1,16 +1,20 @@
 package chousen.cards
 
-import chousen.Actors
+import chousen.{Actors, Cast}
 import chousen.character.{BaseCharacter, CardAction, FireBall, HealWounds}
 
 trait Card {
   val active: CardAction
 
-  def use(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors =
-    active.complete(user, target, bystanders)
+  def use(user: BaseCharacter, actors:Cast): (Card, Cast) = (this, actors)
+
+//  protected def selectTargets = {
+//    ???
+//  }
 }
 
-trait SpellCard extends Card
+trait SpellCard extends Card {
+}
 
 trait PotionCard extends Card
 

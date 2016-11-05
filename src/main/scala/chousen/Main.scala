@@ -64,18 +64,19 @@ case class GameLoop(playerName: String) {
 
     break()
     @tailrec
-    def innerLoop(actors: Actors, dm: DeckManager): State = {
+    def innerLoop(actors: Cast, dm: DeckManager): State = {
 
       // Move
       val (postAttackActors:Actors, nxtDm: DeckManager) = actors.actor match {
-        case player: BaseCharacter with PlayerChoice => player.playerInput(actors, dm)
-        case enemy: BaseCharacter => (enemy.attack(actors.player, Option(actors.fullCastWithoutPlayer)), dm)
+        case player: PlayerCharacter => player.playerInput(actors, dm)
+        case enemy: EnemyCharacter => (enemy.attack(actors.player, Option(actors.fullCastWithoutPlayer)), dm)
+        case _ => println(s"Found: ${actors.actor}"); throw new RuntimeException("It went wrong")
       }
 
       val state = postAttackActors.postAttackState
 
       if (!state.playerAlive || !state.actors.hasEnemies) state
-      else innerLoop(state.actors.changeTurn, dm)
+      else innerLoop(state.actors.changeTurn, nxtDm)
     }
 
     @tailrec
@@ -113,5 +114,5 @@ case class GameLoop(playerName: String) {
 trait Action {
   char: BaseCharacter =>
 
-  def complete(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors
+  def complete(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Cast
 }

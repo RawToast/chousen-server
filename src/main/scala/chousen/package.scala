@@ -21,16 +21,16 @@ package object chousen {
 
   type UserInput = () => String
 
-  val PlayerInput: UserInput = scala.io.StdIn.readLine().toLowerCase
+  def PlayerInput: UserInput = scala.io.StdIn.readLine().toLowerCase
 
   def requireCaseSensitivePlayerInput = scala.io.StdIn.readLine()
 
 
   private def printer(string: String, break:Option[String]=None, newLine:Boolean=true) {
 
-    def space() { Thread.sleep(20); print(" ") }
+    def space() { Thread.sleep(15); print(" ") }
 
-    def sPrint(c: Char, sleep:Int=40) { Thread.sleep(sleep); print(c) }
+    def sPrint(c: Char, sleep:Int=35) { Thread.sleep(sleep); print(c) }
 
     def printString: (String) => Unit = {
       str => str.foreach(c => {
@@ -47,7 +47,7 @@ package object chousen {
       printString(w)
     }
 
-    break.foreach(_.foreach(c => sPrint(c, sleep = 150)))
+    break.foreach(_.foreach(c => sPrint(c, sleep = 140)))
     if (newLine)
       println("")
   }

@@ -1,15 +1,14 @@
 package chousen.character
 
-import cats.data.Xor
+import chousen._
 import chousen.cards.DeckManager
 import chousen.engine.Engine
-import chousen.{Actors, _}
 
 trait Attack extends Action {
   char: BaseCharacter =>
 
   //TODO: Refactor
-  def attack(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors = {
+  def attack(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Cast = {
     if (target.size == 1) {
       exclaim(s"$char attacks")
 
@@ -17,14 +16,13 @@ trait Attack extends Action {
     } else {
       statement("Select a target:")
 
-      val targets: Map[String, BaseCharacter] = target.foldLeft(Map.empty[Int, BaseCharacter]) {
-        (m, bc: BaseCharacter) =>
-          if (m.isEmpty) m + ((1, bc))
-          else m.+((m.keySet.max + 1, bc))
-      }.foldLeft(Map.empty[String, BaseCharacter])((m, bc) => m.+((bc._1.toString, bc._2)))
+      object TargetUtil extends Options[BaseCharacter] {
+        override val items = target.toList
+      }
 
-      val targetString = targets.map(kv => s"[${kv._1}]:${kv._2} ").mkString
-      statement(targetString)
+      lazy val targets: Map[String, BaseCharacter] = TargetUtil.options
+
+      statement(TargetUtil.optionString)
 
       targets.get(requirePlayerInput)
         .map(bc =>
@@ -34,7 +32,7 @@ trait Attack extends Action {
     }
   }
 
-  override def complete(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Actors = {
+  override def complete(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Cast = {
     val t = target.map { e =>
       val damage = Engine.calcDamage(char, e)
       if (isPlayer) exclaim(s"$char deals $damage to $e")
