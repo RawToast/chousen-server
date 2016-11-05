@@ -19,6 +19,6 @@ project/plugins/project/
 # ENSIME specific
 .ensime_cache/
 .ensime
-
+.ensime.sbt
 .idea/
 .DS*
