@@ -14,7 +14,7 @@ object Main extends App {
 
   val player = PlayerCharacter(name, CharStats.DEFAULT)()
 
-  val defautDeck = DeckManager.startNewGameWithDefaultDeck
+  val defaultDeck = DeckManager.startNewGameWithDefaultDeck
 
   val firstEncounter = Encounter.create(EnemyCharacter.yellowSlime) + EnemyCharacter.slime
   val secondEncounter = firstEncounter + EnemyCharacter.giantSlime
@@ -22,7 +22,7 @@ object Main extends App {
 
   val dungeon = Dungeon(List(firstEncounter, secondEncounter, thirdEncounter))
 
-  GameLoop(name).loop(player, defautDeck, dungeon)
+  GameLoop(name).loop(player, defaultDeck, dungeon)
 }
 
 case class Dungeon(encounters: List[Encounter]) {
@@ -57,7 +57,7 @@ case class GameLoop(playerName: String) {
   story(s"It was dark and smelly")
   statement(s"Eventually $playerName finds a room with a chest!")
 
-  def loop(p: BaseCharacter, deckManager: DeckManager, dungeon: Dungeon) = {
+  def loop(p: PlayerCharacter, deckManager: DeckManager, dungeon: Dungeon) = {
 
     // Need to place these elsewhere
     implicit val convert = (b: BaseCharacter) => Set(b)
@@ -67,29 +67,26 @@ case class GameLoop(playerName: String) {
     def innerLoop(actors: Cast, dm: DeckManager): State = {
 
       // Move
-      val (postAttackActors:Actors, nxtDm: DeckManager) = actors.actor match {
-        case player: PlayerCharacter => player.playerInput(actors, dm)
-        case enemy: EnemyCharacter => (enemy.attack(actors.player, Option(actors.fullCastWithoutPlayer)), dm)
-        case _ => println(s"Found: ${actors.actor}"); throw new RuntimeException("It went wrong")
-      }
+      val (newCast:Cast, nxtDm: DeckManager) = actors.takeTurn(dm)
 
-      val state = postAttackActors.postAttackState
+
+      val state = newCast.postAttackState
 
       if (!state.playerAlive || !state.actors.hasEnemies) state
       else innerLoop(state.actors.changeTurn, nxtDm)
     }
 
     @tailrec
-    def play(player: BaseCharacter, d: Dungeon): Dungeon = {
+    def play(player: PlayerCharacter, d: Dungeon): Dungeon = {
       val encounterOption: Option[Encounter] = d.nextEncounter
       val encounter = encounterOption.get
 
       exclaim(encounter.toString)
 
-      val actors = Actors(player, encounter.enemies)
+      val cast = Peoples.init(player, encounter.enemies)
 
       // Fight
-      val result: State = innerLoop(actors.changeTurn, deckManager)
+      val result: State = innerLoop(cast, deckManager)
 
       // Conclude
       val newDungeon = d.progress

@@ -37,7 +37,13 @@ trait Attack extends Action {
       if (isPlayer) exclaim(s"$char deals $damage to $e")
       e.takeDamage(damage)
     }
-    Actors(char, t ++ bystanders.getOrElse(Set.empty))
+    // Actors(char, t ++ bystanders.getOrElse(Set.empty))
+
+    val all = t + char ++ bystanders.getOrElse(Set.empty)
+
+    val player = all.find(p => p.isPlayer)
+
+    Peoples(player.get.asInstanceOf[PlayerCharacter], all.filter(p => p.isPlayer))
   }
 }
 

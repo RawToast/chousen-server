@@ -1,8 +1,10 @@
 package chousen
 
+import chousen.cards.DeckManager
 import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter}
 import chousen.engine.State
 
+import scala.annotation.tailrec
 import scala.util.Random
 
 
@@ -10,13 +12,13 @@ trait Cast {
 
   val cast: Set[BaseCharacter]
 
-  val active: BaseCharacter
-
   val player: PlayerCharacter
 
   val state: State
 
-  val actor = active
+  def active: BaseCharacter
+
+  def actor = active
 
   def changeTurn: Cast
 
@@ -26,162 +28,209 @@ trait Cast {
 
   def hasEnemies: Boolean
 
-  val isPlayerActive = player == active
+  def isPlayerActive = player == active
 
+  def takeTurn(dm: DeckManager): (Cast, DeckManager) = this.cast match {
+    case player: PlayerCharacter => player.playerInput(this, dm)
+    case enemy: EnemyCharacter => (enemy.attack(Set(this.player), Option(this.fullCastWithoutPlayer)), dm)
+  }
+
+  def postAttackState: State = {
+    val postActionCast = removeDeadActors()
+    State.createFromActors(postActionCast)
+  }
+
+  def removeDeadActors(): Cast
 }
 
 /**
   * Safer Actors implementation, guarantees the existence of a Player.
   */
+// Needs to be created using Factory, first turn positions/active need to be calculated on construction
+
+object Peoples {
+  def init(player: PlayerCharacter, enemies: Set[BaseCharacter]): Peoples = {
+
+    @tailrec
+    def calculateActiveCast(p: PlayerCharacter, es: Set[BaseCharacter]): Peoples = {
+
+      case class Actorz(player: PlayerCharacter, enemies: Set[BaseCharacter]) {
+
+        def actorsWith(filter: (BaseCharacter) => Boolean): (Option[PlayerCharacter], Set[BaseCharacter]) = {
+          val po = if (filter(player)) Some(player) else None
+          (po, enemies.filter(filter))
+        }
+
+        def numActorsWith(f: (BaseCharacter) => Boolean): Int = {
+          val (po, es) = actorsWith(f)
+
+          es.size + {
+            if (po.nonEmpty) 1 else 0
+          }
+        }
+
+        def updatePositions(): Actorz = {
+          Actorz(player.updatePosition, enemies.map(_.updatePosition))
+        }
+      }
+
+      lazy val nextActorz: Actorz = Actorz(p, es).updatePositions()
+
+      lazy val actorsWithPosition: (Option[PlayerCharacter], Set[BaseCharacter]) = nextActorz.actorsWith(_.hasPosition)
+      lazy val actorsHadPosition = nextActorz.actorsWith(_.hadPosition)
+
+      def count(aw: (Option[PlayerCharacter], Set[BaseCharacter])) = {
+        val p = aw._1
+        val es = aw._2
+
+        p match {
+          case Some(pc) => 1 + es.size
+          case None => es.size
+        }
+      }
+
+      nextActorz.numActorsWith(_.hasPosition) match {
+        case 0 => calculateActiveCast(nextActorz.player, nextActorz.enemies) //(nextPeeps)
+
+        case 1 =>
+
+          val srtE = nextActorz.enemies.toList.sortBy(f => -f.position)
+
+          if (nextActorz.player.position > srtE.head.position) {
+            println(s"Player pos ${nextActorz.player.position}")
+            Peoples(nextActorz.player, nextActorz.enemies)
+          } else {
+            Peoples(nextActorz.player, nextActorz.enemies)
+          }
+        case _ =>
+          val awp2: Set[BaseCharacter] = actorsWithPosition._1 match {
+            case Some(bc) => actorsWithPosition._2 + bc
+            case None => actorsWithPosition._2
+          }
+
+          val awp = awp2.toList.sortBy(f => -f.position)
+
+          val A1 = awp.head
+          val A2 = awp.tail.head
+
+          if (A1.position > A2.position) {
+            Peoples(nextActorz.player, nextActorz.enemies)
+          } else {
+            count(actorsHadPosition) match {
+              case 0 => calculateActiveCast(nextActorz.player, nextActorz.enemies)
+              case 1 => Peoples(p, es)
+              case _ =>
+                val topSpeedCount = count(nextActorz.actorsWith(bc => bc.stats.speed == {
+                  val fastestEnemySpeed = es.maxBy(_.stats.speed).stats.speed
+                  actorsWithPosition._1 match {
+                    case Some(pc) => if (pc.stats.speed > fastestEnemySpeed) pc.stats.speed else fastestEnemySpeed
+                    case None => fastestEnemySpeed
+                  }
+                }))
+                if (topSpeedCount == 1) calculateActiveCast(nextActorz.player, nextActorz.enemies) //(nextPeeps)
+                else Peoples(nextActorz.player, nextActorz.enemies)
+            }
+          }
+      }
+    }
+
+    calculateActiveCast(player, enemies)
+  }
+}
+
 case class Peoples(player: PlayerCharacter, enemies: Set[BaseCharacter]) extends Cast {
-  override val cast: Set[BaseCharacter] = enemies + player
-  override val state: State = State(player.isAlive, this)
+
+  override lazy val cast: Set[BaseCharacter] = enemies + player
+
+  override lazy val state: State = State(player.isAlive, this)
 
   override def hasEnemies: Boolean = enemies.nonEmpty
 
   def update(bc: BaseCharacter): Peoples = bc match {
-    case p: PlayerCharacter => this.copy(p)
-    case b: BaseCharacter => this.copy(enemies = enemies + b)
+    case p: PlayerCharacter =>
+      Peoples(p, enemies)
+    case b: BaseCharacter =>
+      Peoples(player, Set(b) ++ enemies)
   }
 
-  def changeTurn: Peoples = Peoples(player.updatePosition, enemies.map(_.updatePosition))
+  def changeTurn: Peoples = calculateActiveCast._2
+
+  private def updatePositions: Peoples = {
+    val nnp = player.updatePosition
+    val nem = enemies.map(_.updatePosition)
+
+    Peoples(nnp, nem)
+  }
+
+  private def resetBaseCharacter(bc: BaseCharacter) = bc.resetPosition
+
 
   // Very simple turn change
-  override lazy val active: BaseCharacter = {
+  override def active: BaseCharacter = {
+    def calculateActive: BaseCharacter = this.calculateActiveCast._1
 
-    def calculateActive(peoples: Peoples): BaseCharacter = {
-      def returnBc(bc:BaseCharacter) = bc.resetPosition
+    calculateActive
+  }
 
-      val nextPeeps = peoples.changeTurn
+  final private lazy val calculateActiveCast: (BaseCharacter, Peoples) = {
 
-      def actorsWith: ((BaseCharacter) => Boolean) => Set[BaseCharacter] =
-        nextPeeps.cast.filter(_: (BaseCharacter) => Boolean)
+    val currentWithPosition = this.cast.filter(_.hasPosition)
 
-      def numActorsWith(f: (BaseCharacter) => Boolean) =
-        actorsWith(f)
-          .size
+    currentWithPosition.size match {
+      case 0 => this.updatePositions.calculateActiveCast
 
-      lazy val actorsWithPosition = actorsWith(_.hasPosition)
-      lazy val actorsHadPosition = actorsWith(_.hadPosition)
+      case 1 =>
+        val srtE = this.enemies.toList.sortBy(f => -f.position)
+
+        if (this.player.position > srtE.head.position) {
+          (this.player, this.update(resetBaseCharacter(this.player)))
+        } else {
+          val ne = srtE.head
+          (ne, this.update(resetBaseCharacter(ne)))
+        }
+      case _ => {
+        val awp: List[BaseCharacter] = currentWithPosition.toList.sortBy(f => -f.position)
+
+        val A1 = awp.head
+        val A2 = awp.tail.head
+
+        if (A1.position > A2.position) {
+          val pp = A1.resetPosition
+
+          if (A1.isInstanceOf[PlayerCharacter]) (this.player, this.update(pp))
+          else (this.enemies.find(p => p == A1).get, this.update(pp))
+        } else {
+          val sortBySpd = currentWithPosition.
+            filter(bc => bc.position == A1.position).
+            toList.sortBy(bc => -bc.stats.speed)
 
 
-      actorsWithPosition.size match {
-        case 0 => calculateActive(nextPeeps)
+          val spd = sortBySpd.filter(bc => bc.stats.speed == sortBySpd.head.stats.speed)
 
-        case 1 =>
-          val activeActor: BaseCharacter = nextPeeps.cast.maxBy(bc => bc.position)
-          returnBc(activeActor)
-
-        case _ =>
-          val awp: List[BaseCharacter] = actorsWithPosition.toList.sortBy(f => -f.position)
-          val a1 = awp.head
-          val a2 = awp.tail.head
-
-          if (a1.position > a2.position) {
-            returnBc(a1)
-          } else {
-            actorsHadPosition.size match {
-              case 0 => calculateActive(nextPeeps)
-              case 1 =>
-                returnBc(actorsHadPosition.head)
-              case _ =>
-                val topSpeedCount = numActorsWith(bc => bc.stats.speed == actorsWithPosition.maxBy(_.stats.speed).stats.speed)
-                if (topSpeedCount == 1) calculateActive(nextPeeps)
-                else {
-                  val chosenOne = Random.shuffle(actorsWithPosition).head
-                  returnBc(chosenOne)
-                }
+          spd.size match {
+            case 1 => {
+              val pp = spd.head.resetPosition
+              spd.head match {
+                case _: PlayerCharacter => (this.player, this.update(pp))
+                case _ => (this.enemies.find(p => p == spd.head).get, this.update(pp))
+              }
             }
+            case _ =>
+              val chosenOne = Random.shuffle(spd).head
+              (chosenOne, this.update(resetBaseCharacter(chosenOne)))
           }
+        }
       }
     }
-
-    calculateActive(this)
   }
 
-}
 
-
-case class Actors(override val actor: BaseCharacter, cast: Set[BaseCharacter]) extends Cast {
-
-  // Very simple turn change
-  def changeTurn: Actors = {
-
-    def calculateTurn(fc: Set[BaseCharacter]): Actors = {
-
-      val postCalcActors: Set[BaseCharacter] = fc.map {
-        // Good argument that the position increase should be one my the BC class
-        case p: PlayerCharacter => p.copy()(position = p.position + p.stats.speed)
-        case e: EnemyCharacter => e.copy()(position = e.position + e.stats.speed)
-      }
-
-      def actorsWith: ((BaseCharacter) => Boolean) => Set[BaseCharacter] =
-        postCalcActors.filter(_: (BaseCharacter) => Boolean)
-
-
-      def numActorsWith(f: (BaseCharacter) => Boolean) =
-        actorsWith(f)
-          .size
-
-      lazy val actorsWithPosition = actorsWith(_.hasPosition)
-      lazy val actorsHadPosition = actorsWith(_.hadPosition)
-
-
-      actorsWithPosition.size match {
-        case 0 => calculateTurn(postCalcActors)
-        case 1 =>
-          val activeActor = postCalcActors.maxBy(bc => bc.position)
-          Actors(activeActor.resetPosition, postCalcActors - activeActor)
-        case _ =>
-          val awp = actorsWithPosition.toList.sortBy(f => -f.position)
-
-          if (awp.head.position > awp.tail.head.position) Actors(awp.head.resetPosition, postCalcActors - awp.head)
-          else {
-            actorsHadPosition.size match {
-              case 0 => calculateTurn(postCalcActors)
-              case 1 =>
-                val actor = actorsHadPosition.head
-                Actors(actor.resetPosition, postCalcActors - actor)
-              case _ =>
-                val topSpeedCount = numActorsWith(bc => bc.stats.speed == actorsWithPosition.maxBy(_.stats.speed).stats.speed)
-                if (topSpeedCount == 1) calculateTurn(postCalcActors)
-                else {
-                  val chosenOne = Random.shuffle(actorsWithPosition).head
-                  Actors(chosenOne.resetPosition, postCalcActors - chosenOne)
-                }
-            }
-          }
-      }
-    }
-
-    calculateTurn(fullCast)
-  }
-
-  def postAttackState: State = {
-    val postActionCast = removeDeadActors()
-
-    State.createFromActors(postActionCast)
-  }
-
-  def removeDeadActors(): Actors = {
-    val (alive: Set[BaseCharacter], dead: Set[BaseCharacter]) = this.cast.partition(cm => cm.stats.currentHp > 0)
+  override def removeDeadActors(): Cast = {
+    val (alive: Set[BaseCharacter], dead: Set[BaseCharacter]) = this.enemies.partition(cm => cm.stats.currentHp > 0)
     dead.foreach(cm => exclaim(cm.deathMessage))
-    Actors(this.actor, alive)
+    if (!player.isAlive) exclaim(player.deathMessage)
+
+    Peoples(player = player, enemies = alive)
   }
 
-  override def fullCast = cast + actor
-
-  override def fullCastWithoutPlayer = cast + actor - player
-
-  val player: PlayerCharacter = {
-    val x = cast.find(bc => bc.isPlayer).getOrElse(actor)
-
-    PlayerCharacter(x.name, x.stats)(x.position)
-  }
-
-  override def hasEnemies = !actor.isPlayer || cast.exists(!_.isPlayer)
-
-  override val active: BaseCharacter = actor
-  override val state: State = State.createFromActors(this)
 }
-

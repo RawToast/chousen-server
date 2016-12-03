@@ -7,6 +7,7 @@ import scala.util.Random
 
 case class Deck(cards: List[Card], discarded: List[Card] = List.empty) {
 
+  import cats.implicits._
   def deal: (Hand, Deck) = {
     val (handCards, remainingCards) = this.cards.splitAt(Hand.MAX_SIZE)
     (Hand(handCards), this.copy(cards = remainingCards))
