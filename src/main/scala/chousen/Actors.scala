@@ -22,15 +22,13 @@ trait Cast {
 
   def changeTurn: Cast
 
-  def fullCast = cast // TODO remove
-
   def fullCastWithoutPlayer = cast - player
 
   def hasEnemies: Boolean
 
   def isPlayerActive = player == active
 
-  def takeTurn(dm: DeckManager): (Cast, DeckManager) = this.cast match {
+  def takeTurn(dm: DeckManager): (Cast, DeckManager) = this.active match {
     case player: PlayerCharacter => player.playerInput(this, dm)
     case enemy: EnemyCharacter => (enemy.attack(Set(this.player), Option(this.fullCastWithoutPlayer)), dm)
   }
@@ -46,8 +44,6 @@ trait Cast {
 /**
   * Safer Actors implementation, guarantees the existence of a Player.
   */
-// Needs to be created using Factory, first turn positions/active need to be calculated on construction
-
 object Peoples {
   def init(player: PlayerCharacter, enemies: Set[BaseCharacter]): Peoples = {
 

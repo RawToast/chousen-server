@@ -6,11 +6,8 @@ case class State(playerAlive: Boolean, actors: Cast)
 
 object State {
   def createFromActors(actors: Cast) = {
-    val playerAlive = if (actors.actor.isPlayer) Option(true)
-    else actors.cast
-      .find(cm => cm.isPlayer)
-      .map(pc => pc.stats.currentHp > 0)
+    val playerAlive = actors.player.isAlive
 
-    State(playerAlive.getOrElse(false), actors)
+    State(playerAlive, actors)
   }
 }

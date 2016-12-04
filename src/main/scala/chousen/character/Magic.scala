@@ -18,7 +18,8 @@ trait Magic extends Action {
         spellBook.spellMap.getOrElse(requirePlayerInput, selectSpell)
       }
 
-      (selectSpell.complete(char, cast.cast), dm)// TODO: Unused DeckManager
+      // TODO: Unused DeckManager
+      (selectSpell.complete(char, cast.fullCastWithoutPlayer), dm)
     }
   }
 }
@@ -55,6 +56,7 @@ trait Spell extends CardAction {
   val magicType: String
   val baseDamage: Int
 
+  //TODO This should be something like: complete(user: BaseCharacter, target: Cast => Set[BaseCharacter], cast: Cast): Cast
   def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Cast
 }
 

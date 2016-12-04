@@ -21,7 +21,7 @@ trait Attack extends Action {
 
       lazy val targets: Map[String, BaseCharacter] = TargetUtil.options
 
-      statement(TargetUtil.optionString)
+      statement("Choices: " + TargetUtil.optionString)
 
       targets.get(requirePlayerInput)
         .map(bc =>
@@ -43,7 +43,7 @@ trait Attack extends Action {
 
     val player = all.find(p => p.isPlayer)
 
-    Peoples(player.get.asInstanceOf[PlayerCharacter], all.filter(p => p.isPlayer))
+    Peoples(player.get.asInstanceOf[PlayerCharacter], all.filterNot(p => p.isPlayer))
   }
 }
 

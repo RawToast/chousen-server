@@ -78,7 +78,7 @@ trait PlayerChoice {
     statement("[A]ttack [M]agic ")
 
     requirePlayerInput match {
-      case "a" => (bc.attack(actors.cast, None), deckManager)
+      case "a" => (bc.attack(actors.fullCastWithoutPlayer, None), deckManager)
       case "m" => bc.useMagic(actors, deckManager)
       case _ => playerInput(actors, deckManager)
     }

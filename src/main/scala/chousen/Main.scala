@@ -69,7 +69,6 @@ case class GameLoop(playerName: String) {
       // Move
       val (newCast:Cast, nxtDm: DeckManager) = actors.takeTurn(dm)
 
-
       val state = newCast.postAttackState
 
       if (!state.playerAlive || !state.actors.hasEnemies) state
