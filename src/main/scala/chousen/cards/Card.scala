@@ -7,10 +7,6 @@ trait Card {
   val active: CardAction
 
   def use(user: BaseCharacter, actors:Cast): (Card, Cast) = (this, actors)
-
-//  protected def selectTargets = {
-//    ???
-//  }
 }
 
 trait SpellCard extends Card {

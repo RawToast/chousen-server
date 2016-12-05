@@ -56,6 +56,8 @@ trait Spell extends CardAction {
   val magicType: String
   val baseDamage: Int
 
+  override def toString: String = name
+
   //TODO This should be something like: complete(user: BaseCharacter, target: Cast => Set[BaseCharacter], cast: Cast): Cast
   def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Cast
 }
