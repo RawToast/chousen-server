@@ -93,7 +93,6 @@ object Peoples {
           val srtE = nextActorz.enemies.toList.sortBy(f => -f.position)
 
           if (nextActorz.player.position > srtE.head.position) {
-            println(s"Player pos ${nextActorz.player.position}")
             Peoples(nextActorz.player, nextActorz.enemies)
           } else {
             Peoples(nextActorz.player, nextActorz.enemies)

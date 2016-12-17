@@ -50,7 +50,6 @@ trait CardAction {
   def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Cast
 }
 
-
 trait Spell extends CardAction {
 
   val magicType: String
@@ -79,13 +78,11 @@ class FireBall extends Spell {
       e.takeDamage(damage)
     }
 
-    val all = t + user ++ bystanders.getOrElse(Set.empty)
+    val all = (t + user) ++ bystanders.getOrElse(Set.empty)
 
     val player = all.find(p => p.isPlayer)
 
-    Peoples(player.get.asInstanceOf[PlayerCharacter], all.filter(p => p.isPlayer))
-
-    // Actors(user, t ++ bystanders.getOrElse(Set.empty))
+    Peoples(player.get.asInstanceOf[PlayerCharacter], all)
   }
 }
 
