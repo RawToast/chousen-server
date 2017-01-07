@@ -1,6 +1,6 @@
 package chousen.character
 
-import chousen.cards.DeckManager
+import chousen.cards.{Card, DeckManager}
 import chousen.engine.{Dice, Engine}
 import chousen.{Cast, _}
 
@@ -9,18 +9,38 @@ trait Magic extends Action {
   val spellBook: SpellBook
 
   def useMagic(cast: Cast, dm: DeckManager): (Cast, DeckManager) = {
-    if (spellBook.availableSpells.isEmpty) {
-      statement(s"$char does not know any more magic"); playerInput(cast, dm)
-    }
-    else {
-      def selectSpell: Spell = {
-        statement(s"Select spell: ${spellBook.spellList}")
-        spellBook.spellMap.getOrElse(requirePlayerInput, selectSpell)
+
+    if (dm.hand.cards.isEmpty) {
+      statement(s"$char has no in combat cards left")
+      playerInput(cast, dm)
+    } else {
+
+      val cardChoices = dm.hand.choices
+
+      def selectSpell: Card = {
+        val cList: Map[String, Card] = cardChoices
+        cList.getOrElse(requirePlayerInput, selectSpell)
       }
 
-      // TODO: Unused DeckManager
-      (selectSpell.complete(char, cast.fullCastWithoutPlayer), dm)
+      val (crd, ct) = (selectSpell.use(char, cast))
+      val newDm = dm.discard(crd)
+      (ct, newDm)
     }
+
+
+    //    if (spellBook.availableSpells.isEmpty) {
+    //      statement(s"$char does not know any more magic"); playerInput(cast, dm)
+    //    }
+    //    else {
+    //      def selectSpell: Spell = {
+    //        statement(s"Select spell: ${spellBook.spellList}")
+    //        spellBook.spellMap.getOrElse(requirePlayerInput, selectSpell)
+    //      }
+    //
+    //      // TODO: Unused DeckManager
+    //      (selectSpell.complete(char, cast.fullCastWithoutPlayer), dm)
+    //    }
+    //  }
   }
 }
 
@@ -90,6 +110,8 @@ trait Potion extends CardAction {
 
   val drink: BaseCharacter => BaseCharacter
 
+  override def toString: String = name
+
   def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Cast
 }
 
@@ -115,7 +137,7 @@ class HealWounds extends Potion {
     }
 
   def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Cast = {
-   //  Actors(drink(user), target ++ bystanders.getOrElse(Set.empty))
+    //  Actors(drink(user), target ++ bystanders.getOrElse(Set.empty))
 
     val all = target + drink(user) ++ bystanders.getOrElse(Set.empty)
 

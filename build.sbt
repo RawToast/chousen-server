@@ -2,12 +2,13 @@ name := "chousenScript"
 
 version := "1.0"
 
+lazy val root = (project in file(".")).enablePlugins(PlayScala)
+
 val SCALA_VERSION = "2.11.8"
 
 scalaVersion := SCALA_VERSION
 scalaVersion in ThisBuild := SCALA_VERSION
 
-mainClass in(Compile, run) := Some("chousen.Main")
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),

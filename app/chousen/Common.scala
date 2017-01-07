@@ -65,5 +65,5 @@ trait Options[T] {
       else m.+((m.keySet.max + 1, bc))
   }.foldLeft(Map.empty[String, T])((m, bc) => m.+((bc._1.toString, bc._2)))
 
-  lazy val optionString = options.map(kv => s"[${kv._1}]:${kv._2} ").mkString
+  lazy val optionString = options.toSeq.sortBy(_._1).map(kv => s"[${kv._1}]:${kv._2} ").mkString
 }

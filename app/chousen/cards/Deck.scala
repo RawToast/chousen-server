@@ -40,17 +40,19 @@ case class Deck(cards: List[Card], discarded: List[Card] = List.empty) {
 
 object Deck {
   def create = {
-    val fourCardRange = Range.inclusive(1, 4).toList
+    val fourCardRange = Range.inclusive(1, 10).toList
 
-    val magic: List[Card] = fourCardRange.map(i => new HealWoundsCard)
-    val heal: List[HealWoundsCard] = fourCardRange.map(i => new HealWoundsCard)
+    val magic: List[Card] = fourCardRange.map(_ => new FireBallCard)
+    val heal: List[HealWoundsCard] = fourCardRange.map(_ => new HealWoundsCard)
 
     Deck(magic ++ heal)
   }
 }
 
 case class Hand(cards: List[Card]) extends Options[Card] {
+
   lazy val size = cards.size
+
   override val items = cards
 
   def discard(card: Card) = this.copy(cards.filterNot(c => c == card))

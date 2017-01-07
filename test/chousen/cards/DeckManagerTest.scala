@@ -4,7 +4,8 @@ import org.scalatest.{Matchers, WordSpec}
 
 import scala.annotation.tailrec
 
-class DeckManagerTest extends WordSpec with Matchers {
+class
+DeckManagerTest extends WordSpec with Matchers {
 
   "The Deck manager" when {
 
@@ -12,7 +13,7 @@ class DeckManagerTest extends WordSpec with Matchers {
     val initManager = DeckManager.createManagerForNewGame(deck)
     val deckManager: DeckManager = initManager.startGame
 
-    "starting a new game" should {
+    "starting a new makeChar" should {
       "shuffle the cards" in {
         // FIXME Not a real test for shuffling, spy object may be best here
         deckManager.deck shouldNot equal(initManager.deck)
