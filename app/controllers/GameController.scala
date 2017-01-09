@@ -8,7 +8,6 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, Controller}
 
 
-
 class GameController @Inject()(val messagesApi: MessagesApi) extends Controller with I18nSupport {
 
   def initGame = Action { implicit request =>
