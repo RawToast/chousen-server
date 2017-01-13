@@ -2,7 +2,7 @@ name := "chousenScript"
 
 version := "1.0"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+mainClass in(Compile, run) := Some("Main")
 
 val SCALA_VERSION = "2.11.8"
 
@@ -15,9 +15,14 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
   "Bintary JCenter" at "http://jcenter.bintray.com"
 )
+
+libraryDependencies += "com.github.finagle" %% "finch-core" % "0.11.0"
+libraryDependencies += "com.github.finagle" %% "finch-circe" % "0.11.0"
+libraryDependencies += "com.github.finagle" %% "finch-test" % "0.11.0"
+
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
-
 libraryDependencies += "org.typelevel" %  "cats-core_2.11" % "0.8.0"
-libraryDependencies += "play-circe" %% "play-circe" % "2.5-0.6.0"
-
 libraryDependencies += "com.github.julien-truffaut" % "monocle-core_2.11" % "1.3.1"
+
+
+
