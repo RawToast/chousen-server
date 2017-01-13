@@ -3,7 +3,7 @@ package chousen.character
 import chousen._
 import chousen.engine.Engine
 
-trait Attack extends Action {
+trait Attack extends PlayerTrait {
   char: BaseCharacter =>
 
   //TODO: Refactor

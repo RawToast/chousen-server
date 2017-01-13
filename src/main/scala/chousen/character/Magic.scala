@@ -4,7 +4,7 @@ import chousen.cards.{Card, DeckManager}
 import chousen.engine.{Dice, Engine}
 import chousen.{Cast, _}
 
-trait Magic extends Action {
+trait Magic extends PlayerTrait {
   char: BaseCharacter with PlayerChoice =>
   val spellBook: SpellBook
 
@@ -61,8 +61,15 @@ object SpellBook {
   def create = SpellBook(Set.empty)
 }
 
+trait Action {
+  val name: String
+  val description: String
 
-trait CardAction {
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Cast
+}
+
+
+trait CardAction extends Action{
   val name: String
   val description: String
   val maxCopies: Int = 4

@@ -81,7 +81,7 @@ case class GameLoop(playerName: String) {
 }
 
 
-trait Action {
+trait PlayerTrait {
   char: BaseCharacter =>
 
   def complete(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Cast

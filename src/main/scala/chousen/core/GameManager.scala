@@ -2,11 +2,27 @@ package chousen.core
 
 import chousen.{core, _}
 import chousen.cards.{Deck, DeckManager}
-import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter}
+import chousen.character.{Action, BaseCharacter, EnemyCharacter, PlayerCharacter}
 import chousen.engine.State
 
 import scala.annotation.tailrec
 
+
+trait GameManager {
+  def create(name:String): Game
+
+  val takeCommand: (Command, Game) => Game
+}
+
+case class Game(playerCharacter: PlayerCharacter, deckManager: DeckManager, dungeon: Dungeon)
+
+case class Command(target: Set[BaseCharacter], action: Action)
+
+
+
+
+// OLD ENGINE
+// For reference purposes
 object GameObject {
 
   statement("Enter name: ")
@@ -27,11 +43,7 @@ object GameObject {
 }
 
 
-trait GameManager {
-  val playerName: String
 
-
-}
 
 case class GameLoop(playerName: String) {
   story(s"$playerName has entered the dungeon")
