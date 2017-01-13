@@ -28,7 +28,7 @@ class GameManagerSpec extends WordSpec with Matchers {
       val cmd: Command = ???
 
       "Create a new game with different state" in {
-        val result: Game = gameManager.takeCommand(game, cmd)
+        val result: Game = gameManager.takeCommand(cmd, game)
         result shouldNot equal(game)
       }
     }
