@@ -1,13 +1,13 @@
-package chousen
+package chousen.core
 
+import chousen.{core, _}
 import chousen.cards.{Deck, DeckManager}
 import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter}
-import chousen.core.{Encounter, GameLoop}
 import chousen.engine.State
 
 import scala.annotation.tailrec
 
-object Main extends App {
+object GameObject {
 
   statement("Enter name: ")
   val name = requireCaseSensitivePlayerInput
@@ -23,7 +23,14 @@ object Main extends App {
 
   val dungeon = core.Dungeon(List(firstEncounter, secondEncounter, thirdEncounter))
 
-  GameLoop(name).loop(player, defaultDeck, dungeon)
+  core.GameLoop(name).loop(player, defaultDeck, dungeon)
+}
+
+
+trait GameManager {
+  val playerName: String
+
+
 }
 
 case class GameLoop(playerName: String) {
@@ -31,7 +38,7 @@ case class GameLoop(playerName: String) {
   story(s"It was dark and smelly")
   statement(s"Eventually $playerName finds a room with a chest!")
 
-  def loop(p: PlayerCharacter, deckManager: DeckManager, dungeon: core.Dungeon) = {
+  def loop(p: PlayerCharacter, deckManager: DeckManager, dungeon: Dungeon) = {
 
     // Need to place these elsewhere
     implicit val convert = (b: BaseCharacter) => Set(b)
@@ -50,7 +57,7 @@ case class GameLoop(playerName: String) {
     }
 
     @tailrec
-    def play(player: PlayerCharacter, d: core.Dungeon): core.Dungeon = {
+    def play(player: PlayerCharacter, d: Dungeon): Dungeon = {
       val encounterOption: Option[Encounter] = d.nextEncounter
       val encounter = encounterOption.get
 
@@ -78,11 +85,4 @@ case class GameLoop(playerName: String) {
       story(s" it was a trap and $playerName died")
     }
   }
-}
-
-
-trait Action {
-  char: BaseCharacter =>
-
-  def complete(target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Cast
 }

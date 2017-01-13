@@ -30,7 +30,6 @@ class GameServiceTest extends WordSpec with Matchers with ScalaFutures {
 
         whenReady(resultFuture) { result =>
           result.id should be(testID)
-
         }
       }
 
