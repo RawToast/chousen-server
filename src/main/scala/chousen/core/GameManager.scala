@@ -2,22 +2,83 @@ package chousen.core
 
 import chousen.{core, _}
 import chousen.cards.{Deck, DeckManager}
-import chousen.character.{Action, BaseCharacter, EnemyCharacter, PlayerCharacter}
-import chousen.engine.State
+import chousen.character.{Action, BaseCharacter, CardAction, EnemyCharacter, PlayerCharacter}
+import chousen.data.{CharStats, GameMessage}
+import chousen.engine.{ActionCalc, Engine, State}
 
 import scala.annotation.tailrec
 
+
+object BasicGameManager extends GameManager {
+  val actionCalc = Engine
+
+  override def create(name: String): Game = {
+    val pc = PlayerCharacter.create(name)
+    val deck = DeckManager.startNewGameWithDefaultDeck
+    val dungeon = {
+      val firstEncounter = Encounter.create(EnemyCharacter.yellowSlime) + EnemyCharacter.slime
+      val secondEncounter = firstEncounter + EnemyCharacter.giantSlime
+      val thirdEncounter = Encounter.create(EnemyCharacter.scoundrel)
+      core.Dungeon(List(firstEncounter, secondEncounter, thirdEncounter))
+    }
+
+    val msg = GameMessage(s"$name has entered the dungeon")
+
+    Game(pc, deck, dungeon, Seq(msg))
+  }
+
+  override val takeCommand: (Command, Game) => Game =
+    (com, gam) => {
+      com.action match {
+        case pa: PlayerAttack => {
+          val allEnemies: Set[BaseCharacter] = gam.quest.current.enemies
+          val byStanders = Option(allEnemies -- com.target)
+          val nc: Cast = pa.complete(gam.playerCharacter, com.target, byStanders)(actionCalc)
+
+          val updatedQuest = Dungeon.update.set(Encounter(nc.enemies))(gam.quest)
+
+          Game(nc.player, gam.deckManager, updatedQuest)
+        }
+        case sp: CardAction => gam
+      }
+    }
+}
 
 trait GameManager {
   def create(name:String): Game
 
   val takeCommand: (Command, Game) => Game
+
+  val actionCalc: ActionCalc
 }
 
-case class Game(playerCharacter: PlayerCharacter, deckManager: DeckManager, dungeon: Dungeon)
+case class Game(playerCharacter: PlayerCharacter, deckManager: DeckManager,
+                quest: Dungeon, messages: Seq[GameMessage] = Seq.empty)
 
 case class Command(target: Set[BaseCharacter], action: Action)
 
+
+class PlayerAttack extends Action {
+  override val name: String = "Attack"
+  override val description: String = "Attacks all selected targets"
+
+  override def complete(user: BaseCharacter, target: Set[BaseCharacter],
+                        bystanders: Option[Set[BaseCharacter]])(calc: ActionCalc): Cast = {
+
+    val t = target.map { e =>
+      val damage = calc.calcDamage(user, e)
+      // if (isPlayer) exclaim(s"$char deals $damage to $e")
+      e.takeDamage(damage)
+    }
+    // Actors(char, t ++ bystanders.getOrElse(Set.empty))
+
+    val all = t + user ++ bystanders.getOrElse(Set.empty)
+
+    val player = all.find(p => p.isPlayer)
+
+    Peoples(player.get.asInstanceOf[PlayerCharacter], all.filterNot(p => p.isPlayer))
+  }
+}
 
 
 

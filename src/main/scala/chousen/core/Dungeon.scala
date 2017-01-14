@@ -5,7 +5,6 @@ import chousen.core
 
 
 
-
 case class Dungeon(encounters: List[Encounter]) {
   val isComplete = encounters.isEmpty
 
@@ -14,6 +13,18 @@ case class Dungeon(encounters: List[Encounter]) {
   def nextEncounter = encounters.headOption
 
   def progress = core.Dungeon(encounters.tail)
+
+  lazy val current: Encounter = encounters.head
+
+
+//  override val update: Lens[Quest, Encounter] =
+//    Lens[Quest, Encounter](_.encounters.head)(enc => dng => dng.copy(enc :: dng.encounters.tail))
+}
+
+object Dungeon {
+  import monocle.Lens
+  val update: Lens[Dungeon, Encounter] =
+    Lens[Dungeon, Encounter](_.current)(enc => dng => dng.copy(enc :: dng.encounters.tail))
 }
 
 

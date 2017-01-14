@@ -10,22 +10,29 @@ class GameManagerSpec extends WordSpec with Matchers {
 
   "The GameManager" when {
 
-    val gameManager:GameManager = ???
+    val gameManager:GameManager = BasicGameManager
 
     "Creating a game" should {
 
-      "Create new game with valid input" in {
+      val newGame = gameManager.create("Bob")
 
-        val newGame = gameManager.create("Bob")
-
+      "create a game with valid input" in {
         newGame.playerCharacter.name shouldBe "Bob"
+      }
+
+      "contain all initial messages" in {
+        newGame.messages.size shouldBe 1
+        newGame.messages.head.text shouldBe "Bob has entered the dungeon"
       }
     }
 
     "Taking a command" should {
 
       val game = gameManager.create("Bob")
-      val cmd: Command = ???
+
+      val encounter = game.quest.current
+
+      val cmd: Command = Command(encounter.enemies, new PlayerAttack())
 
       "Create a new game with different state" in {
         val result: Game = gameManager.takeCommand(cmd, game)

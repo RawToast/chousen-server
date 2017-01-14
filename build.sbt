@@ -16,13 +16,17 @@ resolvers ++= Seq(
   "Bintary JCenter" at "http://jcenter.bintray.com"
 )
 
-libraryDependencies += "com.github.finagle" %% "finch-core" % "0.11.0"
-libraryDependencies += "com.github.finagle" %% "finch-circe" % "0.11.0"
-libraryDependencies += "com.github.finagle" %% "finch-test" % "0.11.0"
+libraryDependencies += "com.github.finagle" %% "finch-core" % "0.11.1"
+libraryDependencies += "com.github.finagle" %% "finch-circe" % "0.11.1"
+libraryDependencies += "com.github.finagle" %% "finch-test" % "0.11.1"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 libraryDependencies += "org.typelevel" %  "cats-core_2.11" % "0.8.0"
 libraryDependencies += "com.github.julien-truffaut" % "monocle-core_2.11" % "1.3.1"
+libraryDependencies += "com.twitter" %% "twitter-server" % "1.25.0"
 
+val circeVersion = "0.6.1"
 
-
+libraryDependencies ++= Seq(
+  "io.circe" %% "circe-generic"
+).map(_ % circeVersion)

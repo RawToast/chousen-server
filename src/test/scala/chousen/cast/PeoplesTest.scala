@@ -1,7 +1,8 @@
 package chousen.cast
 
+import chousen.Peoples
 import chousen.character.{EnemyCharacter, PlayerCharacter}
-import chousen.{CharStats, Peoples}
+import chousen.data.CharStats
 import org.scalatest.WordSpec
 
 class PeoplesTest extends WordSpec {

@@ -7,12 +7,18 @@ import chousen.engine.State
 import scala.annotation.tailrec
 import scala.util.Random
 
+trait Scene {
+  val player: PlayerCharacter
+  val enemies: Set[BaseCharacter]
+}
 
-trait Cast {
+trait Cast extends Scene {
 
   val cast: Set[BaseCharacter]
 
   val player: PlayerCharacter
+
+  val enemies: Set[BaseCharacter]
 
   val state: State
 
@@ -45,6 +51,9 @@ trait Cast {
   * Safer Actors implementation, guarantees the existence of a Player.
   */
 object Peoples {
+
+  def init(scene: Scene): Peoples = init(scene.player, scene.enemies)
+
   def init(player: PlayerCharacter, enemies: Set[BaseCharacter]): Peoples = {
 
     @tailrec

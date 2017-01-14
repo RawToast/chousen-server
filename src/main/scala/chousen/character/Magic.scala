@@ -1,7 +1,7 @@
 package chousen.character
 
 import chousen.cards.{Card, DeckManager}
-import chousen.engine.{Dice, Engine}
+import chousen.engine.{ActionCalc, Dice}
 import chousen.{Cast, _}
 
 trait Magic extends PlayerTrait {
@@ -65,16 +65,16 @@ trait Action {
   val name: String
   val description: String
 
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Cast
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]])(calc: ActionCalc): Cast
 }
 
 
-trait CardAction extends Action{
+trait CardAction extends Action {
   val name: String
   val description: String
   val maxCopies: Int = 4
 
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]]): Cast
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]])(calc: ActionCalc): Cast
 }
 
 trait Spell extends CardAction {
@@ -85,7 +85,7 @@ trait Spell extends CardAction {
   override def toString: String = name
 
   //TODO This should be something like: complete(user: BaseCharacter, target: Cast => Set[BaseCharacter], cast: Cast): Cast
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Cast
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None)(calc: ActionCalc): Cast
 }
 
 class FireBall extends Spell {
@@ -98,9 +98,9 @@ class FireBall extends Spell {
 
   val baseDamage: Int = 3
 
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None) = {
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None)(calc: ActionCalc) = {
     val t = target.map { e: BaseCharacter =>
-      val damage = Engine.calcMagic(this, user, e)
+      val damage = calc.calcMagic(this, user, e)
       exclaim(s"$user deals $damage $magicType damage to $e")
       e.takeDamage(damage)
     }
@@ -119,7 +119,7 @@ trait Potion extends CardAction {
 
   override def toString: String = name
 
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Cast
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None)(calc: ActionCalc): Cast
 }
 
 class HealWounds extends Potion {
@@ -143,7 +143,7 @@ class HealWounds extends Potion {
       }
     }
 
-  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None): Cast = {
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None)(calc: ActionCalc): Cast = {
     //  Actors(drink(user), target ++ bystanders.getOrElse(Set.empty))
 
     val all = target + drink(user) ++ bystanders.getOrElse(Set.empty)

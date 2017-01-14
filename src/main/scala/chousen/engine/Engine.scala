@@ -4,7 +4,7 @@ import chousen.character.{BaseCharacter, Spell}
 
 import scala.util.Random
 
-object Engine {
+trait ActionCalc {
   def calcDamage(a: BaseCharacter, d: BaseCharacter): Int = {
     /** Base stats calc:
       * Atk: 1-6d + (8 + 8) / 2) = (9-14)
@@ -26,6 +26,8 @@ object Engine {
     s.baseDamage + (a.stats.intellect - d.stats.intellect) + Dice.roll(sides = 4, min = 0)
   }
 }
+
+object Engine extends ActionCalc
 
 object Dice {
   def roll(sides: Int = 6, min: Int = 1): Int = min + Random.nextInt(sides)

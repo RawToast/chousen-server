@@ -2,6 +2,7 @@ package chousen.character
 
 import chousen._
 import chousen.cards.{Card, DeckManager}
+import chousen.data.CharStats
 import monocle.{Lens, PLens}
 
 import scala.annotation.tailrec
@@ -34,7 +35,7 @@ case class PlayerCharacter(name: String, stats: CharStats)(override val position
 
   override val isPlayer: Boolean = true
 
-  val isAlive = stats.currentHp > 0
+  val isAlive: Boolean = stats.currentHp > 0
 
   override def takeDamage(damage: Int): BaseCharacter = {
     val currentHp = PlayerCharacter.currentHp.get(this)
@@ -57,6 +58,10 @@ object PlayerCharacter {
 
   import scala.language.implicitConversions
   implicit def toBaseCharacter(pc: PlayerCharacter): BaseCharacter = pc
+
+  def create(name:String): PlayerCharacter = {
+    PlayerCharacter(name, CharStats.DEFAULT)()
+  }
 
   val _stats = Lens[PlayerCharacter, CharStats](_.stats)((cs: CharStats) => p => p.copy(stats = cs)(position = p.position))
 
