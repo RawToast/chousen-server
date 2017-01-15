@@ -9,8 +9,6 @@ val SCALA_VERSION = "2.11.8"
 scalaVersion := SCALA_VERSION
 scalaVersion in ThisBuild := SCALA_VERSION
 
-addCommandAlias("dist", ";clean;compile;assembly")
-
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots"),
