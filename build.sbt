@@ -4,11 +4,13 @@ version := "1.0"
 
 mainClass in(Compile, run) := Some("Main")
 
-enablePlugins(JettyPlugin)
+//enablePlugins(JettyPlugin)
 
-addCommandAlias("stage", ";clean;compile;package")
+//addCommandAlias("stage", ";clean;compile;package")
 
 val SCALA_VERSION = "2.11.8"
+
+import NativePackagerKeys._
 
 scalaVersion := SCALA_VERSION
 scalaVersion in ThisBuild := SCALA_VERSION
@@ -19,20 +21,18 @@ resolvers ++= Seq(
   "Bintary JCenter" at "http://jcenter.bintray.com"
 )
 
-libraryDependencies += "com.github.finagle" %% "finch-core" % "0.11.1"
-libraryDependencies += "com.github.finagle" %% "finch-circe" % "0.11.1"
-libraryDependencies += "com.github.finagle" %% "finch-test" % "0.11.1"
-
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
-libraryDependencies += "org.typelevel" %  "cats-core_2.11" % "0.8.0"
+//libraryDependencies += "org.typelevel" %  "cats-core_2.11" % "0.8.0"
 libraryDependencies += "com.github.julien-truffaut" % "monocle-core_2.11" % "1.3.1"
-libraryDependencies += "com.twitter" %% "twitter-server" % "1.25.0"
+libraryDependencies += "io.circe" %% "circe-generic" % "0.6.1"
 
-val circeVersion = "0.6.1"
+libraryDependencies ++= finch
 
-libraryDependencies ++= Seq(
-  "io.circe" %% "circe-generic"
-).map(_ % circeVersion)
+def finch = Seq(
+    "com.github.finagle" %% "finch-core" % "0.11.1",
+    "com.github.finagle" %% "finch-circe" % "0.11.1",
+    "com.github.finagle" %% "finch-test" % "0.11.1",
+    "com.twitter" %% "twitter-server" % "1.25.0")
 
 scalacOptions ++= Seq(
   "-deprecation",
