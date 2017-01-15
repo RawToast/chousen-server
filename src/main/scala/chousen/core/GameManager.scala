@@ -1,5 +1,7 @@
 package chousen.core
 
+import java.util.UUID
+
 import chousen.{core, _}
 import chousen.cards.{Deck, DeckManager}
 import chousen.character.{Action, BaseCharacter, CardAction, EnemyCharacter, PlayerCharacter}
@@ -12,7 +14,7 @@ import scala.annotation.tailrec
 object BasicGameManager extends GameManager {
   val actionCalc = Engine
 
-  override def create(name: String): Game = {
+  override def create(name: String, uuid: UUID = UUID.randomUUID()): Game = {
     val pc = PlayerCharacter.create(name)
     val deck = DeckManager.startNewGameWithDefaultDeck
     val dungeon = {
@@ -24,7 +26,7 @@ object BasicGameManager extends GameManager {
 
     val msg = GameMessage(s"$name has entered the dungeon")
 
-    Game(pc, deck, dungeon, Seq(msg))
+    Game(uuid, pc, deck, dungeon, Seq(msg))
   }
 
   override val takeCommand: (Command, Game) => Game =
@@ -33,11 +35,11 @@ object BasicGameManager extends GameManager {
         case pa: PlayerAttack => {
           val allEnemies: Set[BaseCharacter] = gam.quest.current.enemies
           val byStanders = Option(allEnemies -- com.target)
-          val nc: Cast = pa.complete(gam.playerCharacter, com.target, byStanders)(actionCalc)
+          val nc: Cast = pa.complete(gam.player, com.target, byStanders)(actionCalc)
 
           val updatedQuest = Dungeon.update.set(Encounter(nc.enemies))(gam.quest)
 
-          Game(nc.player, gam.deckManager, updatedQuest)
+          Game(gam.id, nc.player, gam.deckManager, updatedQuest)
         }
         case sp: CardAction => gam
       }
@@ -45,15 +47,22 @@ object BasicGameManager extends GameManager {
 }
 
 trait GameManager {
-  def create(name:String): Game
+
+  def create(name:String, uuid:UUID=UUID.randomUUID()): Game
 
   val takeCommand: (Command, Game) => Game
 
   val actionCalc: ActionCalc
 }
 
-case class Game(playerCharacter: PlayerCharacter, deckManager: DeckManager,
+case class Game(id: UUID, player: PlayerCharacter, deckManager: DeckManager,
                 quest: Dungeon, messages: Seq[GameMessage] = Seq.empty)
+
+object Game {
+  def create(p: PlayerCharacter, dm: DeckManager, d: Dungeon, msg: Seq[GameMessage] = Seq.empty): Game = {
+    Game(UUID.randomUUID(), p, dm, d, msg)
+  }
+}
 
 case class Command(target: Set[BaseCharacter], action: Action)
 

@@ -7,9 +7,7 @@ version := "1.0"
 
 mainClass in(Compile, run) := Some("Main")
 
-//enablePlugins(JettyPlugin)
 enablePlugins(JavaServerAppPackaging)
-//addCommandAlias("stage", ";clean;compile;package")
 
 val SCALA_VERSION = "2.11.8"
 

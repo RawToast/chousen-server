@@ -1,6 +1,8 @@
 package chousen.data
 
-case class GameResponse(player: Player, cards: Cards, dungeon: Dungeon, messages: Seq[GameMessage])
+import java.util.UUID
+
+case class GameResponse(id: UUID, player: Player, cards: Cards, dungeon: Dungeon, messages: Seq[GameMessage])
 
 case class CharStats(maxHp: Int,
                      currentHp: Int,

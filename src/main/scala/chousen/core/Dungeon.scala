@@ -15,10 +15,6 @@ case class Dungeon(encounters: List[Encounter]) {
   def progress = core.Dungeon(encounters.tail)
 
   lazy val current: Encounter = encounters.head
-
-
-//  override val update: Lens[Quest, Encounter] =
-//    Lens[Quest, Encounter](_.encounters.head)(enc => dng => dng.copy(enc :: dng.encounters.tail))
 }
 
 object Dungeon {

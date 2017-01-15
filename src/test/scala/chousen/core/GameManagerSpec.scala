@@ -17,7 +17,7 @@ class GameManagerSpec extends WordSpec with Matchers {
       val newGame = gameManager.create("Bob")
 
       "create a game with valid input" in {
-        newGame.playerCharacter.name shouldBe "Bob"
+        newGame.player.name shouldBe "Bob"
       }
 
       "contain all initial messages" in {
@@ -37,6 +37,25 @@ class GameManagerSpec extends WordSpec with Matchers {
       "Create a new game with different state" in {
         val result: Game = gameManager.takeCommand(cmd, game)
         result shouldNot equal(game)
+      }
+    }
+
+    "Loading a game" should {
+
+      val game = gameManager.create("Bob")
+
+      "Load an existing game, in the same state" in {
+
+        GameStore.store(game)
+        val sameGameOption:Option[Game] = GameStore.load(game.id)
+
+        sameGameOption shouldNot be(empty)
+        val sameGame = sameGameOption.get
+
+
+        game.id shouldBe sameGame.id
+        game.player.name shouldBe sameGame.player.name
+        game shouldBe sameGame
       }
     }
   }
