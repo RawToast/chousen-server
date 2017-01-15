@@ -1,6 +1,7 @@
 import NativePackagerKeys._
 
 name := "chousenScript"
+herokuAppName in Compile := "immense-bastion-74506"
 
 version := "1.0"
 

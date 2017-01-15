@@ -42,11 +42,13 @@ object Main extends TwitterServer {
   }
 
   val api: Service[Request, Response] = init.toServiceAs[Application.Json]
-
+  val port: String = Option(System.getProperty("http.port")).getOrElse("8080")
+  
   def main(): Unit = {
+    args
     val server = Http.server
       .configured(Stats(statsReceiver))
-      .serve(":8080", api)
+      .serve(s":$port", api)
 
     onExit {
       val _ = server.close()
@@ -55,5 +57,3 @@ object Main extends TwitterServer {
     val _ = Await.ready(adminHttpServer)
   }
 }
-
-
