@@ -6,6 +6,8 @@ mainClass in(Compile, run) := Some("Main")
 
 enablePlugins(JettyPlugin)
 
+addCommandAlias("stage", ";clean;compile;package")
+
 val SCALA_VERSION = "2.11.8"
 
 scalaVersion := SCALA_VERSION
