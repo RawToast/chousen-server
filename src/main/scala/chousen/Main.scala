@@ -34,9 +34,6 @@ case class GameLoop(playerName: String) {
 
   def loop(p: PlayerCharacter, deckManager: DeckManager, dungeon: core.Dungeon) = {
 
-    // Need to place these elsewhere
-    implicit val convert = (b: BaseCharacter) => Set(b)
-
     break()
     @tailrec
     def innerLoop(actors: Cast, dm: DeckManager): State = {

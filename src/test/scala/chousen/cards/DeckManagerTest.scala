@@ -20,7 +20,7 @@ DeckManagerTest extends WordSpec with Matchers {
       }
 
       "deal cards to the player" in {
-        deckManager.hand.cards should have size Hand.MAX_SIZE
+        deckManager.hand.cards should have size Hand.MAX_SIZE.toLong
       }
 
       "reduce the size of the remaining deck" in {
@@ -117,7 +117,7 @@ DeckManagerTest extends WordSpec with Matchers {
         xorDm.isRight shouldBe false
 
         DeckManager.get(xorDm).deck.discarded should have size 0
-        DeckManager.get(xorDm).deck.cards should have size existingSize
+        DeckManager.get(xorDm).deck.cards should have size existingSize.toLong
       }
     }
 

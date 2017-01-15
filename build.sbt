@@ -9,6 +9,7 @@ val SCALA_VERSION = "2.11.8"
 scalaVersion := SCALA_VERSION
 scalaVersion in ThisBuild := SCALA_VERSION
 
+addCommandAlias("dist", ";clean;compile;assembly")
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
@@ -30,3 +31,20 @@ val circeVersion = "0.6.1"
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-generic"
 ).map(_ % circeVersion)
+
+scalacOptions ++= Seq(
+  "-deprecation",
+  "-encoding", "UTF-8",
+  "-feature",
+  "-language:_",
+  "-unchecked",
+  "-Xlint:_",
+  "-Xfatal-warnings",
+  "-Xfuture",
+  "-Ywarn-dead-code",
+  "-Yno-adapted-args",
+  "-Ywarn-numeric-widen",
+  "-Ywarn-unused",
+  "-Ywarn-unused-import",
+  "-Ywarn-value-discard"
+)

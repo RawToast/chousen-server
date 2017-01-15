@@ -20,7 +20,7 @@ class PeoplesTest extends WordSpec {
       val p = Peoples.init(speed10Player, Set(enemy))
 
 
-      "Set the fast player to be the active character" in {
+      "Set thcleare fast player to be the active character" in {
         assert(p.active == speed10Player)
       }
 

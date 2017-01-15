@@ -7,8 +7,8 @@ package object chousen {
 
   def charToListChar: (BaseCharacter) => List[BaseCharacter] = (char:BaseCharacter) => List(char)
 
-  def statement(string: String) = printer(string, None)
-  def break() = printer("", Option("..."), newLine = true)
+  def statement(string: String) = printer(string)
+  def break() = printer("", postfix=Option("..."))
 
 
   def story(string: String) = printer(string, Option("..."))
@@ -26,11 +26,11 @@ package object chousen {
   def requireCaseSensitivePlayerInput = scala.io.StdIn.readLine()
 
 
-  private def printer(string: String, break:Option[String]=None, newLine:Boolean=true) {
+  private def printer(string: String, postfix:Option[String]=None, newLine:Boolean=true): Unit = {
 
-    def space() { Thread.sleep(15); print(" ") }
+    def space(): Unit = { Thread.sleep(15); print(" ") }
 
-    def sPrint(c: Char, sleep:Int=35) { Thread.sleep(sleep); print(c) }
+    def sPrint(c: Char, sleep:Int=35): Unit = { Thread.sleep(sleep.toLong); print(c) }
 
     def printString: (String) => Unit = {
       str => str.foreach(c => {
@@ -47,8 +47,11 @@ package object chousen {
       printString(w)
     }
 
-    break.foreach(_.foreach(c => sPrint(c, sleep = 140)))
-    if (newLine)
-      println("")
+    val _ = postfix match {
+      case Some(x) => x.foreach(c => sPrint(c, sleep = 140))
+      case _ => Unit
+    }
+
+    if (newLine) println("")
   }
 }

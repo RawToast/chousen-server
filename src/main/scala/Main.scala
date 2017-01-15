@@ -36,7 +36,7 @@ import io.finch.circe._
 
 object Main extends TwitterServer {
 
-  val init: Endpoint[GameResponse] = get("init" / string) { playerName: String =>
+  val init: Endpoint[GameResponse] = get("init" :: string) { playerName: String =>
     val game = BasicGameManager.create(playerName)
     Ok(GameResponse(game.playerCharacter, game.deckManager, game.quest, game.messages))
   }
@@ -49,10 +49,10 @@ object Main extends TwitterServer {
       .serve(":8080", api)
 
     onExit {
-      server.close()
+      val _ = server.close()
     }
 
-    Await.ready(adminHttpServer)
+    val _ = Await.ready(adminHttpServer)
   }
 }
 
