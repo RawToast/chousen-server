@@ -4,6 +4,8 @@ version := "1.0"
 
 mainClass in(Compile, run) := Some("Main")
 
+enablePlugins(JettyPlugin)
+
 val SCALA_VERSION = "2.11.8"
 
 scalaVersion := SCALA_VERSION
