@@ -1,3 +1,5 @@
+import NativePackagerKeys._
+
 name := "chousenScript"
 
 version := "1.0"
@@ -5,12 +7,11 @@ version := "1.0"
 mainClass in(Compile, run) := Some("Main")
 
 //enablePlugins(JettyPlugin)
-
+enablePlugins(JavaServerAppPackaging)
 //addCommandAlias("stage", ";clean;compile;package")
 
 val SCALA_VERSION = "2.11.8"
 
-import NativePackagerKeys._
 
 scalaVersion := SCALA_VERSION
 scalaVersion in ThisBuild := SCALA_VERSION
