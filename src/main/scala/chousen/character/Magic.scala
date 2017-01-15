@@ -1,0 +1,156 @@
+package chousen.character
+
+import chousen.cards.{Card, DeckManager}
+import chousen.engine.{ActionCalc, Dice}
+import chousen.{Cast, _}
+
+trait Magic extends PlayerTrait {
+  char: BaseCharacter with PlayerChoice =>
+  val spellBook: SpellBook
+
+  def useMagic(cast: Cast, dm: DeckManager): (Cast, DeckManager) = {
+
+    if (dm.hand.cards.isEmpty) {
+      statement(s"$char has no in combat cards left")
+      playerInput(cast, dm)
+    } else {
+
+      val cardChoices = dm.hand.choices
+
+      def selectSpell: Card = {
+        val cList: Map[String, Card] = cardChoices
+        cList.getOrElse(requirePlayerInput, selectSpell)
+      }
+
+      val (crd, ct) = (selectSpell.use(char, cast))
+      val newDm = dm.discard(crd)
+      (ct, newDm)
+    }
+
+
+    //    if (spellBook.availableSpells.isEmpty) {
+    //      statement(s"$char does not know any more magic"); playerInput(cast, dm)
+    //    }
+    //    else {
+    //      def selectSpell: Spell = {
+    //        statement(s"Select spell: ${spellBook.spellList}")
+    //        spellBook.spellMap.getOrElse(requirePlayerInput, selectSpell)
+    //      }
+    //
+    //      // TODO: Unused DeckManager
+    //      (selectSpell.complete(char, cast.fullCastWithoutPlayer), dm)
+    //    }
+    //  }
+  }
+}
+
+case class SpellBook(spells: Set[Spell]) {
+
+  lazy val availableSpells = spells.toList.sortBy(_.name)
+
+  lazy val spellMap: Map[String, Spell] =
+    availableSpells.foldLeft(Map.empty[String, Spell])((m, s) =>
+      m + (((if (m.isEmpty) "a" else m.keySet.max.head + 1).toString, s)))
+
+  lazy val spellList = spellMap.map(kv => s"[${kv._1}]:${kv._2} ").mkString
+
+  def withSpell(spell: Spell) = this.copy(spells + spell)
+}
+
+object SpellBook {
+  def create = SpellBook(Set.empty)
+}
+
+trait Action {
+  val name: String
+  val description: String
+
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]])(calc: ActionCalc): Cast
+}
+
+
+trait CardAction extends Action {
+  val name: String
+  val description: String
+  val maxCopies: Int = 4
+
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]])(calc: ActionCalc): Cast
+}
+
+trait Spell extends CardAction {
+
+  val magicType: String
+  val baseDamage: Int
+
+  override def toString: String = name
+
+  //TODO This should be something like: complete(user: BaseCharacter, target: Cast => Set[BaseCharacter], cast: Cast): Cast
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None)(calc: ActionCalc): Cast
+}
+
+class FireBall extends Spell {
+
+  val name = "Fireball"
+
+  val description: String = "Deals weak fire damage to all enemies"
+
+  val magicType: String = "fire"
+
+  val baseDamage: Int = 3
+
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None)(calc: ActionCalc) = {
+    val t = target.map { e: BaseCharacter =>
+      val damage = calc.calcMagic(this, user, e)
+      exclaim(s"$user deals $damage $magicType damage to $e")
+      e.takeDamage(damage)
+    }
+
+    val all = (t + user) ++ bystanders.getOrElse(Set.empty)
+
+    val player = all.find(p => p.isPlayer)
+
+    Peoples(player.get.asInstanceOf[PlayerCharacter], all)
+  }
+}
+
+trait Potion extends CardAction {
+
+  val drink: BaseCharacter => BaseCharacter
+
+  override def toString: String = name
+
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None)(calc: ActionCalc): Cast
+}
+
+class HealWounds extends Potion {
+
+  val name = "Heal Wounds"
+
+  val description: String = "Considerably Heals the user"
+
+  val drink: (BaseCharacter) => BaseCharacter =
+    bc => {
+      val variance = Dice.roll() + Dice.roll()
+
+      val hp: Int = bc.stats.maxHp.min(bc.stats.currentHp + bc.stats.vitality + (bc.stats.maxHp / 10) + variance)
+      val diff = hp - bc.stats.currentHp
+
+      exclaim(s"$bc heals ${diff}HP to $hp")
+
+      bc match {
+        case poc: PlayerCharacter => PlayerCharacter.currentHp.set(hp)(poc)
+        case emy: EnemyCharacter => EnemyCharacter.currentHp.set(hp)(emy)
+      }
+    }
+
+  def complete(user: BaseCharacter, target: Set[BaseCharacter], bystanders: Option[Set[BaseCharacter]] = None)(calc: ActionCalc): Cast = {
+    //  Actors(drink(user), target ++ bystanders.getOrElse(Set.empty))
+
+    val all = target + drink(user) ++ bystanders.getOrElse(Set.empty)
+
+    val player = all.find(p => p.isPlayer)
+
+    Peoples(player.get.asInstanceOf[PlayerCharacter], all.filter(p => p.isPlayer))
+  }
+}
+
