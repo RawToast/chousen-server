@@ -1,4 +1,6 @@
-import chousen.core.BasicGameManager
+import java.util.UUID
+
+import chousen.core.{BasicGameManager, Game}
 import chousen.data.GameResponse
 import chousen.data.Implicits._
 import com.twitter.finagle.http.{Request, Response}
@@ -10,15 +12,31 @@ import io.circe.generic.auto._
 import io.finch._
 import io.finch.circe._
 
+
 object Main extends TwitterServer {
 
-  val init: Endpoint[GameResponse] = get("init" :: string) { playerName: String =>
+  var store = Map.empty[UUID, Game]
+
+
+  val init: Endpoint[GameResponse] = post("game" :: "create" :: string) { playerName: String =>
     val game = BasicGameManager.create(playerName)
-    Ok(GameResponse(game.id, game.player, game.deckManager, game.quest, game.messages))
+
+    store = store + (game.id -> game)
+
+    Created(GameResponse(game.id, game.player, game.deckManager, game.quest, game.messages))
   }
 
-  val api: Service[Request, Response] = init.toServiceAs[Application.Json]
+
+  val load: Endpoint[GameResponse] = get("game" :: uuid) { id: UUID =>
+      store.get(id) match {
+        case Some(game) => Ok(GameResponse(game.id, game.player, game.deckManager, game.quest, game.messages))
+        case None => NotFound(new java.util.NoSuchElementException(s"Game with ID=$id does not exist"))
+      }
+    }
+
+  val api: Service[Request, Response] = (init :+: load).toServiceAs[Application.Json]
   val port: String = Option(System.getProperty("http.port")).getOrElse("8080")
+
 
   def main(): Unit = {
     args
