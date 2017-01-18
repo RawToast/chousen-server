@@ -21,7 +21,7 @@ package object chousen {
 
   type UserInput = () => String
 
-  def PlayerInput: UserInput = scala.io.StdIn.readLine().toLowerCase
+  def PlayerInput: UserInput = () => scala.io.StdIn.readLine.toLowerCase()
 
   def requireCaseSensitivePlayerInput = scala.io.StdIn.readLine()
 

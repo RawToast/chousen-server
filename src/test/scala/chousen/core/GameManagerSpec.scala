@@ -39,24 +39,5 @@ class GameManagerSpec extends WordSpec with Matchers {
         result shouldNot equal(game)
       }
     }
-
-    "Loading a game" should {
-
-      val game = gameManager.create("Bob")
-
-      "Load an existing game, in the same state" in {
-
-        GameStore.store(game)
-        val sameGameOption:Option[Game] = GameStore.load(game.id)
-
-        sameGameOption shouldNot be(empty)
-        val sameGame = sameGameOption.get
-
-
-        game.id shouldBe sameGame.id
-        game.player.name shouldBe sameGame.player.name
-        game shouldBe sameGame
-      }
-    }
   }
 }

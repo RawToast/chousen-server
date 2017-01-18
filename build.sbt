@@ -9,7 +9,7 @@ mainClass in(Compile, run) := Some("Main")
 
 enablePlugins(JavaServerAppPackaging)
 
-val SCALA_VERSION = "2.11.8"
+val SCALA_VERSION = "2.12.1"
 
 
 scalaVersion := SCALA_VERSION
@@ -22,17 +22,17 @@ resolvers ++= Seq(
 )
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
-//libraryDependencies += "org.typelevel" %  "cats-core_2.11" % "0.8.0"
-libraryDependencies += "com.github.julien-truffaut" % "monocle-core_2.11" % "1.3.1"
-libraryDependencies += "io.circe" %% "circe-generic" % "0.6.1"
+//libraryDependencies += "org.typelevel" %%  "cats-core" % "0.9.0"
+libraryDependencies += "com.github.julien-truffaut" % "monocle-core_2.11" % "1.4.0"
+libraryDependencies += "io.circe" %% "circe-generic" % "0.7.0"
 
 libraryDependencies ++= finch
 
 def finch = Seq(
-    "com.github.finagle" %% "finch-core" % "0.11.1",
-    "com.github.finagle" %% "finch-circe" % "0.11.1",
-    "com.github.finagle" %% "finch-test" % "0.11.1",
-    "com.twitter" %% "twitter-server" % "1.25.0")
+    "com.github.finagle" %% "finch-core" % "0.12.0",
+    "com.github.finagle" %% "finch-circe" % "0.12.0",
+    "com.github.finagle" %% "finch-test" % "0.12.0",
+    "com.twitter" %% "twitter-server" % "1.26.0")
 
 scalacOptions ++= Seq(
   "-deprecation",
