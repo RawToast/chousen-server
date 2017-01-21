@@ -66,7 +66,7 @@ object PlayerCharacter {
   val _stats = Lens[PlayerCharacter, CharStats](_.stats)((cs: CharStats) => p => p.copy(stats = cs)(position = p.position))
 
   val currentHp: PLens[PlayerCharacter, PlayerCharacter, Int, Int] = _stats composeLens CharStats.currentHp
-  val str = _stats composeLens CharStats.strength
+  val str: PLens[PlayerCharacter, PlayerCharacter, Int, Int] = _stats composeLens CharStats.strength
   val dex = _stats composeLens CharStats.dexterity
   val int = _stats composeLens CharStats.intellect
   val vit = _stats composeLens CharStats.vitality

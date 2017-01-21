@@ -1,6 +1,6 @@
 import NativePackagerKeys._
 
-name := "chousenScript"
+name := "chousen-server"
 herokuAppName in Compile := "immense-bastion-74506"
 
 version := "1.0"
@@ -10,6 +10,7 @@ mainClass in(Compile, run) := Some("Main")
 enablePlugins(JavaServerAppPackaging)
 
 val SCALA_VERSION = "2.12.1"
+addCompilerPlugin("org.scalamacros" %% "paradise" % "2.1.0" cross CrossVersion.full)
 
 
 scalaVersion := SCALA_VERSION
@@ -23,9 +24,11 @@ resolvers ++= Seq(
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 //libraryDependencies += "org.typelevel" %%  "cats-core" % "0.9.0"
-libraryDependencies += "com.github.julien-truffaut" % "monocle-core_2.11" % "1.4.0"
-libraryDependencies += "io.circe" %% "circe-generic" % "0.7.0"
+libraryDependencies += "com.github.julien-truffaut" %% "monocle-core" % "1.4.0"
+libraryDependencies +="com.github.julien-truffaut" %%  "monocle-macro" % "1.4.0"
 
+libraryDependencies += "io.circe" %% "circe-generic" % "0.7.0"
+libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 libraryDependencies ++= finch
 
 def finch = Seq(
@@ -50,3 +53,5 @@ scalacOptions ++= Seq(
   "-Ywarn-unused-import",
   "-Ywarn-value-discard"
 )
+
+

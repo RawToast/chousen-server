@@ -5,8 +5,10 @@ import java.util.UUID
 import chousen.{core, _}
 import chousen.cards.{Deck, DeckManager}
 import chousen.character.{Action, BaseCharacter, CardAction, EnemyCharacter, PlayerCharacter}
-import chousen.data.{CharStats, GameMessage}
+import chousen.data.{CharStats, GameMessage, GameResponse}
 import chousen.engine.{ActionCalc, Engine, State}
+import monocle.Lens
+import monocle.macros.GenLens
 
 import scala.annotation.tailrec
 
@@ -37,18 +39,32 @@ object BasicGameManager extends GameManager {
           val byStanders = Option(allEnemies -- com.target)
           val nc: Cast = pa.complete(gam.player, com.target, byStanders)(actionCalc)
 
-          val updatedQuest = Dungeon.update.set(Encounter(nc.enemies))(gam.quest)
+          val updatedQuest = Dungeon.current.set(Encounter(nc.enemies))(gam.quest)
 
           Game(gam.id, nc.player, gam.deckManager, updatedQuest)
         }
         case sp: CardAction => gam
       }
     }
+
+  override def start(game: Game) = {
+    val enc = game.quest.current
+
+    val peeps = Peoples.init(game.player, enc.enemies)
+
+    val updateCurrent = Game.dungeon composeLens Dungeon.current composeLens Encounter.enemies
+
+    val update = updateCurrent.set(peeps.enemies) compose Game.player.set(peeps.player)
+
+    update(game)
+  }
 }
 
 trait GameManager {
 
   def create(name:String, uuid:UUID=UUID.randomUUID()): Game
+
+  def start(game: Game): Game
 
   val takeCommand: (Command, Game) => Game
 
@@ -62,6 +78,16 @@ object Game {
   def create(p: PlayerCharacter, dm: DeckManager, d: Dungeon, msg: Seq[GameMessage] = Seq.empty): Game = {
     Game(UUID.randomUUID(), p, dm, d, msg)
   }
+
+  def toResponse(game: Game): GameResponse = {
+    import chousen.data.Implicits._
+    GameResponse(game.id, game.player, game.deckManager, game.quest, game.messages)
+  }
+  val player   : Lens[Game, PlayerCharacter] = GenLens[Game](_.player)
+
+  val dungeon   : Lens[Game, Dungeon] = GenLens[Game](_.quest)
+
+
 }
 
 case class Command(target: Set[BaseCharacter], action: Action)

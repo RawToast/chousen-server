@@ -3,7 +3,7 @@ package chousen.cards
 import chousen._
 
 import scala.util.Random
-
+//import cats.implicits._
 
 case class Deck(cards: List[Card], discarded: List[Card] = List.empty) {
 

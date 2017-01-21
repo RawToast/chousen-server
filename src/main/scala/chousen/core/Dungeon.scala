@@ -2,6 +2,7 @@ package chousen.core
 
 import chousen.character.{BaseCharacter, EnemyCharacter}
 import chousen.core
+import monocle.Lens
 
 
 
@@ -19,7 +20,8 @@ case class Dungeon(encounters: List[Encounter]) {
 
 object Dungeon {
   import monocle.Lens
-  val update: Lens[Dungeon, Encounter] =
+
+  val current: Lens[Dungeon, Encounter] =
     Lens[Dungeon, Encounter](_.current)(enc => dng => dng.copy(enc :: dng.encounters.tail))
 }
 
@@ -39,4 +41,8 @@ case class Encounter(enemies: Set[BaseCharacter]) {
 
 object Encounter {
   def create(enemyCharacter: EnemyCharacter) = Encounter(Set(enemyCharacter))
+  import monocle.macros.GenLens
+
+  val enemies : Lens[Encounter, Set[BaseCharacter]] = GenLens[Encounter](_.enemies)
+
 }

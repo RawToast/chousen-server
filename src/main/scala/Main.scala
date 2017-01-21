@@ -2,7 +2,6 @@ import java.util.UUID
 
 import chousen.core.{BasicGameManager, Game}
 import chousen.data.GameResponse
-import chousen.data.Implicits._
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.param.Stats
 import com.twitter.finagle.{Http, Service}
@@ -23,20 +22,28 @@ object Main extends TwitterServer {
 
     store = store + (game.id -> game)
 
-    Created(GameResponse(game.id, game.player, game.deckManager, game.quest, game.messages))
+    Created(Game.toResponse(game))
   }
 
 
   val load: Endpoint[GameResponse] = get("game" :: uuid) { id: UUID =>
       store.get(id) match {
-        case Some(game) => Ok(GameResponse(game.id, game.player, game.deckManager, game.quest, game.messages))
+        case Some(game) => Ok(Game.toResponse(game))
         case None => NotFound(new java.util.NoSuchElementException(s"Game with ID=$id does not exist"))
       }
     }
 
+  val start: Endpoint[GameResponse] = get("game" :: "start" :: uuid) { id: UUID =>
+    val game = store.get(id)
+
+    val g = game.get
+    val startedGame = BasicGameManager.start(g)
+
+    Ok(Game.toResponse(startedGame))
+  }
+
   val api: Service[Request, Response] = (init :+: load).toServiceAs[Application.Json]
   val port: String = Option(System.getProperty("http.port")).getOrElse("8080")
-
 
   def main(): Unit = {
     args

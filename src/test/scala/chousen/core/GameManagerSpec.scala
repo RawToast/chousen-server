@@ -39,5 +39,16 @@ class GameManagerSpec extends WordSpec with Matchers {
         result shouldNot equal(game)
       }
     }
+
+    "Starting a game" should {
+
+      val game = gameManager.create("Bob")
+
+      val startedGame: Game = gameManager.start(game)
+
+      "Result in the player's position being at least" in {
+        startedGame.player.position should be >= 100
+      }
+    }
   }
 }
