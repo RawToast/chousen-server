@@ -1,5 +1,7 @@
 package chousen.character
 
+import java.util.UUID
+
 import chousen._
 import chousen.cards.{Card, DeckManager}
 import chousen.data.CharStats
@@ -9,6 +11,7 @@ import scala.annotation.tailrec
 
 sealed abstract class BaseCharacter
   extends Nameable with Stats with Attack {
+  val id: UUID
   val isPlayer: Boolean
   val position: Int
 
@@ -28,7 +31,7 @@ sealed abstract class BaseCharacter
   override def toString: String = name
 }
 
-case class PlayerCharacter(name: String, stats: CharStats)(override val position: Int = 0)
+case class PlayerCharacter(name: String, id: UUID, stats: CharStats)(override val position: Int = 0)
   extends BaseCharacter with PlayerChoice with Magic {
 
   override val spellBook = SpellBook.create.withSpell(new FireBall)
@@ -60,7 +63,7 @@ object PlayerCharacter {
   implicit def toBaseCharacter(pc: PlayerCharacter): BaseCharacter = pc
 
   def create(name:String): PlayerCharacter = {
-    PlayerCharacter(name, CharStats.DEFAULT)()
+    PlayerCharacter(name, UUID.randomUUID(), CharStats.DEFAULT)()
   }
 
   val _stats = Lens[PlayerCharacter, CharStats](_.stats)((cs: CharStats) => p => p.copy(stats = cs)(position = p.position))
@@ -138,13 +141,13 @@ trait UseCards {
   }
 }
 
-case class EnemyCharacter(name: String, stats: CharStats)(override val position: Int = 0)
+case class EnemyCharacter(name: String, id: UUID, stats: CharStats)(override val position: Int = 0)
   extends BaseCharacter {
 
   override val isPlayer: Boolean = false
 
   def this(name: String, hp: Int) = {
-    this(name, CharStats(hp, hp))()
+    this(name, UUID.randomUUID(), CharStats(hp, hp))()
   }
 
   override def takeDamage(damage: Int): BaseCharacter = {

@@ -33,7 +33,7 @@ object Main extends TwitterServer {
       }
     }
 
-  val start: Endpoint[GameResponse] = get("game" :: "start" :: uuid) { id: UUID =>
+  val start: Endpoint[GameResponse] = post("game" :: "start" :: uuid) { id: UUID =>
     val game = store.get(id)
 
     val g = game.get
@@ -42,7 +42,15 @@ object Main extends TwitterServer {
     Ok(Game.toResponse(startedGame))
   }
 
-  val api: Service[Request, Response] = (init :+: load).toServiceAs[Application.Json]
+   case class CommandRequest(id:UUID)
+
+//  val command: Endpoint[GameResponse] = post("game" :: uuid :: jsonBody[]) {
+//
+//
+//
+//  }
+
+  val api: Service[Request, Response] = (init :+: load :+: start).toServiceAs[Application.Json]
   val port: String = Option(System.getProperty("http.port")).getOrElse("8080")
 
   def main(): Unit = {

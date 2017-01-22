@@ -7,7 +7,7 @@ version := "1.0"
 
 mainClass in(Compile, run) := Some("Main")
 
-enablePlugins(JavaServerAppPackaging)
+enablePlugins(JavaAppPackaging)
 
 val SCALA_VERSION = "2.12.1"
 addCompilerPlugin("org.scalamacros" %% "paradise" % "2.1.0" cross CrossVersion.full)
@@ -50,7 +50,7 @@ scalacOptions ++= Seq(
   "-Yno-adapted-args",
   "-Ywarn-numeric-widen",
   "-Ywarn-unused",
-  "-Ywarn-unused-import",
+  //"-Ywarn-unused-import",
   "-Ywarn-value-discard"
 )
 

@@ -1,5 +1,7 @@
 package chousen.character
 
+import java.util.UUID
+
 import chousen.data.CharStats
 import chousen.engine.{ActionCalc, Engine}
 import chousen.Peoples
@@ -15,7 +17,7 @@ class FireBallTest extends WordSpec with Matchers {
       val spell: FireBall = new FireBall
       val calc: ActionCalc = Engine
 
-      val player = PlayerCharacter("Bob", speed10Char)(position = 1)
+      val player = PlayerCharacter("Bob", UUID.randomUUID(), speed10Char)(position = 1)
       val enemies: Set[BaseCharacter] = Set(EnemyCharacter.baseCharacter, EnemyCharacter.giantSlime)
 
       val res: Peoples = spell.complete(player, enemies, None)(calc)

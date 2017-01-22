@@ -125,7 +125,7 @@ object GameObject {
   val name = requireCaseSensitivePlayerInput
   val initDeck = Deck.create
 
-  val player = PlayerCharacter(name, CharStats.DEFAULT)()
+  val player = PlayerCharacter(name, UUID.randomUUID(), CharStats.DEFAULT)()
 
   val defaultDeck = DeckManager.startNewGameWithDefaultDeck
 

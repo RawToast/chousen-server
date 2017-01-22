@@ -1,5 +1,7 @@
 package chousen.cast
 
+import java.util.UUID
+
 import chousen.Peoples
 import chousen.character.{EnemyCharacter, PlayerCharacter}
 import chousen.data.CharStats
@@ -13,8 +15,8 @@ class PeoplesTest extends WordSpec {
 
   "Peoples" when {
 
-    val speed10Player = PlayerCharacter("Speed 10", speed10Char)(position = 0)
-    val enemy = EnemyCharacter("Enemy", speed8Char)(position = 0)
+    val speed10Player = PlayerCharacter("Speed 10", UUID.randomUUID(), speed10Char)(position = 0)
+    val enemy = EnemyCharacter("Enemy", UUID.randomUUID(), speed8Char)(position = 0)
 
     "initialised with a fast player and a slow enemy" should {
       val p = Peoples.init(speed10Player, Set(enemy))
@@ -39,8 +41,8 @@ class PeoplesTest extends WordSpec {
   "Two actors" when {
 
     // Note that the enemy is closer to their next turn
-    val bc1 = PlayerCharacter("Player", speed10Char)(position = 0)
-    val bc2 = EnemyCharacter("Enemy", speed10Char)(position = 50)
+    val bc1 = PlayerCharacter("Player", UUID.randomUUID(), speed10Char)(position = 0)
+    val bc2 = EnemyCharacter("Enemy", UUID.randomUUID(), speed10Char)(position = 50)
     val cast = Peoples.init(bc1, Set(bc2))
 
     "initialised with equal speeds and different positions" should {
@@ -78,8 +80,8 @@ class PeoplesTest extends WordSpec {
 
     // Player will have 111, enemy 110 so player goes first.
 
-    val player = PlayerCharacter("Player", speed10Char)(position = 91)
-    val enemy = EnemyCharacter("Enemy", speed10Char)(position = 90)
+    val player = PlayerCharacter("Player", UUID.randomUUID(), speed10Char)(position = 91)
+    val enemy = EnemyCharacter("Enemy", UUID.randomUUID(), speed10Char)(position = 90)
     val preCast = Peoples.init(player, Set(enemy))
     val turnOneCast = preCast.changeTurn
 
@@ -110,7 +112,7 @@ class PeoplesTest extends WordSpec {
   "both players reach the goal, with equal position and speed" should {
     // Player will have 111, enemy 110 so player goes first.
 
-    val player = PlayerCharacter("Player", speed8Char)()
+    val player = PlayerCharacter("Player", UUID.randomUUID(), speed8Char)()
     val enemy = EnemyCharacter.baseCharacter
     val turnOneCast = Peoples.init(player, Set(enemy))
     val turnTwoCast = turnOneCast.changeTurn
@@ -124,7 +126,7 @@ class PeoplesTest extends WordSpec {
 
       Range.inclusive(0, 5).foreach {(_:Int) =>
 
-        val player = PlayerCharacter("Player", speed8Char)()
+        val player = PlayerCharacter("Player", UUID.randomUUID(), speed8Char)()
         val enemy = EnemyCharacter.baseCharacter
         val turnOneCast = Peoples.init(player, Set(enemy))
         val turnTwoCast = turnOneCast.changeTurn
@@ -151,9 +153,9 @@ class PeoplesTest extends WordSpec {
     val speed20Char = CharStats(100, 100, speed = 20)
 
     // When two players with the same position score reach the goal, the faster actor is favoured
-    val fastestActor = PlayerCharacter("Fastest Actor", speed20Char)(position = 0)
-    val averageActor = EnemyCharacter("Average Actor", speed10Char)(position = 15)
-    val slowestActor = EnemyCharacter("SLowest Actor ", speed10Char)(position = 0)
+    val fastestActor = PlayerCharacter("Fastest Actor", UUID.randomUUID(), speed20Char)(position = 0)
+    val averageActor = EnemyCharacter("Average Actor", UUID.randomUUID(), speed10Char)(position = 15)
+    val slowestActor = EnemyCharacter("SLowest Actor ", UUID.randomUUID(), speed10Char)(position = 0)
 
     //val preCast =
     val turnOneCast = Peoples.init(fastestActor, Set(averageActor, slowestActor))
