@@ -2,7 +2,7 @@ package chousen.character
 
 import java.util.UUID
 
-import chousen.data.CharStats
+import api.data.CharStats
 import chousen.engine.{ActionCalc, Engine}
 import chousen.Peoples
 import org.scalatest.{Matchers, WordSpec}

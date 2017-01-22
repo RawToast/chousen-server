@@ -1,7 +1,7 @@
 import java.util.UUID
 
 import chousen.core.{BasicGameManager, Game}
-import chousen.data.GameResponse
+import api.data.GameResponse
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.param.Stats
 import com.twitter.finagle.{Http, Service}

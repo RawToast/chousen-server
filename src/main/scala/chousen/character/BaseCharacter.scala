@@ -4,7 +4,7 @@ import java.util.UUID
 
 import chousen._
 import chousen.cards.{Card, DeckManager}
-import chousen.data.CharStats
+import api.data.CharStats
 import monocle.{Lens, PLens}
 
 import scala.annotation.tailrec

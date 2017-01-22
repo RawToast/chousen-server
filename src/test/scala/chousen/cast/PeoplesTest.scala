@@ -4,7 +4,7 @@ import java.util.UUID
 
 import chousen.Peoples
 import chousen.character.{EnemyCharacter, PlayerCharacter}
-import chousen.data.CharStats
+import api.data.CharStats
 import org.scalatest.WordSpec
 
 class PeoplesTest extends WordSpec {

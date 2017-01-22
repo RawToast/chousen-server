@@ -5,7 +5,7 @@ import java.util.UUID
 import chousen.{core, _}
 import chousen.cards.{Deck, DeckManager}
 import chousen.character.{Action, BaseCharacter, CardAction, EnemyCharacter, PlayerCharacter}
-import chousen.data.{CharStats, GameMessage, GameResponse}
+import api.data.{CharStats, GameMessage, GameResponse}
 import chousen.engine.{ActionCalc, Engine, State}
 import monocle.Lens
 import monocle.macros.GenLens
@@ -80,7 +80,7 @@ object Game {
   }
 
   def toResponse(game: Game): GameResponse = {
-    import chousen.data.Implicits._
+    import api.data.Implicits._
     GameResponse(game.id, game.player, game.deckManager, game.quest, game.messages)
   }
   val player   : Lens[Game, PlayerCharacter] = GenLens[Game](_.player)

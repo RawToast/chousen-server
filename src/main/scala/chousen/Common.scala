@@ -1,6 +1,6 @@
 package chousen
 
-import chousen.data.CharStats
+import api.data.CharStats
 
 trait Nameable {
   val name: String

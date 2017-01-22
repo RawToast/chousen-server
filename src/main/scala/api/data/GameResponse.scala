@@ -1,4 +1,4 @@
-package chousen.data
+package api.data
 
 import java.util.UUID
 
@@ -43,4 +43,4 @@ case class Dungeon(currentEncounter: Battle, remainingEncounters: Seq[Battle])
 
 case class Battle(enemies: Set[Enemy])
 
-case class Enemy(name: String, stats: CharStats)
+case class Enemy(name: String, id: UUID, stats: CharStats)

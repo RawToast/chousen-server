@@ -3,7 +3,7 @@ package chousen
 // import chousen.cards.{Deck, DeckManager}
 import chousen.character.BaseCharacter//, EnemyCharacter, PlayerCharacter}
 // import chousen.core.Encounter
-// import chousen.data.CharStats
+// import api.data.CharStats
 // import chousen.engine.State
 //
 // import scala.annotation.tailrec

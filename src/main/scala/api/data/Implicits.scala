@@ -1,4 +1,4 @@
-package chousen.data
+package api.data
 
 import chousen.cards.DeckManager
 import chousen.character.PlayerCharacter
@@ -12,7 +12,7 @@ object Implicits {
     Cards(dm.hand.items.map(c => Card(c.active.name, c.active.description)))
 
   implicit val encounterConv: Encounter => Battle = enc =>
-    Battle(enc.enemies.map(e => Enemy(e.name, e.stats)))
+    Battle(enc.enemies.map(e => Enemy(e.name, e.id, e.stats)))
 
   implicit val dungeonConv: chousen.core.Dungeon => Dungeon = dng =>
     Dungeon(dng.current, dng.encounters.tail.map(encounterConv))
