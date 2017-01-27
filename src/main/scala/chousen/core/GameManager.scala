@@ -31,19 +31,18 @@ object BasicGameManager extends GameManager {
     Game(uuid, pc, deck, dungeon, Seq(msg))
   }
 
-  override val takeCommand: (Command, Game) => Game =
-    (com, gam) => {
-      com.action match {
+  override def takeCommand(command: Command, game: Game): Game = {
+      command.action match {
         case pa: PlayerAttack => {
-          val allEnemies: Set[BaseCharacter] = gam.quest.current.enemies
-          val byStanders = Option(allEnemies -- com.target)
-          val nc: Cast = pa.complete(gam.player, com.target, byStanders)(actionCalc)
+          val allEnemies: Set[BaseCharacter] = game.quest.current.enemies
+          val byStanders = Option(allEnemies -- command.target)
+          val nc: Cast = pa.complete(game.player, command.target, byStanders)(actionCalc)
 
-          val updatedQuest = Dungeon.current.set(Encounter(nc.enemies))(gam.quest)
+          val updatedQuest = Dungeon.current.set(Encounter(nc.enemies))(game.quest)
 
-          Game(gam.id, nc.player, gam.deckManager, updatedQuest)
+          Game(game.id, nc.player, game.deckManager, updatedQuest)
         }
-        case sp: CardAction => gam
+        case sp: CardAction => game
       }
     }
 
@@ -66,7 +65,7 @@ trait GameManager {
 
   def start(game: Game): Game
 
-  val takeCommand: (Command, Game) => Game
+  def takeCommand(command: Command, game: Game): Game
 
   val actionCalc: ActionCalc
 }
@@ -93,7 +92,7 @@ object Game {
 case class Command(target: Set[BaseCharacter], action: Action)
 
 
-class PlayerAttack extends Action {
+object PlayerAttack extends Action {
   override val name: String = "Attack"
   override val description: String = "Attacks all selected targets"
 
