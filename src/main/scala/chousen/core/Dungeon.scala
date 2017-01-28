@@ -1,10 +1,33 @@
 package chousen.core
 
-import chousen.character.{BaseCharacter, EnemyCharacter}
+import java.util.UUID
+
+import api.data.{GameMessage, GameResponse}
+import chousen.cards.DeckManager
+import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter}
 import chousen.core
-import monocle.Lens
+import monocle.{Lens, PLens}
+import monocle.macros.GenLens
 
+case class Game(id: UUID, player: PlayerCharacter, deckManager: DeckManager,
+                quest: Dungeon, messages: Seq[GameMessage] = Seq.empty)
 
+object Game {
+  def create(p: PlayerCharacter, dm: DeckManager, d: Dungeon, msg: Seq[GameMessage] = Seq.empty): Game = {
+    Game(UUID.randomUUID(), p, dm, d, msg)
+  }
+
+  def toResponse(game: Game): GameResponse = {
+    import api.data.Implicits._
+    GameResponse(game.id, game.player, game.deckManager, game.quest, game.messages)
+  }
+  val player   : Lens[Game, PlayerCharacter] = GenLens[Game](_.player)
+
+  val dungeon   : Lens[Game, Dungeon] = GenLens[Game](_.quest)
+
+  val currentEnemies: PLens[Game, Game, Set[BaseCharacter], Set[BaseCharacter]] =
+    Game.dungeon composeLens Dungeon.current composeLens Encounter.enemies
+}
 
 case class Dungeon(encounters: List[Encounter]) {
   val isComplete = encounters.isEmpty

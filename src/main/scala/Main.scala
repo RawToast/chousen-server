@@ -1,7 +1,9 @@
 import java.util.UUID
 
-import api.data.GameResponse
-import chousen.core.{BasicGameManager, Game, PlayerAttack}
+import api.core.MappedGameAccess
+import api.data.{AttackRequest, GameResponse}
+import api.error.TargetNotFoundException
+import chousen.core._
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.param.Stats
 import com.twitter.finagle.{Http, Service}
@@ -24,7 +26,7 @@ object Main extends TwitterServer with MappedGameAccess {
 
 
   val load: Endpoint[GameResponse] = get("game" :: uuid) { id: UUID =>
-    withGame(id){g => Ok(Game.toResponse(g))}
+    withGame(id) { g => Ok(Game.toResponse(g)) }
   }
 
   val start: Endpoint[GameResponse] = post("game" :: "start" :: uuid) { id: UUID =>
@@ -34,19 +36,19 @@ object Main extends TwitterServer with MappedGameAccess {
     }
   }
 
-  val attack: Endpoint[GameResponse] = post("game" :: uuid :: jsonBody[AttackRequest]) { a:(UUID, AttackRequest) =>
-    withGame(a._1) { g: Game => BasicGameManager.takeCommand(???, g)}
+
+  val attack: Endpoint[GameResponse] = post("game" :: uuid :: jsonBody[AttackRequest]) { (id:UUID, ar:AttackRequest) =>
+    withGame(id) { g: Game =>
+
+      val target = Game.currentEnemies.get(g).filter(b => b.id == ar.targetId)
+
+      if (target.nonEmpty) {
+        val command = Command(target, PlayerAttack)
+
+        Ok(Game.toResponse(BasicGameManager.takeCommand(command, g)))
+      } else BadRequest(TargetNotFoundException.raise(id, Game.currentEnemies.get(g).map(_.id)))
+    }
   }
-
-  sealed trait CommandRequest {
-    val gameId: UUID
-  }
-
-  case class AttackRequest(gameId: UUID, targetId: UUID) extends CommandRequest
-
-  case class SingleTargetActionRequest(gameId: UUID, targetId: UUID, actionId: Int) extends CommandRequest
-
-  case class MultiTargetActionRequest(gameId: UUID, targetId: Set[UUID], actionId: Int) extends CommandRequest
 
   val api: Service[Request, Response] = (init :+: load :+: start :+: attack).toServiceAs[Application.Json]
   val port: String = Option(System.getProperty("http.port")).getOrElse("8080")
@@ -63,20 +65,4 @@ object Main extends TwitterServer with MappedGameAccess {
 
     val _ = Await.ready(adminHttpServer)
   }
-
-}
-
-trait MappedGameAccess extends GameAccess {
-  var store = Map.empty[UUID, Game]
-
-  def withGame(id: UUID)(f: Game => Output[GameResponse]): Output[GameResponse] = {
-    store.get(id) match {
-      case Some(game) => f(game)
-      case None => NotFound(new java.util.NoSuchElementException(s"Game with ID=$id does not exist"))
-    }
-  }
-}
-
-trait GameAccess {
-  def withGame(id: UUID)(f: Game => Output[GameResponse]): Output[GameResponse]
 }
