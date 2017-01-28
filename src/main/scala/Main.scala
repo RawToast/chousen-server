@@ -37,7 +37,7 @@ object Main extends TwitterServer with MappedGameAccess {
   }
 
 
-  val attack: Endpoint[GameResponse] = post("game" :: uuid :: jsonBody[AttackRequest]) { (id:UUID, ar:AttackRequest) =>
+  val attack: Endpoint[GameResponse] = post("game" :: uuid :: "attack" :: jsonBody[AttackRequest]) { (id:UUID, ar:AttackRequest) =>
     withGame(id) { g: Game =>
 
       val target = Game.currentEnemies.get(g).filter(b => b.id == ar.targetId)
