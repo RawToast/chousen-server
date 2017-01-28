@@ -2,13 +2,11 @@ package chousen.core
 
 import java.util.UUID
 
-import chousen.{core, _}
+import api.data.{CharStats, GameMessage}
 import chousen.cards.{Deck, DeckManager}
-import chousen.character.{Action, BaseCharacter, CardAction, EnemyCharacter, PlayerCharacter}
-import api.data.{CharStats, GameMessage, GameResponse}
+import chousen.character._
 import chousen.engine.{ActionCalc, Engine, State}
-import monocle.Lens
-import monocle.macros.GenLens
+import chousen.{core, _}
 
 import scala.annotation.tailrec
 
@@ -31,19 +29,17 @@ object BasicGameManager extends GameManager {
     Game(uuid, pc, deck, dungeon, Seq(msg))
   }
 
-  override val takeCommand: (Command, Game) => Game =
-    (com, gam) => {
-      com.action match {
-        case pa: PlayerAttack => {
-          val allEnemies: Set[BaseCharacter] = gam.quest.current.enemies
-          val byStanders = Option(allEnemies -- com.target)
-          val nc: Cast = pa.complete(gam.player, com.target, byStanders)(actionCalc)
+  override def takeCommand(command: Command, game: Game): Game = {
+      command.action match {
+        case pa: PlayerAttack =>
+          val allEnemies: Set[BaseCharacter] = game.quest.current.enemies
+          val byStanders = Option(allEnemies -- command.target)
+          val nc: Cast = pa.complete(game.player, command.target, byStanders)(actionCalc)
 
-          val updatedQuest = Dungeon.current.set(Encounter(nc.enemies))(gam.quest)
+          val updatedQuest = Dungeon.current.set(Encounter(nc.enemies))(game.quest)
 
-          Game(gam.id, nc.player, gam.deckManager, updatedQuest)
-        }
-        case sp: CardAction => gam
+          Game(game.id, nc.player, game.deckManager, updatedQuest)
+        case sp: CardAction => game
       }
     }
 
@@ -66,34 +62,16 @@ trait GameManager {
 
   def start(game: Game): Game
 
-  val takeCommand: (Command, Game) => Game
+  def takeCommand(command: Command, game: Game): Game
 
   val actionCalc: ActionCalc
 }
 
-case class Game(id: UUID, player: PlayerCharacter, deckManager: DeckManager,
-                quest: Dungeon, messages: Seq[GameMessage] = Seq.empty)
-
-object Game {
-  def create(p: PlayerCharacter, dm: DeckManager, d: Dungeon, msg: Seq[GameMessage] = Seq.empty): Game = {
-    Game(UUID.randomUUID(), p, dm, d, msg)
-  }
-
-  def toResponse(game: Game): GameResponse = {
-    import api.data.Implicits._
-    GameResponse(game.id, game.player, game.deckManager, game.quest, game.messages)
-  }
-  val player   : Lens[Game, PlayerCharacter] = GenLens[Game](_.player)
-
-  val dungeon   : Lens[Game, Dungeon] = GenLens[Game](_.quest)
-
-
-}
-
 case class Command(target: Set[BaseCharacter], action: Action)
 
+trait PlayerAttack extends Action
 
-class PlayerAttack extends Action {
+object PlayerAttack extends PlayerAttack {
   override val name: String = "Attack"
   override val description: String = "Attacks all selected targets"
 

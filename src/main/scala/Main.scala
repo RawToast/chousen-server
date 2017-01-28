@@ -1,7 +1,9 @@
 import java.util.UUID
 
-import chousen.core.{BasicGameManager, Game}
-import api.data.GameResponse
+import api.core.MappedGameAccess
+import api.data.{AttackRequest, GameResponse}
+import api.error.TargetNotFoundException
+import chousen.core._
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.param.Stats
 import com.twitter.finagle.{Http, Service}
@@ -12,10 +14,7 @@ import io.finch._
 import io.finch.circe._
 
 
-object Main extends TwitterServer {
-
-  var store = Map.empty[UUID, Game]
-
+object Main extends TwitterServer with MappedGameAccess {
 
   val init: Endpoint[GameResponse] = post("game" :: string) { playerName: String =>
     val game = BasicGameManager.create(playerName)
@@ -27,30 +26,31 @@ object Main extends TwitterServer {
 
 
   val load: Endpoint[GameResponse] = get("game" :: uuid) { id: UUID =>
-      store.get(id) match {
-        case Some(game) => Ok(Game.toResponse(game))
-        case None => NotFound(new java.util.NoSuchElementException(s"Game with ID=$id does not exist"))
-      }
-    }
-
-  val start: Endpoint[GameResponse] = post("game" :: "start" :: uuid) { id: UUID =>
-    val game = store.get(id)
-
-    val g = game.get
-    val startedGame = BasicGameManager.start(g)
-
-    Ok(Game.toResponse(startedGame))
+    withGame(id) { g => Ok(Game.toResponse(g)) }
   }
 
-   case class CommandRequest(id:UUID)
+  val start: Endpoint[GameResponse] = post("game" :: "start" :: uuid) { id: UUID =>
+    withGame(id) { g =>
+      val startedGame = BasicGameManager.start(g)
+      Ok(Game.toResponse(startedGame))
+    }
+  }
 
-//  val command: Endpoint[GameResponse] = post("game" :: uuid :: jsonBody[]) {
-//
-//
-//
-//  }
 
-  val api: Service[Request, Response] = (init :+: load :+: start).toServiceAs[Application.Json]
+  val attack: Endpoint[GameResponse] = post("game" :: uuid :: jsonBody[AttackRequest]) { (id:UUID, ar:AttackRequest) =>
+    withGame(id) { g: Game =>
+
+      val target = Game.currentEnemies.get(g).filter(b => b.id == ar.targetId)
+
+      if (target.nonEmpty) {
+        val command = Command(target, PlayerAttack)
+
+        Ok(Game.toResponse(BasicGameManager.takeCommand(command, g)))
+      } else BadRequest(TargetNotFoundException.raise(id, Game.currentEnemies.get(g).map(_.id)))
+    }
+  }
+
+  val api: Service[Request, Response] = (init :+: load :+: start :+: attack).toServiceAs[Application.Json]
   val port: String = Option(System.getProperty("http.port")).getOrElse("8080")
 
   def main(): Unit = {

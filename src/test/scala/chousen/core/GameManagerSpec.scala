@@ -32,7 +32,7 @@ class GameManagerSpec extends WordSpec with Matchers {
 
       val encounter = game.quest.current
 
-      val cmd: Command = Command(encounter.enemies, new PlayerAttack())
+      val cmd: Command = Command(encounter.enemies, PlayerAttack)
 
       "Create a new game with different state" in {
         val result: Game = gameManager.takeCommand(cmd, game)
