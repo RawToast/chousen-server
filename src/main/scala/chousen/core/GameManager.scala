@@ -38,21 +38,39 @@ object BasicGameManager extends GameManager {
 
           val updatedQuest = Dungeon.current.set(Encounter(nc.enemies))(game.quest)
 
-          Game(game.id, nc.player, game.deckManager, updatedQuest)
+          update(Game(game.id, nc.player, game.deckManager, updatedQuest))
         case sp: CardAction => game
       }
     }
+
+  private def update(game:Game): Game = {
+    // reset player
+    val positionUpdate = Game.player.composeLens(PlayerCharacter.posit).modify(i => i - 100)
+    val updGame = positionUpdate(game)
+
+    // loop until active
+
+    def loopDaLoop(peoples: Peoples): Peoples = peoples.active match {
+      case _: PlayerCharacter => println("Player is active"); peoples
+      case bc: BaseCharacter =>
+        println("Enemy is active")
+        val c = bc.attack(Set(peoples.player), Some(peoples.enemies - bc))
+        val np = Peoples(c.player, c.enemies).changeTurn
+        loopDaLoop(np)
+    }
+    val peeps = Peoples.init(updGame.player, updGame.quest.current.enemies)
+
+    val nPeeps = loopDaLoop(peeps)
+
+    Game.refreshFromPeoples(nPeeps)(updGame)
+  }
 
   override def start(game: Game) = {
     val enc = game.quest.current
 
     val peeps = Peoples.init(game.player, enc.enemies)
 
-    val updateCurrent = Game.dungeon composeLens Dungeon.current composeLens Encounter.enemies
-
-    val update = updateCurrent.set(peeps.enemies) compose Game.player.set(peeps.player)
-
-    update(game)
+    Game.refreshFromPeoples(peeps)(game)
   }
 }
 
