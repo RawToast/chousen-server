@@ -23,7 +23,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
-//libraryDependencies += "org.typelevel" %%  "cats-core" % "0.9.0"
+libraryDependencies += "org.typelevel" %%  "cats-core" % "0.9.0"
 libraryDependencies += "com.github.julien-truffaut" %% "monocle-core" % "1.4.0"
 libraryDependencies +="com.github.julien-truffaut" %%  "monocle-macro" % "1.4.0"
 
@@ -43,15 +43,13 @@ scalacOptions ++= Seq(
   "-feature",
   "-language:_",
   "-unchecked",
-  "-Xlint:_",
-  "-Xfatal-warnings",
+  //"-Xlint:_",
+  //"-Xfatal-warnings",
   "-Xfuture",
-  "-Ywarn-dead-code",
+  //"-Ywarn-dead-code",
   "-Yno-adapted-args",
   "-Ywarn-numeric-widen",
-  "-Ywarn-unused",
+  //"-Ywarn-unused",
   //"-Ywarn-unused-import",
   "-Ywarn-value-discard"
 )
-
-

@@ -7,7 +7,10 @@ import chousen.character.{EnemyCharacter, PlayerCharacter}
 import api.data.CharStats
 import org.scalatest.WordSpec
 
-class PeoplesTest extends WordSpec {
+class EncounterOpsSpec extends WordSpec {
+
+  object EncounterOps {}
+
 
   def speed10Char = CharStats(100, 100, speed = 10)
 
@@ -18,11 +21,11 @@ class PeoplesTest extends WordSpec {
     val speed10Player = PlayerCharacter("Speed 10", UUID.randomUUID(), speed10Char)(position = 0)
     val enemy = EnemyCharacter("Enemy", UUID.randomUUID(), speed8Char)(position = 0)
 
-    "initialised with a fast player and a slow enemy" should {
+    "provided with a fast player and a slow enemy" should {
       val p = Peoples.init(speed10Player, Set(enemy))
 
 
-      "Set thcleare fast player to be the active character" in {
+      "Set the fast player to be the active character" in {
         assert(p.active == speed10Player)
       }
 
