@@ -7,7 +7,7 @@ import chousen.cards.{Deck, DeckManager}
 import chousen.character._
 import chousen.engine.{ActionCalc, Engine, State}
 import chousen.{core, _}
-import monocle.{Lens, PLens}
+import monocle.Lens
 
 import scala.annotation.tailrec
 
@@ -72,10 +72,7 @@ object BasicGameManager extends GameManager {
         Game.ultLens.modify{case ((pc: PlayerCharacter, bcs:Set[BaseCharacter], msgs:Seq[GameMessage])) =>
 
 
-          def update: BasicUpdate = {
-
-          }
-            ???
+          ???
         }
 
 
@@ -91,21 +88,7 @@ object BasicGameManager extends GameManager {
     def mergeLens[S, A, B](lsa : Lens[S, A], lsb : Lens[S, B]) : Lens[S, (A, B)] =
       Lens.apply[S, (A, B)](s => (lsa.get(s), lsb.get(s)))(t => (lsa.set(t._1) andThen lsb.set(t._2)))
 
-
     val encounterLens: Lens[Game, (PlayerCharacter, Set[BaseCharacter])] = mergeLens(Game.player, Game.currentEnemies)
-
-    val g: (Game) => Game = xy.modify{case (pc:PlayerCharacter, es:Set[BaseCharacter]) => pc -> es }
-
-    def testy(p: PlayerCharacter, enc: ((Set[BaseCharacter]) => Set[BaseCharacter]) => (Game) => Game): Game => Game = {
-
-      def x: Int = 3
-
-      enc.apply{ es => es
-
-
-
-      }
-    }
 
     val peeps: Cast = Peoples.init(updGame.player, updGame.quest.current.enemies)
 

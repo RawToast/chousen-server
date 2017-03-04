@@ -31,6 +31,7 @@ object CharStats {
   val speed = Lens[CharStats, Int](_.speed)(spd => s => s.copy(speed = spd))
 }
 
+
 case class Player(name:String, stats: CharStats, position: Int)
 
 case class Cards(cards: List[Card])
@@ -43,4 +44,4 @@ case class Dungeon(currentEncounter: Battle, remainingEncounters: Seq[Battle])
 
 case class Battle(enemies: Set[Enemy])
 
-case class Enemy(name: String, id: UUID, stats: CharStats)
+case class Enemy(name: String, id: UUID, stats: CharStats, position: Int)

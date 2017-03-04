@@ -46,8 +46,10 @@ object Game {
   val ultLens: Lens[Game, (PlayerCharacter, Set[BaseCharacter], Seq[GameMessage])] = triLens(Game.player, Game.currentEnemies, Game.messages)
 
 
+
   private def mergeLens[S, A, B](lsa : Lens[S, A], lsb : Lens[S, B]) : Lens[S, (A, B)] =
     Lens.apply[S, (A, B)](s => (lsa.get(s), lsb.get(s)))(t => lsa.set(t._1).andThen(lsb.set(t._2)))
+
 
   private def triLens[S, A, B, C](lsa : Lens[S, A], lsb : Lens[S, B], lsc: Lens[S, C]) : Lens[S, (A, B, C)] =
     Lens.apply[S, (A, B, C)](s => (lsa.get(s), lsb.get(s), lsc.get(s)))(t => lsa.set(t._1).andThen(lsb.set(t._2)).andThen(lsc.set(t._3)))
