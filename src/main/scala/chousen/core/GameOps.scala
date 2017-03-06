@@ -3,6 +3,7 @@ package chousen.core
 import api.data.{Enemy, GameMessage, Player}
 
 import scala.annotation.tailrec
+import scala.util.Random
 
 
 object GameOps {
@@ -21,17 +22,49 @@ object GameOps {
   @tailrec
   def ensureActive(encounterData: EncounterData): EncounterData = {
     val (p, es, msgs) = encounterData
-
     val (player, enemies) = p.copy(position = p.position + p.stats.speed) ->
       es.map(e => e.copy(position = e.position + e.stats.speed))
 
-    val numWithPosition = if (player.position >= 100) 1 + enemies.count(_.position >= 100)
-    else enemies.count(_.position >= 100)
+    val maxPosition = math.max(player.position, enemies.maxBy(_.position).position)
+    lazy val numWithMaxPosition = if (player.position == maxPosition) 1 + enemies.count(_.position == maxPosition)
+      else enemies.count(_.position == maxPosition)
 
-    numWithPosition match {
-      case 0 => ensureActive(Tuple3(player, enemies, msgs))
-      case 1 => (player, enemies, msgs)
-      case _ => (player, enemies, msgs) //TODO handle
+
+    if (maxPosition < 100) ensureActive((player, enemies, msgs))
+    else {
+      numWithMaxPosition match {
+        case 0 => ensureActive(Tuple3(player, enemies, msgs))
+        case 1 => (player, enemies, msgs)
+        case _ =>
+
+          val fastEnemies = enemies.filter(_.position == maxPosition)
+
+          if (player.position == maxPosition) {
+
+            if (player.stats.speed < fastEnemies.maxBy(_.stats.speed).stats.speed) ensureActive((player, enemies, msgs))
+            else {
+              val fastestSpeeds = fastEnemies.filter(_.stats.speed == fastEnemies.maxBy(_.stats.speed))
+
+              ???
+            }
+          }
+          else {
+            fastEnemies.map(e => e.copy(position = e.stats.speed + e.position))
+            val fastestSpeeds = fastEnemies.filter(_.stats.speed == fastEnemies.maxBy(_.stats.speed))
+
+            fastestSpeeds.size match {
+              case 1 => ensureActive((player, enemies, msgs))
+              case _ =>
+                if (fastestSpeeds.size < fastEnemies.size) ensureActive((player, enemies, msgs))
+                else {
+                  val chosenOne: Enemy = Random.shuffle(fastEnemies).head
+                  val nextEnemies = enemies.map(e => if (e.id == chosenOne.id) e.copy(position = e.position + 1)
+                  else e)
+                  ensureActive((player, nextEnemies, msgs))
+                }
+            }
+          }
+      }
     }
   }
 

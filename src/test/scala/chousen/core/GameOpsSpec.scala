@@ -11,6 +11,11 @@ class GameOpsSpec extends WordSpec {
 
   def speed8Char = CharStats(100, 100, speed = 8)
 
+  def resetActive(t:(Player, Set[Enemy], Seq[GameMessage])): (Player, Set[Enemy]) = {
+    val (p, es, _) = t
+    p -> es
+  }
+
   "GameOps.update" when {
 
     "provided with a fast player and a slow enemy" should {
@@ -137,13 +142,19 @@ class GameOpsSpec extends WordSpec {
     "provided with an equal enemy and player" should {
 
       val player = Player("Player", speed10Char, position = 0)
-      val enemy = Enemy("Quick Enemy", UUID.randomUUID(), speed10Char, position = 50)
+      val enemy = Enemy("Quick Enemy", UUID.randomUUID(), speed10Char, position = 0)
 
       val emptyMessages = Seq.empty[GameMessage]
       val turnOneCast = GameOps.update(player, Set(enemy), emptyMessages)
-      val turnTwoCast = GameOps.update(turnOneCast._1, turnOneCast._2, turnOneCast._3)
-      val turnThreeCast = GameOps.update(turnTwoCast._1, turnTwoCast._2, turnTwoCast._3)
-      val turnFourCast = GameOps.update(turnThreeCast._1, turnThreeCast._2, turnThreeCast._3)
+
+      val (t1Player, t1Enemies) = resetActive(turnOneCast)
+      val turnTwoCast = GameOps.update(t1Player, t1Enemies, turnOneCast._3)
+
+      val (t2Player, t2Enemies) = resetActive(turnTwoCast)
+      val turnThreeCast = GameOps.update(t2Player, t2Enemies, turnTwoCast._3)
+
+      val (t3Player, t3Enemies) = resetActive(turnThreeCast)
+      val turnFourCast = GameOps.update(t3Player, t3Enemies, turnThreeCast._3)
 
       def nameOfActive(t: (Player, Set[Enemy], Seq[GameMessage])): String = {
         val (player, e, _) = t
@@ -168,11 +179,19 @@ class GameOpsSpec extends WordSpec {
         Range.inclusive(0, 5).foreach { (_: Int) =>
 
           val player = Player("Player", speed10Char, position = 0)
-          val enemy = Enemy("Quick Enemy", UUID.randomUUID(), speed10Char, position = 50)
+          val enemy = Enemy("Quick Enemy", UUID.randomUUID(), speed10Char, position = 0)
+          val emptyMessages = Seq.empty[GameMessage]
+
           val turnOneCast = GameOps.update(player, Set(enemy), emptyMessages)
-          val turnTwoCast = GameOps.update(turnOneCast._1, turnOneCast._2, turnOneCast._3)
-          val turnThreeCast = GameOps.update(turnTwoCast._1, turnTwoCast._2, turnTwoCast._3)
-          val turnFourCast = GameOps.update(turnThreeCast._1, turnThreeCast._2, turnThreeCast._3)
+
+          val (t1Player, t1Enemies) = resetActive(turnOneCast)
+          val turnTwoCast = GameOps.update(t1Player, t1Enemies, turnOneCast._3)
+
+          val (t2Player, t2Enemies) = resetActive(turnTwoCast)
+          val turnThreeCast = GameOps.update(t2Player, t2Enemies, turnTwoCast._3)
+
+          val (t3Player, t3Enemies) = resetActive(turnThreeCast)
+          val turnFourCast = GameOps.update(t3Player, t3Enemies, turnThreeCast._3)
 
           assert(nameOfActive(turnOneCast) != nameOfActive(turnTwoCast))
           assert(nameOfActive(turnThreeCast) != nameOfActive(turnFourCast))

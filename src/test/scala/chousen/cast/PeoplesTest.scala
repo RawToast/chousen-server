@@ -111,7 +111,7 @@ class EncounterOpsSpec extends WordSpec {
       }
     }
   }
-
+4
   "both players reach the goal, with equal position and speed" should {
     // Player will have 111, enemy 110 so player goes first.
 
