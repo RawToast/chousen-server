@@ -32,37 +32,42 @@ object GameOps {
 
     if (maxPosition < 100) ensureActive((player, enemies, msgs))
     else {
+      lazy val withPosition = (es:Set[Enemy]) => es.filter(_.position == maxPosition)
+      lazy val enemiesWithPosition = withPosition(enemies)
+
+
       numWithMaxPosition match {
         case 0 => ensureActive(Tuple3(player, enemies, msgs))
         case 1 => (player, enemies, msgs)
-        case _ =>
-
-          val fastEnemies = enemies.filter(_.position == maxPosition)
-
-          if (player.position == maxPosition) {
-
-            if (player.stats.speed < fastEnemies.maxBy(_.stats.speed).stats.speed) ensureActive((player, enemies, msgs))
-            else {
-              val fastestSpeeds = fastEnemies.filter(_.stats.speed == fastEnemies.maxBy(_.stats.speed))
-
-              ???
-            }
-          }
+        case 2 if player.position == maxPosition =>
+          if (player.stats.speed != enemiesWithPosition.maxBy(_.stats.speed).stats.speed) ensureActive((player, enemies, msgs))
           else {
-            fastEnemies.map(e => e.copy(position = e.stats.speed + e.position))
-            val fastestSpeeds = fastEnemies.filter(_.stats.speed == fastEnemies.maxBy(_.stats.speed))
+            val incEnemies: Set[Enemy] = enemies.map(e =>
+              if (e.id == enemies.maxBy(_.stats.speed).id) {e.copy(position = e.position + 1) } else e)
 
-            fastestSpeeds.size match {
-              case 1 => ensureActive((player, enemies, msgs))
-              case _ =>
-                if (fastestSpeeds.size < fastEnemies.size) ensureActive((player, enemies, msgs))
-                else {
-                  val chosenOne: Enemy = Random.shuffle(fastEnemies).head
-                  val nextEnemies = enemies.map(e => if (e.id == chosenOne.id) e.copy(position = e.position + 1)
-                  else e)
-                  ensureActive((player, nextEnemies, msgs))
-                }
-            }
+            ensureActive(Tuple3(player, incEnemies, msgs))
+          }
+        case _ if player.position == maxPosition =>
+          if (player.stats.speed != enemiesWithPosition.maxBy(_.stats.speed).stats.speed) ensureActive((player, enemies, msgs))
+          else {
+
+
+           ???
+          }
+        case _ =>
+          enemiesWithPosition.map(e => e.copy(position = e.stats.speed + e.position))
+          val fastestSpeeds = enemiesWithPosition.filter(_.stats.speed == enemiesWithPosition.maxBy(_.stats.speed))
+
+          fastestSpeeds.size match {
+            case 1 => ensureActive((player, enemies, msgs))
+            case _ =>
+              if (fastestSpeeds.size < enemiesWithPosition.size) ensureActive((player, enemies, msgs))
+              else {
+                val chosenOne: Enemy = Random.shuffle(enemiesWithPosition).head
+                val nextEnemies = enemies.map(e => if (e.id == chosenOne.id) e.copy(position = e.position + 1)
+                else e)
+                ensureActive((player, nextEnemies, msgs))
+              }
           }
       }
     }

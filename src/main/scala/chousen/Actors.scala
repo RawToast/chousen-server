@@ -222,6 +222,9 @@ case class Peoples(player: PlayerCharacter, enemies: Set[BaseCharacter]) extends
             case _ =>
               val chosenOne = Random.shuffle(spd).head
               (chosenOne, this.update(resetBaseCharacter(chosenOne)))
+              val r = Random.setSeed(System.currentTimeMillis)
+              
+              (chosenOne, this)
           }
         }
       }
