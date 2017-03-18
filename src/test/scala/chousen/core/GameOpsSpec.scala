@@ -12,8 +12,16 @@ class GameOpsSpec extends WordSpec {
   def speed8Char = CharStats(100, 100, speed = 8)
 
   def resetActive(t:(Player, Set[Enemy], Seq[GameMessage])): (Player, Set[Enemy]) = {
+    import api.types.Implicits._
     val (p, es, _) = t
-    p -> es
+
+    val enemy = es.maxBy(_.position)
+
+    if (enemy.position > p.position) {
+      val re = enemy.copy(position = enemy.position - 100)
+      p -> es.map(e => if (e ~= re) re else e)
+    }
+    else p.copy(position = p.position - 100) -> es
   }
 
   "GameOps.update" when {

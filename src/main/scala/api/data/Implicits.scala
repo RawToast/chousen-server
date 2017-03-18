@@ -4,7 +4,11 @@ import chousen.cards.DeckManager
 import chousen.character.PlayerCharacter
 import chousen.core.Encounter
 
-object Implicits {
+object Implicits extends LegacyConversions
+
+object ImplicitSyntax
+
+trait LegacyConversions{
   implicit val fromPlayerCharacter: (PlayerCharacter) => Player =
     pc => Player(pc.name, pc.stats, pc.position)
 

@@ -5,9 +5,9 @@ import java.util.UUID
 import api.data.{GameMessage, GameResponse}
 import chousen.cards.DeckManager
 import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter}
-import chousen.{Cast, Peoples, core}
-import monocle.{Lens, PLens}
+import chousen.{Cast, core}
 import monocle.macros.GenLens
+import monocle.{Lens, PLens}
 
 
 
