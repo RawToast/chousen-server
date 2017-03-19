@@ -21,15 +21,16 @@ object CharStats {
   val DEFAULT_STAT = 8
   val DEFAULT_INTELLECT = DEFAULT_STAT
 
-  val company = Lens[CharStats, Int](_.currentHp)(c => e => e.copy(currentHp = c))
+  val hp = Lens[CharStats, Int](_.currentHp)(c => e => e.copy(currentHp = c))
 
-  val currentHp = Lens[CharStats, Int](_.currentHp)(hp => s => s.copy(currentHp = hp))
+  //val currentHp = Lens[CharStats, Int](_.currentHp)((hp:Int) => s => s.copy(currentHp = hp))
   val strength = Lens[CharStats, Int](_.strength)(str => s => s.copy(strength = str))
   val dexterity = Lens[CharStats, Int](_.dexterity)(dex => s => s.copy(dexterity = dex))
   val intellect = Lens[CharStats, Int](_.intellect)(int => s => s.copy(intellect = int))
   val vitality = Lens[CharStats, Int](_.vitality)(vit => s => s.copy(vitality = vit))
   val speed = Lens[CharStats, Int](_.speed)(spd => s => s.copy(speed = spd))
 }
+
 
 case class Player(name:String, stats: CharStats, position: Int)
 
@@ -43,4 +44,4 @@ case class Dungeon(currentEncounter: Battle, remainingEncounters: Seq[Battle])
 
 case class Battle(enemies: Set[Enemy])
 
-case class Enemy(name: String, id: UUID, stats: CharStats)
+case class Enemy(name: String, id: UUID, stats: CharStats, position: Int)

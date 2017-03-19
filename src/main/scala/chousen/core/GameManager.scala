@@ -7,6 +7,7 @@ import chousen.cards.{Deck, DeckManager}
 import chousen.character._
 import chousen.engine.{ActionCalc, Engine, State}
 import chousen.{core, _}
+import monocle.Lens
 
 import scala.annotation.tailrec
 
@@ -46,31 +47,66 @@ object BasicGameManager extends GameManager {
   private def update(game:Game): Game = {
     // reset player
     val positionUpdate = Game.player.composeLens(PlayerCharacter.posit).modify(i => i - 100)
-    val updGame = positionUpdate(game)
+    val updGame: Game = positionUpdate(game)
 
     // loop until active
 
-    def loopDaLoop(peoples: Peoples): Peoples = peoples.active match {
+    def loopDaLoop(peoples: Cast): Cast = peoples.active match {
       case _: PlayerCharacter => println("Player is active"); peoples
-      case bc: BaseCharacter =>
+      case bc: BaseCharacter => {
         println("Enemy is active")
-        val c = bc.attack(Set(peoples.player), Some(peoples.enemies - bc))
-        val np = Peoples(c.player, c.enemies).changeTurn
-        loopDaLoop(np)
+
+        val pl = peoples.player
+        val enemies = peoples.enemies
+
+        implicit val basicTargetting = (c:Cast) => Set(c.player.asInstanceOf[BaseCharacter]) -> Option(c.enemies - bc)
+
+        def attackz(bc: BaseCharacter, p: Cast)(implicit ip: Cast => (Set[BaseCharacter], Option[Set[BaseCharacter]])): Cast = {
+          val tar = ip(p)._1
+          val bystanders = ip(p)._2
+          bc.attack(tar, bystanders).changeTurn
+        }
+
+        type BasicUpdate = (PlayerCharacter, Set[BaseCharacter], Seq[GameMessage]) => (PlayerCharacter, Set[BaseCharacter], Seq[GameMessage])
+
+        Game.ultLens.modify{case ((pc: PlayerCharacter, bcs:Set[BaseCharacter], msgs:Seq[GameMessage])) =>
+
+
+          ???
+        }
+
+
+
+
+        val c: Cast = attackz(bc, peoples)
+        loopDaLoop(c)
+      }
     }
-    val peeps = Peoples.init(updGame.player, updGame.quest.current.enemies)
+    val player: ((PlayerCharacter) => PlayerCharacter) => Game = Game.player.modify(_)(updGame)
+    val enemies: ((Set[BaseCharacter]) => Set[BaseCharacter]) => Game = Game.currentEnemies.modify(_)(updGame)
+
+    def mergeLens[S, A, B](lsa : Lens[S, A], lsb : Lens[S, B]) : Lens[S, (A, B)] =
+      Lens.apply[S, (A, B)](s => (lsa.get(s), lsb.get(s)))(t => (lsa.set(t._1) andThen lsb.set(t._2)))
+
+    val encounterLens: Lens[Game, (PlayerCharacter, Set[BaseCharacter])] = mergeLens(Game.player, Game.currentEnemies)
+
+    val peeps: Cast = Peoples.init(updGame.player, updGame.quest.current.enemies)
 
     val nPeeps = loopDaLoop(peeps)
 
-    Game.refreshFromPeoples(nPeeps)(updGame)
+    Game.refreshFromCast(nPeeps)(updGame)
   }
 
   override def start(game: Game) = {
     val enc = game.quest.current
 
+    val player: ((PlayerCharacter) => PlayerCharacter) => (Game) => Game = Game.player.modify
+    val enemies: ((Set[BaseCharacter]) => Set[BaseCharacter]) => (Game) => Game = Game.currentEnemies.modify
+
+
     val peeps = Peoples.init(game.player, enc.enemies)
 
-    Game.refreshFromPeoples(peeps)(game)
+    Game.refreshFromCast(peeps)(game)
   }
 }
 
