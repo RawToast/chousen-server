@@ -1,7 +1,7 @@
-package chousen.core
+package chousen.core.old
 
-import api.data.GameMessage
 import chousen.character.BaseCharacter
+import chousen.core.GameManager
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.collection.immutable.Nil
@@ -13,7 +13,7 @@ class GameManagerSpec extends WordSpec with Matchers {
 
   "The GameManager" when {
 
-    val gameManager: GameManager = BasicGameManager
+    val gameManager: GameManager[Game] = BasicGameManager
 
     "Creating a game" should {
 

@@ -1,19 +1,14 @@
-package chousen.core
+package chousen.core.old
 
 import java.util.UUID
 
-import api.data.{GameMessage, GameResponse}
+import api.data.{GameMessage, GameState}
+import chousen.Cast
 import chousen.cards.DeckManager
 import chousen.character.{BaseCharacter, EnemyCharacter, PlayerCharacter}
-import chousen.{Cast, core}
 import monocle.macros.GenLens
 import monocle.{Lens, PLens}
 
-
-
-trait Actionable[T] {
-  def affect(g:T): T
-}
 
 case class Game(id: UUID, player: PlayerCharacter, deckManager: DeckManager,
                 quest: Dungeon, messages: Seq[GameMessage] = Seq.empty)
@@ -23,9 +18,9 @@ object Game {
     Game(UUID.randomUUID(), p, dm, d, msg)
   }
 
-  def toResponse(game: Game): GameResponse = {
+  def toResponse(game: Game): GameState = {
     import api.data.Implicits._
-    GameResponse(game.id, game.player, game.deckManager, game.quest, game.messages)
+    GameState(game.id, game.player, game.deckManager, game.quest, game.messages)
   }
 
   val player: Lens[Game, PlayerCharacter] = GenLens[Game](_.player)
@@ -55,6 +50,8 @@ object Game {
     Lens.apply[S, (A, B, C)](s => (lsa.get(s), lsb.get(s), lsc.get(s)))(t => lsa.set(t._1).andThen(lsb.set(t._2)).andThen(lsc.set(t._3)))
 }
 
+
+
 case class Dungeon(encounters: List[Encounter]) {
   val isComplete = encounters.isEmpty
 
@@ -62,7 +59,7 @@ case class Dungeon(encounters: List[Encounter]) {
 
   def nextEncounter = encounters.headOption
 
-  def progress = core.Dungeon(encounters.tail)
+  def progress = Dungeon(encounters.tail)
 
   lazy val current: Encounter = encounters.head
 }

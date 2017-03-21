@@ -3,7 +3,6 @@ package chousen.core
 import api.data.{Enemy, GameMessage, Player}
 
 import scala.annotation.tailrec
-import scala.util.Random
 
 
 object GameOps {

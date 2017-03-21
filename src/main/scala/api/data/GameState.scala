@@ -2,7 +2,7 @@ package api.data
 
 import java.util.UUID
 
-case class GameResponse(id: UUID, player: Player, cards: Cards, dungeon: Dungeon, messages: Seq[GameMessage])
+case class GameState(id: UUID, player: Player, cards: Cards, dungeon: Dungeon, messages: Seq[GameMessage])
 
 case class CharStats(maxHp: Int,
                      currentHp: Int,
@@ -45,3 +45,25 @@ case class Dungeon(currentEncounter: Battle, remainingEncounters: Seq[Battle])
 case class Battle(enemies: Set[Enemy])
 
 case class Enemy(name: String, id: UUID, stats: CharStats, position: Int)
+
+object Deck {
+  sealed trait Card{
+    val name: String
+    val description: String
+  }
+
+  case object FireballCard extends Card {
+    override val name = "Fireball"
+    override val description = "Casts a fireball, dealing damage to all enemies"
+  }
+
+}
+
+
+object WeekDay {
+  sealed abstract class EnumVal(val name: String)
+  case object FireballCard extends EnumVal("Fireball")
+  case object HealCard extends EnumVal("Heal")
+  val daysOfWeek = Seq(FireballCard, HealCard)
+}
+
