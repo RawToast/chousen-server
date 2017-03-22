@@ -2,6 +2,8 @@ package chousen.core
 
 import java.util.UUID
 
+import chousen.core.old.Game
+
 
 trait Store[A, B] {
 

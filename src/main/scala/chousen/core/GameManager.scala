@@ -32,7 +32,7 @@ trait GameStateManager extends GameManager[GameState] {
 
   override def takeCommand(command: Command, game: GameState): GameState = ???
 
-  override val actionCalc: ActionCalc = _
+  override val actionCalc: ActionCalc = ???
 }
 
 //override def create(name: String, uuid: UUID = UUID.randomUUID()): Game = {

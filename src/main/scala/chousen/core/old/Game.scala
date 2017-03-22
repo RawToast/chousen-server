@@ -19,7 +19,7 @@ object Game {
   }
 
   def toResponse(game: Game): GameState = {
-    import api.data.Implicits._
+    import api.data.ImplicitConversions._
     GameState(game.id, game.player, game.deckManager, game.quest, game.messages)
   }
 

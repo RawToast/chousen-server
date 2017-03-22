@@ -3,9 +3,8 @@ package api.data
 import chousen.cards.DeckManager
 import chousen.character.PlayerCharacter
 import chousen.core.old
-object Implicits extends LegacyConversions
 
-object ImplicitSyntax
+object ImplicitConversions extends LegacyConversions
 
 trait LegacyConversions{
   implicit val fromPlayerCharacter: (PlayerCharacter) => Player =

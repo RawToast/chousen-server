@@ -36,3 +36,4 @@ object Equality {
     x.hasSameIdentity(a, b)
   }
 }
+

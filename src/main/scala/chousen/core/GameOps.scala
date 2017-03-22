@@ -1,6 +1,7 @@
 package chousen.core
 
 import api.data.{Enemy, GameMessage, Player}
+import api.types.Equality
 
 import scala.annotation.tailrec
 

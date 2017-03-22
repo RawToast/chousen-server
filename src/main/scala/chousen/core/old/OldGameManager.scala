@@ -3,11 +3,13 @@ package chousen.core.old
 import java.util.UUID
 
 import api.data.{CharStats, GameMessage}
+import chousen.{Cast, Peoples}
 import chousen.cards.{Deck, DeckManager}
 import chousen.character._
 import chousen.core.GameManager
 import chousen.engine.{ActionCalc, Engine, State}
 import monocle.Lens
+import chousen._
 
 import scala.annotation.tailrec
 
