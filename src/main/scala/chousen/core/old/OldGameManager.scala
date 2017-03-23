@@ -105,7 +105,6 @@ object BasicGameManager extends GameManager[Game] {
     val player: ((PlayerCharacter) => PlayerCharacter) => (Game) => Game = Game.player.modify
     val enemies: ((Set[BaseCharacter]) => Set[BaseCharacter]) => (Game) => Game = Game.currentEnemies.modify
 
-
     val peeps = Peoples.init(game.player, enc.enemies)
 
     Game.refreshFromCast(peeps)(game)

@@ -2,8 +2,9 @@ import java.util.UUID
 
 import api.core.MappedGameAccess
 import api.data.{AttackRequest, GameState}
-import api.error.TargetNotFoundException
-import chousen.core.old.{BasicGameManager, Command, Game, PlayerAttack}
+import chousen.character.BaseCharacter
+import chousen.core.GameStateManager
+import chousen.core.old.{Command, PlayerAttack}
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.param.Stats
 import com.twitter.finagle.{Http, Service}
@@ -17,36 +18,38 @@ import io.finch.circe._
 object Main extends TwitterServer with MappedGameAccess {
 
   val init: Endpoint[GameState] = post("game" :: string) { playerName: String =>
-    val game = BasicGameManager.create(playerName)
+    val game:GameState = GameStateManager.create(playerName)
 
     store = store + (game.id -> game)
 
-    Created(Game.toResponse(game))
+    Created(game)
   }
 
 
   val load: Endpoint[GameState] = get("game" :: uuid) { id: UUID =>
-    withGame(id) { g => Ok(Game.toResponse(g)) }
+    withGame(id) { g => Ok(g) }
   }
+
 
   val start: Endpoint[GameState] = post("game" :: "start" :: uuid) { id: UUID =>
     withGame(id) { g =>
-      val startedGame = BasicGameManager.start(g)
-      Ok(Game.toResponse(startedGame))
+      val startedGame = GameStateManager.start(g)
+      Ok(startedGame)
     }
   }
 
 
   val attack: Endpoint[GameState] = post("game" :: uuid :: "attack" :: jsonBody[AttackRequest]) { (id:UUID, ar:AttackRequest) =>
-    withGame(id) { g: Game =>
-
-      val target = Game.currentEnemies.get(g).filter(b => b.id == ar.targetId)
-
-      if (target.nonEmpty) {
-        val command = Command(target, PlayerAttack)
-
-        Ok(Game.toResponse(BasicGameManager.takeCommand(command, g)))
-      } else BadRequest(TargetNotFoundException.raise(id, Game.currentEnemies.get(g).map(_.id)))
+    withGame(id) { g: GameState =>
+//
+//      val target = Game.currentEnemies.get(g).filter(b => b.id == ar.targetId)
+//
+//      if (target.nonEmpty) {
+//        val command = Command(target, PlayerAttack)
+//
+//        Ok(Game.toResponse(BasicGameManager.takeCommand(command, g)))
+//      } else BadRequest(TargetNotFoundException.raise(id, Game.currentEnemies.get(g).map(_.id)))
+      Ok(GameStateManager.takeCommand(Command(Set.empty[BaseCharacter], PlayerAttack), g))
     }
   }
 
