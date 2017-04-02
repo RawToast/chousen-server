@@ -9,7 +9,7 @@ mainClass in(Compile, run) := Some("Main")
 
 enablePlugins(JavaAppPackaging)
 
-val SCALA_VERSION = "2.11.8"
+val SCALA_VERSION = "2.12.1"
 addCompilerPlugin("org.scalamacros" %% "paradise" % "2.1.0" cross CrossVersion.full)
 
 
