@@ -3,11 +3,11 @@ package chousen.core
 import api.data.{Enemy, GameMessage, Player}
 
 import scala.annotation.tailrec
+import scala.util.{Left, Right}
 
 object GameOps extends GameOps {
   override val encOps = EncounterOps
 }
-
 
 
 trait GameOps {
@@ -17,9 +17,24 @@ trait GameOps {
   def update(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage]):
   (Player, Set[Enemy], Seq[GameMessage]) = {
 
-    def process: EncounterUpdate = encOps.ensureActive _ andThen encOps.announceActive
+    def process: EncounterUpdate = encOps.ensureActive _ andThen  encOps.announceActive
 
     process(Tuple3(player, enemies, messages))
+  }
+
+  @scala.annotation.tailrec
+  final def updateUntilPlayerIsActive(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage]): EncounterData = {
+
+    val next = update(player, enemies, messages)
+    encOps.getActive(next)match {
+      case Left(_) => next
+      case Right(enemy) => {
+        val reset = enemy.copy(position = enemy.position - 100)
+        import api.types.Implicits._
+        val es = enemies.map(e => if(e ~= reset) reset else e)
+        updateUntilPlayerIsActive(next._1, es, next._3)
+      }
+    }
   }
 }
 
@@ -108,11 +123,20 @@ object EncounterOps extends EncounterOps{
     (player, enemies, msgs :+ message)
   }
 
+  override def getActive(x: EncounterData): Either[Player, Enemy] = {
+    val (p: Player, es: Set[Enemy], _) = x
+    val maxPosition = math.max(p.position, es.maxBy(_.position).position)
+
+    if (p.position == maxPosition) Left(p)
+    else Right(es.maxBy(_.position))
+  }
 }
 
 trait EncounterOps {
   def ensureActive(ed: EncounterData): EncounterData
 
   def announceActive(ed: EncounterData): EncounterData
+
+  def getActive(x: EncounterData): Either[Player, Enemy]
 }
 

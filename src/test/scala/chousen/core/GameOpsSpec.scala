@@ -209,4 +209,20 @@ class GameOpsSpec extends WordSpec {
     }
   }
 
+  //TODO in progress
+  "GameOps.updateUntilPlayerIsActive" when {
+    "provided with an ahead equal enemy and player" should {
+
+      val player = Player("Player", speed10Char, position = 0)
+      val enemy = Enemy("Quick Enemy", UUID.randomUUID(), speed10Char, position = 50)
+      val emptyMessages = Seq.empty[GameMessage]
+
+      val next = GameOps.updateUntilPlayerIsActive(player, Set(enemy), emptyMessages)
+
+      "result in the player being active" in {
+
+        assert(EncounterOps.getActive(next) == Left(next._1))
+      }
+    }
+  }
 }
