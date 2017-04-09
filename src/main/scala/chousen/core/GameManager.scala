@@ -42,18 +42,3 @@ object GameStateManager extends GameManager[GameState] {
 
   override val actionCalc: ActionCalc = Engine //FIXME: Implement
 }
-
-//override def create(name: String, uuid: UUID = UUID.randomUUID()): Game = {
-//  val pc = PlayerCharacter.create(name)
-//  val deck = DeckManager.startNewGameWithDefaultDeck
-//  val dungeon = {
-//  val firstEncounter = Encounter.create(EnemyCharacter.yellowSlime) + EnemyCharacter.slime
-//  val secondEncounter = firstEncounter + EnemyCharacter.giantSlime
-//  val thirdEncounter = Encounter.create(EnemyCharacter.scoundrel)
-//  Dungeon(List(firstEncounter, secondEncounter, thirdEncounter))
-//}
-//
-//  val msg = GameMessage(s"$name has entered the dungeon")
-//
-//  Game(uuid, pc, deck, dungeon, Seq(msg))
-//}```````

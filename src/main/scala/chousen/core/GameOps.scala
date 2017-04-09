@@ -1,29 +1,36 @@
 package chousen.core
 
 import api.data.{Enemy, GameMessage, Player}
-import api.types.Equality
 
 import scala.annotation.tailrec
 
+object GameOps extends GameOps {
+  override val encOps = EncounterOps
+}
 
-object GameOps {
-  type Actors = (Player, Set[Enemy])
-  type EncounterData = (Player, Set[Enemy], Seq[GameMessage])
-  type EncounterUpdate = ((Player, Set[Enemy], Seq[GameMessage])) => (Player, Set[Enemy], Seq[GameMessage])
+
+
+trait GameOps {
+
+  val encOps: EncounterOps
 
   def update(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage]):
   (Player, Set[Enemy], Seq[GameMessage]) = {
 
-    def process: EncounterUpdate = ensureActive _ andThen announceActive
+    def process: EncounterUpdate = encOps.ensureActive _ andThen encOps.announceActive
 
     process(Tuple3(player, enemies, messages))
   }
+}
+
+
+object EncounterOps extends EncounterOps{
 
   @tailrec
-  def ensureActive(encounterData: EncounterData): EncounterData = {
+  override def ensureActive(ed: EncounterData): EncounterData = {
     import api.types.Implicits._
 
-    val (p, es, msgs) = encounterData
+    val (p, es, msgs) = ed
     val (player, enemies) = p.copy(position = p.position + p.stats.speed) ->
       es.map(e => e.copy(position = e.position + e.stats.speed))
 
@@ -88,8 +95,8 @@ object GameOps {
     }
   }
 
-  private def announceActive(encounterData: EncounterData): EncounterData = {
-    val (player, enemies, msgs) = encounterData
+  override def announceActive(ed: EncounterData): EncounterData = {
+    val (player, enemies, msgs) = ed
 
     val fastestEnemy = enemies.maxBy(_.position)
 
@@ -100,4 +107,12 @@ object GameOps {
 
     (player, enemies, msgs :+ message)
   }
+
 }
+
+trait EncounterOps {
+  def ensureActive(ed: EncounterData): EncounterData
+
+  def announceActive(ed: EncounterData): EncounterData
+}
+

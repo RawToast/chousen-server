@@ -23,9 +23,9 @@ resolvers ++= Seq(
 )
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
-libraryDependencies += "org.typelevel" %%  "cats-core" % "0.9.0"
+libraryDependencies += "org.typelevel" %%  "cats" % "0.9.0"
 libraryDependencies += "com.github.julien-truffaut" %% "monocle-core" % "1.4.0"
-libraryDependencies +="com.github.julien-truffaut" %%  "monocle-macro" % "1.4.0"
+libraryDependencies += "com.github.julien-truffaut" %%  "monocle-macro" % "1.4.0"
 
 libraryDependencies += "io.circe" %% "circe-generic" % "0.7.0"
 libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
