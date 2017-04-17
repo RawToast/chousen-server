@@ -129,7 +129,7 @@ class GameOpsSpec extends WordSpec {
         val enemy = Enemy("Enemy", UUID.randomUUID(), speed10Char, position = 91)
         val emptyMessages = Seq.empty[GameMessage]
 
-        val (updPlayer, updEnemies, updMessages) =
+        val (updPlayer, updEnemies, _) =
           GameOps.update(player, Set(enemy), emptyMessages)
 
         "the faster actor's position is >= 100" in {
