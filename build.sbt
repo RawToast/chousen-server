@@ -25,8 +25,6 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 libraryDependencies += "org.typelevel" %%  "cats" % "0.9.0"
 libraryDependencies += "com.github.julien-truffaut" %% "monocle-core" % "1.4.0"
 libraryDependencies += "com.github.julien-truffaut" %%  "monocle-macro" % "1.4.0"
-libraryDependencies += "com.github.julien-truffaut" %%  "monocle-law" % "1.4.0"
-
 libraryDependencies += "io.circe" %% "circe-generic" % "0.7.1"
 libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 libraryDependencies ++= finch

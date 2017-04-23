@@ -1,8 +1,7 @@
-package chousen.game.api.core
+package chousen.api.core
 
-import chousen.api.core.MappedGameAccess
+import chousen.api.core.data.GameStateGenerator
 import chousen.api.data.GameState
-import chousen.game.core.GameStateManager
 import io.finch.Output
 import org.scalatest.WordSpec
 
@@ -11,21 +10,20 @@ class MappedGameAccessSpec extends WordSpec {
   "MappedGameAccess" should {
 
     val mappedGameAccess = new MappedGameAccess{}
-    val gameId = java.util.UUID.randomUUID()
 
-    val gameState: GameState = GameStateManager.create("Coolio", gameId)
+    val gameState: GameState = GameStateGenerator.staticGameState
 
-    mappedGameAccess.store = mappedGameAccess.store + (gameId -> gameState)
+    mappedGameAccess.store = mappedGameAccess.store + (GameStateGenerator.uuid -> gameState)
 
     "Return a game with the given id" in {
 
-      val result: Output[GameState] = mappedGameAccess.withGame(gameId)(io.finch.Ok)
+      val result: Output[GameState] = mappedGameAccess.withGame(GameStateGenerator.uuid)(io.finch.Ok)
 
       assert(result.status.code == 200)
       val gameState = result.value
 
-      assert(gameState.player.name == "Coolio")
-      assert(gameState.id == gameId)
+      assert(gameState.player.name == "Test Player")
+      assert(gameState.id == GameStateGenerator.uuid)
     }
 
     "Return a Finch error when the game does not exist" in {
