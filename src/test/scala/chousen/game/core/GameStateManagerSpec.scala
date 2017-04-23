@@ -30,7 +30,7 @@ class GameStateManagerSpec extends WordSpec {
       }
     }
 
-    "Starting a game" when {
+    "Starting a game" should {
 
       "the player is ahead of the enemy" should {
         val gameState = GameStateGenerator.gameStateWithFastPlayer
@@ -59,5 +59,31 @@ class GameStateManagerSpec extends WordSpec {
         }
       }
     }
+
+    "Accepting a command" which {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+      val startedGame: GameState = gameStateManager.start(gameState)
+
+      "Is a basic attack" should {
+        val result = gameStateManager.takeCommand(???, startedGame)
+
+        "Lower the targeted enemies health" in {
+          assert(getFirstEnemyHp(result) < getFirstEnemyHp(startedGame))
+        }
+
+        "the player is set back to active" in {
+          assert(result.player.position > 100)
+          val active = EncounterOps.getActive(result.player,
+            result.dungeon.currentEncounter.enemies, result.messages)
+          assert(active.isLeft)
+
+          import chousen.api.types.Implicits._
+          active.swap.foreach(_ ~= startedGame.player)
+
+        }
+      }
+    }
   }
+
+  def getFirstEnemyHp(result: GameState) = result.dungeon.currentEncounter.enemies.head.stats.currentHp
 }

@@ -1,6 +1,6 @@
 package chousen.api.types
 
-import chousen.api.data.Enemy
+import chousen.api.data.{Enemy, Player}
 
 trait Equality[A] {
   def hasSameIdentity(x: A, y: A): Boolean
@@ -28,6 +28,10 @@ trait EqualitySyntax {
 trait EqualityInstances {
   implicit val enemyEquality = new Equality[Enemy] {
     override def hasSameIdentity(x: Enemy, y: Enemy) = x.id == y.id
+  }
+
+  implicit val playerEquality = new Equality[Player] {
+    override def hasSameIdentity(x: Player, y: Player) = x.name == y.name
   }
 }
 
