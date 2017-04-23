@@ -1,10 +1,8 @@
 import java.util.UUID
 
-import api.core.MappedGameAccess
-import api.data.{AttackRequest, GameState}
-import chousen.character.BaseCharacter
-import chousen.core.GameStateManager
-import chousen.core.old.{Command, PlayerAttack}
+import chousen.api.core.MappedGameAccess
+import chousen.api.data.{AttackRequest, GameState}
+import chousen.game.core.{Command, GameStateManager}
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.param.Stats
 import com.twitter.finagle.{Http, Service}
@@ -49,7 +47,7 @@ object Main extends TwitterServer with MappedGameAccess {
 //
 //        Ok(Game.toResponse(BasicGameManager.takeCommand(command, g)))
 //      } else BadRequest(TargetNotFoundException.raise(id, Game.currentEnemies.get(g).map(_.id)))
-      Ok(GameStateManager.takeCommand(Command(Set.empty[BaseCharacter], PlayerAttack), g))
+      Ok(GameStateManager.takeCommand(new Command{}, g))
     }
   }
 
