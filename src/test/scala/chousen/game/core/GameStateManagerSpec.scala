@@ -65,7 +65,8 @@ class GameStateManagerSpec extends WordSpec {
       val startedGame: GameState = gameStateManager.start(gameState)
 
       "Is a basic attack" should {
-        val result = gameStateManager.takeCommand(???, startedGame)
+        val target = GameStateGenerator.firstEnemy
+        val result = gameStateManager.takeCommand(AttackRequest(target.id), startedGame)
 
         "Lower the targeted enemies health" in {
           assert(getFirstEnemyHp(result) < getFirstEnemyHp(startedGame))
@@ -73,13 +74,12 @@ class GameStateManagerSpec extends WordSpec {
 
         "the player is set back to active" in {
           assert(result.player.position > 100)
-          val active = EncounterOps.getActive(result.player,
-            result.dungeon.currentEncounter.enemies, result.messages)
+          val active = EncounterOps.getActive((result.player,
+            result.dungeon.currentEncounter.enemies, result.messages))
           assert(active.isLeft)
 
           import chousen.api.types.Implicits._
           active.swap.foreach(_ ~= startedGame.player)
-
         }
       }
     }
