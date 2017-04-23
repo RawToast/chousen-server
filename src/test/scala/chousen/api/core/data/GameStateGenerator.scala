@@ -11,13 +11,15 @@ object GameStateGenerator {
 
   val uuid = UUID.fromString("624d191b-5561-4c24-ba3f-e646dbb3c13a")
 
+  val playerName = "Test Player"
+
   val staticGameState = {
-    val player = Player("Test Player", CharStats(100, 100), 0)
+    val player = Player(playerName, CharStats(100, 100), 0)
     gameStateWithPlayer(player)
   }
 
   val gameStateWithFastPlayer = {
-    val player = Player("Test Player", CharStats(100, 100), 1)
+    val player = Player(playerName, CharStats(100, 100), 1)
     gameStateWithPlayer(player)
   }
 

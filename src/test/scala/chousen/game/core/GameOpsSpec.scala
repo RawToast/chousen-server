@@ -247,7 +247,7 @@ class GameOpsSpec extends WordSpec {
         assert(nextMessages.last.text == "Player's turn!")
       }
 
-      "the player's currenty hp is reduced" in {
+      "the player's current hp is reduced" in {
         assert(nextPlayer.stats.maxHp > nextPlayer.stats.currentHp)
 
         // Additional checks

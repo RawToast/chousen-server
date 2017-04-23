@@ -1,3 +1,5 @@
+package chousen
+
 import java.util.UUID
 
 import chousen.api.core.MappedGameAccess
@@ -12,11 +14,10 @@ import io.circe.generic.auto._
 import io.finch._
 import io.finch.circe._
 
-
-object Main extends TwitterServer with MappedGameAccess {
+object ChousenServer extends TwitterServer with MappedGameAccess {
 
   val init: Endpoint[GameState] = post("game" :: string) { playerName: String =>
-    val game:GameState = GameStateManager.create(playerName)
+    val game: GameState = GameStateManager.create(playerName)
 
     store = store + (game.id -> game)
 
@@ -37,17 +38,9 @@ object Main extends TwitterServer with MappedGameAccess {
   }
 
 
-  val attack: Endpoint[GameState] = post("game" :: uuid :: "attack" :: jsonBody[AttackRequest]) { (id:UUID, ar:AttackRequest) =>
+  val attack: Endpoint[GameState] = post("game" :: uuid :: "attack" :: jsonBody[AttackRequest]) { (id: UUID, ar: AttackRequest) =>
     withGame(id) { g: GameState =>
-//
-//      val target = Game.currentEnemies.get(g).filter(b => b.id == ar.targetId)
-//
-//      if (target.nonEmpty) {
-//        val command = Command(target, PlayerAttack)
-//
-//        Ok(Game.toResponse(BasicGameManager.takeCommand(command, g)))
-//      } else BadRequest(TargetNotFoundException.raise(id, Game.currentEnemies.get(g).map(_.id)))
-      Ok(GameStateManager.takeCommand(new Command{}, g))
+      Ok(GameStateManager.takeCommand(new Command {}, g))
     }
   }
 

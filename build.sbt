@@ -5,7 +5,7 @@ herokuAppName in Compile := "immense-bastion-74506"
 
 version := "1.0"
 
-mainClass in(Compile, run) := Some("Main")
+mainClass in(Compile, run) := Some("chousen.ChousenServer")
 
 enablePlugins(JavaAppPackaging)
 
@@ -38,7 +38,7 @@ def finch = Seq(
 // Code coverage
 addCommandAlias("validate", ";coverage;test;coverageReport")
 
-coverageMinimum := 50 // Continually increase
+coverageMinimum := 55 // Continually increase
 coverageFailOnMinimum := true
 
 // Compiler options

@@ -40,7 +40,13 @@ object GameStateManager extends GameManager[GameState] {
 
   override def start(game: GameState): GameState = {
     val update = encounterLens.modify {
-      case (p: Player, es: Seq[Enemy], m: Seq[GameMessage]) => GameOps.update(p, es, m)
+      case (p: Player, es: Seq[Enemy], m: Seq[GameMessage]) =>
+
+        val msgs = Seq(GameMessage(s"${p.name} has entered the dungeon"),
+        if (es.size == 1)  GameMessage(s"${p.name} encounters a ${es.head.name}!")
+        else GameMessage(s"${p.name} encounters: ${es.map(_.name).mkString(", ")}"))
+
+        GameOps.update(p, es, m ++ msgs)
     }
 
     update(game)
