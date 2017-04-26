@@ -31,7 +31,7 @@ object GameStateGenerator {
     import chousen.api.types.Implicits._
 
     val cards = Cards(List(Card("Fireball Card", "Casts a fireball, dealing damage to all enemies")))
-    def mkBattle(e: Enemy) = Battle(Seq(e))
+    def mkBattle(e: Enemy) = Battle(Set(e))
     def createBattle = mkBattle(firstEnemy) |+| mkBattle(secondEnemy)
 
     val dungeon = Dungeon(createBattle, LinearSeq(createBattle, createBattle |+| createBattle))

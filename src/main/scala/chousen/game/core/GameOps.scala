@@ -14,7 +14,7 @@ trait GameOps {
 
   val encOps: EncounterOps
 
-  def update(player: Player, enemies: Seq[Enemy], messages: Seq[GameMessage]): EncounterData = {
+  def update(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage]): EncounterData = {
 
     def process: EncounterUpdate = encOps.ensureActive _ andThen  encOps.announceActive
 
@@ -22,9 +22,9 @@ trait GameOps {
   }
 
   @scala.annotation.tailrec
-  final def updateUntilPlayerIsActive(player: Player, enemies: Seq[Enemy], messages: Seq[GameMessage]): EncounterData = {
+  final def updateUntilPlayerIsActive(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage]): EncounterData = {
 
-    val next: (Player, Seq[Enemy], Seq[GameMessage]) = update(player, enemies, messages)
+    val next: (Player, Set[Enemy], Seq[GameMessage]) = update(player, enemies, messages)
     encOps.getActive(next) match {
       case Left(_) => next
       case Right(_) => {
@@ -40,7 +40,7 @@ trait GameOps {
 object EnemyTurnOps {
 
   // This method will use the enemy with the highest position
-  def takeTurn(player: Player, enemies: Seq[Enemy], messages: Seq[GameMessage]) = {
+  def takeTurn(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage]) = {
 
     val activeEnemy = enemies.maxBy(_.position)
     val msg1 = GameMessage(s"${activeEnemy.name} attacks ${player.name}!")
@@ -86,7 +86,7 @@ object EncounterOps extends EncounterOps{
 
     if (maxPosition < 100) ensureActive((player, enemies, msgs))
     else {
-      lazy val withPosition = (es: Seq[Enemy]) => es.filter(_.position == maxPosition)
+      lazy val withPosition = (es: Set[Enemy]) => es.filter(_.position == maxPosition)
       lazy val enemiesWithPosition = withPosition(enemies)
       lazy val fastestEnemySpeed = enemiesWithPosition.maxBy(_.stats.speed).stats.speed
 
@@ -95,7 +95,7 @@ object EncounterOps extends EncounterOps{
         case 2 if player.position == maxPosition =>
           if (player.stats.speed != fastestEnemySpeed) ensureActive((player, enemies, msgs))
           else {
-            val incEnemies: Seq[Enemy] = enemies.map(e =>
+            val incEnemies: Set[Enemy] = enemies.map(e =>
               if (e ~= enemies.maxBy(_.stats.speed)) {
                 e.copy(position = e.position + 1)
               } else e)
@@ -114,7 +114,7 @@ object EncounterOps extends EncounterOps{
               // Player speed equals fastest enemy (a min of 2 have same speed)
               // All same speed
               val chosenOne: Enemy = enemiesWithPosition.maxBy(_.id)
-              val nextEnemies: Seq[Enemy] =
+              val nextEnemies: Set[Enemy] =
                 enemies.map(e => if (e ~= chosenOne) e.copy(position = e.position + 1) else e)
 
               ensureActive(Tuple3(player, nextEnemies, msgs))
@@ -153,7 +153,7 @@ object EncounterOps extends EncounterOps{
   }
 
   override def getActive(x: EncounterData): Either[Player, Enemy] = {
-    val (p: Player, es: Seq[Enemy], _) = x
+    val (p: Player, es: Set[Enemy], _) = x
     val maxPosition = math.max(p.position, es.maxBy(_.position).position)
 
     if (p.position == maxPosition) Left(p)

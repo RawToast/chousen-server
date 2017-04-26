@@ -53,11 +53,11 @@ val compilerOptions = Seq(
   "-Xfuture",
   "-Yno-adapted-args",
   "-Ywarn-numeric-widen",
-  "-Ywarn-unused",
   "-Ywarn-unused-import",
   "-Ywarn-value-discard"
 )
 val additionalOptions = Seq(
+  "-Ywarn-unused",
   "-Ywarn-dead-code",
   "-Ywarn-value-discard"
 )

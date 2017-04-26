@@ -27,7 +27,7 @@ object GameStateManager extends GameManager[GameState] {
   import cats.syntax.all._
   import chousen.api.types.Implicits._
 
-  private val encounterLens: Lens[GameState, (Player, Seq[Enemy], Seq[GameMessage])] =
+  private val encounterLens: Lens[GameState, (Player, Set[Enemy], Seq[GameMessage])] =
     LensUtil.triLens(GenLens[GameState](_.player),
       GenLens[GameState](_.dungeon.currentEncounter.enemies),
       GenLens[GameState](_.messages))
@@ -37,7 +37,7 @@ object GameStateManager extends GameManager[GameState] {
     val player = Player(name, CharStats(100, 100), 0)
     val cards = Cards(List(Card("Fireball Card", "Casts a fireball, dealing damage to all enemies")))
 
-    def createSlime = Battle(Seq(Enemy("Slime", UUID.randomUUID(), CharStats(10, 10), 0)))
+    def createSlime = Battle(Set(Enemy("Slime", UUID.randomUUID(), CharStats(10, 10), 0)))
 
     def createBattle = createSlime |+| createSlime
 
@@ -49,7 +49,7 @@ object GameStateManager extends GameManager[GameState] {
 
   override def start(game: GameState): GameState = {
     val update = encounterLens.modify {
-      case (p: Player, es: Seq[Enemy], m: Seq[GameMessage]) =>
+      case (p: Player, es: Set[Enemy], m: Seq[GameMessage]) =>
 
         val msgs = Seq(GameMessage(s"${p.name} has entered the dungeon"),
           if (es.size == 1) GameMessage(s"${p.name} encounters a ${es.head.name}!")
@@ -64,19 +64,17 @@ object GameStateManager extends GameManager[GameState] {
   override def takeCommand(command: CommandRequest, game: GameState): GameState = {
 
     command match {
-      case AttackRequest(targetId) => {
+      case AttackRequest(targetId) =>
         game.dungeon.currentEncounter.enemies.find(e=> e.id == targetId) match {
-          case Some(e: Enemy) => {
+          case Some(_) => {
             game
           }
           case None => game
         }
-      }
       case SingleTargetActionRequest(_, _) => game
       case MultiTargetActionRequest(_, _) => game
     }
-
-
-
   }
+
+
 }
