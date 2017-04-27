@@ -53,9 +53,9 @@ object GameStateManager extends GameManager[GameState] {
 
         val msgs = Seq(GameMessage(s"${p.name} has entered the dungeon"),
           if (es.size == 1) GameMessage(s"${p.name} encounters a ${es.head.name}!")
-          else GameMessage(s"${p.name} encounters: ${es.map(_.name).mkString(", ")}"))
+          else GameMessage(s"${p.name} encounters: ${es.toList.map(_.name).mkString(", ")}"))
 
-        GameOps.update(p, es, m ++ msgs)
+        GameOps.updateUntilPlayerIsActive(p, es, m ++ msgs)
     }
 
     update(game)
@@ -65,12 +65,27 @@ object GameStateManager extends GameManager[GameState] {
 
     command match {
       case AttackRequest(targetId) =>
-        game.dungeon.currentEncounter.enemies.find(e=> e.id == targetId) match {
-          case Some(_) => {
-            game
-          }
-          case None => game
+        // This is promising, could be used generically?
+        val executeAction = GameStateOps.targettedLens(targetId).modify {
+          case (p, optE, msgs) =>
+
+            val newE: Option[Enemy] = optE.map(e => {
+              // Not safe, could deal negative damage!
+              val dmg = p.stats.strength + p.stats.dexterity - e.stats.vitality
+              EnemyOptics.charStats.composeLens(CharStatsOptics.hp).modify(hp => hp - dmg)(e)
+            })
+            (p.copy(position = p.position - 100), newE, msgs)
         }
+        val completeTurn = encounterLens.modify(GameOps.updateUntilPlayerIsActive)
+
+        //val action = executeAction andThen completeTurn
+
+        val ns = executeAction(game)
+        println(s"Old ${game.player.position} es ${game.dungeon.currentEncounter.enemies.toList.map(_.position)}")
+
+        println(s"New ${ns.player.position} es ${ns.dungeon.currentEncounter.enemies.toList.map(_.position)}")
+        completeTurn(ns)
+
       case SingleTargetActionRequest(_, _) => game
       case MultiTargetActionRequest(_, _) => game
     }

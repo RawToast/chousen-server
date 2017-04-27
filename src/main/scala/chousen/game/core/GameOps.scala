@@ -14,12 +14,18 @@ trait GameOps {
 
   val encOps: EncounterOps
 
+  def update(ed: EncounterData): EncounterData = update(ed._1, ed._2, ed._3)
+
   def update(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage]): EncounterData = {
 
     def process: EncounterUpdate = encOps.ensureActive _ andThen  encOps.announceActive
 
     process(Tuple3(player, enemies, messages))
   }
+
+  final def updateUntilPlayerIsActive(ed: EncounterData): EncounterData =
+    updateUntilPlayerIsActive(ed._1, ed._2, ed._3)
+
 
   @scala.annotation.tailrec
   final def updateUntilPlayerIsActive(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage]): EncounterData = {

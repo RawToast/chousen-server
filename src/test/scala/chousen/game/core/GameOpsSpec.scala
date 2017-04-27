@@ -209,7 +209,6 @@ class GameOpsSpec extends WordSpec {
     }
   }
 
-  //TODO in progress
   "GameOps.updateUntilPlayerIsActive" when {
     "provided with an ahead equal enemy and player" should {
 

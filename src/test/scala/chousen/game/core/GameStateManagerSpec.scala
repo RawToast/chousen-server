@@ -30,7 +30,7 @@ class GameStateManagerSpec extends WordSpec {
       }
     }
 
-    "Starting a game" should {
+    "Starting a game" when {
 
       "the player is ahead of the enemy" should {
         val gameState = GameStateGenerator.gameStateWithFastPlayer
@@ -41,7 +41,7 @@ class GameStateManagerSpec extends WordSpec {
           assert(result.player.position >= 100)
         }
 
-        "return messages for the start of the game" ignore {
+        "return messages for the start of the game" in {
           assert(result.messages.head == GameMessage(s"${GameStateGenerator.playerName} has entered the dungeon"))
           assert(result.messages(1) == GameMessage(s"${GameStateGenerator.playerName} encounters: Slime, Slime"))
           assert(result.messages(2) == GameMessage(s"${GameStateGenerator.playerName}'s turn!"))
@@ -68,7 +68,10 @@ class GameStateManagerSpec extends WordSpec {
         val target = GameStateGenerator.firstEnemy
         val result = gameStateManager.takeCommand(AttackRequest(target.id), startedGame)
 
-        "Lower the targeted enemies health" ignore {
+        "Lower the targeted enemies health" in {
+          assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == target.id))
+          assert(startedGame.dungeon.currentEncounter.enemies.size == 2)
+          assert(result.dungeon.currentEncounter.enemies.size == 2)
           assert(getFirstEnemyHp(result) < getFirstEnemyHp(startedGame))
         }
 
@@ -85,5 +88,8 @@ class GameStateManagerSpec extends WordSpec {
     }
   }
 
-  def getFirstEnemyHp(result: GameState) = result.dungeon.currentEncounter.enemies.head.stats.currentHp
+  def getFirstEnemyHp(result: GameState) =
+    result.dungeon.currentEncounter.enemies
+      .find(_.id == GameStateGenerator.firstEnemy.id)
+      .map(_.stats.currentHp).getOrElse(404)
 }

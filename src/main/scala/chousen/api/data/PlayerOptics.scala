@@ -23,3 +23,8 @@ object CharStatsOptics {
   val vitality = GenLens[CharStats](_.vitality)
   val speed = GenLens[CharStats](_.speed)
 }
+
+
+object EnemyOptics {
+  var charStats = GenLens[Enemy](_.stats)
+}

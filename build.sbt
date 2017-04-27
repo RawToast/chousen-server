@@ -38,7 +38,7 @@ def finch = Seq(
 // Code coverage
 addCommandAlias("validate", ";coverage;test;coverageReport")
 
-coverageMinimum := 55 // Continually increase
+coverageMinimum := 65 // Continually increase
 coverageFailOnMinimum := true
 
 // Compiler options
