@@ -77,14 +77,9 @@ object GameStateManager extends GameManager[GameState] {
             (p.copy(position = p.position - 100), newE, msgs)
         }
         val completeTurn = encounterLens.modify(GameOps.updateUntilPlayerIsActive)
+        val action = executeAction andThen completeTurn
 
-        //val action = executeAction andThen completeTurn
-
-        val ns = executeAction(game)
-        println(s"Old ${game.player.position} es ${game.dungeon.currentEncounter.enemies.toList.map(_.position)}")
-
-        println(s"New ${ns.player.position} es ${ns.dungeon.currentEncounter.enemies.toList.map(_.position)}")
-        completeTurn(ns)
+        action(game)
 
       case SingleTargetActionRequest(_, _) => game
       case MultiTargetActionRequest(_, _) => game
