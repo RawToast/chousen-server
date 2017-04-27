@@ -49,7 +49,7 @@ class GameStateManagerSpec extends WordSpec {
 
         "return correct message for a single enemy" in {
           val setToSingleEnemy = GenLens[GameState](_.dungeon.currentEncounter.enemies)
-            .set(Seq(Enemy("Slime", UUID.randomUUID(), CharStats(10, 10), 0)))
+            .set(Set(Enemy("Slime", UUID.randomUUID(), CharStats(10, 10), 0)))
 
           val altResult: GameState = gameStateManager.start(setToSingleEnemy(gameState))
 
@@ -59,5 +59,37 @@ class GameStateManagerSpec extends WordSpec {
         }
       }
     }
+
+    "Accepting a command" which {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+      val startedGame: GameState = gameStateManager.start(gameState)
+
+      "Is a basic attack" should {
+        val target = GameStateGenerator.firstEnemy
+        val result = gameStateManager.takeCommand(AttackRequest(target.id), startedGame)
+
+        "Lower the targeted enemies health" in {
+          assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == target.id))
+          assert(startedGame.dungeon.currentEncounter.enemies.size == 2)
+          assert(result.dungeon.currentEncounter.enemies.size == 2)
+          assert(getFirstEnemyHp(result) < getFirstEnemyHp(startedGame))
+        }
+
+        "the player is set back to active" in {
+          assert(result.player.position > 100)
+          val active = EncounterOps.getActive((result.player,
+            result.dungeon.currentEncounter.enemies, result.messages))
+          assert(active.isLeft)
+
+          import chousen.api.types.Implicits._
+          active.swap.foreach(_ ~= startedGame.player)
+        }
+      }
+    }
   }
+
+  def getFirstEnemyHp(result: GameState) =
+    result.dungeon.currentEncounter.enemies
+      .find(_.id == GameStateGenerator.firstEnemy.id)
+      .map(_.stats.currentHp).getOrElse(404)
 }

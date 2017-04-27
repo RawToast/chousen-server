@@ -38,7 +38,7 @@ def finch = Seq(
 // Code coverage
 addCommandAlias("validate", ";coverage;test;coverageReport")
 
-coverageMinimum := 55 // Continually increase
+coverageMinimum := 65 // Continually increase
 coverageFailOnMinimum := true
 
 // Compiler options
@@ -53,11 +53,11 @@ val compilerOptions = Seq(
   "-Xfuture",
   "-Yno-adapted-args",
   "-Ywarn-numeric-widen",
-  "-Ywarn-unused",
   "-Ywarn-unused-import",
   "-Ywarn-value-discard"
 )
 val additionalOptions = Seq(
+  "-Ywarn-unused",
   "-Ywarn-dead-code",
   "-Ywarn-value-discard"
 )

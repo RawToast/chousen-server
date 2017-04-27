@@ -11,7 +11,7 @@ class GameOpsSpec extends WordSpec {
 
   def speed8Char = CharStats(100, 100, speed = 8)
 
-  def resetActive(t:(Player, Seq[Enemy], Seq[GameMessage])): (Player, Seq[Enemy]) = {
+  def resetActive(t:(Player, Set[Enemy], Seq[GameMessage])): (Player, Set[Enemy]) = {
     import chousen.api.types.Implicits._
     val (p, es, _) = t
 
@@ -31,7 +31,7 @@ class GameOpsSpec extends WordSpec {
       val enemy = Enemy("Enemy", UUID.randomUUID(), speed8Char, position = 0)
       val emptyMessages = Seq.empty[GameMessage]
 
-      val (updPlayer, updEnemies, updMessages) = GameOps.update(player, Seq(enemy), emptyMessages)
+      val (updPlayer, updEnemies, updMessages) = GameOps.update(player, Set(enemy), emptyMessages)
 
       "Set the fast player to be the active character" in {
         assert(!updEnemies.exists(e => e.position > updPlayer.position))
@@ -61,7 +61,7 @@ class GameOpsSpec extends WordSpec {
       val emptyMessages = Seq.empty[GameMessage]
 
       val (updPlayer, updEnemies, updMessages) =
-        GameOps.update(player, Seq(enemy), emptyMessages)
+        GameOps.update(player, Set(enemy), emptyMessages)
 
       "Set the highest positioned player to be the actor with a higher position" in {
         assert(updEnemies.maxBy(_.position).position > updPlayer.position)
@@ -130,7 +130,7 @@ class GameOpsSpec extends WordSpec {
         val emptyMessages = Seq.empty[GameMessage]
 
         val (updPlayer, updEnemies, _) =
-          GameOps.update(player, Seq(enemy), emptyMessages)
+          GameOps.update(player, Set(enemy), emptyMessages)
 
         "the faster actor's position is >= 100" in {
           assert(updEnemies.head.position == 101)
@@ -153,7 +153,7 @@ class GameOpsSpec extends WordSpec {
       val enemy = Enemy("Quick Enemy", UUID.randomUUID(), speed10Char, position = 0)
 
       val emptyMessages = Seq.empty[GameMessage]
-      val turnOneCast = GameOps.update(player, Seq(enemy), emptyMessages)
+      val turnOneCast = GameOps.update(player, Set(enemy), emptyMessages)
 
       val (t1Player, t1Enemies) = resetActive(turnOneCast)
       val turnTwoCast = GameOps.update(t1Player, t1Enemies, turnOneCast._3)
@@ -164,7 +164,7 @@ class GameOpsSpec extends WordSpec {
       val (t3Player, t3Enemies) = resetActive(turnThreeCast)
       val turnFourCast = GameOps.update(t3Player, t3Enemies, turnThreeCast._3)
 
-      def nameOfActive(t: (Player, Seq[Enemy], Seq[GameMessage])): String = {
+      def nameOfActive(t: (Player, Set[Enemy], Seq[GameMessage])): String = {
         val (player, e, _) = t
 
         val enemy = e.maxBy(_.position)
@@ -190,7 +190,7 @@ class GameOpsSpec extends WordSpec {
           val enemy = Enemy("Quick Enemy", UUID.randomUUID(), speed10Char, position = 0)
           val emptyMessages = Seq.empty[GameMessage]
 
-          val turnOneCast = GameOps.update(player, Seq(enemy), emptyMessages)
+          val turnOneCast = GameOps.update(player, Set(enemy), emptyMessages)
 
           val (t1Player, t1Enemies) = resetActive(turnOneCast)
           val turnTwoCast = GameOps.update(t1Player, t1Enemies, turnOneCast._3)
@@ -209,7 +209,6 @@ class GameOpsSpec extends WordSpec {
     }
   }
 
-  //TODO in progress
   "GameOps.updateUntilPlayerIsActive" when {
     "provided with an ahead equal enemy and player" should {
 
@@ -217,7 +216,7 @@ class GameOpsSpec extends WordSpec {
       val enemy = Enemy("Quick Enemy", UUID.randomUUID(), speed10Char, position = 50)
       val emptyMessages = Seq.empty[GameMessage]
 
-      val next = GameOps.updateUntilPlayerIsActive(player, Seq(enemy), emptyMessages)
+      val next = GameOps.updateUntilPlayerIsActive(player, Set(enemy), emptyMessages)
       val (nextPlayer, _, nextMessages) = next
 
 

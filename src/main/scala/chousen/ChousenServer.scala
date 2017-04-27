@@ -40,7 +40,7 @@ object ChousenServer extends TwitterServer with MappedGameAccess {
 
   val attack: Endpoint[GameState] = post("game" :: uuid :: "attack" :: jsonBody[AttackRequest]) { (id: UUID, ar: AttackRequest) =>
     withGame(id) { g: GameState =>
-      Ok(GameStateManager.takeCommand(new Command {}, g))
+      Ok(GameStateManager.takeCommand(ar, g))
     }
   }
 

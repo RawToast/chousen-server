@@ -23,7 +23,7 @@ case class GameMessage(text: String)
 
 case class Dungeon(currentEncounter: Battle, remainingEncounters: Seq[Battle])
 
-case class Battle(enemies: Seq[Enemy])
+case class Battle(enemies: Set[Enemy])
 
 case class Enemy(name: String, id: UUID, stats: CharStats, position: Int)
 
