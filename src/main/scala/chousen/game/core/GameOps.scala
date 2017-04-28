@@ -1,6 +1,9 @@
 package chousen.game.core
 
 import chousen.api.data._
+import chousen.util.LensUtil
+import monocle.Lens
+import monocle.macros.GenLens
 
 import scala.annotation.tailrec
 import scala.util.{Left, Right}

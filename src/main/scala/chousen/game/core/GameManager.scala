@@ -3,9 +3,8 @@ package chousen.game.core
 import java.util.UUID
 
 import chousen.api.data._
-import chousen.util.LensUtil
-import monocle.Lens
-import monocle.macros.GenLens
+import chousen.game.actions.BasicAttack
+import chousen.game.core.GameStateOps.EncounterLens
 
 import scala.collection.LinearSeq
 
@@ -27,10 +26,6 @@ object GameStateManager extends GameManager[GameState] {
   import cats.syntax.all._
   import chousen.api.types.Implicits._
 
-  private val encounterLens: Lens[GameState, (Player, Set[Enemy], Seq[GameMessage])] =
-    LensUtil.triLens(GenLens[GameState](_.player),
-      GenLens[GameState](_.dungeon.currentEncounter.enemies),
-      GenLens[GameState](_.messages))
 
   override def create(name: String, uuid: UUID): GameState = {
 
@@ -48,7 +43,7 @@ object GameStateManager extends GameManager[GameState] {
   }
 
   override def start(game: GameState): GameState = {
-    val update = encounterLens.modify {
+    val update = EncounterLens.modify {
       case (p: Player, es: Set[Enemy], m: Seq[GameMessage]) =>
 
         val msgs = Seq(GameMessage(s"${p.name} has entered the dungeon"),
@@ -65,29 +60,9 @@ object GameStateManager extends GameManager[GameState] {
 
     command match {
       case AttackRequest(targetId) =>
-        // This is promising, could be used generically?
-        val executeAction = GameStateOps.targettedLens(targetId).modify {
-          case (p, optE, msgs) =>
+        val completeTurn = EncounterLens.modify(GameOps.updateUntilPlayerIsActive)
 
-            optE match {
-              case Some(e) =>
-                // Not safe, could deal negative damage!
-                val dmg = p.stats.strength + p.stats.dexterity - e.stats.vitality
-
-                val targetMsg = GameMessage(s"${p.name} attacks ${e.name}!")
-                val dmgMsg = GameMessage(s"${p.name} deals $dmg to ${e.name}!")
-
-                // This should be replaced by a generic attack/damage function
-                val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
-                  .modify(hp => hp - dmg)(e)
-                val gameMessages = msgs :+ targetMsg :+ dmgMsg
-
-                (p.copy(position = p.position - 100), Option(newEnemy), gameMessages)
-              case None => (p, optE, msgs)
-            }
-        }
-        val completeTurn = encounterLens.modify(GameOps.updateUntilPlayerIsActive)
-        val action = executeAction andThen completeTurn
+        val action = BasicAttack.attack(targetId) andThen completeTurn
 
         action(game)
 
