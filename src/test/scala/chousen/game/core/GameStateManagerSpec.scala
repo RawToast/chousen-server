@@ -84,6 +84,23 @@ class GameStateManagerSpec extends WordSpec {
           import chousen.api.types.Implicits._
           active.swap.foreach(_ ~= startedGame.player)
         }
+
+        lazy val numberOfNewMessages = result.messages.size - startedGame.messages.size
+        lazy val latestMessages = result.messages.takeRight(numberOfNewMessages)
+
+        "game messages are created for the player's attack" in {
+          assert(result.messages.size > startedGame.messages.size)
+
+          assert(latestMessages.head == GameMessage("Test Player attacks Slime!"))
+          assert(latestMessages(1).text.contains("Test Player deals"))
+        }
+
+        "the enemy takes their turn" in {
+          assert(result.player.stats.currentHp < startedGame.player.stats.currentHp)
+
+          assert(latestMessages.exists(_.text.contains("Slime attacks Test Player")))
+          assert(latestMessages.exists(_.text.contains("Slime deals")))
+        }
       }
     }
   }
