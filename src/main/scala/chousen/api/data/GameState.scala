@@ -32,19 +32,4 @@ object Deck {
     val name: String
     val description: String
   }
-
-  case object FireballCard extends Card {
-    override val name = "Fireball"
-    override val description = "Casts a fireball, dealing damage to all enemies"
-  }
-
 }
-
-// Enum example
-//object WeekDay {
-//  sealed abstract class EnumVal(val name: String)
-//  case object FireballCard extends EnumVal("Fireball")
-//  case object HealCard extends EnumVal("Heal")
-//  val daysOfWeek = Seq(FireballCard, HealCard)
-//}
-
