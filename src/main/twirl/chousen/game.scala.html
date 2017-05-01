@@ -1,0 +1,36 @@
+@(gameState: chousen.api.data.GameState)
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>Chousen Beta</title>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
+
+    <body>
+        <div class="container-fluid">
+            <h1 class="lead">Chousen Dev Client</h1>
+
+            <div id="gameMessagesRow" class="row">
+                <div id="gameMessages" class=".col-md-8 .col-md-offset-2">
+                <div id="gameMessages" class=".col-md-8 .col-md-offset-2">
+                    @{
+                        gameState.messages.map(m => {
+                                <p>{m.text}</p>
+                        })
+                    }
+                </div>
+            </div>
+
+            <div id="inputRow" class="row">
+                <div id="input" class=".col-md-8 .col-md-offset-2">
+                @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
+                    <button id=@{e.id.toString} type="button" class="btn btn-default">Attack @{e.name}</button>
+                }
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

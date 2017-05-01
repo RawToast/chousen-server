@@ -1,16 +1,19 @@
 import NativePackagerKeys._
+import sbt.Keys.libraryDependencies
 
 name := "chousen-server"
 herokuAppName in Compile := "immense-bastion-74506"
 
 version := "1.0"
 
-mainClass in(Compile, run) := Some("chousen.ChousenServer")
+mainClass in(Compile, run) := Some("chousen.Http4sServer")
 
-enablePlugins(JavaAppPackaging)
+enablePlugins(JavaAppPackaging, SbtTwirl)
 
 val SCALA_VERSION = "2.12.2"
 val FINCH_VERSION = "0.14.0"
+val HTTP4S_VERSION = "0.17.0-M2"
+val CIRCE_VERSION = "0.7.1"
 
 scalaVersion := SCALA_VERSION
 scalaVersion in ThisBuild := SCALA_VERSION
@@ -21,19 +24,42 @@ resolvers ++= Seq(
   "Bintary JCenter" at "http://jcenter.bintray.com"
 )
 
+libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.1"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
-libraryDependencies += "org.typelevel" %%  "cats" % "0.9.0"
-libraryDependencies += "com.github.julien-truffaut" %% "monocle-core" % "1.4.0"
-libraryDependencies += "com.github.julien-truffaut" %%  "monocle-macro" % "1.4.0"
-libraryDependencies += "io.circe" %% "circe-generic" % "0.7.1"
 libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 libraryDependencies ++= finch
+libraryDependencies ++= http4s
+libraryDependencies ++= circe
+libraryDependencies ++= monocle
+
 
 def finch = Seq(
     "com.github.finagle" %% "finch-core" % FINCH_VERSION,
     "com.github.finagle" %% "finch-circe" % FINCH_VERSION,
     "com.github.finagle" %% "finch-test" % FINCH_VERSION,
     "com.twitter" %% "twitter-server" % "1.28.0")
+
+
+def http4s = Seq(
+  "org.http4s" %% "http4s-dsl" % HTTP4S_VERSION,
+  "org.http4s" %% "http4s-blaze-server" % HTTP4S_VERSION,
+  "org.http4s" %% "http4s-blaze-client" % HTTP4S_VERSION,
+  "org.http4s" %% "http4s-circe" % HTTP4S_VERSION,
+  "org.http4s" %% "http4s-twirl" % HTTP4S_VERSION
+)
+
+
+def circe = Seq(
+  "io.circe" %% "circe-generic" % CIRCE_VERSION,
+  "io.circe" %% "circe-literal" % CIRCE_VERSION,
+  "io.circe" %% "circe-optics" % CIRCE_VERSION
+)
+
+
+def monocle = Seq(
+  "com.github.julien-truffaut" %% "monocle-core" % "1.4.0",
+  "com.github.julien-truffaut" %%  "monocle-macro" % "1.4.0"
+)
 
 // Code coverage
 addCommandAlias("validate", ";coverage;test;coverageReport")
