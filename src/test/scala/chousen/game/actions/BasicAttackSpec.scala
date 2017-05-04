@@ -2,8 +2,7 @@ package chousen.game.actions
 
 import java.util.UUID
 
-import chousen.api.core.data.GameStateGenerator
-import chousen.api.data.{GameMessage, GameState}
+import chousen.api.data.{GameMessage, GameState, GameStateGenerator}
 import chousen.game.core.GameStateManager
 import org.scalatest.WordSpec
 
