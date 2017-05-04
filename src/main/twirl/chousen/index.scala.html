@@ -17,24 +17,24 @@
 
         <script type="text/javascript">
 
-                $('#namebox').on('keypress', function (e) {
-                    // Enter key!
-                    if (e.which === 13) {
+            $('#namebox').on('keypress', function (e) {
+                // Enter key!
+                if (e.which === 13) {
 
-                        //Disable textbox to prevent multiple submit
-                        $(this).attr("disabled", "disabled");
+                    //Disable textbox to prevent multiple submit
+                    $(this).attr("disabled", "disabled");
 
-                        //Do Stuff, submit, etc..
-                        var n = jQuery("#namebox").val();
-                        var uri = "/game/" + n + "/start";
-                        $(this).attr("disabled", "");
+                    //Do Stuff, submit, etc..
+                    var n = jQuery("#namebox").val();
+                    var uri = "/game/" + n + "/start";
+                    $(this).attr("disabled", "");
 
-                        jQuery.post(uri, function(result) {
-                            window.location.replace(window.location.href + result.id)
-                        });
+                    jQuery.post(uri, function(result) {
+                        window.location.replace(result.id)
+                    });
 
-                    }
-                });
+                }
+            });
 
         </script>
     </body>
