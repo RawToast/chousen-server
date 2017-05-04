@@ -9,28 +9,80 @@
     </head>
 
     <body>
-        <div class="container-fluid">
+        <div class="container">
             <h1 class="lead">Chousen Dev Client</h1>
 
-            <div id="gameMessagesRow" class="row">
-                <div id="gameMessages" class=".col-md-8 .col-md-offset-2">
-                <div id="gameMessages" class=".col-md-8 .col-md-offset-2">
-                    @{
-                        gameState.messages.map(m => {
-                                <p>{m.text}</p>
-                        })
-                    }
+            <div id="characterSheet" class="row">
+                <div class="row" style="padding: 8px 0px">
+                    <div class="col-md-2">@{gameState.player.name}</div>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-2">HP: @{gameState.player.stats.currentHp} / @{gameState.player.stats.maxHp}</div>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-2">@{gameState.player.position}</div>
+                </div>
+
+                <div class="row" style="padding: 8px 0px">
+                    <div class="col-md-2">STR: @{gameState.player.stats.strength}</div>
+                    <div class="col-md-2">DEX: @{gameState.player.stats.dexterity}</div>
+                    <div class="col-md-2">INT: @{gameState.player.stats.intellect}</div>
+                    <div class="col-md-2">VIT: @{gameState.player.stats.vitality}</div>
+                    <div class="col-md-2">SPD: @{gameState.player.stats.speed}</div>
+                    <div class="col-md-2">@{gameState.player.position}</div>
+                </div>
+
+                @for(e <- gameState.dungeon.currentEncounter.enemies) {
+                    <div class="row" style="padding: 8px 0px">
+                        <div class="col-md-2">@{e.name}</div>
+                        <div class="col-md-2"></div>
+                        <div class="col-md-2">HP: @{e.stats.currentHp} / @{e.stats.maxHp}</div>
+                        <div class="col-md-2"></div>
+                        <div class="col-md-2"></div>
+                        <div class="col-md-2">@{e.position}</div>
+                    </div>
+                }
+            </div>
+
+            <div id="gameMessagesRow" class="row" style="padding: 8px 0px">
+                <div id="gameMessagesOffSet" class=".col-md-8 .col-md-offset-2">
+                    <textarea id="gameMessagesText" class="form-control noresize"
+                        style="resize: none" rows="15" data-role="none">@{gameState.messages.map(m => {{m.text + "\r\n"}})}
+                    </textarea>
                 </div>
             </div>
 
-            <div id="inputRow" class="row">
-                <div id="input" class=".col-md-8 .col-md-offset-2">
-                @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
-                    <button id=@{e.id.toString} type="button" class="btn btn-default">Attack @{e.name}</button>
-                }
+                <div id="inputRow" class="row" style="padding: 8px 0px">
+                    <div id="input" class=".col-md-8 .col-md-offset-2">
+                    @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
+                        <button id=@{e.id.toString} type="button" class="btn btn-default" uri=@{s"game/" + gameState.id + "/attack"}>
+                            Attack @{e.name}
+                        </button>
+                    }
+                    </div>
                 </div>
-            </div>
+
         </div>
+
+        <script type="text/javascript">
+
+                $('.btn').click(function(evt) {
+                    evt.preventDefault();
+
+                        var id = $(this).attr("id");
+                        var uri = $(this).attr("uri");
+
+
+                    jQuery.post(uri, JSON.stringify({ targetId: id }), function(result) {
+                            window.location.replace(window.location.href)
+                        });
+                });
+
+
+                $(document).ready(function(){
+                    var textarea = $('#gameMessagesText');
+                    textarea.scrollTop(textarea[0].scrollHeight);
+                });
+        </script>
 
     </body>
 </html>

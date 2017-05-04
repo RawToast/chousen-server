@@ -18,7 +18,7 @@ case class DeckManager(hand: Hand, deck: Deck) {
     */
   def drawCard: Either[DeckManager, DeckManager] = {
     deck.draw match {
-      case Left(d: Deck) => Left(this)
+      case Left(_: Deck) => Left(this)
       case Right((c: Card, d: Deck)) => Right(DeckManager(hand + c, d))
     }
   }

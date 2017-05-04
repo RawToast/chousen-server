@@ -4,7 +4,7 @@ import java.util.UUID
 
 import chousen.api.data._
 import fs2.Task
-import io.finch.Output
+//import io.finch.Output
 import org.http4s.Response
 
 import scala.collection.LinearSeq
@@ -13,17 +13,17 @@ trait GameAccess[T] {
   def withGame(id: UUID)(f: GameState => T): T
 }
 
-trait MappedGameAccess extends GameAccess[Output[GameState]] {
-  var store = Map.empty[UUID, GameState]
-
-  def withGame(id: UUID)(f: GameState => Output[GameState]): Output[GameState] = {
-    store.get(id) match {
-      case Some(game) => f(game)
-      case None => io.finch.NotFound(
-        new java.util.NoSuchElementException(s"Game with ID=$id does not exist"))
-    }
-  }
-}
+//trait MappedGameAccess extends GameAccess[Output[GameState]] {
+//  var store = Map.empty[UUID, GameState]
+//
+//  def withGame(id: UUID)(f: GameState => Output[GameState]): Output[GameState] = {
+//    store.get(id) match {
+//      case Some(game) => f(game)
+//      case None => io.finch.NotFound(
+//        new java.util.NoSuchElementException(s"Game with ID=$id does not exist"))
+//    }
+//  }
+//}
 
 trait Http4sMappedGameAccess extends GameAccess[Task[Response]] {
   import io.circe.generic.auto._

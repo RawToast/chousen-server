@@ -27,10 +27,12 @@
                         //Do Stuff, submit, etc..
                         var n = jQuery("#namebox").val();
                         var uri = "/game/" + n + "/start";
+                        $(this).attr("disabled", "");
 
                         jQuery.post(uri, function(result) {
                             window.location.replace(window.location.href + result.id)
                         });
+
                     }
                 });
 

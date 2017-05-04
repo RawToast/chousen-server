@@ -87,11 +87,11 @@ object Http4sServer extends StreamApp with Http4sMappedGameAccess {
     // Attack
     case req@POST -> Root / "game" / uuid / "attack" =>
       val id = UUID.fromString(uuid)
-
       withGame(id) { g =>
         for {
           ar <- req.as(jsonOf[AttackRequest])
           ng = GameStateManager.takeCommand(ar, g)
+          _ = {store = store + (ng.id -> ng)}
           res <- Ok.apply(ng.asJson)
         } yield res
       }
@@ -99,9 +99,12 @@ object Http4sServer extends StreamApp with Http4sMappedGameAccess {
 
   override def stream(args: List[String]) = {
     import cats.implicits._
+    val port = Option(System.getProperty("http.port")).getOrElse("8080").toInt
+    val host = Option(System.getProperty("http.host")).getOrElse("0.0.0.0")
+
 
     // Unconfigured, will bind to 8080
-    BlazeBuilder.bindHttp()
+    BlazeBuilder.bindHttp(port, host)
       .withServiceExecutor(Executors.newCachedThreadPool())
       .mountService(apiEndpoints |+| frontend |+| inputEndpoints, "/")
       .serve
