@@ -63,7 +63,7 @@ def monocle = Seq(
 // Code coverage
 addCommandAlias("validate", ";coverage;test;coverageReport")
 
-coverageMinimum := 56 // Continually increase
+coverageMinimum := 65 // Continually increase
 coverageFailOnMinimum := true
 
 // Compiler options

@@ -1,6 +1,6 @@
 package chousen.api.core
 
-import chousen.api.core.data.GameStateGenerator._
+import chousen.api.data.GameStateGenerator._
 import chousen.api.data.Enemy
 import chousen.game.core.GameStateOps
 import org.scalatest.WordSpec

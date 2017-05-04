@@ -21,7 +21,6 @@ object Http4sServer extends StreamApp with Http4sMappedGameAccess {
   import io.circe.syntax._
 
 
-
   object NameMatcher extends QueryParamDecoderMatcher[String]("name")
 
 

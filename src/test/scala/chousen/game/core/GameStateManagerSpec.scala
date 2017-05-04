@@ -2,8 +2,7 @@ package chousen.game.core
 
 import java.util.UUID
 
-import chousen.api.core.data.GameStateGenerator
-import chousen.api.data._
+import chousen.api.data.{GameStateGenerator, _}
 import monocle.macros.GenLens
 import org.scalatest.WordSpec
 

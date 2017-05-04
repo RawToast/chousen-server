@@ -1,8 +1,6 @@
-package chousen.api.core.data
+package chousen.api.data
 
 import java.util.UUID
-
-import chousen.api.data._
 
 import scala.collection.LinearSeq
 

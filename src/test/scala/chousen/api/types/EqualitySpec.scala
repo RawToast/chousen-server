@@ -2,7 +2,7 @@ package chousen.api.types
 
 import java.util.UUID
 
-import chousen.api.core.data.GameStateGenerator
+import chousen.api.data.GameStateGenerator
 import org.scalatest.WordSpec
 import chousen.api.types.Implicits._
 
