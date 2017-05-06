@@ -3,7 +3,6 @@ package chousen.game.core
 import java.util.UUID
 
 import chousen.api.data._
-import monocle.Lens
 import org.scalatest.WordSpec
 
 class GameOpsSpec extends WordSpec {
@@ -76,10 +75,10 @@ class GameOpsSpec extends WordSpec {
         assert(updEnemies.exists(_.position == 100))
       }
 
-      "Include a game message stating it's the higher positioned users turn" in {
-        assert(updMessages.size == 1)
-        assert(updMessages.head.text == "Quick Enemy's turn!")
-      }
+//      "Include a game message stating it's the higher positioned users turn" in {
+//        assert(updMessages.size == 1)
+//        assert(updMessages.head.text == "Quick Enemy's turn!")
+//      }
 
       "updating again" must {
 
@@ -89,15 +88,6 @@ class GameOpsSpec extends WordSpec {
         "retain the active actor" in {
           assert(updEnemies.maxBy(_.position).position > updPlayer.position)
           assert(latestEnemies.maxBy(_.position).position > latestPlayer.position)
-        }
-
-        "Include an additional message with the same text" in {
-          assert(latestMessages.size != updEnemies.size)
-          assert(latestMessages.size == 2)
-          assert(latestMessages.last.text == "Quick Enemy's turn!")
-
-          // Same message
-          assert(latestMessages.toSet.size == 1)
         }
 
       }
@@ -115,9 +105,9 @@ class GameOpsSpec extends WordSpec {
         }
 
         "Include a game message stating it's now the Player's turn" in {
-          assert(latestMessages.size == 2)
+          assert(latestMessages.size == 1)
           assert(latestMessages.exists(_.text == "Player's turn!"))
-          assert(latestMessages.last.text == "Player's turn!")
+          assert(latestMessages.head.text == "Player's turn!")
         }
 
       }
@@ -221,26 +211,19 @@ class GameOpsSpec extends WordSpec {
       val (nextPlayer, _, nextMessages) = next
 
 
-      "create three messages" in {
+      "create two messages" in {
         assert(nextMessages.nonEmpty)
-        assert(next._3.size == 4)
+        assert(next._3.size == 2)
       }
 
-      "include message a for the enemy becoming active" in {
+      "include message a for the enemy's action" in {
         assert(nextMessages.size > 1)
-        assert(nextMessages.head.text == "Quick Enemy's turn!")
+        assert(nextMessages.head.text.contains("Quick Enemy attacks Player"))
       }
 
       "include a message for the enemies actions" in {
-        val attackText = "Quick Enemy attacks Player!"
-        val damageText = "Quick Enemy deals "
-        def messageIndex(m: String) = nextMessages.indexWhere(p => p.text.contains(m))
-
+        val attackText = "Quick Enemy attacks Player"
         assert(nextMessages.exists(gm => gm.text.contains(attackText)))
-        assert(nextMessages.exists(gm => gm.text.contains(damageText)))
-
-        // Ensure order
-        assert(messageIndex(attackText) < messageIndex(damageText))
       }
 
       "the last message states the player is active" in {

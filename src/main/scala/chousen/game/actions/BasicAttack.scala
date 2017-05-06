@@ -15,8 +15,8 @@ object BasicAttack {
           // Not safe, could deal negative damage!
           val dmg = p.stats.strength + p.stats.dexterity - e.stats.vitality
 
-          val targetMsg = GameMessage(s"${p.name} attacks ${e.name}!")
-          val dmgMsg = GameMessage(s"${p.name} deals $dmg to ${e.name}!")
+          val targetMsg = GameMessage(s"${p.name} attacks ${e.name}.")
+          val dmgMsg = GameMessage(s"${p.name}'s attack deals $dmg to ${e.name}!")
 
           // This should be replaced by a generic attack/damage function
           val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)

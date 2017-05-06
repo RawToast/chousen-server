@@ -11,7 +11,7 @@
     <body>
         <div class="container">
             <h1 class="lead">Chousen Dev Client</h1>
-                <input id ="namebox" type="text" placeholder="Character Name">
+                <input id ="namebox" type="text" class="form-control" placeholder="Character Name">
 
         </div>
 
@@ -31,7 +31,6 @@
                     jQuery.post(uri, function(result) {
                         window.location.replace(result.id)
                     });
-
                 }
             });
         </script>

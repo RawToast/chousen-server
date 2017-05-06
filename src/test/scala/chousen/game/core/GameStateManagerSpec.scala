@@ -90,15 +90,15 @@ class GameStateManagerSpec extends WordSpec {
         "game messages are created for the player's attack" in {
           assert(result.messages.size > startedGame.messages.size)
 
-          assert(latestMessages.head == GameMessage("Test Player attacks Slime!"))
-          assert(latestMessages(1).text.contains("Test Player deals"))
+          assert(latestMessages.head == GameMessage("Test Player attacks Slime."))
+          assert(latestMessages(1).text.contains("Test Player's attack deals"))
         }
 
         "the enemy takes their turn" in {
           assert(result.player.stats.currentHp < startedGame.player.stats.currentHp)
 
           assert(latestMessages.exists(_.text.contains("Slime attacks Test Player")))
-          assert(latestMessages.exists(_.text.contains("Slime deals")))
+          assert(latestMessages.exists(_.text.contains(" damage.")))
         }
       }
     }
