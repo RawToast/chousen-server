@@ -283,7 +283,7 @@ class GameOpsSpec extends WordSpec {
 
     "Provided with a dead player and alive enemies" should {
 
-      val deadPlayer = PlayerOptics.charStats.composeLens(CharStatsOptics.hp).set(0).apply(player)
+      val deadPlayer = PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.hp).set(0).apply(player)
 
       val result = GameOps.isGameActive((deadPlayer, enemies, emptyMessages))
 

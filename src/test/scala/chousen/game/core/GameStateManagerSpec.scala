@@ -107,7 +107,7 @@ class GameStateManagerSpec extends WordSpec {
     "Transitioning a game" should {
       val gameState = GameStateGenerator.staticGameState
 
-      val deadPlayerLens = GameStateOptics.PlayerLens.composeLens(PlayerOptics.charStats.composeLens(CharStatsOptics.hp)).set(0)
+      val deadPlayerLens = GameStateOptics.PlayerLens.composeLens(PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.hp)).set(0)
       val removeEnemies = GameStateOptics.EncounterLens.modify(pem => (pem._1, Set.empty, pem._3))
 
       "Do nothing if the current encounter is still active" in {
@@ -134,6 +134,7 @@ class GameStateManagerSpec extends WordSpec {
 
         assert(result.id == initialState.id)
         assert(result.player != initialState.player)
+        assert(result.player.stats.currentHp <= result.player.stats.maxHp)
         assert(result.player ~= initialState.player)
         assert(result.dungeon != initialState.dungeon)
         assert(result.dungeon.currentEncounter.enemies.nonEmpty)

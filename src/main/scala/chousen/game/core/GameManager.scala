@@ -2,6 +2,7 @@ package chousen.game.core
 
 import java.util.UUID
 
+import chousen.api.data.PlayerOptics.PlayerCharStatsLens
 import chousen.api.data._
 import chousen.game.actions.BasicAttack
 import chousen.game.core.GameStateOptics.{EncounterLens, MessagesLens}
@@ -37,16 +38,17 @@ object GameStateManager extends GameManager[GameState] {
 
     def createSlime = Battle(Set(Enemy("Slime", UUID.randomUUID(), CharStats(10, 10), 0)))
 
-    def createSloth = Battle(Set(Enemy("Sloth", UUID.randomUUID(), CharStats(17, 17, strength = 12, speed = 4), 0)))
+    def createSloth = Battle(Set(Enemy("Sloth", UUID.randomUUID(), CharStats(23, 23, strength = 12, speed = 3), 0)))
 
     def createRat = Battle(Set(Enemy("Rat", UUID.randomUUID(), CharStats(7, 7, strength = 6, speed = 12), 0)))
 
-    def orcus = battleMonoid.empty |+| Enemy("Orcus Malorcus", UUID.randomUUID(), CharStats(40, 40, strength = 11, speed = 5), 0)
+    def orcus = battleMonoid.empty |+| Enemy("Orcus Malorcus", UUID.randomUUID(), CharStats(50, 50, strength = 11, vitality = 11, speed = 7), 0)
 
-    val battle1 = createRat |+| createRat
+    val battle1 = createRat
     val battle2 = createSlime |+| createSloth
+    val battle3 = orcus |+| createRat |+| createSloth
 
-    val dungeon = Dungeon(battle1, LinearSeq(battle2, orcus))
+    val dungeon = Dungeon(battle1, LinearSeq(battle2, battle3))
     val msgs = Seq.empty[GameMessage]
 
     GameState(uuid, player, cards, dungeon, msgs)
@@ -93,15 +95,18 @@ object GameStateManager extends GameManager[GameState] {
         GameStateOptics.DungeonTriLens.modify { (pdm: (Player, Dungeon, Seq[GameMessage])) =>
           val (p, d, msgs) = pdm
           val newDungeon = Dungeon(d.remainingEncounters.head, d.remainingEncounters.tail)
-          val healAmount = 20
+          val healAmount = 20.min(p.stats.maxHp - p.stats.currentHp)
 
           val restMsg = GameMessage(s"${p.name} rests and recovers $healAmount hp.")
+          val strongerMsg = GameMessage(s"${p.name} feels stronger after resting.")
           val progressMsg = GameMessage(s"${p.name} recklessly wanders deeper into the dungeon.")
           val encounterMsg = startEncounterMessage(newDungeon.currentEncounter.enemies, p)
 
-          val newPlayer = PlayerOptics.charStats.composeLens(CharStatsOptics.hp).modify(_ + healAmount)(p)
+          val newPlayer = PlayerCharStatsLens.composeLens(CharStatsOptics.hp).modify(_ + healAmount).compose(
+          PlayerCharStatsLens.modify(cs =>
+            cs.copy(strength = cs.strength + 1, dexterity = cs.dexterity + 1, vitality = cs.vitality + 1))).apply(p)
 
-          (newPlayer, newDungeon, msgs :+ restMsg :+ progressMsg :+ encounterMsg)
+          (newPlayer, newDungeon, msgs :+ restMsg :+ strongerMsg :+ progressMsg :+ encounterMsg)
         }(game)
       } else game
     }
