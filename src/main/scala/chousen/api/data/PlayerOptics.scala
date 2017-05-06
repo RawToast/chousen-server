@@ -4,7 +4,7 @@ import monocle.macros.GenLens
 
 
 object PlayerOptics {
-  val charStats = GenLens[Player](_.stats)
+  val PlayerCharStatsLens = GenLens[Player](_.stats)
 }
 
 object CharStatsOptics {

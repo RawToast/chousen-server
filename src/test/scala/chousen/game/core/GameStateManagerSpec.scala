@@ -3,6 +3,7 @@ package chousen.game.core
 import java.util.UUID
 
 import chousen.api.data.{GameStateGenerator, _}
+import chousen.game.core.GameStateOptics.DungeonTriLens
 import monocle.macros.GenLens
 import org.scalatest.WordSpec
 
@@ -42,7 +43,7 @@ class GameStateManagerSpec extends WordSpec {
 
         "return messages for the start of the game" in {
           assert(result.messages.head == GameMessage(s"${GameStateGenerator.playerName} has entered the dungeon"))
-          assert(result.messages(1) == GameMessage(s"${GameStateGenerator.playerName} encounters: Slime, Slime"))
+          assert(result.messages(1) == GameMessage(s"${GameStateGenerator.playerName} is attacked by: Slime, Slime!"))
           assert(result.messages(2) == GameMessage(s"${GameStateGenerator.playerName}'s turn!"))
         }
 
@@ -53,7 +54,7 @@ class GameStateManagerSpec extends WordSpec {
           val altResult: GameState = gameStateManager.start(setToSingleEnemy(gameState))
 
           assert(altResult.messages.head == GameMessage(s"${GameStateGenerator.playerName} has entered the dungeon"))
-          assert(altResult.messages(1) == GameMessage(s"${GameStateGenerator.playerName} encounters a Slime!"))
+          assert(altResult.messages(1) == GameMessage(s"${GameStateGenerator.playerName} is attacked by Slime!"))
           assert(altResult.messages(2) == GameMessage(s"${GameStateGenerator.playerName}'s turn!"))
         }
       }
@@ -90,18 +91,71 @@ class GameStateManagerSpec extends WordSpec {
         "game messages are created for the player's attack" in {
           assert(result.messages.size > startedGame.messages.size)
 
-          assert(latestMessages.head == GameMessage("Test Player attacks Slime!"))
-          assert(latestMessages(1).text.contains("Test Player deals"))
+          assert(latestMessages.head == GameMessage("Test Player attacks Slime."))
+          assert(latestMessages(1).text.contains("Test Player's attack deals"))
         }
 
         "the enemy takes their turn" in {
           assert(result.player.stats.currentHp < startedGame.player.stats.currentHp)
 
           assert(latestMessages.exists(_.text.contains("Slime attacks Test Player")))
-          assert(latestMessages.exists(_.text.contains("Slime deals")))
+          assert(latestMessages.exists(_.text.contains(" damage.")))
         }
       }
     }
+
+    "Transitioning a game" should {
+      val gameState = GameStateGenerator.staticGameState
+
+      val deadPlayerLens = GameStateOptics.PlayerLens.composeLens(PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.hp)).set(0)
+      val removeEnemies = GameStateOptics.EncounterLens.modify(pem => (pem._1, Set.empty, pem._3))
+
+      "Do nothing if the current encounter is still active" in {
+        val result = GameStateManager.transition(gameState)
+
+        assert(result == gameState)
+      }
+
+      "Add new messages if the player is dead" in {
+        val initialState = deadPlayerLens(gameState)
+        val result = GameStateManager.transition(initialState)
+
+        assert(result.id == initialState.id)
+        assert(result.player == initialState.player)
+        assert(result.dungeon == initialState.dungeon)
+        assert(result.messages.size > initialState.messages.size)
+
+      }
+
+      "Transition to the next battle if the encounter is empty" in {
+        import chousen.api.types.Implicits._
+        val initialState = removeEnemies(gameState)
+        val result = GameStateManager.transition(initialState)
+
+        assert(result.id == initialState.id)
+        assert(result.player != initialState.player)
+        assert(result.player.stats.currentHp <= result.player.stats.maxHp)
+        assert(result.player ~= initialState.player)
+        assert(result.dungeon != initialState.dungeon)
+        assert(result.dungeon.currentEncounter.enemies.nonEmpty)
+        assert(result.messages.size > initialState.messages.size)
+      }
+
+      "Congradulate the player on victory" in {
+        val initialState = DungeonTriLens
+          .modify(pdm => (pdm._1, Dungeon(Battle(Set.empty), Seq.empty), pdm._3))(gameState)
+        val result = GameStateManager.transition(initialState)
+
+        assert(result.id == initialState.id)
+        assert(result.player == initialState.player)
+        assert(result.dungeon == initialState.dungeon)
+        assert(result.dungeon.currentEncounter.enemies.isEmpty)
+        assert(result.messages.size > initialState.messages.size)
+        assert(result.messages.last.text.contains("win"))
+      }
+
+    }
+
   }
 
   def getFirstEnemyHp(result: GameState) =

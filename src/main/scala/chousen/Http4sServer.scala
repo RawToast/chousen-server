@@ -35,9 +35,8 @@ object Http4sServer extends StreamApp with Http4sMappedGameAccess {
       val uuid = UUID.fromString(id)
 
       withGame(uuid) { game =>
-        Created(html.game.apply(game))
+        Ok(html.game.apply(game))
       }
-
   }
 
 
@@ -63,7 +62,6 @@ object Http4sServer extends StreamApp with Http4sMappedGameAccess {
 
     //  create
     case POST -> Root / "game" / playerName / "start" =>
-
       val game: GameState = GameStateManager.create(playerName)
       val startedGame = GameStateManager.start(game)
 

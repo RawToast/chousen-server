@@ -2,7 +2,7 @@ package chousen.game.core
 
 import java.util.UUID
 
-import chousen.api.data.{CharStats, Enemy, GameMessage, Player}
+import chousen.api.data._
 import org.scalatest.WordSpec
 
 class GameOpsSpec extends WordSpec {
@@ -75,10 +75,10 @@ class GameOpsSpec extends WordSpec {
         assert(updEnemies.exists(_.position == 100))
       }
 
-      "Include a game message stating it's the higher positioned users turn" in {
-        assert(updMessages.size == 1)
-        assert(updMessages.head.text == "Quick Enemy's turn!")
-      }
+//      "Include a game message stating it's the higher positioned users turn" in {
+//        assert(updMessages.size == 1)
+//        assert(updMessages.head.text == "Quick Enemy's turn!")
+//      }
 
       "updating again" must {
 
@@ -88,15 +88,6 @@ class GameOpsSpec extends WordSpec {
         "retain the active actor" in {
           assert(updEnemies.maxBy(_.position).position > updPlayer.position)
           assert(latestEnemies.maxBy(_.position).position > latestPlayer.position)
-        }
-
-        "Include an additional message with the same text" in {
-          assert(latestMessages.size != updEnemies.size)
-          assert(latestMessages.size == 2)
-          assert(latestMessages.last.text == "Quick Enemy's turn!")
-
-          // Same message
-          assert(latestMessages.toSet.size == 1)
         }
 
       }
@@ -114,9 +105,9 @@ class GameOpsSpec extends WordSpec {
         }
 
         "Include a game message stating it's now the Player's turn" in {
-          assert(latestMessages.size == 2)
+          assert(latestMessages.size == 1)
           assert(latestMessages.exists(_.text == "Player's turn!"))
-          assert(latestMessages.last.text == "Player's turn!")
+          assert(latestMessages.head.text == "Player's turn!")
         }
 
       }
@@ -220,26 +211,19 @@ class GameOpsSpec extends WordSpec {
       val (nextPlayer, _, nextMessages) = next
 
 
-      "create three messages" in {
+      "create two messages" in {
         assert(nextMessages.nonEmpty)
-        assert(next._3.size == 4)
+        assert(next._3.size == 2)
       }
 
-      "include message a for the enemy becoming active" in {
+      "include message a for the enemy's action" in {
         assert(nextMessages.size > 1)
-        assert(nextMessages.head.text == "Quick Enemy's turn!")
+        assert(nextMessages.head.text.contains("Quick Enemy attacks Player"))
       }
 
       "include a message for the enemies actions" in {
-        val attackText = "Quick Enemy attacks Player!"
-        val damageText = "Quick Enemy deals "
-        def messageIndex(m: String) = nextMessages.indexWhere(p => p.text.contains(m))
-
+        val attackText = "Quick Enemy attacks Player"
         assert(nextMessages.exists(gm => gm.text.contains(attackText)))
-        assert(nextMessages.exists(gm => gm.text.contains(damageText)))
-
-        // Ensure order
-        assert(messageIndex(attackText) < messageIndex(damageText))
       }
 
       "the last message states the player is active" in {
@@ -258,5 +242,65 @@ class GameOpsSpec extends WordSpec {
         assert(EncounterOps.getActive(next) == Left(nextPlayer))
       }
     }
+
+    "provided with various enemies including a fast enemy" should {
+      val player = Player("Player", CharStats(100, 100), 0)
+
+      def createSlime = Enemy("Slime", UUID.randomUUID(), CharStats(10, 10), 0)
+      def createSloth = Enemy("Sloth", UUID.randomUUID(), CharStats(15, 15, strength = 11, speed = 5), 0)
+      def createRat = Enemy("Rat", UUID.randomUUID(), CharStats(10, 10, strength = 6, speed = 10), 0)
+      val es: Set[Enemy] = Set(createSlime, createSloth, createRat)
+
+      val (nextPlayer, nextEnemies, nextMessages) = GameOps.updateUntilPlayerIsActive(player, es, Seq.empty[GameMessage])
+
+      "result in the player being active" in {
+          assert(nextPlayer.position >= 100)
+      }
+
+      "the player loses health" in {
+        assert(nextPlayer.stats.currentHp < player.stats.maxHp)
+        assert(nextPlayer.stats.currentHp < player.stats.currentHp)
+        assert(nextPlayer.stats.currentHp < nextPlayer.stats.maxHp)
+      }
+    }
   }
+
+  "GameOps.isGameActive" when {
+
+    val player = Player("Player", speed10Char, position = 0)
+    val enemies = Set(Enemy("Enemy", UUID.randomUUID(), speed8Char, position = 0))
+    val emptyMessages = Seq.empty[GameMessage]
+
+
+    "Provided with an alive player and enemies" should {
+
+      val result: Boolean = GameOps.isGameActive((player, enemies, emptyMessages))
+
+      "State the game is active" in {
+        assert(result)
+      }
+    }
+
+    "Provided with a dead player and alive enemies" should {
+
+      val deadPlayer = PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.hp).set(0).apply(player)
+
+      val result = GameOps.isGameActive((deadPlayer, enemies, emptyMessages))
+
+      "State the game is not active" in {
+        assert(!result)
+      }
+    }
+
+    "Provided with an alive player and no enemies" should {
+
+      val result: Boolean = GameOps.isGameActive((player, Set.empty, emptyMessages))
+
+      "State the game is not active" in {
+        assert(!result)
+      }
+    }
+
+  }
+
 }

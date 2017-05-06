@@ -31,7 +31,7 @@
                     <div class="col-md-2">@{gameState.player.position}</div>
                 </div>
 
-                @for(e <- gameState.dungeon.currentEncounter.enemies) {
+                @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
                     <div class="row" style="padding: 8px 0px">
                         <div class="col-md-2">@{e.name}</div>
                         <div class="col-md-2"></div>

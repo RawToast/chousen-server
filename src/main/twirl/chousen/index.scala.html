@@ -11,16 +11,15 @@
     <body>
         <div class="container">
             <h1 class="lead">Chousen Dev Client</h1>
+                <input id ="namebox" type="text" class="form-control" placeholder="Character Name">
 
-            <input id ="namebox" type="text" class="form-control" placeholder="Character Name">
         </div>
 
         <script type="text/javascript">
-
-            $('#namebox').on('keypress', function (e) {
+            $('#namebox').on('keyup', function (e) {
                 // Enter key!
                 if (e.which === 13) {
-
+                    e.preventDefault;
                     //Disable textbox to prevent multiple submit
                     $(this).attr("disabled", "disabled");
 
@@ -32,10 +31,8 @@
                     jQuery.post(uri, function(result) {
                         window.location.replace(result.id)
                     });
-
                 }
             });
-
         </script>
     </body>
 </html>
