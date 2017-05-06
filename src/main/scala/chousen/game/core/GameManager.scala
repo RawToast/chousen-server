@@ -4,7 +4,7 @@ import java.util.UUID
 
 import chousen.api.data._
 import chousen.game.actions.BasicAttack
-import chousen.game.core.GameStateOps.EncounterLens
+import chousen.game.core.GameStateOptics.EncounterLens
 
 import scala.collection.LinearSeq
 
@@ -20,7 +20,6 @@ trait GameManager[A] {
   def takeCommand(command: CommandRequest, game: A): A
 }
 
-
 object GameStateManager extends GameManager[GameState] {
 
   import cats.syntax.all._
@@ -33,10 +32,12 @@ object GameStateManager extends GameManager[GameState] {
     val cards = Cards(List(Card("Fireball Card", "Casts a fireball, dealing damage to all enemies")))
 
     def createSlime = Battle(Set(Enemy("Slime", UUID.randomUUID(), CharStats(10, 10), 0)))
+    def createSloth = Battle(Set(Enemy("Sloth", UUID.randomUUID(), CharStats(15, 15, strength = 11, speed = 5), 0)))
+    def createRat = Battle(Set(Enemy("Rat", UUID.randomUUID(), CharStats(10, 10, strength = 6, speed = 10), 0)))
 
-    def createBattle = createSlime |+| createSlime
+    def createBattle = createSlime |+| createSloth |+| createRat
 
-    val dungeon = Dungeon(createBattle, LinearSeq(createBattle, createBattle |+| createBattle))
+    val dungeon = Dungeon(createBattle, LinearSeq(createBattle))
     val msgs = Seq.empty[GameMessage]
 
     GameState(uuid, player, cards, dungeon, msgs)
@@ -59,17 +60,11 @@ object GameStateManager extends GameManager[GameState] {
   override def takeCommand(command: CommandRequest, game: GameState): GameState = {
 
     command match {
-      case AttackRequest(targetId) =>
-        val completeTurn = EncounterLens.modify(GameOps.updateUntilPlayerIsActive)
-
-        val action = BasicAttack.attack(targetId) andThen completeTurn
-
-        action(game)
-
+      case AttackRequest(targetId) => {
+        GameTurnLoop.takeTurn(game, BasicAttack.attack(targetId))
+      }
       case SingleTargetActionRequest(_, _) => game
       case MultiTargetActionRequest(_, _) => game
     }
   }
-
-
 }

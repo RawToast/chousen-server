@@ -2,7 +2,8 @@ package chousen.game.core
 
 import java.util.UUID
 
-import chousen.api.data.{CharStats, Enemy, GameMessage, Player}
+import chousen.api.data._
+import monocle.Lens
 import org.scalatest.WordSpec
 
 class GameOpsSpec extends WordSpec {
@@ -258,5 +259,65 @@ class GameOpsSpec extends WordSpec {
         assert(EncounterOps.getActive(next) == Left(nextPlayer))
       }
     }
+
+    "provided with various enemies including a fast enemy" should {
+      val player = Player("Player", CharStats(100, 100), 0)
+
+      def createSlime = Enemy("Slime", UUID.randomUUID(), CharStats(10, 10), 0)
+      def createSloth = Enemy("Sloth", UUID.randomUUID(), CharStats(15, 15, strength = 11, speed = 5), 0)
+      def createRat = Enemy("Rat", UUID.randomUUID(), CharStats(10, 10, strength = 6, speed = 10), 0)
+      val es: Set[Enemy] = Set(createSlime, createSloth, createRat)
+
+      val (nextPlayer, nextEnemies, nextMessages) = GameOps.updateUntilPlayerIsActive(player, es, Seq.empty[GameMessage])
+
+      "result in the player being active" in {
+          assert(nextPlayer.position >= 100)
+      }
+
+      "the player loses health" in {
+        assert(nextPlayer.stats.currentHp < player.stats.maxHp)
+        assert(nextPlayer.stats.currentHp < player.stats.currentHp)
+        assert(nextPlayer.stats.currentHp < nextPlayer.stats.maxHp)
+      }
+    }
   }
+
+  "GameOps.isGameActive" when {
+
+    val player = Player("Player", speed10Char, position = 0)
+    val enemies = Set(Enemy("Enemy", UUID.randomUUID(), speed8Char, position = 0))
+    val emptyMessages = Seq.empty[GameMessage]
+
+
+    "Provided with an alive player and enemies" should {
+
+      val result: Boolean = GameOps.isGameActive((player, enemies, emptyMessages))
+
+      "State the game is active" in {
+        assert(result)
+      }
+    }
+
+    "Provided with a dead player and alive enemies" should {
+
+      val deadPlayer = PlayerOptics.charStats.composeLens(CharStatsOptics.hp).set(0).apply(player)
+
+      val result = GameOps.isGameActive((deadPlayer, enemies, emptyMessages))
+
+      "State the game is not active" in {
+        assert(!result)
+      }
+    }
+
+    "Provided with an alive player and no enemies" should {
+
+      val result: Boolean = GameOps.isGameActive((player, Set.empty, emptyMessages))
+
+      "State the game is not active" in {
+        assert(!result)
+      }
+    }
+
+  }
+
 }

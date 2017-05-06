@@ -8,7 +8,7 @@ import monocle._
 import monocle.function.At
 import monocle.macros.GenLens
 
-object GameStateOps {
+object GameStateOptics {
 
   val EncounterLens: Lens[GameState, (Player, Set[Enemy], Seq[GameMessage])] =
     LensUtil.triLens(GenLens[GameState](_.player),
