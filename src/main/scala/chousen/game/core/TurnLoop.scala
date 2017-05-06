@@ -1,6 +1,7 @@
 package chousen.game.core
 
 import chousen.api.data.GameState
+import monocle.macros.GenLens
 
 object GameTurnLoop extends TurnLoop(GameOperations.UpdateUntilPlayerIsActive,
   GameOperations.PreTurnValidation, GameOperations.PostTurnValidation, GameOperations.GameOvercheck)
@@ -18,9 +19,8 @@ abstract class TurnLoop(takeEnemyTurns: GameOperation, preTurnValidation: Forked
       checkedGame <- preTurnValidation(gameState)
       postInput <- playerInput.andThen(postTurnValidation)(checkedGame)
       postEnemy = takeEnemyTurns(postInput)
-      postCheck2 <- gameOverCheck(postEnemy)
-    } yield postCheck2
-
+      postCheck <- gameOverCheck(postEnemy)
+    } yield postCheck
 
     // Return the state as is
     newState match {
@@ -45,7 +45,9 @@ abstract class GameOperations(gameops: GameOps) {
 
   val PostTurnValidation: ForkedGameOption = gs => {
     val isActive = GameStateOptics.EncounterLens.get _ andThen gameops.isGameActive
-    if (isActive(gs)) Right(gs)
+    if (isActive(gs)) Right {
+      GenLens[GameState](_.dungeon.currentEncounter.enemies).modify(_.filter(_.stats.currentHp > 0))(gs)
+    }
     else Left(gs)
   }
 

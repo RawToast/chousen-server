@@ -35,8 +35,6 @@ abstract class GameOps(encOps: EncounterOps) {
   }
 
 
-  def update(ed: EncounterData): EncounterData = update(ed._1, ed._2, ed._3)
-
   def update(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage]): EncounterData = {
 
     def process: EncounterUpdate = encOps.ensureActive _ andThen encOps.announceActive

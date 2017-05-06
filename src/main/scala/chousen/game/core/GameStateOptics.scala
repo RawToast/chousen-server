@@ -2,13 +2,15 @@ package chousen.game.core
 
 import java.util.UUID
 
-import chousen.api.data.{Enemy, GameMessage, GameState, Player}
+import chousen.api.data._
 import chousen.util.LensUtil
 import monocle._
 import monocle.function.At
 import monocle.macros.GenLens
 
 object GameStateOptics {
+
+  val DungeonLens = GenLens[GameState](_.dungeon)
 
   val PlayerLens = GenLens[GameState](_.player)
   val MessagesLens = GenLens[GameState](_.messages)
@@ -17,6 +19,9 @@ object GameStateOptics {
     LensUtil.triLens(PlayerLens,
       GenLens[GameState](_.dungeon.currentEncounter.enemies),
       MessagesLens)
+
+  val DungeonTriLens: Lens[GameState, (Player, Dungeon, Seq[GameMessage])] =
+    LensUtil.triLens(PlayerLens, DungeonLens, MessagesLens)
 
   def targettedLens(uuid: UUID): Lens[GameState, (Player, Option[Enemy], Seq[GameMessage])] = {
     import monocle.Iso
