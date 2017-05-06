@@ -10,10 +10,13 @@ import monocle.macros.GenLens
 
 object GameStateOptics {
 
+  val PlayerLens = GenLens[GameState](_.player)
+  val MessagesLens = GenLens[GameState](_.messages)
+
   val EncounterLens: Lens[GameState, (Player, Set[Enemy], Seq[GameMessage])] =
-    LensUtil.triLens(GenLens[GameState](_.player),
+    LensUtil.triLens(PlayerLens,
       GenLens[GameState](_.dungeon.currentEncounter.enemies),
-      GenLens[GameState](_.messages))
+      MessagesLens)
 
   def targettedLens(uuid: UUID): Lens[GameState, (Player, Option[Enemy], Seq[GameMessage])] = {
     import monocle.Iso
