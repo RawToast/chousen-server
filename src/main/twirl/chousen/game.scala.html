@@ -54,27 +54,65 @@
                 <div id="inputRow" class="row" style="padding: 8px 0px">
                     <div id="input" class=".col-md-8 .col-md-offset-2">
                     @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
-                        <button id=@{e.id.toString} type="button" class="btn btn-default" uri=@{s"game/" + gameState.id + "/attack"}>
+                        <button id=@{e.id.toString} type="button" class="btn btn-atk btn-default" uri=@{s"game/" + gameState.id + "/attack"}>
                             Attack @{e.name}
                         </button>
                     }
                     </div>
+
+                    <div id="input" class=".col-md-8 .col-md-offset-2">
+                    @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
+                        <button id=@{e.id.toString} type="button" class="btn btn-com btn-default" actionId="CrushingBlow" uri=@{s"game/" + gameState.id + "/basic"}>
+                            Crushing Blow @{e.name}
+                        </button>
+                    }
+                    </div>
+
+                    <div id="input" class=".col-md-8 .col-md-offset-2">
+                    @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
+                        <button id=@{e.id.toString} type="button" class="btn btn-com btn-default" actionId="QuickAttack" uri=@{s"game/" + gameState.id + "/basic"}>
+                            Quick Attack @{e.name}
+                        </button>
+                    }
+                    </div>
+
+
                 </div>
 
         </div>
 
         <script type="text/javascript">
 
-                $('.btn').click(function(evt) {
+                $('.btn-atk').click(function(evt) {
                     evt.preventDefault();
 
                         var id = $(this).attr("id");
                         var uri = $(this).attr("uri");
 
 
-                    jQuery.post(uri, JSON.stringify({ targetId: id }), function(result) {
+                    $.post(uri, JSON.stringify({ targetId: id }), function(result) {
                             window.location.replace(window.location.href)
                         });
+                });
+
+
+                $('.btn-com').click(function(evt) {
+                    evt.preventDefault();
+
+                    var id = $(this).attr("id");
+                    var uri = $(this).attr("uri");
+                    var actionId = $(this).attr("actionId");
+
+                    jQuery.ajax ({
+                        url: uri,
+                        type: "POST",
+                        data: JSON.stringify({ targetId: id, actionId: actionId }),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function(){
+                            window.location.replace(window.location.href)
+                        }
+                    });
                 });
 
 

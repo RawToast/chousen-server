@@ -4,7 +4,7 @@ import java.util.UUID
 
 import chousen.api.data.PlayerOptics.PlayerCharStatsLens
 import chousen.api.data._
-import chousen.game.actions.BasicAttack
+import chousen.game.actions.{BasicAttack, SingleTargetActionHandler}
 import chousen.game.core.GameStateOptics.{EncounterLens, MessagesLens}
 
 import scala.collection.LinearSeq
@@ -74,10 +74,13 @@ object GameStateManager extends GameManager[GameState] {
         val newState = GameTurnLoop.takeTurn(game, BasicAttack.attack(targetId))
         transition(newState)
       }
-      case SingleTargetActionRequest(_, _) => game
+      case SingleTargetActionRequest(targetId, actionId) => {
+        val ns= GameTurnLoop.takeTurn(game,
+          SingleTargetActionHandler.handle(targetId, actionId))
+        transition(ns)
+      }
       case MultiTargetActionRequest(_, _) => game
     }
-
 
     newState
   }

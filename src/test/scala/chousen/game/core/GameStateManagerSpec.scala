@@ -102,6 +102,47 @@ class GameStateManagerSpec extends WordSpec {
           assert(latestMessages.exists(_.text.contains(" damage.")))
         }
       }
+
+
+      "Is a basic single target command" should {
+        val target = GameStateGenerator.firstEnemy
+        val singleTargetCommand =  SingleTargetActionRequest(target.id, CrushingBlow)
+        val result = gameStateManager.takeCommand(singleTargetCommand, startedGame)
+
+        "Lower the targeted enemies health" in {
+          assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == target.id))
+          assert(startedGame.dungeon.currentEncounter.enemies.size == 2)
+          assert(result.dungeon.currentEncounter.enemies.size == 2)
+          assert(getFirstEnemyHp(result) < getFirstEnemyHp(startedGame))
+        }
+
+        "the player is set back to active" in {
+          assert(result.player.position > 100)
+          val active = EncounterOps.getActive((result.player,
+            result.dungeon.currentEncounter.enemies, result.messages))
+          assert(active.isLeft)
+
+          import chousen.api.types.Implicits._
+          active.swap.foreach(_ ~= startedGame.player)
+        }
+
+        lazy val numberOfNewMessages = result.messages.size - startedGame.messages.size
+        lazy val latestMessages = result.messages.takeRight(numberOfNewMessages)
+
+        "game messages are created for the player's attack" in {
+          assert(result.messages.size > startedGame.messages.size)
+
+          assert(latestMessages.head == GameMessage("Test Player jumps in the air and lands a crushing blow to Slime!"))
+          assert(latestMessages(1).text.contains("Slime takes"))
+        }
+
+        "the enemy takes their turn" in {
+          assert(result.player.stats.currentHp < startedGame.player.stats.currentHp)
+
+          assert(latestMessages.exists(_.text.contains("Slime attacks Test Player")))
+          assert(latestMessages.exists(_.text.contains(" damage.")))
+        }
+      }
     }
 
     "Transitioning a game" should {

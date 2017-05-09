@@ -3,7 +3,7 @@ package chousen
 import java.util.UUID
 
 import chousen.api.core.Http4sMappedGameAccess
-import chousen.api.data.{AttackRequest, GameState}
+import chousen.api.data.{ActionId, AttackRequest, GameState, SingleTargetActionRequest}
 import chousen.game.core.GameStateManager
 import org.http4s.util.StreamApp
 import play.twirl.api.Html
@@ -80,6 +80,7 @@ object Http4sServer extends StreamApp with Http4sMappedGameAccess {
   }
 
 
+
   val inputEndpoints = HttpService {
     // Attack
     case req@POST -> Root / "game" / uuid / "attack" =>
@@ -87,6 +88,20 @@ object Http4sServer extends StreamApp with Http4sMappedGameAccess {
       withGame(id) { g =>
         for {
           ar <- req.as(jsonOf[AttackRequest])
+          ng = GameStateManager.takeCommand(ar, g)
+          _ = {store = store + (ng.id -> ng)}
+          res <- Ok.apply(ng.asJson)
+        } yield res
+      }
+
+    case req@POST -> Root / "game" / uuid / "basic" =>
+      import io.circe.generic.extras.semiauto._
+      implicit val enumDecoder = deriveEnumerationDecoder[ActionId]
+
+      val id = UUID.fromString(uuid)
+      withGame(id) { g =>
+        for {
+          ar <- req.as(jsonOf[SingleTargetActionRequest])
           ng = GameStateManager.takeCommand(ar, g)
           _ = {store = store + (ng.id -> ng)}
           res <- Ok.apply(ng.asJson)

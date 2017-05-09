@@ -50,6 +50,7 @@ def http4s = Seq(
 
 def circe = Seq(
   "io.circe" %% "circe-generic" % CIRCE_VERSION,
+  "io.circe" %% "circe-generic-extras" % CIRCE_VERSION,
   "io.circe" %% "circe-literal" % CIRCE_VERSION,
   "io.circe" %% "circe-optics" % CIRCE_VERSION
 )
