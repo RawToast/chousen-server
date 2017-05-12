@@ -30,7 +30,7 @@ object GameStateManager extends GameManager[GameState] {
   override def create(name: String, uuid: UUID): GameState = {
 
     val player = Player(name, CharStats(100, 100), 0)
-    val cards = Cards(List(Card("Fireball Card", "Casts a fireball, dealing damage to all enemies")))
+    val cards = Cards(List.empty)
 
     import chousen.api.types.Implicits._
 
@@ -70,15 +70,15 @@ object GameStateManager extends GameManager[GameState] {
   override def takeCommand(command: CommandRequest, game: GameState): GameState = {
 
     val newState = command match {
-      case AttackRequest(targetId) => {
+      case SelfInflictingActionRequest(_) =>
+          game
+      case AttackRequest(targetId) =>
         val newState = GameTurnLoop.takeTurn(game, BasicAttack.attack(targetId))
         transition(newState)
-      }
-      case SingleTargetActionRequest(targetId, actionId) => {
+      case SingleTargetActionRequest(targetId, actionId) =>
         val ns= GameTurnLoop.takeTurn(game,
           SingleTargetActionHandler.handle(targetId, actionId))
         transition(ns)
-      }
       case MultiTargetActionRequest(_, _) => game
     }
 

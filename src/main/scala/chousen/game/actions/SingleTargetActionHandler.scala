@@ -7,7 +7,7 @@ import chousen.game.core.GameStateOptics
 
 object SingleTargetActionHandler {
 
-  def handle(targetId: UUID, actionId: ActionId) = {
+  def handle(targetId: UUID, actionId: SingleTargetAction) = {
 
     GameStateOptics.targettedLens(targetId).modify {
       case (p, es, msgs) =>
@@ -27,7 +27,7 @@ object SingleTargetActionHandler {
         val dmg = (p.stats.strength * 2) + p.stats.dexterity - e.stats.vitality
 
         val targetMsg = GameMessage(s"${p.name} jumps in the air and lands a crushing blow to ${e.name}!")
-        val dmgMsg = GameMessage(s"${e.name} takes $dmg.")
+        val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
 
         // This should be replaced by a generic attack/damage function
         val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
@@ -46,7 +46,7 @@ object SingleTargetActionHandler {
         val dmg = (p.stats.dexterity * 2) - e.stats.vitality - 2
 
         val targetMsg = GameMessage(s"${p.name} uses Quick Attack!")
-        val dmgMsg = GameMessage(s"${e.name} takes $dmg.")
+        val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
 
         // This should be replaced by a generic attack/damage function
         val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)

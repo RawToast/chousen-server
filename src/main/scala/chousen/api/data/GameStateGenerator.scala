@@ -27,7 +27,12 @@ object GameStateGenerator {
   private def gameStateWithPlayer(player:Player) = {
     import cats.implicits._
     import chousen.api.types.Implicits._
-    val cards = Cards(List(Card("Fireball Card", "Casts a fireball, dealing damage to all enemies")))
+    //val cards = Cards(List(Card("Fireball Card", "Casts a fireball, dealing damage to all enemies")))
+
+    val cCard = Card("Crushing Blow", "Deals heavy damage to a single target", CrushingBlow)
+    val qaCard = Card("Quick Attack", "Attack with reduced movement penalty", QuickAttack)
+
+    val cards = Cards(List(cCard, qaCard))
     def mkBattle(e: Enemy) = Battle(Set(e))
     def createBattle = mkBattle(firstEnemy) |+| mkBattle(secondEnemy)
 
@@ -38,6 +43,5 @@ object GameStateGenerator {
   }
 
   private def createSlime(id: UUID) = Enemy("Slime", id, CharStats(999, 999), 0)
-
 
 }

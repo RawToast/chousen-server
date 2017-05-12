@@ -15,7 +15,7 @@ class CommandRequestSpec extends WordSpec{
   "CommandRequest" must {
 
     "Work" in {
-      implicit val actionIdFormatter = deriveEnumerationEncoder[ActionId]
+      implicit val actionIdFormatter = deriveEnumerationEncoder[SingleTargetAction]
       val request = SingleTargetActionRequest(UUID.randomUUID(), CrushingBlow)
 
       println(request.asJson)
