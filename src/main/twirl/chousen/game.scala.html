@@ -54,60 +54,32 @@
                 <div id="inputRow" class="row" style="padding: 8px 0px">
                     <div id="input" class=".col-md-8 .col-md-offset-2">
                     @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
-                        <button id=@{e.id.toString} type="button" class="btn btn-atk btn-default" uri=@{s"game/" + gameState.id + "/attack"}>
+                        <button id=@{e.id.toString} type="button" class="btn btn-atk btn-default" uri="@{s"game/" + gameState.id + "/attack"}">
                             Attack @{e.name}
                         </button>
                     }
                     </div>
 
-                    <!--<div id="input2" class=".col-md-8 .col-md-offset-2">-->
-                    <!--@for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {-->
-                        <!--<button id=@{e.id.toString} type="button" class="btn btn-com btn-default" actionId="CrushingBlow" uri=@{s"game/" + gameState.id + "/basic"}>-->
-                            <!--Crushing Blow @{e.name}-->
-                        <!--</button>-->
-                    <!--}-->
-                    <!--</div>-->
-
-                    <!--<div id="input3" class=".col-md-8 .col-md-offset-2">-->
-                    <!--@for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {-->
-                        <!--<button id=@{e.id.toString} type="button" class="btn btn-com btn-default" actionId="QuickAttack" uri=@{s"game/" + gameState.id + "/basic"}>-->
-                            <!--Quick Attack @{e.name}-->
-                        <!--</button>-->
-                    <!--}-->
-                    <!--</div>-->
 
 
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">
-                            Quick Attack
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
-                            <li>
-                                <a href="#" id=@{e.id.toString} class="btn btn-com" actionId="QuickAttack" uri=@{s"game/" + gameState.id + "/basic"}>
-                            @{e.name}
-                            </a></li>
-                            }
-                        </ul>
-                    </div>
-
-                    <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                    @for(c <- gameState.cards.hand) {
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false">
-                        Crushing Blow
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
-                        <li>
-                            <a href="#" id=@{e.id.toString} class="btn btn-com" actionId="CrushingBlow" uri=@{s"game/" + gameState.id + "/basic"}>
-                            @{e.name}
-                            </a></li>
-                        }
-                    </ul>
-                    </div>
+                                @{c.name}
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                            @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
+                                <li>
+                                    <a href="#"class="btn btn-com" eid="@{e.id.toString}"  actionId="@{c.actionId}" uri="@{s"game/" + gameState.id + "/basic"}">
+                                    @{e.name}
+                                    </a>
+                                </li>
+                            }
+                            </ul>
+                        </div>
+                    }
 
                 </div>
 
@@ -131,7 +103,7 @@
                 $('.btn-com').click(function(evt) {
                     evt.preventDefault();
 
-                    var id = $(this).attr("id");
+                    var id = $(this).attr("eid");
                     var uri = $(this).attr("uri");
                     var actionId = $(this).attr("actionId");
 

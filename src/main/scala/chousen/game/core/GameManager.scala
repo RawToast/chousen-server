@@ -30,7 +30,8 @@ object GameStateManager extends GameManager[GameState] {
   override def create(name: String, uuid: UUID): GameState = {
 
     val player = Player(name, CharStats(100, 100), 0)
-    val cards = Cards(List.empty)
+    val cards = Cards(List(Card("Crushing Blow", "Deals heavy damage to a single target", CrushingBlow),
+      Card("Quick Attack", "Attack with reduced movement penalty", QuickAttack)))
 
     import chousen.api.types.Implicits._
 

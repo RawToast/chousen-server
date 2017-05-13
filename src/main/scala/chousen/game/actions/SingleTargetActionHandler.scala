@@ -7,22 +7,40 @@ import chousen.game.core.GameStateOptics
 
 object SingleTargetActionHandler {
 
-  def handle(targetId: UUID, actionId: SingleTargetAction) = {
-
+  def handle(targetId: UUID, action: SingleTargetAction): (GameState) => GameState = {
     GameStateOptics.targettedLens(targetId).modify {
       case (p, es, msgs) =>
-       actionId match {
-        case CrushingBlow => crushingBlow(p, es, msgs)
-        case QuickAttack => quickAttack(p, es, msgs)
-      }
+        es match {
+          case Some(e) => singleTargetActions(action)(p, e, msgs)
+          case None => (p, es, msgs)
+        }
     }.andThen(handleDead)
   }
 
+//
+//  private def handleMultiTargetAction(targetId: Set[UUID], action: MultiAction): (GameState) => GameState = {
+//    GameStateOptics.targettedLens(targetId.head).modify {
+//      case (p, es, msgs) =>
+//        es match {
+//          case Some(e) => singleTargetActions(action)(p, e, msgs)
+//          case None => (p, es, msgs)
+//        }
+//    }.andThen(handleDead)
+//  }
+
+//  private def handleSelfAction(action: SelfAction) = GameStateOptics.PlayerLens.modify _
 
 
-  def crushingBlow(p: Player, optE: Option[Enemy], msgs: Seq[GameMessage]) = {
-    optE match {
-      case Some(e) =>
+  private def singleTargetActions(actionId: SingleTargetAction): (Player, Enemy, Seq[GameMessage]) => (Player, Option[Enemy], Seq[GameMessage]) =
+    actionId match {
+      case CrushingBlow => crushingBlow
+      case QuickAttack => quickAttack
+    }
+
+
+
+
+  def crushingBlow(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
         // Not safe, could deal negative damage!
         val dmg = (p.stats.strength * 2) + p.stats.dexterity - e.stats.vitality
 
@@ -34,30 +52,24 @@ object SingleTargetActionHandler {
           .modify(hp => hp - dmg)(e)
         val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
-        (p.copy(position = p.position - 130), Option(newEnemy), gameMessages)
-      case None => (p, optE, msgs)
-    }
+      (p.copy(position = p.position - 130), Option(newEnemy), gameMessages)
   }
 
-  def quickAttack(p: Player, optE: Option[Enemy], msgs: Seq[GameMessage]) = {
-    optE match {
-      case Some(e) =>
-        // Not safe, could deal negative damage!
-        val dmg = (p.stats.dexterity * 2) - e.stats.vitality - 2
 
-        val targetMsg = GameMessage(s"${p.name} uses Quick Attack!")
-        val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
+  def quickAttack(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+      // Not safe, could deal negative damage!
+      val dmg = (p.stats.dexterity * 2) - e.stats.vitality - 2
 
-        // This should be replaced by a generic attack/damage function
-        val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
-          .modify(hp => hp - dmg)(e)
-        val gameMessages = msgs :+ targetMsg :+ dmgMsg
+      val targetMsg = GameMessage(s"${p.name} uses Quick Attack!")
+      val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
 
-        (p.copy(position = p.position - 70), Option(newEnemy), gameMessages)
-      case None => (p, optE, msgs)
-    }
+      // This should be replaced by a generic attack/damage function
+      val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
+        .modify(hp => hp - dmg)(e)
+      val gameMessages = msgs :+ targetMsg :+ dmgMsg
+
+      (p.copy(position = p.position - 70), Option(newEnemy), gameMessages)
   }
-
 
 
   private def handleDead = GameStateOptics.EncounterLens.modify {

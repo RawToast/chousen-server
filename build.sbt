@@ -67,6 +67,8 @@ addCommandAlias("validate", ";coverage;test;coverageReport")
 coverageMinimum := 75 // Continually increase
 coverageFailOnMinimum := true
 
+TwirlKeys.templateImports := Seq()
+
 // Compiler options
 val compilerOptions = Seq(
   "-deprecation",
@@ -75,11 +77,11 @@ val compilerOptions = Seq(
   "-language:_",
   "-unchecked",
   "-Xlint:_",
-  //"-Xfatal-warnings",
+   "-Xfatal-warnings",
   "-Xfuture",
   "-Yno-adapted-args",
   "-Ywarn-numeric-widen",
-  //"-Ywarn-unused-import",
+  "-Ywarn-unused-import",
   "-Ywarn-value-discard"
 )
 val additionalOptions = Seq(
