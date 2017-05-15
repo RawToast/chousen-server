@@ -30,8 +30,14 @@ object GameStateManager extends GameManager[GameState] {
   override def create(name: String, uuid: UUID): GameState = {
 
     val player = Player(name, CharStats(100, 100), 0)
-    val cards = Cards(List(Card("Crushing Blow", "Deals heavy damage to a single target", CrushingBlow),
-      Card("Quick Attack", "Attack with reduced movement penalty", QuickAttack)))
+    val cards = Cards(List(Card("Crushing Blow", "Deals heavy damage, but has an increased movement penalty ", CrushingBlow),
+      Card("Crushing Blow", "Deals heavy damage, but has an increased movement penalty", CrushingBlow),
+      Card("Quick Attack", "Attack with reduced movement penalty", QuickAttack),
+      Card("Quick Attack", "Attack with reduced movement penalty", QuickAttack),
+      Card("Heal Wounds", "Heals 30HP", HealWounds),
+      Card("Heal Wounds", "Heals 30HP", HealWounds),
+      Card("Fireball", "Deals fire damage to all enemies", Fireball),
+      Card("Fireball", "Deals fire damage to all enemies", Fireball)))
 
     import chousen.api.types.Implicits._
 
@@ -43,17 +49,20 @@ object GameStateManager extends GameManager[GameState] {
 
     def createRat = Battle(Set(Enemy("Rat", UUID.randomUUID(), CharStats(7, 7, strength = 6, speed = 12), 0)))
 
-    def orcus = battleMonoid.empty |+| Enemy("Orcus Malorcus", UUID.randomUUID(), CharStats(50, 50, strength = 11, vitality = 11, speed = 7), 0)
+    def orc = battleMonoid.empty |+| Enemy("Orc", UUID.randomUUID(), CharStats(50, 50, strength = 11, vitality = 11, speed = 7), 0)
 
     val battle1 = createRat
-    val battle2 = createSlime |+| createSloth
-    val battle3 = orcus |+| createRat |+| createSloth
+    val battle2 = createRat |+| createRat |+| createRat |+| createRat
+    val battle3 = createSloth
+    val battle4 = createSlime |+| createSloth |+| createRat
+    val battle5 = orc |+| createRat |+| createSloth |+| createRat |+| createSlime
 
-    val dungeon = Dungeon(battle1, LinearSeq(battle2, battle3))
+    val dungeon = Dungeon(battle1, LinearSeq(battle2, battle3, battle4, battle5))
     val msgs = Seq.empty[GameMessage]
 
     GameState(uuid, player, cards, dungeon, msgs)
   }
+
 
   override def start(game: GameState): GameState = {
     val update = EncounterLens.modify {
@@ -76,9 +85,9 @@ object GameStateManager extends GameManager[GameState] {
       case AttackRequest(targetId) =>
         val newState = GameTurnLoop.takeTurn(game, BasicAttack.attack(targetId))
         transition(newState)
-      case SingleTargetActionRequest(targetId, actionId) =>
+      case SingleTargetActionRequest(targetId, action) =>
         val ns= GameTurnLoop.takeTurn(game,
-          SingleTargetActionHandler.handle(targetId, actionId))
+          SingleTargetActionHandler.handle(targetId, action))
         transition(ns)
       case MultiTargetActionRequest(_, _) => game
     }

@@ -3,7 +3,7 @@ package chousen
 import java.util.UUID
 
 import chousen.api.core.Http4sMappedGameAccess
-import chousen.api.data.{SingleTargetAction, AttackRequest, GameState, SingleTargetActionRequest}
+import chousen.api.data._
 import chousen.game.core.GameStateManager
 import org.http4s.util.StreamApp
 import play.twirl.api.Html
@@ -102,6 +102,48 @@ object Http4sServer extends StreamApp with Http4sMappedGameAccess {
       withGame(id) { g =>
         for {
           ar <- req.as(jsonOf[SingleTargetActionRequest])
+          ng = GameStateManager.takeCommand(ar, g)
+          _ = {store = store + (ng.id -> ng)}
+          res <- Ok.apply(ng.asJson)
+        } yield res
+      }
+
+    case req@POST -> Root / "game" / uuid / "single" =>
+      import io.circe.generic.extras.semiauto._
+      implicit val enumDecoder = deriveEnumerationDecoder[SingleTargetAction]
+
+      val id = UUID.fromString(uuid)
+      withGame(id) { g =>
+        for {
+          ar <- req.as(jsonOf[SingleTargetActionRequest])
+          ng = GameStateManager.takeCommand(ar, g)
+          _ = {store = store + (ng.id -> ng)}
+          res <- Ok.apply(ng.asJson)
+        } yield res
+      }
+
+    case req@POST -> Root / "game" / uuid / "self" =>
+      import io.circe.generic.extras.semiauto._
+      implicit val enumDecoder = deriveEnumerationDecoder[SelfAction]
+
+      val id = UUID.fromString(uuid)
+      withGame(id) { g =>
+        for {
+          ar <- req.as(jsonOf[SelfInflictingActionRequest])
+          ng = GameStateManager.takeCommand(ar, g)
+          _ = {store = store + (ng.id -> ng)}
+          res <- Ok.apply(ng.asJson)
+        } yield res
+      }
+
+    case req@POST -> Root / "game" / uuid / "multi" =>
+      import io.circe.generic.extras.semiauto._
+      implicit val enumDecoder = deriveEnumerationDecoder[MultiAction]
+
+      val id = UUID.fromString(uuid)
+      withGame(id) { g =>
+        for {
+          ar <- req.as(jsonOf[MultiTargetActionRequest])
           ng = GameStateManager.takeCommand(ar, g)
           _ = {store = store + (ng.id -> ng)}
           res <- Ok.apply(ng.asJson)
