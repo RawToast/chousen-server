@@ -11,8 +11,8 @@ object GameStateGenerator {
 
   val playerName = "Test Player"
 
-  val firstEnemy: Enemy = createSlime(UUID.fromString("299dcde7-88e0-4e1d-9024-69baa0fda0a2"))
-  val secondEnemy: Enemy = createSlime(UUID.fromString("403768ae-a336-4654-bebf-6920ff4d5eb8"))
+  val firstEnemy: Enemy = createBigSlime(UUID.fromString("299dcde7-88e0-4e1d-9024-69baa0fda0a2"))
+  val secondEnemy: Enemy = createBigSlime(UUID.fromString("403768ae-a336-4654-bebf-6920ff4d5eb8"))
 
   val staticGameState: GameState = {
     val player = Player(playerName, CharStats(100, 100), 0)
@@ -41,6 +41,6 @@ object GameStateGenerator {
     GameState(uuid, player, cards, dungeon, msgs)
   }
 
-  private def createSlime(id: UUID) = Enemy("Slime", id, CharStats(999, 999), 0)
+  private def createBigSlime(id: UUID) = Enemy("Slime", id, CharStats(999, 999), 0)
 
 }

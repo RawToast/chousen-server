@@ -7,7 +7,7 @@ import chousen.game.core.GameStateOptics
 
 object MultiTargetActionHandler extends ActionHandler {
 
-  def handleMultiTargetAction(targetId: Set[UUID], action: MultiAction): (GameState) => GameState = (gs: GameState) => {
+  def handle(targetId: Set[UUID], action: MultiAction): (GameState) => GameState = (gs: GameState) => {
 
     val message = action.toString.head + ('A' to 'Z').foldLeft(action.toString.tail){case (str: String, c: Char) =>
         str.replace(s"$c", s" $c")
@@ -27,7 +27,7 @@ object MultiTargetActionHandler extends ActionHandler {
     })
 
     if (gsWithMessage == newState) gs
-    else newState
+    else handleDead(newState)
   }
 
   private def singleTargetActions(action: MultiAction): (Player, Enemy, Seq[GameMessage]) => (Player, Option[Enemy], Seq[GameMessage]) = {
@@ -46,6 +46,6 @@ object MultiTargetActionHandler extends ActionHandler {
 
     val gameMessages: Seq[GameMessage] = msgs ++ dmgMsg
 
-    (p.copy(position = p.position), Option(newE), gameMessages)
+    (p.copy(position = p.position - 100), Option(newE), gameMessages)
   }
 }

@@ -19,7 +19,6 @@ trait GameManager[A] {
 
   def transition(game: A): A
 
-  // Returns None, when the card cannot be applied
   def useCard(card: Card, commandRequest: CommandRequest, game: A): A
 }
 
@@ -102,7 +101,7 @@ object GameStateManager extends GameManager[GameState] with GameStateCreation {
     val newState = command match {
       case SelfInflictingActionRequest(a) =>
         val ns = GameTurnLoop.takeTurn(game,
-          SelfActionHandler.handleSelfAction(a).apply)
+          SelfActionHandler.handle(a).apply)
           transition(ns)
       case AttackRequest(targetId) =>
         val newState = GameTurnLoop.takeTurn(game, BasicAttack.attack(targetId))
@@ -113,7 +112,7 @@ object GameStateManager extends GameManager[GameState] with GameStateCreation {
         transition(ns)
       case MultiTargetActionRequest(targets, action) =>
         val ns = GameTurnLoop.takeTurn(game,
-          MultiTargetActionHandler.handleMultiTargetAction(targets, action))
+          MultiTargetActionHandler.handle(targets, action))
         transition(ns)
     }
 

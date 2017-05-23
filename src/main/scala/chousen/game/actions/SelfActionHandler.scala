@@ -7,7 +7,7 @@ import chousen.util.LensUtil
 
 object SelfActionHandler {
 
-  def handleSelfAction(action: SelfAction): (GameState) => GameState = {
+  def handle(action: SelfAction): (GameState) => GameState = {
     LensUtil.duoLens(PlayerLens, MessagesLens).modify{
       case (p:Player, msgs: Seq[GameMessage]) =>
         actions(action)(p, msgs)
@@ -22,7 +22,7 @@ object SelfActionHandler {
 
   def healWounds(p: Player, msgs: Seq[GameMessage]) = {
     val healAmount = 10 + p.stats.intellect + (p.stats.maxHp / 10)
-    val message = GameMessage(s"${p.name} uses Heal Wounds and recovers $healAmount!")
+    val message = GameMessage(s"${p.name} uses Heal Wounds and recovers ${healAmount}HP!")
     val gameMessages = msgs :+ message
 
     val lens = LensUtil.duoLens(PlayerOptics.PlayerHealthLens, PlayerOptics.PlayerPositionLens)
