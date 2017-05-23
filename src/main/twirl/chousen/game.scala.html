@@ -61,7 +61,7 @@
                     </div>
 
 
-                    @for(c <- gameState.cards.hand.toSet.filter(_.action.isInstanceOf[chousen.api.data.SingleTargetAction])) {
+                    @for(c <- gameState.cards.hand.filter(_.action.isInstanceOf[chousen.api.data.SingleTargetAction])) {
                         <div class="btn-group" role="group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false" title="@{c.description}">
@@ -72,7 +72,7 @@
                             @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
                                 <li>
                                     <a href="#" class="btn btn-com" eid="@{e.id.toString}" action="@{c.action}"
-                                    uri="@{s"game/" + gameState.id + "/basic"}">
+                                    uri="@{s"game/" + gameState.id + "/single/" + c.id}">
                                         @{e.name}
                                     </a>
                                 </li>
@@ -81,23 +81,22 @@
                         </div>
                     }
                     <div class="btn-group" role="group">
-                    @for(c <- gameState.cards.hand.toSet.filter(_.action.isInstanceOf[chousen.api.data.SelfAction])) {
-
+                    @for(c <- gameState.cards.hand.filter(_.action.isInstanceOf[chousen.api.data.SelfAction])) {
                             <button type="button" class="btn btn-default btn-self" action="@{c.action}"
                                     title="@{c.description}"
-                                    uri="@{s"game/" + gameState.id + "/self"}">
+                                    uri="@{s"game/" + gameState.id + "/self/" + c.id}">
                                     @{c.name}
                                     </button>
                     }
                     </div>
 
                     <div class="btn-group" role="group">
-                    @for(c <- gameState.cards.hand.toSet.filter(_.action.isInstanceOf[chousen.api.data.MultiAction])) {
+                    @for(c <- gameState.cards.hand.filter(_.action.isInstanceOf[chousen.api.data.MultiAction])) {
 
                         <button type="button" class="btn btn-default btn-multi" action="@{c.action}"
                             title="@{c.description}"
                             eids="@{gameState.dungeon.currentEncounter.enemies.map(_.id).mkString(",")}"
-                            uri="@{s"game/" + gameState.id + "/multi"}">
+                            uri="@{s"game/" + gameState.id + "/multi/" + c.id}">
                             @{c.name}
                         </button>
                     }

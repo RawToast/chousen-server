@@ -17,7 +17,7 @@ case class Player(name:String, stats: CharStats, position: Int)
 
 case class Cards(hand: List[Card])
 
-case class Card(name: String, description: String, action: Action)
+case class Card(id: UUID, name: String, description: String, action: Action)
 
 case class GameMessage(text: String)
 

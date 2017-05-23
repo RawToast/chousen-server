@@ -24,15 +24,14 @@ object GameStateGenerator {
     gameStateWithPlayer(player)
   }
 
+  lazy val crushingBlowCard = Card(UUID.fromString("614e566c-03a5-43b0-ae55-e131f4428fc3"), "Crushing Blow", "Deals heavy damage to a single target", CrushingBlow)
+  lazy val quickAttackCard = Card(UUID.fromString("e5992111-b751-4cbb-8be0-22e0b6d8f4a6"), "Quick Attack", "Attack with reduced movement penalty", QuickAttack)
+
   private def gameStateWithPlayer(player:Player) = {
     import cats.implicits._
     import chousen.api.types.Implicits._
-    //val cards = Cards(List(Card("Fireball Card", "Casts a fireball, dealing damage to all enemies")))
 
-    val cCard = Card("Crushing Blow", "Deals heavy damage to a single target", CrushingBlow)
-    val qaCard = Card("Quick Attack", "Attack with reduced movement penalty", QuickAttack)
-
-    val cards = Cards(List(cCard, qaCard))
+    val cards = Cards(List(crushingBlowCard, quickAttackCard))
     def mkBattle(e: Enemy) = Battle(Set(e))
     def createBattle = mkBattle(firstEnemy) |+| mkBattle(secondEnemy)
 
