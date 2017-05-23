@@ -54,27 +54,129 @@
                 <div id="inputRow" class="row" style="padding: 8px 0px">
                     <div id="input" class=".col-md-8 .col-md-offset-2">
                     @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
-                        <button id=@{e.id.toString} type="button" class="btn btn-default" uri=@{s"game/" + gameState.id + "/attack"}>
+                        <button id=@{e.id.toString} type="button" class="btn btn-atk btn-default" uri="@{s"game/" + gameState.id + "/attack"}">
                             Attack @{e.name}
                         </button>
                     }
                     </div>
+
+
+                    @for(c <- gameState.cards.hand.filter(_.action.isInstanceOf[chousen.api.data.SingleTargetAction])) {
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false" title="@{c.description}">
+                                @{c.name}
+                            <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                            @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
+                                <li>
+                                    <a href="#" class="btn btn-com" eid="@{e.id.toString}" action="@{c.action}"
+                                    uri="@{s"game/" + gameState.id + "/single/" + c.id}">
+                                        @{e.name}
+                                    </a>
+                                </li>
+                            }
+                            </ul>
+                        </div>
+                    }
+                    <div class="btn-group" role="group">
+                    @for(c <- gameState.cards.hand.filter(_.action.isInstanceOf[chousen.api.data.SelfAction])) {
+                            <button type="button" class="btn btn-default btn-self" action="@{c.action}"
+                                    title="@{c.description}"
+                                    uri="@{s"game/" + gameState.id + "/self/" + c.id}">
+                                    @{c.name}
+                                    </button>
+                    }
+                    </div>
+
+                    <div class="btn-group" role="group">
+                    @for(c <- gameState.cards.hand.filter(_.action.isInstanceOf[chousen.api.data.MultiAction])) {
+
+                        <button type="button" class="btn btn-default btn-multi" action="@{c.action}"
+                            title="@{c.description}"
+                            eids="@{gameState.dungeon.currentEncounter.enemies.map(_.id).mkString(",")}"
+                            uri="@{s"game/" + gameState.id + "/multi/" + c.id}">
+                            @{c.name}
+                        </button>
+                    }
+                    </div>
+
                 </div>
 
         </div>
 
         <script type="text/javascript">
 
-                $('.btn').click(function(evt) {
+                $('.btn-atk').click(function(evt) {
                     evt.preventDefault();
 
                         var id = $(this).attr("id");
                         var uri = $(this).attr("uri");
 
 
-                    jQuery.post(uri, JSON.stringify({ targetId: id }), function(result) {
+                    $.post(uri, JSON.stringify({ targetId: id }), function(result) {
                             window.location.replace(window.location.href)
                         });
+                });
+
+
+                $('.btn-multi').click(function(evt) {
+                    evt.preventDefault();
+
+                    var eids = [];
+                    var idsString = $(this).attr("eids");
+                    eids = idsString.split(",");
+                    var uri = $(this).attr("uri");
+                    var action = $(this).attr("action");
+
+                    jQuery.ajax ({
+                        url: uri,
+                        type: "POST",
+                        data: JSON.stringify({ targetId: eids, action: action }),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function(){
+                            window.location.replace(window.location.href)
+                        }
+                    });
+                });
+
+                $('.btn-com').click(function(evt) {
+                    evt.preventDefault();
+
+                    var id = $(this).attr("eid");
+                    var uri = $(this).attr("uri");
+                    var action = $(this).attr("action");
+
+                    jQuery.ajax ({
+                        url: uri,
+                        type: "POST",
+                        data: JSON.stringify({ targetId: id, action: action }),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function(){
+                            window.location.replace(window.location.href)
+                        }
+                    });
+                });
+
+                $('.btn-self').click(function(evt) {
+                    evt.preventDefault();
+
+                    var uri = $(this).attr("uri");
+                    var action = $(this).attr("action");
+
+                    jQuery.ajax ({
+                        url: uri,
+                        type: "POST",
+                        data: JSON.stringify({ action: action }),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function(){
+                            window.location.replace(window.location.href)
+                        }
+                    });
                 });
 
 

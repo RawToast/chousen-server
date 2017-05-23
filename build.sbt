@@ -26,7 +26,7 @@ resolvers ++= Seq(
 
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.1"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
-//libraryDependencies ++= finch
+// libraryDependencies ++= finch
 libraryDependencies ++= http4s
 libraryDependencies ++= circe
 libraryDependencies ++= monocle
@@ -50,6 +50,7 @@ def http4s = Seq(
 
 def circe = Seq(
   "io.circe" %% "circe-generic" % CIRCE_VERSION,
+  "io.circe" %% "circe-generic-extras" % CIRCE_VERSION,
   "io.circe" %% "circe-literal" % CIRCE_VERSION,
   "io.circe" %% "circe-optics" % CIRCE_VERSION
 )
@@ -66,6 +67,8 @@ addCommandAlias("validate", ";coverage;test;coverageReport")
 coverageMinimum := 75 // Continually increase
 coverageFailOnMinimum := true
 
+TwirlKeys.templateImports := Seq()
+
 // Compiler options
 val compilerOptions = Seq(
   "-deprecation",
@@ -74,11 +77,11 @@ val compilerOptions = Seq(
   "-language:_",
   "-unchecked",
   "-Xlint:_",
-  //"-Xfatal-warnings",
+   "-Xfatal-warnings",
   "-Xfuture",
   "-Yno-adapted-args",
   "-Ywarn-numeric-widen",
-  //"-Ywarn-unused-import",
+  "-Ywarn-unused-import",
   "-Ywarn-value-discard"
 )
 val additionalOptions = Seq(

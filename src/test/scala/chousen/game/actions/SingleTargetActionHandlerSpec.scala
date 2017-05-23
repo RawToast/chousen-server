@@ -2,36 +2,37 @@ package chousen.game.actions
 
 import java.util.UUID
 
-import chousen.api.data.{GameMessage, GameState, GameStateGenerator}
+import chousen.api.data.{GameState, GameStateGenerator, QuickAttack}
 import chousen.game.core.GameStateManager
 import org.scalatest.WordSpec
 
-class BasicAttackSpec extends WordSpec {
+class SingleTargetActionHandlerSpec extends WordSpec {
 
-  "Basic Attack" when {
+  "SingleTargetActionHandler" when {
 
-    "Given a UUID that does not match any enemy" should {
+    "Given an Action and an UUID that does not match any enemy" should {
 
-      val initialState: GameState = GameStateGenerator.staticGameState
+      val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
+      val startedGame: GameState = GameStateManager.start(initialState)
+
       val altUUID = UUID.fromString("0709daa1-5975-4f28-b0be-a676f87b70f0")
-      lazy val result = BasicAttack.attack(altUUID).apply(GameStateGenerator.staticGameState)
+      lazy val result = SingleTargetActionHandler.handle(altUUID, QuickAttack).apply(startedGame)
 
       "Have no affect on the player" in {
-        assert(result.player == initialState.player)
+        assert(result.player == startedGame.player)
       }
 
       "Have no affect on the enemies" in {
-        assert(result.dungeon == initialState.dungeon)
+        assert(result.dungeon == startedGame.dungeon)
       }
     }
 
-
-    "Given a UUID for an enemy" should {
+    "Given an Action and a UUID for an enemy" should {
       val gameState = GameStateGenerator.gameStateWithFastPlayer
       val startedGame: GameState = GameStateManager.start(gameState)
 
       val target = GameStateGenerator.firstEnemy
-      val result = BasicAttack.attack(target.id)(startedGame)
+      lazy val result = SingleTargetActionHandler.handle(target.id, QuickAttack).apply(startedGame)
 
       "Lower the targeted enemies health" in {
         assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == target.id))
@@ -49,9 +50,6 @@ class BasicAttackSpec extends WordSpec {
 
       "game messages are created for the player's attack" in {
         assert(result.messages.size > startedGame.messages.size)
-
-        assert(latestMessages.head == GameMessage("Test Player attacks Slime."))
-        assert(latestMessages(1).text.contains("Test Player's attack deals"))
       }
 
       "the enemy does not take a turn" in {

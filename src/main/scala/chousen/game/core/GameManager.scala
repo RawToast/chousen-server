@@ -4,14 +4,11 @@ import java.util.UUID
 
 import chousen.api.data.PlayerOptics.PlayerCharStatsLens
 import chousen.api.data._
-import chousen.game.actions.BasicAttack
+import chousen.game.actions.{BasicAttack, MultiTargetActionHandler, SelfActionHandler, SingleTargetActionHandler}
+import chousen.game.core.GameStateManager.startEncounterMessage
 import chousen.game.core.GameStateOptics.{EncounterLens, MessagesLens}
 
 import scala.collection.LinearSeq
-
-trait Command
-
-trait ActionCalc
 
 trait GameManager[A] {
   def create(name: String, uuid: UUID = UUID.randomUUID()): A
@@ -21,16 +18,26 @@ trait GameManager[A] {
   def takeCommand(command: CommandRequest, game: A): A
 
   def transition(game: A): A
+
+  def useCard(card: Card, commandRequest: CommandRequest, game: A): A
 }
 
-object GameStateManager extends GameManager[GameState] {
+trait GameStateCreation {
+  def createAndStart(name: String, uuid: UUID = UUID.randomUUID()): GameState = {
+    start(create(name, uuid))
+  }
 
-  import cats.syntax.all._
-
-  override def create(name: String, uuid: UUID): GameState = {
+  def create(name: String, uuid: UUID = UUID.randomUUID()): GameState = {
+    import cats.syntax.all._
 
     val player = Player(name, CharStats(100, 100), 0)
-    val cards = Cards(List(Card("Fireball Card", "Casts a fireball, dealing damage to all enemies")))
+    val cards = Cards(List(Card(UUID.randomUUID(), "Crushing Blow", "Deals heavy damage, but has an increased movement penalty ", CrushingBlow),
+      Card(UUID.randomUUID(), "Crushing Blow", "Deals heavy damage, but has an increased movement penalty", CrushingBlow),
+      Card(UUID.randomUUID(), "Quick Attack", "Attack with reduced movement penalty", QuickAttack),
+      Card(UUID.randomUUID(), "Quick Attack", "Attack with reduced movement penalty", QuickAttack),
+      Card(UUID.randomUUID(), "Heal Wounds", "Heals 30HP", HealWounds),
+      Card(UUID.randomUUID(), "Fireball", "Deals fire damage to all enemies", Fireball),
+      Card(UUID.randomUUID(), "Fireball", "Deals fire damage to all enemies", Fireball)))
 
     import chousen.api.types.Implicits._
 
@@ -38,23 +45,25 @@ object GameStateManager extends GameManager[GameState] {
 
     def createSlime = Battle(Set(Enemy("Slime", UUID.randomUUID(), CharStats(10, 10), 0)))
 
-    def createSloth = Battle(Set(Enemy("Sloth", UUID.randomUUID(), CharStats(23, 23, strength = 12, speed = 3), 0)))
+    def createSloth = Battle(Set(Enemy("Sloth", UUID.randomUUID(), CharStats(23, 23, strength = 12, speed = 4), 0)))
 
-    def createRat = Battle(Set(Enemy("Rat", UUID.randomUUID(), CharStats(7, 7, strength = 6, speed = 12), 0)))
+    def createRat = Battle(Set(Enemy("Rat", UUID.randomUUID(), CharStats(8, 8, strength = 6, speed = 12), 0)))
 
-    def orcus = battleMonoid.empty |+| Enemy("Orcus Malorcus", UUID.randomUUID(), CharStats(50, 50, strength = 11, vitality = 11, speed = 7), 0)
+    def orc = battleMonoid.empty |+| Enemy("Orc", UUID.randomUUID(), CharStats(50, 50, strength = 11, vitality = 11, speed = 7), 0)
 
-    val battle1 = createRat
-    val battle2 = createSlime |+| createSloth
-    val battle3 = orcus |+| createRat |+| createSloth
+    val battle1 = createSloth
+    val battle2 = createRat |+| createRat |+| createRat |+| createRat
+   // val battle3 = createSlime |+| orc
+    val battle4 = createSlime |+| createSloth |+| createRat
+    val battle5 = orc |+| createRat |+| createSloth |+| createRat |+| createSlime
 
-    val dungeon = Dungeon(battle1, LinearSeq(battle2, battle3))
+    val dungeon = Dungeon(battle1, LinearSeq(battle2, battle4, battle5))
     val msgs = Seq.empty[GameMessage]
 
     GameState(uuid, player, cards, dungeon, msgs)
   }
 
-  override def start(game: GameState): GameState = {
+  def start(game: GameState): GameState = {
     val update = EncounterLens.modify {
       case (p: Player, es: Set[Enemy], m: Seq[GameMessage]) =>
 
@@ -66,18 +75,46 @@ object GameStateManager extends GameManager[GameState] {
 
     update(game)
   }
+}
+
+object GameStateManager extends GameManager[GameState] with GameStateCreation {
+
+  override def useCard(card: Card, commandRequest: CommandRequest, game: GameState): GameState = {
+    import chousen.api.types.Implicits._
+
+    game.cards.hand
+      .find(_ ~= card)
+      .find(c => commandRequest match {
+        case AttackRequest(_) => false
+        case SelfInflictingActionRequest(action) => c.action == action
+        case SingleTargetActionRequest(_, action) => c.action == action
+        case MultiTargetActionRequest(_, action) => c.action == action
+      })
+      .fold(game)(c =>
+        GameStateOptics.HandLens.modify((cs:List[Card]) => cs.filterNot(_ ~= c))
+          .compose(takeCommand(commandRequest, _: GameState))
+          .apply(game)
+    )
+  }
 
   override def takeCommand(command: CommandRequest, game: GameState): GameState = {
-
     val newState = command match {
-      case AttackRequest(targetId) => {
+      case SelfInflictingActionRequest(a) =>
+        val ns = GameTurnLoop.takeTurn(game,
+          SelfActionHandler.handle(a).apply)
+          transition(ns)
+      case AttackRequest(targetId) =>
         val newState = GameTurnLoop.takeTurn(game, BasicAttack.attack(targetId))
         transition(newState)
-      }
-      case SingleTargetActionRequest(_, _) => game
-      case MultiTargetActionRequest(_, _) => game
+      case SingleTargetActionRequest(targetId, action) =>
+        val ns= GameTurnLoop.takeTurn(game,
+          SingleTargetActionHandler.handle(targetId, action))
+        transition(ns)
+      case MultiTargetActionRequest(targets, action) =>
+        val ns = GameTurnLoop.takeTurn(game,
+          MultiTargetActionHandler.handle(targets, action))
+        transition(ns)
     }
-
 
     newState
   }
@@ -116,4 +153,5 @@ object GameStateManager extends GameManager[GameState] {
     if (enemies.size == 1) GameMessage(s"${player.name} is attacked by ${enemies.head.name}!")
     else GameMessage(s"${player.name} is attacked by: ${enemies.toList.map(_.name).mkString(", ")}!")
   }
+
 }

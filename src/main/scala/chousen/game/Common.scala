@@ -1,22 +1,5 @@
 package chousen.game
 
-import chousen.api.data.CharStats
-
-trait Nameable {
-  val name: String
-}
-
-
-trait Stats {
-  val stats: CharStats
-}
-
-trait CanLevel {
-  stats: CharStats =>
-  def levelUp(): CharStats
-}
-
-
 trait Options[T] {
 
   val items: List[T]
