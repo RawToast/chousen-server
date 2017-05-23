@@ -27,7 +27,10 @@ object MultiTargetActionHandler extends ActionHandler {
     })
 
     if (gsWithMessage == newState) gs
-    else handleDead(newState)
+    else GameStateOptics.PlayerLens.composeLens(PlayerOptics.PlayerPositionLens)
+      .modify(p => p - 100)
+      .andThen(handleDead)
+      .apply(gs)
   }
 
   private def singleTargetActions(action: MultiAction): (Player, Enemy, Seq[GameMessage]) => (Player, Option[Enemy], Seq[GameMessage]) = {
@@ -46,6 +49,6 @@ object MultiTargetActionHandler extends ActionHandler {
 
     val gameMessages: Seq[GameMessage] = msgs ++ dmgMsg
 
-    (p.copy(position = p.position - 100), Option(newE), gameMessages)
+    (p, Option(newE), gameMessages)
   }
 }
