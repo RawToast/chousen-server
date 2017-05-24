@@ -30,7 +30,7 @@ object MultiTargetActionHandler extends ActionHandler {
     else GameStateOptics.PlayerLens.composeLens(PlayerOptics.PlayerPositionLens)
       .modify(p => p - 100)
       .andThen(handleDead)
-      .apply(gs)
+      .apply(newState)
   }
 
   private def singleTargetActions(action: MultiAction): (Player, Enemy, Seq[GameMessage]) => (Player, Option[Enemy], Seq[GameMessage]) = {
