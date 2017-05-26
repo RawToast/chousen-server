@@ -37,7 +37,7 @@ trait GameStateCreation {
       Card(UUID.randomUUID(), "Quick Attack", "Attack with reduced movement penalty", QuickAttack),
       Card(UUID.randomUUID(), "Heal Wounds", "Heals 30HP", HealWounds),
       Card(UUID.randomUUID(), "Fireball", "Deals fire damage to all enemies", Fireball),
-      Card(UUID.randomUUID(), "Fireball", "Deals fire damage to all enemies", Fireball)))
+      Card(UUID.randomUUID(), "Fireball", "Deals fire damage to all enemies", Fireball)), Seq.empty, Seq.empty)
 
     import chousen.api.types.Implicits._
 
@@ -91,7 +91,7 @@ object GameStateManager extends GameManager[GameState] with GameStateCreation {
         case MultiTargetActionRequest(_, action) => c.action == action
       })
       .fold(game)(c =>
-        GameStateOptics.HandLens.modify((cs:List[Card]) => cs.filterNot(_ ~= c))
+        GameStateOptics.HandLens.modify((cs:Seq[Card]) => cs.filterNot(_ ~= c))
           .compose(takeCommand(commandRequest, _: GameState))
           .apply(game)
     )
@@ -132,7 +132,7 @@ object GameStateManager extends GameManager[GameState] with GameStateCreation {
         GameStateOptics.DungeonTriLens.modify { (pdm: (Player, Dungeon, Seq[GameMessage])) =>
           val (p, d, msgs) = pdm
           val newDungeon = Dungeon(d.remainingEncounters.head, d.remainingEncounters.tail)
-          val healAmount = 20.min(p.stats.maxHp - p.stats.currentHp)
+          val healAmount = Math.min(Math.min(0, p.stats.maxHp - p.stats.currentHp), 20)
 
           val restMsg = GameMessage(s"${p.name} rests and recovers $healAmount hp.")
           val strongerMsg = GameMessage(s"${p.name} feels stronger after resting.")
@@ -142,9 +142,8 @@ object GameStateManager extends GameManager[GameState] with GameStateCreation {
           val newPlayer = PlayerCharStatsLens.composeLens(CharStatsOptics.hp).modify(_ + healAmount).compose(
           PlayerCharStatsLens.modify(cs =>
             cs.copy(strength = cs.strength + 1, dexterity = cs.dexterity + 1, vitality = cs.vitality + 1))).apply(p)
-
           (newPlayer, newDungeon, msgs :+ restMsg :+ strongerMsg :+ progressMsg :+ encounterMsg)
-        }(game)
+        }.andThen(GameStateOptics.EncounterLens.modify(GameOps.updateUntilPlayerIsActive)).apply(game)
       } else game
     }
   }

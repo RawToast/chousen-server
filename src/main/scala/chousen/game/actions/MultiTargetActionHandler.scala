@@ -20,7 +20,7 @@ object MultiTargetActionHandler extends ActionHandler {
       GameStateOptics.targettedLens(id).modify {
         case (p, es, msgs) =>
           es match {
-            case Some(e) => singleTargetActions(action)(p, e, msgs)
+            case Some(e) => actions(action)(p, e, msgs)
             case None => (p, es, msgs)
           }
       }.apply(gs)
@@ -33,7 +33,7 @@ object MultiTargetActionHandler extends ActionHandler {
       .apply(newState)
   }
 
-  private def singleTargetActions(action: MultiAction): (Player, Enemy, Seq[GameMessage]) => (Player, Option[Enemy], Seq[GameMessage]) = {
+  private def actions(action: MultiAction): (Player, Enemy, Seq[GameMessage]) => (Player, Option[Enemy], Seq[GameMessage]) = {
     action match {
       case Fireball => fireball
     }

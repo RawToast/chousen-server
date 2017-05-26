@@ -31,7 +31,7 @@ object GameStateGenerator {
     import cats.implicits._
     import chousen.api.types.Implicits._
 
-    val cards = Cards(List(crushingBlowCard, quickAttackCard))
+    val cards = Cards(Seq(crushingBlowCard, quickAttackCard), Seq.empty, Seq.empty)
     def mkBattle(e: Enemy) = Battle(Set(e))
     def createBattle = mkBattle(firstEnemy) |+| mkBattle(secondEnemy)
 
