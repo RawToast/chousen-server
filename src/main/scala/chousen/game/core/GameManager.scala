@@ -5,6 +5,7 @@ import java.util.UUID
 import chousen.api.data.PlayerOptics.PlayerCharStatsLens
 import chousen.api.data._
 import chousen.game.actions.{BasicAttack, MultiTargetActionHandler, SelfActionHandler, SingleTargetActionHandler}
+import chousen.game.cards.CardManager
 import chousen.game.core.GameStateManager.startEncounterMessage
 import chousen.game.core.GameStateOptics.{EncounterLens, MessagesLens}
 
@@ -80,21 +81,16 @@ trait GameStateCreation {
 object GameStateManager extends GameManager[GameState] with GameStateCreation {
 
   override def useCard(card: Card, commandRequest: CommandRequest, game: GameState): GameState = {
-    import chousen.api.types.Implicits._
 
-    game.cards.hand
-      .find(_ ~= card)
-      .find(c => commandRequest match {
+    CardManager.playCard(card) { (c: Card) =>
+      if (commandRequest match {
         case AttackRequest(_) => false
         case SelfInflictingActionRequest(action) => c.action == action
         case SingleTargetActionRequest(_, action) => c.action == action
         case MultiTargetActionRequest(_, action) => c.action == action
-      })
-      .fold(game)(c =>
-        GameStateOptics.HandLens.modify((cs:Seq[Card]) => cs.filterNot(_ ~= c))
-          .compose(takeCommand(commandRequest, _: GameState))
-          .apply(game)
-    )
+      }) takeCommand(commandRequest, game)
+      else game
+    }.apply(game)
   }
 
   override def takeCommand(command: CommandRequest, game: GameState): GameState = {
