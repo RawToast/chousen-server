@@ -6,7 +6,6 @@ import chousen.game.core.GameStateOptics
 import scala.util.Random
 
 object CardManager extends CardManager {
-
   val initialCards = CardCatalogue.defaultDeck
 }
 
@@ -35,26 +34,22 @@ trait CardManager {
   }
 
   def startGame(cards:Seq[data.Card]): Cards = {
-
-    val shuffledCards = Random.shuffle(cards)
+    val shuffledCards = Random.shuffle(Random.shuffle(cards))
 
     val (hand, deck) = shuffledCards.splitAt(MAX_HAND_SIZE)
 
     Cards(hand, deck, Seq.empty)
   }
 
-  def drawCard(cards: Cards): Cards = {
-    cards.deck match {
-      case h :: t => Cards(cards.hand :+ h, t, cards.discard)
-      case Nil => cards
-    }
+  def drawCard(cards: Cards): Cards = cards.deck match {
+    case h :: t => Cards(cards.hand :+ h, t, cards.discard)
+    case Nil => cards
   }
 
   def moveLastDiscardToTopDeck(cards: Cards): Cards = {
     cards.discard.headOption.fold(cards){ (c: data.Card) =>
       Cards(cards.hand, Seq(c) ++ cards.deck, cards.discard.tail)
     }
-
   }
 
   def moveCardToBottomOfDeck(card: data.Card): Cards => Cards = {

@@ -9,6 +9,7 @@ import chousen.game.cards.{CardCatalogue, CardManager}
 import chousen.game.core.GameStateManager.startEncounterMessage
 import chousen.game.core.GameStateOptics.{EncounterLens, MessagesLens}
 
+import scala.annotation.tailrec
 import scala.collection.LinearSeq
 
 trait GameManager[A] {
@@ -38,23 +39,30 @@ trait GameStateCreation {
 
     implicit def toBattle(e: Enemy): Battle = Battle(Set(e))
 
-    def createStone = Battle(Set(Enemy("Stone", UUID.randomUUID(), CharStats(1, 1, strength = 6, speed = 0), 0)))
+    def campFire = Battle(Set(Enemy("Camp Fire", UUID.randomUUID(), CharStats(3, 3, strength = 6, speed = 0), 0)))
 
-    def createSlime = Battle(Set(Enemy("Slime", UUID.randomUUID(), CharStats(10, 10), 0)))
+    def createSlime = Battle(Set(Enemy("Slime", UUID.randomUUID(), CharStats(12, 12), 0)))
 
     def createSloth = Battle(Set(Enemy("Sloth", UUID.randomUUID(), CharStats(23, 23, strength = 12, speed = 4), 0)))
 
-    def createRat = Battle(Set(Enemy("Rat", UUID.randomUUID(), CharStats(7, 7, strength = 6, speed = 12), 0)))
+    def createRat = Battle(Set(Enemy("Rat", UUID.randomUUID(), CharStats(7, 7, strength = 4, speed = 12), 0)))
 
-    def orc = battleMonoid.empty |+| Enemy("Orc", UUID.randomUUID(), CharStats(50, 50, strength = 11, vitality = 11, speed = 7), 0)
+    def orc = battleMonoid.empty |+| Enemy("Orc", UUID.randomUUID(), CharStats(80, 80, strength = 12, vitality = 11, speed = 7), 0)
+
+    def giantOrc = battleMonoid.empty |+| Enemy("Giant Orc", UUID.randomUUID(), CharStats(130, 130, strength = 40, vitality = 14, speed = 2), -10)
 
     val battle1 = createSloth
     val battle2 = createRat |+| createRat |+| createRat |+| createRat
-    val battle3 = createStone
-    val battle4 = createSlime |+| createSloth |+| createRat
-    val battle5 = orc |+| createRat |+| createSloth |+| createRat |+| createSlime
+    val battle3 = createSlime |+| campFire
 
-    val dungeon = Dungeon(battle1, LinearSeq(battle2, battle3, battle4, battle5))
+    val battle4 = createSlime |+| createSloth |+| createSlime
+    val battle5 = orc |+| createRat |+| createSloth |+| createRat |+| createSlime
+    val battle6 = campFire
+
+    val battle7 = orc |+| giantOrc
+
+
+    val dungeon = Dungeon(battle1, LinearSeq(battle2, battle3, battle4, battle5, battle6, battle7))
     val msgs = Seq.empty[GameMessage]
 
     GameState(uuid, player, cards, dungeon, msgs)
@@ -136,7 +144,13 @@ object GameStateManager extends GameManager[GameState] with GameStateCreation {
             cs.copy(strength = cs.strength + 1, dexterity = cs.dexterity + 1, vitality = cs.vitality + 1))).apply(p)
           (newPlayer, newDungeon, msgs :+ restMsg :+ strongerMsg :+ progressMsg :+ encounterMsg)
         }.andThen(GameStateOptics.EncounterLens.modify(GameOps.updateUntilPlayerIsActive)).apply(game)
-        val cards = CardManager.drawCard(g.cards)
+
+        @tailrec
+        def refillHand(cards: Cards): Cards = {
+          if (cards.hand.size >= 7) cards
+          else refillHand(CardManager.drawCard(cards))
+        }
+        val cards = refillHand(g.cards)
         g.copy(cards = cards)
       } else game
     }
