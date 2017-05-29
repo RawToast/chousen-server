@@ -36,7 +36,7 @@ trait Magic extends CardBuilder{
 
 trait Strength extends CardBuilder{
   def crushingBlow = Card(UUID.randomUUID(), "Crushing Blow", "Deals heavy damage, but has an increased movement penalty", CrushingBlow)
-  def hamstring = Card(UUID.randomUUID(), "Hamstring", "Attack that permanently reduces the speed of a single enemy", Hamstring)
+  def hamstring = Card(UUID.randomUUID(), "Hamstring", "Attack that reduces the speed of a single enemy", Hamstring)
   def stunningStrike = Card(UUID.randomUUID(), "Stunning Strike", "Attack that stuns a single enemy", StunningStrike)
   def groundStrike = Card(UUID.randomUUID(), "Ground Strike", "Slam the ground with your weapon, hitting all enemies and reducing their position", GroundStrike)
 }

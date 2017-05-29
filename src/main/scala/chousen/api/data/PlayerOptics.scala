@@ -38,4 +38,5 @@ object CharStatsOptics {
 
 object EnemyOptics {
   var charStats = GenLens[Enemy](_.stats)
+  var position = GenLens[Enemy](_.position)
 }
