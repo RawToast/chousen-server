@@ -1,7 +1,4 @@
 package chousen.game.cards
-
-import java.util.UUID
-
 import chousen.api.data
 import chousen.api.data._
 import chousen.game.core.GameStateOptics
@@ -10,23 +7,7 @@ import scala.util.Random
 
 object CardManager extends CardManager {
 
-  val initialCards = Seq(Card(UUID.randomUUID(), "Crushing Blow", "Deals heavy damage, but has an increased movement penalty ", CrushingBlow),
-    Card(UUID.randomUUID(), "Crushing Blow", "Deals heavy damage, but has an increased movement penalty", CrushingBlow),
-    Card(UUID.randomUUID(), "Crushing Blow", "Deals heavy damage, but has an increased movement penalty", CrushingBlow),
-    Card(UUID.randomUUID(), "Crushing Blow", "Deals heavy damage, but has an increased movement penalty", CrushingBlow),
-    Card(UUID.randomUUID(), "Quick Attack", "Attack with reduced movement penalty", QuickAttack),
-    Card(UUID.randomUUID(), "Quick Attack", "Attack with reduced movement penalty", QuickAttack),
-    Card(UUID.randomUUID(), "Quick Attack", "Attack with reduced movement penalty", QuickAttack),
-    Card(UUID.randomUUID(), "Quick Attack", "Attack with reduced movement penalty", QuickAttack),
-    Card(UUID.randomUUID(), "Heal Wounds", "Heals 30HP", HealWounds),
-    Card(UUID.randomUUID(), "Heal Wounds", "Heals 30HP", HealWounds),
-    Card(UUID.randomUUID(), "Heal Wounds", "Heals 30HP", HealWounds),
-    Card(UUID.randomUUID(), "Heal Wounds", "Heals 30HP", HealWounds),
-    Card(UUID.randomUUID(), "Fireball", "Deals fire damage to all enemies", Fireball),
-    Card(UUID.randomUUID(), "Fireball", "Deals fire damage to all enemies", Fireball),
-    Card(UUID.randomUUID(), "Fireball", "Deals fire damage to all enemies", Fireball),
-    Card(UUID.randomUUID(), "Fireball", "Deals fire damage to all enemies", Fireball))
-
+  val initialCards = CardCatalogue.defaultDeck
 }
 
 

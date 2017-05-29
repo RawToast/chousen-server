@@ -1,12 +1,19 @@
 package chousen.api.data
 
+import monocle.PLens
 import monocle.macros.GenLens
 
 
 object PlayerOptics {
   val PlayerCharStatsLens = GenLens[Player](_.stats)
 
-  val PlayerHealthLens = PlayerCharStatsLens.composeLens(CharStatsOptics.hp)
+  val PlayerHealthLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.hp)
+  val PlayerMaxHealthLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.maxHp)
+  val PlayerStrengthLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.strength)
+  val PlayerDexterityLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.dexterity)
+  val PlayerIntellectLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.intellect)
+  val PlayerVitalityLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.vitality)
+  val PlayerSpeedLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.speed)
   val PlayerPositionLens = GenLens[Player](_.position)
 }
 
@@ -19,6 +26,7 @@ object CharStatsOptics {
   // val currentHp = Lens[CharStats, Int](_.currentHp)((hp:Int) => s => s.copy(currentHp = hp))
 
   val hp = GenLens[CharStats](_.currentHp)
+  val maxHp = GenLens[CharStats](_.maxHp)
 
   val strength = GenLens[CharStats](_.strength)
   val dexterity = GenLens[CharStats](_.dexterity)

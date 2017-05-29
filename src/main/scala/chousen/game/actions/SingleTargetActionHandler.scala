@@ -21,6 +21,10 @@ object SingleTargetActionHandler extends ActionHandler{
     actionId match {
       case CrushingBlow => crushingBlow
       case QuickAttack => quickAttack
+      case Pain => quickAttack
+      case Hamstring => quickAttack
+      case StunningStrike => quickAttack
+      case Assassinate => quickAttack
     }
 
 

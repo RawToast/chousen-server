@@ -5,7 +5,7 @@ import java.util.UUID
 import chousen.api.data.PlayerOptics.PlayerCharStatsLens
 import chousen.api.data._
 import chousen.game.actions.{BasicAttack, MultiTargetActionHandler, SelfActionHandler, SingleTargetActionHandler}
-import chousen.game.cards.CardManager
+import chousen.game.cards.{CardCatalogue, CardManager}
 import chousen.game.core.GameStateManager.startEncounterMessage
 import chousen.game.core.GameStateOptics.{EncounterLens, MessagesLens}
 
@@ -32,33 +32,29 @@ trait GameStateCreation {
     import cats.syntax.all._
 
     val player = Player(name, CharStats(100, 100), 0)
-    val cards = Cards(List(Card(UUID.randomUUID(), "Crushing Blow", "Deals heavy damage, but has an increased movement penalty ", CrushingBlow),
-      Card(UUID.randomUUID(), "Crushing Blow", "Deals heavy damage, but has an increased movement penalty", CrushingBlow),
-      Card(UUID.randomUUID(), "Quick Attack", "Attack with reduced movement penalty", QuickAttack),
-      Card(UUID.randomUUID(), "Quick Attack", "Attack with reduced movement penalty", QuickAttack),
-      Card(UUID.randomUUID(), "Heal Wounds", "Heals 30HP", HealWounds),
-      Card(UUID.randomUUID(), "Fireball", "Deals fire damage to all enemies", Fireball),
-      Card(UUID.randomUUID(), "Fireball", "Deals fire damage to all enemies", Fireball)), Seq.empty, Seq.empty)
+    val cards = CardManager.startGame(CardCatalogue.defaultDeck)
 
     import chousen.api.types.Implicits._
 
     implicit def toBattle(e: Enemy): Battle = Battle(Set(e))
 
+    def createStone = Battle(Set(Enemy("Stone", UUID.randomUUID(), CharStats(1, 1, strength = 6, speed = 0), 0)))
+
     def createSlime = Battle(Set(Enemy("Slime", UUID.randomUUID(), CharStats(10, 10), 0)))
 
     def createSloth = Battle(Set(Enemy("Sloth", UUID.randomUUID(), CharStats(23, 23, strength = 12, speed = 4), 0)))
 
-    def createRat = Battle(Set(Enemy("Rat", UUID.randomUUID(), CharStats(8, 8, strength = 6, speed = 12), 0)))
+    def createRat = Battle(Set(Enemy("Rat", UUID.randomUUID(), CharStats(7, 7, strength = 6, speed = 12), 0)))
 
     def orc = battleMonoid.empty |+| Enemy("Orc", UUID.randomUUID(), CharStats(50, 50, strength = 11, vitality = 11, speed = 7), 0)
 
     val battle1 = createSloth
     val battle2 = createRat |+| createRat |+| createRat |+| createRat
-   // val battle3 = createSlime |+| orc
+    val battle3 = createStone
     val battle4 = createSlime |+| createSloth |+| createRat
     val battle5 = orc |+| createRat |+| createSloth |+| createRat |+| createSlime
 
-    val dungeon = Dungeon(battle1, LinearSeq(battle2, battle4, battle5))
+    val dungeon = Dungeon(battle1, LinearSeq(battle2, battle3, battle4, battle5))
     val msgs = Seq.empty[GameMessage]
 
     GameState(uuid, player, cards, dungeon, msgs)

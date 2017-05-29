@@ -251,7 +251,7 @@ class GameOpsSpec extends WordSpec {
       def createRat = Enemy("Rat", UUID.randomUUID(), CharStats(10, 10, strength = 6, speed = 10), 0)
       val es: Set[Enemy] = Set(createSlime, createSloth, createRat)
 
-      val (nextPlayer, nextEnemies, nextMessages) = GameOps.updateUntilPlayerIsActive(player, es, Seq.empty[GameMessage])
+      val (nextPlayer, _, _) = GameOps.updateUntilPlayerIsActive(player, es, Seq.empty[GameMessage])
 
       "result in the player being active" in {
           assert(nextPlayer.position >= 100)

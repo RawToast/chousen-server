@@ -36,6 +36,10 @@ object MultiTargetActionHandler extends ActionHandler {
   private def actions(action: MultiAction): (Player, Enemy, Seq[GameMessage]) => (Player, Option[Enemy], Seq[GameMessage]) = {
     action match {
       case Fireball => fireball
+      case StaticField => fireball
+      case Shatter => fireball
+      case GroundStrike => fireball
+      case WindStrike => fireball
     }
   }
 
