@@ -121,10 +121,10 @@ object GameStateManager extends GameManager[GameState] with GameStateCreation {
     else {
       if (game.dungeon.currentEncounter.enemies.isEmpty && game.dungeon.remainingEncounters.isEmpty) MessagesLens.modify(msgs => msgs :+ winMessage)(game)
       else if (game.dungeon.currentEncounter.enemies.isEmpty && game.dungeon.remainingEncounters.nonEmpty) {
-        GameStateOptics.DungeonTriLens.modify { (pdm: (Player, Dungeon, Seq[GameMessage])) =>
+        val g = GameStateOptics.DungeonTriLens.modify { (pdm: (Player, Dungeon, Seq[GameMessage])) =>
           val (p, d, msgs) = pdm
           val newDungeon = Dungeon(d.remainingEncounters.head, d.remainingEncounters.tail)
-          val healAmount = Math.max(Math.max(0, p.stats.maxHp - p.stats.currentHp), 20)
+          val healAmount = Math.min(Math.max(0, p.stats.maxHp - p.stats.currentHp), 20)
 
           val restMsg = GameMessage(s"${p.name} rests and recovers $healAmount hp.")
           val strongerMsg = GameMessage(s"${p.name} feels stronger after resting.")
@@ -136,6 +136,8 @@ object GameStateManager extends GameManager[GameState] with GameStateCreation {
             cs.copy(strength = cs.strength + 1, dexterity = cs.dexterity + 1, vitality = cs.vitality + 1))).apply(p)
           (newPlayer, newDungeon, msgs :+ restMsg :+ strongerMsg :+ progressMsg :+ encounterMsg)
         }.andThen(GameStateOptics.EncounterLens.modify(GameOps.updateUntilPlayerIsActive)).apply(game)
+        val cards = CardManager.drawCard(g.cards)
+        g.copy(cards = cards)
       } else game
     }
   }
