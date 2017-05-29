@@ -30,7 +30,7 @@ trait PermanentEffects extends CardBuilder {
 trait Magic extends CardBuilder{
   def fireball = Card(UUID.randomUUID(), "Fireball", "Deals fire damage to all enemies", Fireball)
   def staticField = Card(UUID.randomUUID(), "Static Field", "Reduces all enemies hp by 25%", StaticField)
-  def pain = Card(UUID.randomUUID(), "Static Field", "Reduces the hp of a single target by 50%", Pain)
+  def pain = Card(UUID.randomUUID(), "Pain", "Reduces the hp of a single target by 50%", Pain)
   def shatter = Card(UUID.randomUUID(), "Shatter", "Reduce player to 1hp and deal the same damage to all enemies", Shatter)
 }
 

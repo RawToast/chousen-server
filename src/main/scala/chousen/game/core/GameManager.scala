@@ -124,7 +124,7 @@ object GameStateManager extends GameManager[GameState] with GameStateCreation {
         GameStateOptics.DungeonTriLens.modify { (pdm: (Player, Dungeon, Seq[GameMessage])) =>
           val (p, d, msgs) = pdm
           val newDungeon = Dungeon(d.remainingEncounters.head, d.remainingEncounters.tail)
-          val healAmount = Math.min(Math.min(0, p.stats.maxHp - p.stats.currentHp), 20)
+          val healAmount = Math.max(Math.max(0, p.stats.maxHp - p.stats.currentHp), 20)
 
           val restMsg = GameMessage(s"${p.name} rests and recovers $healAmount hp.")
           val strongerMsg = GameMessage(s"${p.name} feels stronger after resting.")
