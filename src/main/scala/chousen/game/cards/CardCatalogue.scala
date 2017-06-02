@@ -5,12 +5,11 @@ import java.util.UUID
 import chousen.api.data._
 
 object CardCatalogue extends Potions with PermanentEffects with Magic with Strength with Dexterity {
-  def defaultDeck = Seq(healWounds, fireball, staticField, pain, shatter, crushingBlow, hamstring, stunningStrike, groundStrike, quickAttack, assassinate, quickStep, windStrike) ++
-      Seq(healWounds, fireball, staticField, pain, shatter, crushingBlow, hamstring, stunningStrike, groundStrike, quickAttack, assassinate, quickStep, windStrike) ++
-      Seq(healWounds, fireball, staticField, pain, shatter, crushingBlow, hamstring, stunningStrike, groundStrike, quickAttack, assassinate, quickStep, windStrike) ++
-      Seq(healWounds, fireball, staticField, pain, shatter, crushingBlow, hamstring, stunningStrike, groundStrike, quickAttack, assassinate, quickStep, windStrike) ++
-      Seq(elixirOfStrength, elixirOfDexterity, elixirOfIntelligence, elixirOfVitality, rarePepe) ++
-      Seq(elixirOfStrength, elixirOfDexterity, elixirOfIntelligence, elixirOfVitality, rarePepe)
+  def defaultDeck = Seq(healWounds, assassinate, windStrike, staticField, drain, fireball, quickStep, rarePepe) ++
+    Seq(healWounds, stunningStrike, assassinate, windStrike, staticField, drain, fireball, quickStep, rarePepe) ++
+    Seq(healWounds, stunningStrike, assassinate, windStrike, staticField, drain, fireball, quickStep, rarePepe) ++
+    Seq(healWounds, stunningStrike, assassinate, windStrike, staticField, drain, fireball, quickStep, rarePepe) ++
+      Seq(elixirOfStrength, elixirOfDexterity, elixirOfIntelligence, elixirOfVitality)
 
   def magicDeck = Seq(fireball, healWounds, pain, shatter, magicMissile, drain, quickStep, elixirOfIntelligence, rarePepe) ++
     Seq(fireball, healWounds, pain, shatter, magicMissile, drain, quickStep, elixirOfIntelligence, rarePepe) ++
@@ -34,15 +33,15 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 sealed trait CardBuilder
 
 trait Potions extends CardBuilder {
-  def healWounds: Card = Card(UUID.randomUUID(), "Heal Wounds", "Heals 30HP", HealWounds)
+  def healWounds: Card = Card(UUID.randomUUID(), "Heal Wounds", "Heals around 30HP", HealWounds)
 }
 
 trait PermanentEffects extends CardBuilder {
-  def elixirOfStrength: Card = Card(UUID.randomUUID(), "Elixir of Strength ", "Permanently increases Strength by 2", ElixirOfStrength)
-  def elixirOfDexterity: Card = Card(UUID.randomUUID(), "Elixir of Dexterity ", "Permanently increases Dexterity by 2", ElixirOfDexterity)
-  def elixirOfIntelligence: Card = Card(UUID.randomUUID(), "Elixir of Intelligence ", "Permanently increases Intelligence by 2", ElixirOfIntelligence)
-  def elixirOfVitality: Card = Card(UUID.randomUUID(), "Elixir of Vitality ", "Permanently increases Vitality by 2", ElixirOfVitality)
-  def rarePepe: Card = Card(UUID.randomUUID(), "Rare Pepe ", "Level up", RarePepe)
+  def elixirOfStrength: Card = Card(UUID.randomUUID(), "Elixir of Strength ", "Permanently increases Strength by 3", ElixirOfStrength)
+  def elixirOfDexterity: Card = Card(UUID.randomUUID(), "Elixir of Dexterity ", "Permanently increases Dexterity by 3", ElixirOfDexterity)
+  def elixirOfIntelligence: Card = Card(UUID.randomUUID(), "Elixir of Intelligence ", "Permanently increases Intelligence by 3", ElixirOfIntelligence)
+  def elixirOfVitality: Card = Card(UUID.randomUUID(), "Elixir of Vitality ", "Permanently increases Vitality by 3", ElixirOfVitality)
+  def rarePepe: Card = Card(UUID.randomUUID(), "Rare Pepe ", "Level up, increasing all stats", RarePepe)
 }
 
 trait Magic extends CardBuilder{

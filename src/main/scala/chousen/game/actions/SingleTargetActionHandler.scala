@@ -77,7 +77,7 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def hamstring(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, 2 + p.stats.strength - e.stats.vitality)
+    val dmg = Math.max(1, (2 * p.stats.strength) - e.stats.vitality - 2)
 
     val targetMsg = GameMessage(s"${p.name} uses Hamstring!")
     val dmgMsg = GameMessage(s"${e.name} slows down and takes $dmg damage.")
@@ -94,7 +94,7 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def stunningStrike(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, ((p.stats.strength * 2) / 3) - e.stats.vitality)
+    val dmg = Math.max(1, (2 * p.stats.strength) - e.stats.vitality - 3)
 
     val targetMsg = GameMessage(s"${p.name} uses Stunning Strike!")
     val dmgMsg = GameMessage(s"${e.name} is stunned and takes $dmg damage!")
@@ -103,7 +103,7 @@ object SingleTargetActionHandler extends ActionHandler {
     val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
         .modify(hp => hp - dmg).
       andThen(EnemyOptics.position
-        .modify(s => s - 110))(e)
+        .modify(s => s - 100 - p.stats.strength))(e)
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
     (p.copy(position = p.position - 105), Option(newEnemy), gameMessages)
@@ -138,7 +138,7 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def magicMissile(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, e.stats.intellect * 2)
+    val dmg = Math.max(1, 2 + p.stats.intellect * 2)
 
     val targetMsg = GameMessage(s"${p.name} uses Magic Missile!")
     val dmgMsg = GameMessage(s"The missile strikes ${e.name} for $dmg damage!")
@@ -152,7 +152,7 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def drain(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, e.stats.intellect + (e.stats.maxHp / 10))
+    val dmg = Math.max(1, p.stats.intellect + (e.stats.maxHp / 10))
 
     val targetMsg = GameMessage(s"${p.name} uses Drain!")
     val dmgMsg = GameMessage(s"${p.name} drains $dmg health from ${e.name}!")

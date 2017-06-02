@@ -47,14 +47,14 @@ object MultiTargetActionHandler extends ActionHandler {
       case Fireball => fireball
       case StaticField => staticField
       case Shatter => shatter
-      case GroundStrike => fireball
-      case WindStrike => fireball
+      case GroundStrike => groundStrike
+      case WindStrike => windStrike
     }
   }
 
   def fireball(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, p.stats.intellect)
-    val gameMessages = msgs :+ GameMessage(s"${e.name} takes $dmg damage.")
+    val dmg = Math.max(1, (p.stats.intellect * 3) / 2)
+    val gameMessages = msgs :+ GameMessage(s"${e.name} is engulfed in flames and takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function
     val newE = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
@@ -76,10 +76,9 @@ object MultiTargetActionHandler extends ActionHandler {
   }
 
   def shatter(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+    val dmg = Math.max(p.stats.intellect, p.stats.intellect + p.stats.currentHp - e.stats.vitality)
 
-    val dmg = Math.max(1, p.stats.currentHp - 1)
-
-    val gameMessages = msgs :+ GameMessage(s"The world shakes around ${e.name} dealing $dmg!")
+    val gameMessages = msgs :+ GameMessage(s"The world shakes around ${e.name} dealing $dmg damage!")
 
     // This should be replaced by a generic attack/damage function
     val newE = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
@@ -101,7 +100,7 @@ object MultiTargetActionHandler extends ActionHandler {
   }
 
   def windStrike(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, (p.stats.dexterity * 2) - e.stats.vitality)
+    val dmg = Math.max(1, (p.stats.dexterity * 2) + (p.stats.intellect / 2) - e.stats.vitality)
     val gameMessages = msgs :+ GameMessage(s"${e.name} takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function

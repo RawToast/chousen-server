@@ -49,8 +49,8 @@ object SelfActionHandler {
   def elixirOfVitality(p: Player, msgs: Seq[GameMessage]) = elixir(p, msgs, "Vitality", PlayerVitalityLens)
 
 
-  private def elixir(p: Player, msgs: Seq[GameMessage], stat: String, lens: Lens[Player, Int], amt: Int = 2) = {
-    val bonusStat = 2
+  private def elixir(p: Player, msgs: Seq[GameMessage], stat: String, lens: Lens[Player, Int], amt: Int = 3) = {
+    val bonusStat = amt
     val message = GameMessage(s"${p.name} uses Elixir of $stat and gains $bonusStat $stat!")
     val gameMessages = msgs :+ message
 
@@ -64,7 +64,7 @@ object SelfActionHandler {
 
   def rarePepe(p: Player, msgs: Seq[GameMessage]) = {
     val bonusStat = 2
-    val message = GameMessage(s"${p.name} uses Rare Pepe!")
+    val message = GameMessage(s"${p.name} looks at a Rare Pepe and becomes stronger!")
     val gameMessages = msgs :+ message
 
     val lens = LensUtil.triLens(PlayerMaxHealthLens, PlayerHealthLens, PlayerPositionLens)

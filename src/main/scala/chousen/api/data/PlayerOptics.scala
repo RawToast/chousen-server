@@ -7,6 +7,8 @@ import monocle.macros.GenLens
 object PlayerOptics {
   val PlayerCharStatsLens = GenLens[Player](_.stats)
 
+  val SetPlayerStats = (s: Int, d: Int, i: Int, v: Int) => PlayerStrengthLens.modify(_ + s).andThen(PlayerDexterityLens.modify(_ + d))
+    .andThen(PlayerVitalityLens.modify(_ + v).andThen(PlayerIntellectLens.modify(_ + i)))
   val PlayerHealthLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.hp)
   val PlayerMaxHealthLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.maxHp)
   val PlayerStrengthLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.strength)

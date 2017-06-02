@@ -47,7 +47,7 @@ class GameOpsSpec extends WordSpec {
 
       "Includes a game message stating it's the fast player's turn" in {
         assert(updMessages.size == 1)
-        assert(updMessages.head.text == "Player's turn!")
+        assert(updMessages.head.text == "Player's turn.")
       }
 
     }
@@ -77,7 +77,7 @@ class GameOpsSpec extends WordSpec {
 
 //      "Include a game message stating it's the higher positioned users turn" in {
 //        assert(updMessages.size == 1)
-//        assert(updMessages.head.text == "Quick Enemy's turn!")
+//        assert(updMessages.head.text == "Quick Enemy's turn.")
 //      }
 
       "updating again" must {
@@ -106,8 +106,8 @@ class GameOpsSpec extends WordSpec {
 
         "Include a game message stating it's now the Player's turn" in {
           assert(latestMessages.size == 1)
-          assert(latestMessages.exists(_.text == "Player's turn!"))
-          assert(latestMessages.head.text == "Player's turn!")
+          assert(latestMessages.exists(_.text == "Player's turn."))
+          assert(latestMessages.head.text == "Player's turn.")
         }
 
       }
@@ -227,7 +227,7 @@ class GameOpsSpec extends WordSpec {
       }
 
       "the last message states the player is active" in {
-        assert(nextMessages.last.text == "Player's turn!")
+        assert(nextMessages.last.text == "Player's turn.")
       }
 
       "the player's current hp is reduced" in {

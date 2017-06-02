@@ -148,7 +148,7 @@ object EncounterOps extends EncounterOps {
 
     val fastestEnemy = enemies.maxBy(_.position)
 
-      val newMessages = if (player.position > fastestEnemy.position) msgs :+GameMessage(s"${player.name}'s turn!")
+      val newMessages = if (player.position > fastestEnemy.position) msgs :+GameMessage(s"${player.name}'s turn.")
         else msgs
     (player, enemies, newMessages)
   }
