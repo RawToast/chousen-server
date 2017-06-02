@@ -21,11 +21,19 @@ sealed trait SelfAction extends Action
 
 
 case object CrushingBlow extends SingleTargetAction
-case object QuickAttack extends SingleTargetAction
-case object Pain extends SingleTargetAction
 case object Hamstring extends SingleTargetAction
 case object StunningStrike extends SingleTargetAction
+
+case object QuickAttack extends SingleTargetAction
 case object Assassinate extends SingleTargetAction
+case object TripleStrike extends SingleTargetAction
+
+case object Pain extends SingleTargetAction
+case object MagicMissile extends SingleTargetAction
+case object Drain extends SingleTargetAction
+
+
+
 
 
 case object Fireball extends MultiAction

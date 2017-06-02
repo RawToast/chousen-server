@@ -22,13 +22,10 @@ trait CardManager {
         val ng = f(c)
         if (ng == game) ng
         else {
-
-
           // Move to discard
-
-
-
-          GameStateOptics.HandLens.modify((cs:Seq[data.Card]) => cs.filterNot(_ ~= c)).apply(ng)
+          GameStateOptics.HandLens.modify((cs:Seq[data.Card]) => cs.filterNot(_ ~= c))
+            .andThen(GameStateOptics.DiscardLens.modify((ds: Seq[data.Card]) => c +: ds))
+            .apply(ng)
         }
       }
   }

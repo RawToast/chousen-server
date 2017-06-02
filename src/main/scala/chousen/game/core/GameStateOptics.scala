@@ -16,6 +16,8 @@ object GameStateOptics {
   val MessagesLens = GenLens[GameState](_.messages)
 
   val HandLens = GenLens[GameState](_.cards.hand)
+  val DiscardLens = GenLens[GameState](_.cards.discard)
+
 
   val EncounterLens: Lens[GameState, (Player, Set[Enemy], Seq[GameMessage])] =
     LensUtil.triLens(PlayerLens,

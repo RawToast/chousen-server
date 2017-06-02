@@ -80,6 +80,6 @@ object SelfActionHandler {
   def quickStep(p: Player, msgs: Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} uses Quick Step!")
 
-    (PlayerPositionLens.modify(_ + 105)(p), msgs :+ message)
+    (PlayerPositionLens.modify(_ + 100 + p.stats.dexterity)(p), msgs :+ message)
   }
 }

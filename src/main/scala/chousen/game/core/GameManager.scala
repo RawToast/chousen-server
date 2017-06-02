@@ -31,9 +31,23 @@ trait GameStateCreation {
 
   def create(name: String, uuid: UUID = UUID.randomUUID()): GameState = {
     import cats.syntax.all._
+    val seed = new scala.util.Random().nextInt(2)
+    val p = Player(name, CharStats(100, 100), 0)
 
-    val player = Player(name, CharStats(100, 100), 0)
-    val cards = CardManager.startGame(CardCatalogue.defaultDeck)
+    val player = seed match {
+      case 0 => PlayerOptics.PlayerStrengthLens.modify(_+2)(p)
+      case 1 => PlayerOptics.PlayerDexterityLens.modify(_+2)(p)
+      case 2 => PlayerOptics.PlayerIntellectLens.modify(_+2)(p)
+      case _ => PlayerOptics.PlayerVitalityLens.modify(_+2)(p)
+    }
+
+    val cards = seed match {
+      case 0 => CardManager.startGame(CardCatalogue.strengthDeck)
+      case 1 => CardManager.startGame(CardCatalogue.dexterityDeck)
+      case 2 => CardManager.startGame(CardCatalogue.magicDeck)
+      case _ => CardManager.startGame(CardCatalogue.defaultDeck)
+    }
+    //val cards = CardManager.startGame(CardCatalogue.defaultDeck)
 
     import chousen.api.types.Implicits._
 

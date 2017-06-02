@@ -26,6 +26,7 @@ class GameStateCreationSpec extends WordSpec {
         assert(game1 != game2)
         assert(game1.id != game2.id)
       }
+
     }
 
     "Starting a game" when {

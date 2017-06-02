@@ -64,7 +64,7 @@ def monocle = Seq(
 // Code coverage
 addCommandAlias("validate", ";coverage;test;coverageReport")
 
-coverageMinimum := 75 // Continually increase
+coverageMinimum := 65 // Continually increase
 coverageFailOnMinimum := true
 
 TwirlKeys.templateImports := Seq()

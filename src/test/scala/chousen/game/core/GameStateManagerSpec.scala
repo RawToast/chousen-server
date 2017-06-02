@@ -96,7 +96,6 @@ class GameStateManagerSpec extends WordSpec {
       }
     }
 
-
     "Accepting a card" which {
 
       "The user does not have" should {
@@ -141,7 +140,6 @@ class GameStateManagerSpec extends WordSpec {
         }
       }
     }
-  }
 
     "Transitioning a game" should {
       val gameState = GameStateGenerator.staticGameState
@@ -194,6 +192,7 @@ class GameStateManagerSpec extends WordSpec {
       }
 
     }
+  }
 
   def getFirstEnemyHp(result: GameState) =
     result.dungeon.currentEncounter.enemies
