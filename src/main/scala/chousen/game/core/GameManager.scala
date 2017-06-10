@@ -153,29 +153,37 @@ object GameStateManager extends GameManager[GameState] with GameStateCreation {
     else {
       if (game.dungeon.currentEncounter.enemies.isEmpty && game.dungeon.remainingEncounters.isEmpty) MessagesLens.modify(msgs => msgs :+ winMessage)(game)
       else if (game.dungeon.currentEncounter.enemies.isEmpty && game.dungeon.remainingEncounters.nonEmpty) {
-        val g = GameStateOptics.DungeonTriLens.modify { (pdm: (Player, Dungeon, Seq[GameMessage])) =>
-          val (p, d, msgs) = pdm
-          val newDungeon = Dungeon(d.remainingEncounters.head, d.remainingEncounters.tail)
-          val healAmount = Math.min(Math.max(0, p.stats.maxHp - p.stats.currentHp), 20)
 
-          val restMsg = GameMessage(s"${p.name} rests and recovers $healAmount hp.")
-          val strongerMsg = GameMessage(s"${p.name} feels stronger after resting.")
-          val progressMsg = GameMessage(s"${p.name} recklessly wanders deeper into the dungeon.")
-          val encounterMsg = startEncounterMessage(newDungeon.currentEncounter.enemies, p)
+        postTurn(game)
 
-          val newPlayer = PlayerCharStatsLens.composeLens(CharStatsOptics.hp).modify(_ + healAmount).apply(p)
-          (newPlayer, newDungeon, msgs :+ restMsg :+ strongerMsg :+ progressMsg :+ encounterMsg)
-        }.andThen(GameStateOptics.EncounterLens.modify(GameOps.updateUntilPlayerIsActive)).apply(game)
-
-        @tailrec
-        def refillHand(cards: Cards): Cards = {
-          if (cards.hand.size >= 7) cards
-          else refillHand(CardManager.drawCard(cards))
-        }
-        val cards = refillHand(g.cards)
-        g.copy(cards = cards)
       } else game
     }
+  }
+
+  private def postTurn(gs:GameState): GameState = {
+
+    val g = GameStateOptics.DungeonTriLens.modify { (pdm: (Player, Dungeon, Seq[GameMessage])) =>
+      val (p, d, msgs) = pdm
+      val newDungeon = Dungeon(d.remainingEncounters.head, d.remainingEncounters.tail)
+      val healAmount = Math.min(Math.max(0, p.stats.maxHp - p.stats.currentHp), 20)
+
+      val restMsg = GameMessage(s"${p.name} rests and recovers $healAmount hp.")
+      val strongerMsg = GameMessage(s"${p.name} feels stronger after resting.")
+      val progressMsg = GameMessage(s"${p.name} recklessly wanders deeper into the dungeon.")
+      val encounterMsg = startEncounterMessage(newDungeon.currentEncounter.enemies, p)
+
+      val newPlayer = PlayerCharStatsLens.composeLens(CharStatsOptics.HpLens).modify(_ + healAmount).apply(p)
+      (newPlayer, newDungeon, msgs :+ restMsg :+ strongerMsg :+ progressMsg :+ encounterMsg)
+    }.andThen(GameStateOptics.EncounterLens.modify(GameOps.updateUntilPlayerIsActive)).apply(gs)
+
+    @tailrec
+    def refillHand(cards: Cards): Cards = {
+      if (cards.hand.size >= 7) cards
+      else refillHand(CardManager.drawCard(cards))
+    }
+    val cards = refillHand(g.cards)
+    g.copy(cards = cards)
+
   }
 
   def startEncounterMessage(enemies: Set[Enemy], player: Player): GameMessage = {

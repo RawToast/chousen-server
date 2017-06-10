@@ -33,9 +33,6 @@ case object MagicMissile extends SingleTargetAction
 case object Drain extends SingleTargetAction
 
 
-
-
-
 case object Fireball extends MultiAction
 case object StaticField extends MultiAction
 case object Shatter extends MultiAction
@@ -44,6 +41,14 @@ case object WindStrike extends MultiAction
 
 
 case object HealWounds extends SelfAction
+case object Haste extends SelfAction
+
+case object PotionOfMight extends SelfAction
+case object PotionOfDexterity extends SelfAction
+case object PotionOfIntelligence extends SelfAction
+case object PotionOfStoneSkin extends SelfAction
+
+
 case object ElixirOfStrength extends SelfAction
 case object ElixirOfDexterity extends SelfAction
 case object ElixirOfIntelligence extends SelfAction

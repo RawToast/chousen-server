@@ -8,7 +8,7 @@ class GameOperationsSpec extends WordSpec {
   "GameOperations.PreTurnValidation" when {
 
     val activeGame = GameStateGenerator.staticGameState
-    val deadPlayerLens = GameStateOptics.PlayerLens.composeLens(PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.hp)).set(0)
+    val deadPlayerLens = GameStateOptics.PlayerLens.composeLens(PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.HpLens)).set(0)
     val removeEnemies = GameStateOptics.EncounterLens.modify(pem => (pem._1, Set.empty, pem._3))
 
     "Given an active game" must {
@@ -41,7 +41,7 @@ class GameOperationsSpec extends WordSpec {
   "GameOperations.PostTurnValidation" when {
 
     val activeGame = GameStateGenerator.staticGameState
-    val deadPlayerLens = GameStateOptics.PlayerLens.composeLens(PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.hp)).set(0)
+    val deadPlayerLens = GameStateOptics.PlayerLens.composeLens(PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.HpLens)).set(0)
     val removeEnemies = GameStateOptics.EncounterLens.modify(pem => (pem._1, Set.empty, pem._3))
 
     "Given an active game" must {
@@ -74,7 +74,7 @@ class GameOperationsSpec extends WordSpec {
   "GameOperations.GameOverCheck" when {
 
     val activeGame = GameStateGenerator.staticGameState
-    val deadPlayerLens = GameStateOptics.PlayerLens.composeLens(PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.hp)).set(0)
+    val deadPlayerLens = GameStateOptics.PlayerLens.composeLens(PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.HpLens)).set(0)
     val removeEnemies = GameStateOptics.EncounterLens.modify(pem => (pem._1, Set.empty, pem._3))
 
     "Given an active game" must {

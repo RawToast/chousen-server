@@ -3,12 +3,12 @@ package chousen.game.actions
 import java.util.UUID
 
 import chousen.api.data._
-import chousen.game.core.GameStateOptics
+import chousen.Optics.{EnemyStats, EnemyPosition, targettedLens, HpLens}
 
 object SingleTargetActionHandler extends ActionHandler {
 
   def handle(targetId: UUID, action: SingleTargetAction): (GameState) => GameState = {
-    GameStateOptics.targettedLens(targetId).modify {
+    targettedLens(targetId).modify {
       case (p, es, msgs) =>
         es match {
           case Some(e) => singleTargetActions(action)(p, e, msgs)
@@ -40,7 +40,7 @@ object SingleTargetActionHandler extends ActionHandler {
         val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
 
         // This should be replaced by a generic attack/damage function
-        val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
+        val newEnemy = EnemyStats.composeLens(HpLens)
           .modify(hp => hp - dmg)(e)
         val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
@@ -55,7 +55,7 @@ object SingleTargetActionHandler extends ActionHandler {
       val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
 
       // This should be replaced by a generic attack/damage function
-      val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
+      val newEnemy = EnemyStats.composeLens(HpLens)
         .modify(hp => hp - dmg)(e)
       val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
@@ -69,7 +69,7 @@ object SingleTargetActionHandler extends ActionHandler {
     val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function
-    val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
+    val newEnemy = EnemyStats.composeLens(HpLens)
       .modify(hp => hp - dmg)(e)
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
@@ -83,9 +83,9 @@ object SingleTargetActionHandler extends ActionHandler {
     val dmgMsg = GameMessage(s"${e.name} slows down and takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function
-    val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
+    val newEnemy = EnemyOptics.EnemyStats.composeLens(CharStatsOptics.HpLens)
         .modify(hp => hp - dmg).
-      andThen(EnemyOptics.charStats.composeLens(CharStatsOptics.speed)
+      andThen(EnemyOptics.EnemyStats.composeLens(CharStatsOptics.SpeedLens)
         .modify(s => Math.min(1, s - 1)))(e)
 
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
@@ -100,9 +100,9 @@ object SingleTargetActionHandler extends ActionHandler {
     val dmgMsg = GameMessage(s"${e.name} is stunned and takes $dmg damage!")
 
     // This should be replaced by a generic attack/damage function
-    val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
+    val newEnemy = EnemyStats.composeLens(HpLens)
         .modify(hp => hp - dmg).
-      andThen(EnemyOptics.position
+      andThen(EnemyPosition
         .modify(s => s - 100 - p.stats.strength))(e)
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
@@ -116,7 +116,7 @@ object SingleTargetActionHandler extends ActionHandler {
     val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function
-    val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
+    val newEnemy = EnemyStats.composeLens(HpLens)
       .modify(hp => hp - dmg)(e)
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
@@ -130,7 +130,7 @@ object SingleTargetActionHandler extends ActionHandler {
     val dmgMsg = GameMessage(s"${e.name} convulses in pain and takes $dmg damage!")
 
     // This should be replaced by a generic attack/damage function
-    val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
+    val newEnemy = EnemyStats.composeLens(HpLens)
       .modify(hp => hp - dmg)(e)
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
@@ -144,7 +144,7 @@ object SingleTargetActionHandler extends ActionHandler {
     val dmgMsg = GameMessage(s"The missile strikes ${e.name} for $dmg damage!")
 
     // This should be replaced by a generic attack/damage function
-    val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
+    val newEnemy = EnemyStats.composeLens(HpLens)
       .modify(hp => hp - dmg)(e)
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
@@ -158,7 +158,7 @@ object SingleTargetActionHandler extends ActionHandler {
     val dmgMsg = GameMessage(s"${p.name} drains $dmg health from ${e.name}!")
 
     // This should be replaced by a generic attack/damage function
-    val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
+    val newEnemy = EnemyStats.composeLens(HpLens)
       .modify(hp => hp - dmg)(e)
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 

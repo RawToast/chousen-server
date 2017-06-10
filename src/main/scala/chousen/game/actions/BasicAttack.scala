@@ -19,7 +19,7 @@ object BasicAttack {
           val dmgMsg = GameMessage(s"${p.name}'s attack deals $dmg to ${e.name}!")
 
           // This should be replaced by a generic attack/damage function
-          val newEnemy = EnemyOptics.charStats.composeLens(CharStatsOptics.hp)
+          val newEnemy = EnemyOptics.EnemyStats.composeLens(CharStatsOptics.HpLens)
             .modify(hp => hp - dmg)(e)
           val gameMessages = msgs :+ targetMsg :+ dmgMsg
 

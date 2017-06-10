@@ -9,7 +9,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     Seq(healWounds, stunningStrike, assassinate, windStrike, staticField, drain, fireball, quickStep, rarePepe) ++
     Seq(healWounds, stunningStrike, assassinate, windStrike, staticField, drain, fireball, quickStep, rarePepe) ++
     Seq(healWounds, stunningStrike, assassinate, windStrike, staticField, drain, fireball, quickStep, rarePepe) ++
-      Seq(elixirOfStrength, elixirOfDexterity, elixirOfIntelligence, elixirOfVitality)
+      Seq(might, dexterity, intelligence, stoneSkin)
 
   def magicDeck = Seq(fireball, healWounds, pain, shatter, magicMissile, drain, quickStep, elixirOfIntelligence, rarePepe) ++
     Seq(fireball, healWounds, pain, shatter, magicMissile, drain, quickStep, elixirOfIntelligence, rarePepe) ++
@@ -17,23 +17,33 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     Seq(fireball, healWounds, pain, shatter, magicMissile, drain, quickStep, elixirOfIntelligence, rarePepe) ++
     Seq(staticField, staticField, assassinate, assassinate)
 
-  def strengthDeck = Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, quickStep, elixirOfStrength, rarePepe) ++
-    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, quickStep, elixirOfStrength, rarePepe) ++
-    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, quickStep, elixirOfStrength, rarePepe)  ++
-    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, quickStep, elixirOfStrength, rarePepe) ++
-    Seq(elixirOfDexterity, elixirOfDexterity, assassinate, assassinate, shatter, shatter, pain, pain)
+  def strengthDeck = Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, haste, elixirOfStrength, rarePepe) ++
+    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, haste, elixirOfStrength, rarePepe) ++
+    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, haste, elixirOfStrength, rarePepe)  ++
+    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, haste, elixirOfStrength, rarePepe) ++
+    Seq(might, might, assassinate, assassinate, shatter, shatter, pain, pain)
 
   def dexterityDeck = Seq(quickAttack, tripleStrike, assassinate, windStrike, healWounds, quickStep, elixirOfDexterity, rarePepe) ++
     Seq(quickAttack, crushingBlow, assassinate, windStrike, healWounds, quickStep, elixirOfDexterity, rarePepe) ++
     Seq(quickAttack, crushingBlow, assassinate, windStrike, healWounds, quickStep, elixirOfDexterity, rarePepe)  ++
     Seq(quickAttack, crushingBlow, assassinate, windStrike, healWounds, quickStep, elixirOfDexterity, rarePepe) ++
-    Seq(elixirOfStrength, elixirOfStrength, stunningStrike, stunningStrike, shatter, shatter, pain, pain)
+    Seq(dexterity, dexterity, haste, haste, haste, pain, pain, pain)
+
+  def shacoDeck = Seq(rarePepe, healWounds, quickStep, assassinate, pain, windStrike, rarePepe) ++
+    Seq(tripleStrike, tripleStrike, quickAttack, quickAttack) ++
+    Seq(shatter, shatter, haste, haste) ++
+    Seq(elixirOfDexterity, elixirOfDexterity, elixirOfIntelligence, elixirOfIntelligence)
 }
 
 sealed trait CardBuilder
 
 trait Potions extends CardBuilder {
   def healWounds: Card = Card(UUID.randomUUID(), "Heal Wounds", "Heals around 30HP", HealWounds)
+  def haste: Card = Card(UUID.randomUUID(), "Potion of Haste", "Temporarily increases player speed", Haste)
+  def might: Card = Card(UUID.randomUUID(), "Potion of Might", "Temporarily increases player strength", PotionOfMight)
+  def intelligence: Card = Card(UUID.randomUUID(), "Potion of Intelligence", "Temporarily increases player intelligence", PotionOfIntelligence)
+  def stoneSkin: Card = Card(UUID.randomUUID(), "Stone Skin", "Temporarily increases player defence", PotionOfStoneSkin)
+  def dexterity: Card = Card(UUID.randomUUID(), "Potion of Dexterity", "Temporarily increases player dexterity", PotionOfDexterity)
 }
 
 trait PermanentEffects extends CardBuilder {
