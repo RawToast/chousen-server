@@ -144,7 +144,6 @@ object GameStateManager extends GameManager[GameState] with GameStateCreation {
   }
 
   override def transition(game: GameState): GameState = {
-
     val playerIsDead = game.player.stats.currentHp <= 0
     lazy val deathMessage = GameMessage(s"${game.player.name} dies.")
     lazy val winMessage = GameMessage(s"A winner is ${game.player.name}!")

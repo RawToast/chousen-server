@@ -2,6 +2,8 @@ package chousen.api.data
 
 import java.util.UUID
 
+import chousen.game.cards.{CardCatalogue, CardManager}
+
 import scala.collection.LinearSeq
 
 
@@ -31,7 +33,7 @@ object GameStateGenerator {
     import cats.implicits._
     import chousen.api.types.Implicits._
 
-    val cards = Cards(Seq(crushingBlowCard, quickAttackCard), Seq.empty, Seq.empty)
+    val cards = CardManager.startGame(CardCatalogue.defaultDeck)
     def mkBattle(e: Enemy) = Battle(Set(e))
     def createBattle = mkBattle(firstEnemy) |+| mkBattle(secondEnemy)
 

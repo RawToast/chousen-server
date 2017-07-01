@@ -6,7 +6,7 @@ import chousen.game.core.GameStateOptics
 import scala.util.Random
 
 object CardManager extends CardManager {
-  val initialCards = CardCatalogue.defaultDeck
+  val initialCards: Seq[Card] = CardCatalogue.defaultDeck
 }
 
 
@@ -40,7 +40,8 @@ trait CardManager {
 
   def drawCard(cards: Cards): Cards = cards.deck match {
     case h :: t => Cards(cards.hand :+ h, t, cards.discard)
-    case Nil => cards
+    case Nil =>
+      drawCard(cards.copy(deck = cards.discard, discard=Seq.empty))
   }
 
   def moveLastDiscardToTopDeck(cards: Cards): Cards = {

@@ -26,11 +26,15 @@ object SelfActionHandler {
       case ElixirOfVitality => elixirOfVitality
       case RarePepe => rarePepe
       case QuickStep => quickStep
-      case Fast => haste
+      case Haste => haste
+      case PotionOfMight => haste
+      case PotionOfDexterity => haste
+      case PotionOfIntelligence => haste
+      case PotionOfStoneSkin => haste
     }
 
 
-  def healWounds(p: Player, msgs: Seq[GameMessage]) = {
+  def healWounds(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = {
     val healAmount = 10 + p.stats.intellect + (p.stats.maxHp / 10)
     val message = GameMessage(s"${p.name} uses Heal Wounds and recovers ${healAmount}HP!")
     val gameMessages = msgs :+ message
@@ -85,10 +89,19 @@ object SelfActionHandler {
     (PlayerPositionLens.modify(_ + 100 + p.stats.dexterity)(p), msgs :+ message)
   }
 
-  def quickStep(p: Player, msgs: Seq[GameMessage]) = {
+  def haste(p: Player, msgs: Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} uses Haste!")
 
     val hasteStatus: Status = StatusBuilder.makeHaste(4)
+
+    (PlayerStatusLens.modify(_ :+ hasteStatus)
+      .andThen(PlayerSpeedLens.modify(_ + 4))(p), msgs :+ message)
+  }
+
+  def might(p: Player, msgs: Seq[GameMessage]) = {
+    val message = GameMessage(s"${p.name} uses Potion of Might!")
+
+    val hasteStatus: Status = StatusBuilder.makeMight(4)
 
     (PlayerStatusLens.modify(_ :+ hasteStatus)
       .andThen(PlayerSpeedLens.modify(_ + 4))(p), msgs :+ message)

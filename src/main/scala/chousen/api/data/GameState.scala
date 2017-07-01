@@ -35,7 +35,7 @@ object Deck {
 }
 
 
-case class Status(effect: StatusEffect, description: String, amount: Int, turns: Int)
+case class Status(effect: StatusEffect, description: String, turns: Int, amount: Option[Int] = None)
 
 sealed trait StatusEffect
 
