@@ -5,34 +5,55 @@ import java.util.UUID
 import chousen.api.data._
 
 object CardCatalogue extends Potions with PermanentEffects with Magic with Strength with Dexterity {
-  def defaultDeck = Seq(healWounds, assassinate, windStrike, staticField, drain, fireball, quickStep, rarePepe) ++
-    Seq(healWounds, stunningStrike, assassinate, windStrike, staticField, drain, fireball, quickStep, rarePepe) ++
-    Seq(healWounds, stunningStrike, assassinate, windStrike, staticField, drain, fireball, quickStep, rarePepe) ++
-    Seq(healWounds, stunningStrike, assassinate, windStrike, staticField, drain, fireball, quickStep, rarePepe) ++
-      Seq(might, dexterity, intelligence, stoneSkin)
 
-  def magicDeck = Seq(fireball, healWounds, pain, shatter, magicMissile, drain, quickStep, elixirOfIntelligence, rarePepe) ++
-    Seq(fireball, healWounds, pain, shatter, magicMissile, drain, quickStep, elixirOfIntelligence, rarePepe) ++
-    Seq(fireball, healWounds, pain, shatter, magicMissile, drain, quickStep, elixirOfIntelligence, rarePepe)  ++
-    Seq(fireball, healWounds, pain, shatter, magicMissile, drain, quickStep, elixirOfIntelligence, rarePepe) ++
-    Seq(staticField, staticField, assassinate, assassinate)
+  implicit case class multiplier(card: Card) {
+    def times(n: Int): Seq[Card] = {
+      Seq.fill(n)(card.copy(id = UUID.randomUUID()))
+    }
+  }
 
-  def strengthDeck = Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, elixirOfStrength, rarePepe) ++
-    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, elixirOfStrength, rarePepe) ++
-    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, elixirOfStrength, rarePepe)  ++
-    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, elixirOfStrength, rarePepe) ++
-    Seq(might, might, assassinate, assassinate, shatter, shatter, pain, pain)
+  implicit case class altMultiplier(n: Int) {
+    def of(c: Card): Seq[Card] = {
+      Seq.fill(n)(c.copy(id = UUID.randomUUID()))
+    }
+  }
 
-  def dexterityDeck = Seq(quickAttack, tripleStrike, assassinate, windStrike, healWounds, quickStep, elixirOfDexterity, rarePepe) ++
-    Seq(quickAttack, crushingBlow, assassinate, windStrike, healWounds, quickStep, elixirOfDexterity, rarePepe) ++
-    Seq(quickAttack, crushingBlow, assassinate, windStrike, healWounds, quickStep, elixirOfDexterity, rarePepe)  ++
-    Seq(quickAttack, crushingBlow, assassinate, windStrike, healWounds, quickStep, elixirOfDexterity, rarePepe) ++
-    Seq(dexterity, dexterity, pain, pain, pain)
+  def defaultDeck: Seq[Card] = Seq( // 15
+    4 of healWounds, 4 of might, 4 of dexterity, 4 of intelligence, 4 of stoneSkin,
+    4 of crushingBlow, 4 of groundStrike, 4 of stunningStrike,
+    4 of assassinate, 4 of windStrike, 4 of quickStep,
+    4 of staticField, 4 of drain, 4 of fireball,
+    4 of rarePepe
+  ).flatten
 
-  def shacoDeck = Seq(rarePepe, healWounds, quickStep, assassinate, pain, windStrike, rarePepe) ++
-    Seq(tripleStrike, tripleStrike, quickAttack, quickAttack) ++
-    Seq(shatter, shatter) ++
-    Seq(elixirOfDexterity, elixirOfDexterity, elixirOfIntelligence, elixirOfIntelligence)
+  def magicDeck: Seq[Card] = Seq( // 15
+    4 of healWounds, 4 of intelligence, 4 of haste, 2 of stoneSkin,
+    4 of quickStep, 4 of windStrike, 2 of assassinate,
+    4 of fireball, 4 of staticField, 4 of drain, 4 of shatter, 4 of magicMissile, 4 of pain,
+    4 of rarePepe, 4 of elixirOfIntelligence, 4 of elixirOfVitality
+  ).flatten
+
+  def strengthDeck = Seq( // 13
+    4 of healWounds, 4 of might, 4 of stoneSkin, 4 of haste,
+    4 of crushingBlow, 4 of hamstring, 4 of stunningStrike, 4 of groundStrike,
+    4 of quickStep,
+    4 of shatter,
+    4 of rarePepe, 4 of elixirOfStrength, 4 of elixirOfVitality
+  ).flatten
+
+  def dexterityDeck = Seq( // 13
+    4 of healWounds, 4 of dexterity, 4 of stoneSkin, 4 of haste,
+    4 of quickStep, 4 of tripleStrike, 4 of assassinate, 4 of windStrike,
+    4 of pain,
+    4 of rarePepe, 4 of elixirOfDexterity, 4 of elixirOfVitality
+  ).flatten
+
+  def cheeseDeck = Seq( // 13
+    4 of healWounds, 4 of dexterity, 4 of stoneSkin, 4 of haste,
+    4 of assassinate, 4 of windStrike, 4 of quickStep,
+    4 of pain, 4 of staticField, 4 of fireball,
+    4 of rarePepe, 4 of elixirOfDexterity, 4 of elixirOfIntelligence
+  ).flatten
 }
 
 sealed trait CardBuilder
@@ -56,7 +77,7 @@ trait PermanentEffects extends CardBuilder {
 
 trait Magic extends CardBuilder{
   def fireball = Card(UUID.randomUUID(), "Fireball", "Deals fire damage to all enemies", Fireball)
-  def staticField = Card(UUID.randomUUID(), "Static Field", "Reduces all enemies hp by 25%", StaticField)
+  def staticField = Card(UUID.randomUUID(), "Static Field", "Reduces all enemies hp by 33%", StaticField)
   def pain = Card(UUID.randomUUID(), "Pain", "Reduces the hp of a single target by 50%", Pain)
   def shatter = Card(UUID.randomUUID(), "Shatter", "Reduce player to 1hp and deal the same damage to all enemies", Shatter)
   def magicMissile = Card(UUID.randomUUID(), "Magic Missile", "Deals magic damage to a single enemy", MagicMissile)

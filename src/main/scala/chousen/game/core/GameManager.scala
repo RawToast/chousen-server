@@ -31,13 +31,14 @@ trait GameStateCreation {
 
   def create(name: String, uuid: UUID = UUID.randomUUID()): GameState = {
     import cats.syntax.all._
-    val seed = new scala.util.Random().nextInt(4)
+    val seed = new scala.util.Random().nextInt(5)
     val p = Player(name, CharStats(100, 100), 0)
 
     val player = seed match {
       case 0 => SetPlayerStats.apply(2, 0, 0, 1)(p)
       case 1 => SetPlayerStats.apply(0, 3, 0, 0)(p)
       case 2 => SetPlayerStats.apply(-1, 0, 4, 0)(p)
+      case 3 => SetPlayerStats.apply(0, 1, 1, 1)(p)
       case _ => SetPlayerStats.apply(0, 0, 0, 2)(p)
     }
 
@@ -45,6 +46,7 @@ trait GameStateCreation {
       case 0 => CardManager.startGame(CardCatalogue.strengthDeck)
       case 1 => CardManager.startGame(CardCatalogue.dexterityDeck)
       case 2 => CardManager.startGame(CardCatalogue.magicDeck)
+      case 3 => CardManager.startGame(CardCatalogue.cheeseDeck)
       case _ => CardManager.startGame(CardCatalogue.defaultDeck)
     }
     //val cards = CardManager.startGame(CardCatalogue.defaultDeck)

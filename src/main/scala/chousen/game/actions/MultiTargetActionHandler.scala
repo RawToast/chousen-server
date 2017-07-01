@@ -65,7 +65,7 @@ object MultiTargetActionHandler extends ActionHandler {
 
   def staticField(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
     // Calc isn't accurate
-    val dmg = Math.max(1, e.stats.currentHp / 4)
+    val dmg = Math.max(1, e.stats.currentHp / 3)
     val gameMessages = msgs :+ GameMessage(s"${e.name} is shocked and takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function
