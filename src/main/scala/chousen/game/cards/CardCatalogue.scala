@@ -17,21 +17,21 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     Seq(fireball, healWounds, pain, shatter, magicMissile, drain, quickStep, elixirOfIntelligence, rarePepe) ++
     Seq(staticField, staticField, assassinate, assassinate)
 
-  def strengthDeck = Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, haste, elixirOfStrength, rarePepe) ++
-    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, haste, elixirOfStrength, rarePepe) ++
-    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, haste, elixirOfStrength, rarePepe)  ++
-    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, haste, elixirOfStrength, rarePepe) ++
+  def strengthDeck = Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, elixirOfStrength, rarePepe) ++
+    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, elixirOfStrength, rarePepe) ++
+    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, elixirOfStrength, rarePepe)  ++
+    Seq(crushingBlow, hamstring, stunningStrike, groundStrike, healWounds, elixirOfStrength, rarePepe) ++
     Seq(might, might, assassinate, assassinate, shatter, shatter, pain, pain)
 
   def dexterityDeck = Seq(quickAttack, tripleStrike, assassinate, windStrike, healWounds, quickStep, elixirOfDexterity, rarePepe) ++
     Seq(quickAttack, crushingBlow, assassinate, windStrike, healWounds, quickStep, elixirOfDexterity, rarePepe) ++
     Seq(quickAttack, crushingBlow, assassinate, windStrike, healWounds, quickStep, elixirOfDexterity, rarePepe)  ++
     Seq(quickAttack, crushingBlow, assassinate, windStrike, healWounds, quickStep, elixirOfDexterity, rarePepe) ++
-    Seq(dexterity, dexterity, haste, haste, haste, pain, pain, pain)
+    Seq(dexterity, dexterity, pain, pain, pain)
 
   def shacoDeck = Seq(rarePepe, healWounds, quickStep, assassinate, pain, windStrike, rarePepe) ++
     Seq(tripleStrike, tripleStrike, quickAttack, quickAttack) ++
-    Seq(shatter, shatter, haste, haste) ++
+    Seq(shatter, shatter) ++
     Seq(elixirOfDexterity, elixirOfDexterity, elixirOfIntelligence, elixirOfIntelligence)
 }
 
