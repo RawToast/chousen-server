@@ -63,7 +63,7 @@ trait CardManager {
   }
 
 
-  def discard(card: data.Card) = { cards: Cards =>
+  def discard(card: data.Card): (Cards) => Cards = { cards: Cards =>
     import chousen.api.types.Implicits._
     cards.hand.find(_ ~= card).fold(cards) { c =>
       val newHand = cards.hand.filterNot(_ ~= c)

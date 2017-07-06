@@ -4,55 +4,59 @@ import java.util.UUID
 
 import chousen.api.data._
 
-object CardCatalogue extends Potions with PermanentEffects with Magic with Strength with Dexterity {
+object CardCatalogue extends Potions with PermanentEffects with Magic with Strength with Dexterity with Utility {
 
-  implicit case class multiplier(card: Card) {
+  implicit class multiplier(card: Card) {
     def times(n: Int): Seq[Card] = {
       Seq.fill(n)(card.copy(id = UUID.randomUUID()))
     }
   }
 
-  implicit case class altMultiplier(n: Int) {
+  implicit class altMultiplier(n: Int) {
     def of(c: Card): Seq[Card] = {
       Seq.fill(n)(c.copy(id = UUID.randomUUID()))
     }
   }
 
   def defaultDeck: Seq[Card] = Seq( // 15
-    4 of healWounds, 4 of might, 4 of dexterity, 4 of intelligence, 4 of stoneSkin,
+    4 of healWounds, /*4 of might, 4 of dexterity, 4 of intelligence, 4 of stoneSkin,*/
     4 of crushingBlow, 4 of groundStrike, 4 of stunningStrike,
     4 of assassinate, 4 of windStrike, 4 of quickStep,
     4 of staticField, 4 of drain, 4 of fireball,
-    4 of rarePepe
+    4 of rarePepe,
+    4 of restore, 4 of replace
   ).flatten
 
   def magicDeck: Seq[Card] = Seq( // 15
-    4 of healWounds, 4 of intelligence, 4 of haste, 2 of stoneSkin,
+    4 of healWounds, /*4 of intelligence, 4 of haste, 2 of stoneSkin,*/
     4 of quickStep, 4 of windStrike, 2 of assassinate,
     4 of fireball, 4 of staticField, 4 of drain, 4 of shatter, 4 of magicMissile, 4 of pain,
-    4 of rarePepe, 4 of elixirOfIntelligence, 4 of elixirOfVitality
+    4 of rarePepe, 4 of elixirOfIntelligence, 4 of elixirOfVitality,
+    4 of restore
   ).flatten
 
-  def strengthDeck = Seq( // 13
-    4 of healWounds, 4 of might, 4 of stoneSkin, 4 of haste,
-    4 of crushingBlow, 4 of hamstring, 4 of stunningStrike, 4 of groundStrike,
+  def strengthDeck = Seq( // 14
+    4 of healWounds, /*4 of might, 4 of stoneSkin, 4 of haste, */
+    4 of crushingBlow, 4 of hamstring, 4 of stunningStrike, 4 of groundStrike, 4 of counter,
     4 of quickStep,
     4 of shatter,
     4 of rarePepe, 4 of elixirOfStrength, 4 of elixirOfVitality
   ).flatten
 
-  def dexterityDeck = Seq( // 13
-    4 of healWounds, 4 of dexterity, 4 of stoneSkin, 4 of haste,
+  def dexterityDeck = Seq( // 15
+    4 of healWounds, /*4 of dexterity, 4 of stoneSkin, 4 of haste,*/
     4 of quickStep, 4 of tripleStrike, 4 of assassinate, 4 of windStrike,
     4 of pain,
-    4 of rarePepe, 4 of elixirOfDexterity, 4 of elixirOfVitality
+    4 of rarePepe, 4 of elixirOfDexterity, 4 of elixirOfVitality,
+    4 of restore, 4 of replace
   ).flatten
 
-  def cheeseDeck = Seq( // 13
-    4 of healWounds, 4 of dexterity, 4 of stoneSkin, 4 of haste,
+  def cheeseDeck = Seq( // 15
+    4 of healWounds, /*4 of dexterity, 4 of stoneSkin, 4 of haste,*/
     4 of assassinate, 4 of windStrike, 4 of quickStep,
     4 of pain, 4 of staticField, 4 of fireball,
-    4 of rarePepe, 4 of elixirOfDexterity, 4 of elixirOfIntelligence
+    4 of rarePepe, 4 of elixirOfDexterity, 4 of elixirOfIntelligence,
+    4 of restore, 4 of replace
   ).flatten
 }
 
@@ -89,6 +93,8 @@ trait Strength extends CardBuilder{
   def hamstring = Card(UUID.randomUUID(), "Hamstring", "Attack that reduces the speed of a single enemy", Hamstring)
   def stunningStrike = Card(UUID.randomUUID(), "Stunning Strike", "Attack that stuns a single enemy", StunningStrike)
   def groundStrike = Card(UUID.randomUUID(), "Ground Strike", "Slam the ground with your weapon, hitting all enemies and reducing their position", GroundStrike)
+
+  def counter = Card(UUID.randomUUID(), "Counter", "Attack that deals more damage the stronger the enemy", Counter)
 }
 
 trait Dexterity extends CardBuilder{
@@ -97,4 +103,14 @@ trait Dexterity extends CardBuilder{
   def quickStep = Card(UUID.randomUUID(), "Quick Step", "Player can take 2 turns", QuickStep)
   def windStrike = Card(UUID.randomUUID(), "Wind Strike", "Attacks all enemies", WindStrike)
   def tripleStrike = Card(UUID.randomUUID(), "Triple Strike", "Attacks an enemy three times", TripleStrike)
+}
+
+trait Utility extends CardBuilder {
+  def rummage = Card(UUID.randomUUID(), "Rummage", "Search the area and draw 2 cards", Rummage)
+
+  def miracle = Card(UUID.randomUUID(), "Miracle", "Draw cards until your hand is full", Miracle)
+
+  def replace = Card(UUID.randomUUID(), "Replace", "Instantly replaces the player's hand", Replace)
+
+  def restore = Card(UUID.randomUUID(), "Restore", "Instantly places the top discarded card into your hand", Restore)
 }

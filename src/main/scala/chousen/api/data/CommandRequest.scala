@@ -12,17 +12,22 @@ case class SingleTargetActionRequest(targetId: UUID, action: SingleTargetAction)
 
 case class MultiTargetActionRequest(targetId: Set[UUID], action: MultiAction) extends CommandRequest
 
+case class CardActionRequest(action: CardAction) extends CommandRequest
+
 
 sealed trait Action
 
 sealed trait SingleTargetAction extends Action
 sealed trait MultiAction extends Action
 sealed trait SelfAction extends Action
+sealed trait CardAction extends Action
+
 
 
 case object CrushingBlow extends SingleTargetAction
 case object Hamstring extends SingleTargetAction
 case object StunningStrike extends SingleTargetAction
+case object Counter extends SingleTargetAction
 
 case object QuickAttack extends SingleTargetAction
 case object Assassinate extends SingleTargetAction
@@ -55,3 +60,8 @@ case object ElixirOfIntelligence extends SelfAction
 case object ElixirOfVitality extends SelfAction
 case object RarePepe extends SelfAction
 case object QuickStep extends SelfAction
+
+case object Rummage extends CardAction
+case object Miracle extends CardAction
+case object Replace extends CardAction
+case object Restore extends CardAction

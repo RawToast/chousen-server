@@ -22,6 +22,7 @@ object SingleTargetActionHandler extends ActionHandler {
       case CrushingBlow => crushingBlow
       case Hamstring => hamstring
       case StunningStrike => stunningStrike
+      case Counter => counter
 
       case QuickAttack => quickAttack
       case Assassinate => assassinate
@@ -108,6 +109,23 @@ object SingleTargetActionHandler extends ActionHandler {
 
     (p.copy(position = p.position - 105), Option(newEnemy), gameMessages)
   }
+
+  def counter(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+    val dmg = Math.max(1, (p.stats.strength * 2) + e.stats.strength - e.stats.vitality)
+
+    val targetMsg = GameMessage(s"${p.name} uses Counter!")
+    val dmgMsg = GameMessage(s"${e.name} is countered and takes $dmg damage.")
+
+    // This should be replaced by a generic attack/damage function
+    val newEnemy = EnemyStats.composeLens(HpLens)
+      .modify(hp => hp - dmg)(e)
+    val gameMessages = msgs :+ targetMsg :+ dmgMsg
+
+    (p.copy(position = p.position - 100), Option(newEnemy), gameMessages)
+  }
+
+
+  // Dex
 
   def assassinate(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
     val dmg = Math.max(p.stats.dexterity, e.stats.maxHp - e.stats.currentHp)
