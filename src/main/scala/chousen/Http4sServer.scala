@@ -152,6 +152,28 @@ object Http4sServer extends StreamApp with Http4sMappedGameAccess {
         }
       }
 
+    case req@POST -> Root / "game" / uuid / "card" / cardUuid =>
+      import io.circe.generic.extras.semiauto._
+
+      implicit val enumDecoder = deriveEnumerationDecoder[CardAction]
+
+      val id = UUID.fromString(uuid)
+      val cardId = UUID.fromString(cardUuid)
+
+      withGame(id) { g =>
+        g.cards.hand.find(_.id == cardId) match {
+          case Some(card) => for {
+            ar <- req.as(jsonOf[CardActionRequest])
+            ng = GameStateManager.useCard(card, ar, g)
+            _ = {
+              store = store + (ng.id -> ng)
+            }
+            res <- Ok.apply(ng.asJson)
+          } yield res
+          case None => NotFound(g.asJson)
+        }
+      }
+
     case req@POST -> Root / "game" / uuid / "multi" / cardUuid =>
       import io.circe.generic.extras.semiauto._
       implicit val enumDecoder = deriveEnumerationDecoder[MultiAction]

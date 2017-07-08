@@ -42,7 +42,7 @@ trait GameStateCreation {
       case _ => SetPlayerStats.apply(0, 0, 0, 2)(p)
     }
 
-    val cards = seed match {
+    val cards: Cards = seed match {
       case 0 => CardManager.startGame(CardCatalogue.strengthDeck)
       case 1 => CardManager.startGame(CardCatalogue.dexterityDeck)
       case 2 => CardManager.startGame(CardCatalogue.magicDeck)

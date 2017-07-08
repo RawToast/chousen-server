@@ -17,7 +17,7 @@ object CardActionHandler extends ActionHandler {
 
   private def cardActions(actionId: CardAction): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) =
     actionId match {
-      case Rummage => restore
+      case Rummage => rummage
       case Miracle => restore
       case Replace => replace
       case Restore => restore
@@ -51,12 +51,25 @@ object CardActionHandler extends ActionHandler {
     @scala.annotation.tailrec
     def populate(cards: Cards): Cards = {
       if (cards.hand.size >= 7) cards
-      else populate(CardManager.drawCard(discardedHandCards))
+      else populate(CardManager.drawCard(cards))
     }
 
     val newCards = populate(discardedHandCards)
 
     (p, newCards, gameMessages)
+  }
+
+  def rummage(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
+    val cs1 = CardManager.drawCard(cs)
+    val cs2 = CardManager.drawCard(cs1)
+
+    val foundCards = cs2.hand.filter(c => cs.hand.contains(c))
+
+    val targetMsg = GameMessage(s"${p.name} quickly searches the area and finds: ${foundCards.mkString(", ")}")
+
+    val gameMessages = msgs :+ targetMsg
+
+    (p.copy(position = p.position - 70), cs2, gameMessages)
   }
 
 

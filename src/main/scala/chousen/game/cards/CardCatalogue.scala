@@ -18,46 +18,42 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     }
   }
 
-  def defaultDeck: Seq[Card] = Seq( // 15
-    4 of healWounds, /*4 of might, 4 of dexterity, 4 of intelligence, 4 of stoneSkin,*/
-    4 of crushingBlow, 4 of groundStrike, 4 of stunningStrike,
-    4 of assassinate, 4 of windStrike, 4 of quickStep,
-    4 of staticField, 4 of drain, 4 of fireball,
-    4 of rarePepe,
-    4 of restore, 4 of replace
-  ).flatten
+  def defaultDeck: Seq[Card] = // 15
+    healWounds.times(4) ++
+      crushingBlow.times(4) ++ groundStrike.times(4) ++ stunningStrike.times(4) ++
+      assassinate.times(4) ++ windStrike.times(4) ++ quickStep.times(4) ++
+      staticField.times(4) ++ drain.times(4) ++ fireball.times(4) ++
+      rarePepe.times(4) ++
+      restore.times(4) ++ replace.times(4)
 
-  def magicDeck: Seq[Card] = Seq( // 15
-    4 of healWounds, /*4 of intelligence, 4 of haste, 2 of stoneSkin,*/
-    4 of quickStep, 4 of windStrike, 2 of assassinate,
-    4 of fireball, 4 of staticField, 4 of drain, 4 of shatter, 4 of magicMissile, 4 of pain,
-    4 of rarePepe, 4 of elixirOfIntelligence, 4 of elixirOfVitality,
-    4 of restore
-  ).flatten
+  def magicDeck: Seq[Card] = // 15
+    (4 of healWounds) ++ /*4 of intelligence, 4 of haste, 2 of stoneSkin,*/
+      (4 of quickStep) ++ (4 of windStrike) ++ (2 of assassinate) ++
+      (4 of fireball) ++ (4 of staticField) ++ (4 of drain) ++ (4 of shatter) ++ (4 of magicMissile) ++ (4 of pain) ++
+      (4 of rarePepe) ++ (4 of elixirOfIntelligence) ++ (4 of elixirOfVitality) ++
+      (4 of restore) ++ (4 of replace)
 
-  def strengthDeck = Seq( // 14
-    4 of healWounds, /*4 of might, 4 of stoneSkin, 4 of haste, */
-    4 of crushingBlow, 4 of hamstring, 4 of stunningStrike, 4 of groundStrike, 4 of counter,
-    4 of quickStep,
-    4 of shatter,
-    4 of rarePepe, 4 of elixirOfStrength, 4 of elixirOfVitality
-  ).flatten
+  def strengthDeck = // 14
+    (4 of healWounds) ++ /*4 of might, 4 of stoneSkin, 4 of haste, */
+      (4 of crushingBlow) ++ (4 of hamstring) ++ (4 of stunningStrike) ++ (4 of groundStrike) ++ (4 of counter) ++
+      (4 of quickStep) ++
+      (4 of shatter) ++
+      (4 of rarePepe) ++ (4 of elixirOfStrength) ++ (4 of elixirOfVitality) ++
+      (4 of rummage) ++ (4 of replace)
 
-  def dexterityDeck = Seq( // 15
-    4 of healWounds, /*4 of dexterity, 4 of stoneSkin, 4 of haste,*/
-    4 of quickStep, 4 of tripleStrike, 4 of assassinate, 4 of windStrike,
-    4 of pain,
-    4 of rarePepe, 4 of elixirOfDexterity, 4 of elixirOfVitality,
-    4 of restore, 4 of replace
-  ).flatten
+  def dexterityDeck = // 15
+    (4 of healWounds) ++ /*4 of dexterity, 4 of stoneSkin, 4 of haste,*/
+      (4 of quickStep) ++ (4 of tripleStrike) ++ (4 of assassinate) ++ (4 of windStrike) ++
+      (4 of pain) ++
+      (4 of rarePepe) ++ (4 of elixirOfDexterity) ++ (4 of elixirOfVitality) ++
+      (4 of restore) ++ (4 of replace)
 
-  def cheeseDeck = Seq( // 15
-    4 of healWounds, /*4 of dexterity, 4 of stoneSkin, 4 of haste,*/
-    4 of assassinate, 4 of windStrike, 4 of quickStep,
-    4 of pain, 4 of staticField, 4 of fireball,
-    4 of rarePepe, 4 of elixirOfDexterity, 4 of elixirOfIntelligence,
-    4 of restore, 4 of replace
-  ).flatten
+  def cheeseDeck = // 15
+    (4 of healWounds) ++ /*4 of dexterity, 4 of stoneSkin, 4 of haste,*/
+      (4 of assassinate) ++ (4 of windStrike) ++ (4 of quickStep) ++
+      (4 of pain) ++ (4 of staticField) ++ (4 of fireball) ++
+      (4 of rarePepe) ++ (4 of elixirOfDexterity) ++ (4 of elixirOfIntelligence) ++
+      (4 of restore) ++ (4 of replace)
 }
 
 sealed trait CardBuilder
@@ -106,11 +102,13 @@ trait Dexterity extends CardBuilder{
 }
 
 trait Utility extends CardBuilder {
-  def rummage = Card(UUID.randomUUID(), "Rummage", "Search the area and draw 2 cards", Rummage)
-
+  // Cost 100
   def miracle = Card(UUID.randomUUID(), "Miracle", "Draw cards until your hand is full", Miracle)
 
-  def replace = Card(UUID.randomUUID(), "Replace", "Instantly replaces the player's hand", Replace)
+  // Cost 70
+  def rummage = Card(UUID.randomUUID(), "Rummage", "Quickly search the area and draw 2 cards", Rummage)
 
+  // Cost 0
+  def replace = Card(UUID.randomUUID(), "Replace", "Instantly replaces the player's hand", Replace)
   def restore = Card(UUID.randomUUID(), "Restore", "Instantly places the top discarded card into your hand", Restore)
 }
