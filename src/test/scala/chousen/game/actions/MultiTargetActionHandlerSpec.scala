@@ -2,7 +2,7 @@ package chousen.game.actions
 
 import java.util.UUID
 
-import chousen.api.data.{Fireball, GameState, GameStateGenerator}
+import chousen.api.data._
 import chousen.game.core.GameStateManager
 import org.scalatest.WordSpec
 
@@ -92,6 +92,75 @@ class MultiTargetActionHandlerSpec extends WordSpec {
         assert(latestMessages.exists(!_.text.contains("Slime attacks Test Player")))
       }
     }
+
+    "Given WindStrike" should {
+      val (startedGame, result, targets) = completeAction(WindStrike)
+
+      standardAssertions(startedGame, result, targets)
+    }
+
+    "Given Shatter" should {
+      val (startedGame, result, targets) = completeAction(Shatter)
+
+      standardAssertions(startedGame, result, targets)
+    }
+
+    "Given Static Field" should {
+      val (startedGame, result, targets) = completeAction(StaticField)
+
+      standardAssertions(startedGame, result, targets)
+    }
+
+    "Given Ground Strike" should {
+      val (startedGame, result, targets) = completeAction(GroundStrike)
+
+      standardAssertions(startedGame, result, targets)
+    }
+
+    "Given MassDrain" should {
+      val (startedGame, result, targets) = completeAction(MassDrain)
+
+      standardAssertions(startedGame, result, targets)
+    }
+
+    def completeAction(action: MultiAction) = {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+      val startedGame: GameState = GameStateManager.start(gameState)
+
+      val targets = Set(GameStateGenerator.firstEnemy.id, GameStateGenerator.secondEnemy.id)
+      lazy val result = MultiTargetActionHandler.handle(targets, Fireball).apply(startedGame)
+      (startedGame, result, targets)
+    }
+
+
+    def standardAssertions(startedGame: GameState, result: GameState, targets: Set[UUID]) = {
+      "Lower the targeted enemies health" in {
+        targets.foreach(t => assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == t)))
+        assert(startedGame.dungeon.currentEncounter.enemies.size == 2)
+        assert(result.dungeon.currentEncounter.enemies.size == 2)
+        assert(getFirstEnemyHp(result) < getFirstEnemyHp(startedGame))
+        assert(getSecondEnemyHp(result) < getSecondEnemyHp(startedGame))
+      }
+
+      "the players position is reduced" in {
+        assert(result.player.position < 100)
+      }
+
+      lazy val numberOfNewMessages = result.messages.size - startedGame.messages.size
+      lazy val latestMessages = result.messages.takeRight(numberOfNewMessages)
+
+      "game messages are created for the player's attack" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "the enemy does not take a turn" in {
+        assert(result.player.stats.currentHp == startedGame.player.stats.currentHp)
+
+        assert(latestMessages.exists(!_.text.contains("Slime attacks Test Player")))
+      }
+    }
+
+
   }
 
 

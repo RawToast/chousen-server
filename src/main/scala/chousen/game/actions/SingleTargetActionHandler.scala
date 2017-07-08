@@ -107,7 +107,7 @@ object SingleTargetActionHandler extends ActionHandler {
         .modify(s => s - 100 - p.stats.strength))(e)
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
-    (p.copy(position = p.position - 105), Option(newEnemy), gameMessages)
+    (p.copy(position = p.position - 105 + p.stats.strength), Option(newEnemy), gameMessages)
   }
 
   def counter(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
