@@ -52,7 +52,7 @@ object EnemyTurnOps {
 
     val atkPwr = 3 + activeEnemy.stats.strength + activeEnemy.stats.dexterity
     val defPwr = player.stats.vitality
-    val dmg = Math.min(1, atkPwr - defPwr)
+    val dmg = Math.max(1, atkPwr - defPwr)
 
     val playerHp = PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.HpLens)
     val hpLens: (Player) => Player = playerHp.modify(hp => hp - dmg)

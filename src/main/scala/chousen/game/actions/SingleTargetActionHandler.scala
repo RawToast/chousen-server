@@ -45,7 +45,7 @@ object SingleTargetActionHandler extends ActionHandler {
           .modify(hp => hp - dmg)(e)
         val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
-      (p.copy(position = p.position - 130), Option(newEnemy), gameMessages)
+      (p.copy(position = p.position - 130 + (p.stats.strength / 4)), Option(newEnemy), gameMessages)
   }
 
 
@@ -60,11 +60,11 @@ object SingleTargetActionHandler extends ActionHandler {
         .modify(hp => hp - dmg)(e)
       val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
-      (p.copy(position = p.position - 80 - p.stats.dexterity), Option(newEnemy), gameMessages)
+      (p.copy(position = p.position - 80 + (p.stats.dexterity / 4)), Option(newEnemy), gameMessages)
   }
 
   def tripleStrike(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(3, (1 + p.stats.dexterity - e.stats.vitality) * 3)
+    val dmg = Math.max(3, (1 + ((p.stats.dexterity * 3) / 2) - e.stats.vitality) * 3)
 
     val targetMsg = GameMessage(s"${p.name} uses Triple Strike!")
     val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
@@ -95,7 +95,7 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def stunningStrike(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, (2 * p.stats.strength) - e.stats.vitality - 3)
+    val dmg = Math.max(1, (2 * p.stats.strength) - e.stats.vitality - 2)
 
     val targetMsg = GameMessage(s"${p.name} uses Stunning Strike!")
     val dmgMsg = GameMessage(s"${e.name} is stunned and takes $dmg damage!")
