@@ -4,11 +4,13 @@ import java.util.UUID
 
 import chousen.api.data._
 import chousen.util.LensUtil
-import monocle.function.{At, FilterIndex}
+import monocle.function.At
 import monocle.macros.GenLens
 import monocle.{Lens, _}
 
-object GameStateOptics {
+object GameStateOptics extends GameStateOptics
+
+trait GameStateOptics {
 
   val DungeonLens = GenLens[GameState](_.dungeon)
 
@@ -16,6 +18,8 @@ object GameStateOptics {
   val MessagesLens = GenLens[GameState](_.messages)
 
   val HandLens = GenLens[GameState](_.cards.hand)
+  val DiscardLens = GenLens[GameState](_.cards.discard)
+
 
   val EncounterLens: Lens[GameState, (Player, Set[Enemy], Seq[GameMessage])] =
     LensUtil.triLens(PlayerLens,
@@ -33,20 +37,6 @@ object GameStateOptics {
     LensUtil.triLens(PlayerLens,
       enemiesLens.composeLens(At.fromIso(enemiesIso).at(uuid)),
       MessagesLens)
-  }
-
-  def multiTargettedLens(uuid: Set[UUID]): Lens[GameState, (Player, Set[Enemy], Seq[GameMessage])] = {
-
-    ???
-  }
-
-  def multiTargettedLens2(uuid: Set[UUID]): (Lens[GameState, (Player, Seq[GameMessage])], Traversal[GameState, Enemy]) = {
-
-    val filterIndex: Traversal[Set[Enemy], Enemy] = FilterIndex.fromIso(enemiesIso).filterIndex(id => uuid.contains(id))
-
-    val tv: Traversal[GameState, Enemy] = GenLens[GameState](_.dungeon.currentEncounter.enemies).composeTraversal(filterIndex)
-    val duo: Lens[GameState, (Player, Seq[GameMessage])] = LensUtil.duoLens(GenLens[GameState](_.player), GenLens[GameState](_.messages))
-    duo -> tv
   }
 
 

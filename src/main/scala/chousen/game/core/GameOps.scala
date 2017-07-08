@@ -19,11 +19,10 @@ abstract class GameOps(encOps: EncounterOps) {
     val next: (Player, Set[Enemy], Seq[GameMessage]) = update(player, enemies, messages)
     encOps.getActive(next) match {
       case Left(_) => next
-      case Right(_) => {
+      case Right(_) =>
         val (p, es, msgs) = EnemyTurnOps.takeTurn(next._1, next._2, next._3)
 
         updateUntilPlayerIsActive(p, es, msgs)
-      }
     }
   }
 
@@ -50,25 +49,23 @@ object EnemyTurnOps {
   def takeTurn(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage]) = {
 
     val activeEnemy = enemies.maxBy(_.position)
-    // val msg1 = GameMessage(s"${activeEnemy.name} attacks ${player.name}!")
-
 
     val atkPwr = 3 + activeEnemy.stats.strength + activeEnemy.stats.dexterity
     val defPwr = player.stats.vitality
-    val dmg = atkPwr - defPwr
+    val dmg = Math.max(1, atkPwr - defPwr)
 
-    val playerHp = PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.hp)
+    val playerHp = PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.HpLens)
     val hpLens: (Player) => Player = playerHp.modify(hp => hp - dmg)
 
     // Message
-    val msg2 = GameMessage(s"${activeEnemy.name} attacks ${player.name} for $dmg damage.")
+    val attackMessage = GameMessage(s"${activeEnemy.name} attacks ${player.name} for $dmg damage.")
 
     // Then reset
     def reset(e: Enemy) = e.copy(position = e.position - 100)
     import chousen.api.types.Implicits._
     val es = enemies.map(e => if (e ~= activeEnemy) reset(e) else e)
 
-    (hpLens.apply(player), es, messages :+ msg2)
+    (hpLens.apply(player), es, messages :+ attackMessage)
   }
 }
 
@@ -76,10 +73,10 @@ object EnemyTurnOps {
 object EncounterOps extends EncounterOps {
 
   @tailrec
-  override def ensureActive(ed: EncounterData): EncounterData = {
+  override def ensureActive(encounterData: EncounterData): EncounterData = {
     import chousen.api.types.Implicits._
 
-    val (p, es, msgs) = ed
+    val (p, es, msgs) = encounterData
     val (player, enemies) = p.copy(position = p.position + p.stats.speed) ->
       es.map(e => e.copy(position = e.position + e.stats.speed))
 
@@ -143,18 +140,18 @@ object EncounterOps extends EncounterOps {
     }
   }
 
-  override def announceActive(ed: EncounterData): EncounterData = {
-    val (player, enemies, msgs) = ed
+  override def announceActive(encounterData: EncounterData): EncounterData = {
+    val (player, enemies, msgs) = encounterData
 
     val fastestEnemy = enemies.maxBy(_.position)
 
-      val newMessages = if (player.position > fastestEnemy.position) msgs :+GameMessage(s"${player.name}'s turn!")
+    val newMessages = if (player.position > fastestEnemy.position) msgs :+GameMessage(s"${player.name}'s turn.")
         else msgs
     (player, enemies, newMessages)
   }
 
-  override def getActive(x: EncounterData): Either[Player, Enemy] = {
-    val (p: Player, es: Set[Enemy], _) = x
+  override def getActive(encounterData: EncounterData): Either[Player, Enemy] = {
+    val (p: Player, es: Set[Enemy], _) = encounterData
     val maxPosition = math.max(p.position, es.maxBy(_.position).position)
 
     if (p.position == maxPosition) Left(p)
@@ -163,10 +160,10 @@ object EncounterOps extends EncounterOps {
 }
 
 trait EncounterOps {
-  def ensureActive(ed: EncounterData): EncounterData
+  def ensureActive(encounterData: EncounterData): EncounterData
 
-  def announceActive(ed: EncounterData): EncounterData
+  def announceActive(encounterData: EncounterData): EncounterData
 
-  def getActive(x: EncounterData): Either[Player, Enemy]
+  def getActive(encounterData: EncounterData): Either[Player, Enemy]
 }
 

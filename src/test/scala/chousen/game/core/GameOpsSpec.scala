@@ -47,7 +47,7 @@ class GameOpsSpec extends WordSpec {
 
       "Includes a game message stating it's the fast player's turn" in {
         assert(updMessages.size == 1)
-        assert(updMessages.head.text == "Player's turn!")
+        assert(updMessages.head.text == "Player's turn.")
       }
 
     }
@@ -77,7 +77,7 @@ class GameOpsSpec extends WordSpec {
 
 //      "Include a game message stating it's the higher positioned users turn" in {
 //        assert(updMessages.size == 1)
-//        assert(updMessages.head.text == "Quick Enemy's turn!")
+//        assert(updMessages.head.text == "Quick Enemy's turn.")
 //      }
 
       "updating again" must {
@@ -106,8 +106,8 @@ class GameOpsSpec extends WordSpec {
 
         "Include a game message stating it's now the Player's turn" in {
           assert(latestMessages.size == 1)
-          assert(latestMessages.exists(_.text == "Player's turn!"))
-          assert(latestMessages.head.text == "Player's turn!")
+          assert(latestMessages.exists(_.text == "Player's turn."))
+          assert(latestMessages.head.text == "Player's turn.")
         }
 
       }
@@ -227,7 +227,7 @@ class GameOpsSpec extends WordSpec {
       }
 
       "the last message states the player is active" in {
-        assert(nextMessages.last.text == "Player's turn!")
+        assert(nextMessages.last.text == "Player's turn.")
       }
 
       "the player's current hp is reduced" in {
@@ -251,7 +251,7 @@ class GameOpsSpec extends WordSpec {
       def createRat = Enemy("Rat", UUID.randomUUID(), CharStats(10, 10, strength = 6, speed = 10), 0)
       val es: Set[Enemy] = Set(createSlime, createSloth, createRat)
 
-      val (nextPlayer, nextEnemies, nextMessages) = GameOps.updateUntilPlayerIsActive(player, es, Seq.empty[GameMessage])
+      val (nextPlayer, _, _) = GameOps.updateUntilPlayerIsActive(player, es, Seq.empty[GameMessage])
 
       "result in the player being active" in {
           assert(nextPlayer.position >= 100)
@@ -283,7 +283,7 @@ class GameOpsSpec extends WordSpec {
 
     "Provided with a dead player and alive enemies" should {
 
-      val deadPlayer = PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.hp).set(0).apply(player)
+      val deadPlayer = PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.HpLens).set(0).apply(player)
 
       val result = GameOps.isGameActive((deadPlayer, enemies, emptyMessages))
 

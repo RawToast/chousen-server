@@ -61,14 +61,13 @@ class CardManagerSpec extends WordSpec with Matchers {
         newCards.discard.size should equal(shuffledCards.discard.size)
       }
 
-      "give no cards when none remain" in {
-
-        val emptyDeck = Cards(Seq.empty, Seq.empty, Seq.empty)
+      "refresh the deck from the discard pile when required" in {
+        val emptyDeck = shuffledCards.copy(deck = Seq.empty, discard = shuffledCards.deck)
         val testDeck = CardManager.drawCard(emptyDeck)
 
-        emptyDeck.hand.size should equal(testDeck.hand.size)
-        emptyDeck.deck.size should equal(testDeck.deck.size)
-        emptyDeck.discard.size should equal(testDeck.discard.size)
+        emptyDeck.hand.size shouldBe < (testDeck.hand.size)
+        emptyDeck.deck.size shouldBe < (testDeck.deck.size)
+        emptyDeck.discard.size shouldBe > (testDeck.discard.size)
       }
     }
 

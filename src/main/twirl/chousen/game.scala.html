@@ -102,6 +102,16 @@
                     }
                     </div>
 
+                    <div id="card-group" class="btn-group" role="group">
+                    @for(c <- gameState.cards.hand.filter(_.action.isInstanceOf[chousen.api.data.CardAction])) {
+                        <button type="button" class="btn btn-default btn-card" action="@{c.action}"
+                        title="@{c.description}"
+                        uri="@{s"game/" + gameState.id + "/card/" + c.id}">
+                        @{c.name}
+                        </button>
+                    }
+                    </div>
+
                 </div>
 
         </div>
@@ -162,6 +172,24 @@
                 });
 
                 $('.btn-self').click(function(evt) {
+                    evt.preventDefault();
+
+                    var uri = $(this).attr("uri");
+                    var action = $(this).attr("action");
+
+                    jQuery.ajax ({
+                        url: uri,
+                        type: "POST",
+                        data: JSON.stringify({ action: action }),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function(){
+                            window.location.replace(window.location.href)
+                        }
+                    });
+                });
+
+                $('.btn-card').click(function(evt) {
                     evt.preventDefault();
 
                     var uri = $(this).attr("uri");

@@ -5,7 +5,7 @@ import fs2.Task
 import org.http4s.dsl._
 import org.scalatest.WordSpec
 
-class n extends WordSpec {
+class MappedGameAccess extends WordSpec {
 
   //  "MappedGameAccess" should {
   //

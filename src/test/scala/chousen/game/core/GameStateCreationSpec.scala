@@ -26,6 +26,7 @@ class GameStateCreationSpec extends WordSpec {
         assert(game1 != game2)
         assert(game1.id != game2.id)
       }
+
     }
 
     "Starting a game" when {
@@ -42,7 +43,7 @@ class GameStateCreationSpec extends WordSpec {
         "return messages for the start of the game" in {
           assert(result.messages.head == GameMessage(s"${GameStateGenerator.playerName} has entered the dungeon"))
           assert(result.messages(1) == GameMessage(s"${GameStateGenerator.playerName} is attacked by: Slime, Slime!"))
-          assert(result.messages(2) == GameMessage(s"${GameStateGenerator.playerName}'s turn!"))
+          assert(result.messages(2) == GameMessage(s"${GameStateGenerator.playerName}'s turn."))
         }
 
         "return correct message for a single enemy" in {
@@ -53,7 +54,7 @@ class GameStateCreationSpec extends WordSpec {
 
           assert(altResult.messages.head == GameMessage(s"${GameStateGenerator.playerName} has entered the dungeon"))
           assert(altResult.messages(1) == GameMessage(s"${GameStateGenerator.playerName} is attacked by Slime!"))
-          assert(altResult.messages(2) == GameMessage(s"${GameStateGenerator.playerName}'s turn!"))
+          assert(altResult.messages(2) == GameMessage(s"${GameStateGenerator.playerName}'s turn."))
         }
       }
     }
