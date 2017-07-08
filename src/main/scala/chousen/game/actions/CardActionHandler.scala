@@ -38,23 +38,24 @@ object CardActionHandler extends ActionHandler {
     (p, newCards, gameMessages)
   }
 
-  def replace(p: Player, h: Cards, msgs: Seq[GameMessage]) = {
-
+  def replace(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
     val targetMsg = GameMessage(s"${p.name} uses Replace!")
 
     val gameMessages = msgs :+ targetMsg
 
-    val discardedHandCards: Cards = h.hand
+    val discardedHandCards: Cards = cs.hand
       .map(c => CardManager.discard(c))
-        .foldLeft(h)((c, ca) => ca(c))
+        .foldLeft(cs)((c, ca) => ca(c))
+
+    val handSize = Math.min(3, cs.hand.size)
 
     @scala.annotation.tailrec
-    def populate(cards: Cards): Cards = {
-      if (cards.hand.size >= 7) cards
-      else populate(CardManager.drawCard(cards))
+    def populate(cards: Cards, amount: Int): Cards = {
+      if (cards.hand.size >= amount) cards
+      else populate(CardManager.drawCard(cards), amount)
     }
 
-    val newCards = populate(discardedHandCards)
+    val newCards = populate(discardedHandCards, handSize)
 
     (p, newCards, gameMessages)
   }
@@ -68,7 +69,7 @@ object CardActionHandler extends ActionHandler {
       else populate(CardManager.drawCard(cards))
     }
     val newCards = populate(h)
-    val foundCards = newCards.hand.filter(c => h.hand.contains(c))
+    val foundCards = newCards.hand.filter(c => !h.hand.contains(c))
 
     val targetMsg = GameMessage(s"${p.name} uses Miracle and finds: ${foundCards.map(_.name).mkString(", ")}")
     val gameMessages = msgs :+ targetMsg
@@ -81,7 +82,7 @@ object CardActionHandler extends ActionHandler {
     val cs1 = CardManager.drawCard(cs)
     val cs2 = CardManager.drawCard(cs1)
 
-    val foundCards = cs2.hand.filter(c => cs.hand.contains(c))
+    val foundCards = cs2.hand.filter(c => !cs.hand.contains(c))
 
     val targetMsg = GameMessage(s"${p.name} quickly searches the area and finds: ${foundCards.map(_.name).mkString(", ")}")
 

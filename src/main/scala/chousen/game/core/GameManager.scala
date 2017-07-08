@@ -9,7 +9,6 @@ import chousen.game.cards.{CardCatalogue, CardManager}
 import chousen.game.core.GameStateManager.startEncounterMessage
 import chousen.game.core.GameStateOptics.{EncounterLens, MessagesLens}
 
-import scala.annotation.tailrec
 import scala.collection.LinearSeq
 
 trait GameManager[A] {
@@ -54,7 +53,7 @@ trait GameStateCreation {
 
     import chousen.api.types.Implicits._
 
-    implicit def toBattle(e: Enemy): Battle = Battle(Set(e))
+    def toBattle(e: Enemy): Battle = Battle(Set(e))
 
     def campFire = Battle(Set(Enemy("Camp Fire", UUID.randomUUID(), CharStats(3, 3, strength = 6, speed = 0), 0)))
 
@@ -65,17 +64,17 @@ trait GameStateCreation {
     def createRat = Battle(Set(Enemy("Rat", UUID.randomUUID(), CharStats(7, 7, strength = 4, vitality = 4, speed = 12), 0)))
     def giantRat = Battle(Set(Enemy("Giant Rat", UUID.randomUUID(), CharStats(26, 26, dexterity = 9, vitality = 6, speed = 11), 0)))
 
-    def oldOrc = battleMonoid.empty |+| Enemy("Old Orc", UUID.randomUUID(), CharStats(70, 70, strength = 14, dexterity = 6, vitality = 10, speed = 4), 0)
+    def oldOrc = toBattle(Enemy("Old Orc", UUID.randomUUID(), CharStats(70, 70, strength = 14, dexterity = 6, vitality = 10, speed = 4), 0))
 
-    def orc = battleMonoid.empty |+| Enemy("Orc", UUID.randomUUID(), CharStats(85, 85, strength = 20, dexterity = 7, vitality = 13, speed = 7), 0)
+    def orc = toBattle(Enemy("Orc", UUID.randomUUID(), CharStats(85, 85, strength = 20, dexterity = 7, vitality = 13, speed = 7), 0))
 
-    def goblin = battleMonoid.empty |+| Enemy("Goblin", UUID.randomUUID(), CharStats(50, 50, strength = 9, dexterity = 10, vitality = 9, speed = 9), 0)
+    def goblin = toBattle(Enemy("Goblin", UUID.randomUUID(), CharStats(50, 50, strength = 9, dexterity = 10, vitality = 9, speed = 9), 0))
 
-    def oldWarrior = battleMonoid.empty |+| Enemy("Old Warrior", UUID.randomUUID(), CharStats(60, 60, strength = 15, dexterity = 10, vitality = 22), 0)
+    def oldWarrior = toBattle(Enemy("Old Warrior", UUID.randomUUID(), CharStats(60, 60, strength = 15, dexterity = 10, vitality = 22), 0))
 
-    def troll = battleMonoid.empty |+| Enemy("Troll", UUID.randomUUID(), CharStats(160, 160, strength = 40, intellect = 5, vitality = 14, speed = 2), 0)
+    def troll = toBattle(Enemy("Troll", UUID.randomUUID(), CharStats(160, 160, strength = 40, intellect = 5, vitality = 14, speed = 2), 0))
 
-    def orcKing = battleMonoid.empty |+| Enemy("Orc King", UUID.randomUUID(), CharStats(130, 130, strength = 28, vitality = 17), -25)
+    def orcKing = toBattle(Enemy("Orc King", UUID.randomUUID(), CharStats(130, 130, strength = 28, vitality = 17), -25))
 
     val battle1 = createSloth
     val battle2 = createRat |+| createRat |+| createRat |+| createRat
@@ -186,13 +185,7 @@ object GameStateManager extends GameManager[GameState] with GameStateCreation {
       (newPlayer, newDungeon, msgs :+ restMsg :+ strongerMsg :+ progressMsg :+ encounterMsg)
     }.andThen(GameStateOptics.EncounterLens.modify(GameOps.updateUntilPlayerIsActive)).apply(gs)
 
-    @tailrec
-    def refillHand(cards: Cards): Cards = {
-      if (cards.hand.size >= 7) cards
-      else refillHand(CardManager.drawCard(cards))
-    }
-    val cards = refillHand(g.cards)
-    g.copy(cards = cards)
+    g.copy(cards = CardManager.drawCard(g.cards))
 
   }
 

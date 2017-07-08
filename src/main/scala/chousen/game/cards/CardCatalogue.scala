@@ -118,6 +118,6 @@ trait Utility extends CardBuilder {
   def rummage = Card(UUID.randomUUID(), "Rummage", "Quickly search the area and draw 2 cards", Rummage)
 
   // Cost 0
-  def replace = Card(UUID.randomUUID(), "Replace", "Instantly replaces the player's hand", Replace)
+  def replace = Card(UUID.randomUUID(), "Replace", "Instantly replaces the player's hand (will draw at least 3 cards)", Replace)
   def restore = Card(UUID.randomUUID(), "Restore", "Instantly places the top discarded card into your hand", Restore)
 }

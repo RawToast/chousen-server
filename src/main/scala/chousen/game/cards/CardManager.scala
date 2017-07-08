@@ -38,10 +38,12 @@ trait CardManager {
     Cards(hand, deck, Seq.empty)
   }
 
-  def drawCard(cards: Cards): Cards = cards.deck match {
+  def drawCard(cards: Cards): Cards = {
+    if (cards.hand.size < MAX_HAND_SIZE) cards.deck match {
     case h :: t => Cards(cards.hand :+ h, t, cards.discard)
     case Nil =>
       drawCard(cards.copy(deck = cards.discard, discard=Seq.empty))
+    } else cards
   }
 
   def moveLastDiscardToTopDeck(cards: Cards): Cards = {
