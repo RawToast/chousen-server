@@ -2,6 +2,7 @@ package chousen.game.actions
 
 import java.util.UUID
 
+import chousen.Optics.{EnemyStats, HpLens}
 import chousen.api.data._
 import chousen.game.core.GameStateOptics._
 
@@ -49,6 +50,7 @@ object MultiTargetActionHandler extends ActionHandler {
       case Shatter => shatter
       case GroundStrike => groundStrike
       case WindStrike => windStrike
+      case MassDrain => massDrain
     }
   }
 
@@ -88,12 +90,12 @@ object MultiTargetActionHandler extends ActionHandler {
   }
 
   def groundStrike(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, 2 + p.stats.strength - e.stats.vitality)
+    val dmg = Math.max(1, 4 + p.stats.strength - e.stats.vitality)
     val gameMessages = msgs :+ GameMessage(s"${e.name} takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function
     val newE = EnemyOptics.EnemyStats.composeLens(CharStatsOptics.HpLens).modify(hp => hp - dmg)
-      .andThen(EnemyOptics.EnemyPosition.modify(p => p - 15))
+      .andThen(EnemyOptics.EnemyPosition.modify(ep => ep - 10 - (p.stats.strength / 2)))
         .apply(e)
 
     (p, Option(newE), gameMessages)
@@ -108,5 +110,20 @@ object MultiTargetActionHandler extends ActionHandler {
       .modify(hp => hp - dmg)(e)
 
     (p, Option(newE), gameMessages)
+  }
+
+  def massDrain(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+    val dmg = Math.max(1, p.stats.intellect + (e.stats.maxHp / 12))
+
+    val dmgMsg = GameMessage(s"${p.name} drains $dmg health from ${e.name}!")
+
+    // This should be replaced by a generic attack/damage function
+    val newEnemy = EnemyStats.composeLens(HpLens)
+      .modify(hp => hp - dmg)(e)
+
+    val newPlayer = PlayerOptics.PlayerHealthLens.modify(hp => Math.min(hp + dmg, p.stats.maxHp))(p)
+    val gameMessages = msgs :+ dmgMsg :+ dmgMsg
+
+    (newPlayer, Option(newEnemy), gameMessages)
   }
 }

@@ -24,14 +24,14 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
       assassinate.times(4) ++ windStrike.times(4) ++ quickStep.times(4) ++
       staticField.times(4) ++ drain.times(4) ++ fireball.times(4) ++
       rarePepe.times(4) ++
-      restore.times(4) ++ replace.times(4)
+      restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
-  def magicDeck: Seq[Card] = // 15
-    (4 of healWounds) ++ /*4 of intelligence, 4 of haste, 2 of stoneSkin,*/
-      (4 of quickStep) ++ (4 of windStrike) ++ (2 of assassinate) ++
-      (4 of fireball) ++ (4 of staticField) ++ (4 of drain) ++ (4 of shatter) ++ (4 of magicMissile) ++ (4 of pain) ++
-      (4 of rarePepe) ++ (4 of elixirOfIntelligence) ++ (4 of elixirOfVitality) ++
-      (4 of restore) ++ (4 of replace)
+  def magicDeck: Seq[Card] = // 13
+    healWounds.times(4) ++
+    fireball.times(4) ++ magicMissile.times(4) ++ drain.times(4) ++ staticField.times(2) ++ pain.times(2) ++ massDrain.times(4)
+    assassinate.times(2) ++ quickStep.times(4)
+    rarePepe.times(4) ++ elixirOfIntelligence.times(4) ++ elixirOfVitality.times(2)
+    restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
   def strengthDeck = // 14
     (4 of healWounds) ++ /*4 of might, 4 of stoneSkin, 4 of haste, */
@@ -54,6 +54,14 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
       (4 of pain) ++ (4 of staticField) ++ (4 of fireball) ++
       (4 of rarePepe) ++ (4 of elixirOfDexterity) ++ (4 of elixirOfIntelligence) ++
       (4 of restore) ++ (4 of replace)
+
+  def strongManDeck = // 10
+    healWounds.times(4) ++
+    massDrain.times(4) ++
+    quickStep.times(4) ++
+    groundStrike.times(4) ++ crushingBlow.times(4) ++ quickAttack.times(4) ++
+    rarePepe.times(4) ++ elixirOfStrength.times(4) ++ elixirOfDexterity.times(4) ++ elixirOfVitality.times(4) ++
+    restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 }
 
 sealed trait CardBuilder
@@ -82,6 +90,7 @@ trait Magic extends CardBuilder{
   def shatter = Card(UUID.randomUUID(), "Shatter", "Reduce player to 1hp and deal the same damage to all enemies", Shatter)
   def magicMissile = Card(UUID.randomUUID(), "Magic Missile", "Deals magic damage to a single enemy", MagicMissile)
   def drain = Card(UUID.randomUUID(), "Drain", "Drains health from an enemy and heals the player", Drain)
+  def massDrain = Card(UUID.randomUUID(), "Mass Drain", "Drains health from multiple enemies and heals the player", MassDrain)
 }
 
 trait Strength extends CardBuilder{

@@ -170,7 +170,7 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def drain(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, p.stats.intellect + (e.stats.maxHp / 10))
+    val dmg = Math.max(1, 1 + p.stats.intellect + (e.stats.maxHp / 5))
 
     val targetMsg = GameMessage(s"${p.name} uses Drain!")
     val dmgMsg = GameMessage(s"${p.name} drains $dmg health from ${e.name}!")
@@ -178,8 +178,10 @@ object SingleTargetActionHandler extends ActionHandler {
     // This should be replaced by a generic attack/damage function
     val newEnemy = EnemyStats.composeLens(HpLens)
       .modify(hp => hp - dmg)(e)
+    val newPlayer = PlayerOptics.PlayerHealthLens.modify(hp => Math.min(hp + dmg, p.stats.maxHp)).apply(p)
+
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
-    (p.copy(position = p.position - 100), Option(newEnemy), gameMessages)
+    (newPlayer.copy(position = p.position - 100), Option(newEnemy), gameMessages)
   }
 }
