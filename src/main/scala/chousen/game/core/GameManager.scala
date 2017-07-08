@@ -63,19 +63,19 @@ trait GameStateCreation {
     def createSloth = Battle(Set(Enemy("Sloth", UUID.randomUUID(), CharStats(26, 26, strength = 12, vitality = 4, speed = 4), 0)))
 
     def createRat = Battle(Set(Enemy("Rat", UUID.randomUUID(), CharStats(7, 7, strength = 4, vitality = 4, speed = 12), 0)))
-    def giantRat = Battle(Set(Enemy("Giant Rat", UUID.randomUUID(), CharStats(26, 26, dexterity = 9, vitality = 7, speed = 11), 0)))
+    def giantRat = Battle(Set(Enemy("Giant Rat", UUID.randomUUID(), CharStats(26, 26, dexterity = 9, vitality = 6, speed = 11), 0)))
 
     def oldOrc = battleMonoid.empty |+| Enemy("Old Orc", UUID.randomUUID(), CharStats(70, 70, strength = 14, dexterity = 6, vitality = 10, speed = 4), 0)
 
     def orc = battleMonoid.empty |+| Enemy("Orc", UUID.randomUUID(), CharStats(85, 85, strength = 20, dexterity = 7, vitality = 13, speed = 7), 0)
 
-    def goblin = battleMonoid.empty |+| Enemy("Goblin", UUID.randomUUID(), CharStats(50, 50, strength = 9, dexterity = 10, vitality = 7, speed = 9), 0)
+    def goblin = battleMonoid.empty |+| Enemy("Goblin", UUID.randomUUID(), CharStats(50, 50, strength = 9, dexterity = 10, vitality = 9, speed = 9), 0)
 
-    def oldWarrior = battleMonoid.empty |+| Enemy("Old Warrior", UUID.randomUUID(), CharStats(60, 60, strength = 15, dexterity = 10, vitality = 20), 0)
+    def oldWarrior = battleMonoid.empty |+| Enemy("Old Warrior", UUID.randomUUID(), CharStats(60, 60, strength = 15, dexterity = 10, vitality = 22), 0)
 
     def troll = battleMonoid.empty |+| Enemy("Troll", UUID.randomUUID(), CharStats(160, 160, strength = 40, intellect = 5, vitality = 14, speed = 2), 0)
 
-    def orcKing = battleMonoid.empty |+| Enemy("Orc King", UUID.randomUUID(), CharStats(130, 130, strength = 28, vitality = 15), -25)
+    def orcKing = battleMonoid.empty |+| Enemy("Orc King", UUID.randomUUID(), CharStats(130, 130, strength = 28, vitality = 17), -25)
 
     val battle1 = createSloth
     val battle2 = createRat |+| createRat |+| createRat |+| createRat

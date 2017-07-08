@@ -27,9 +27,9 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
   def magicDeck: Seq[Card] = // 13
     usefulCards ++
-    fireball.times(4) ++ magicMissile.times(4) ++ drain.times(4) ++ staticField.times(2) ++ pain.times(2) ++ massDrain.times(4)
-    assassinate.times(2) ++ quickStep.times(4) ++ shatter.times(2)
-    elixirOfIntelligence.times(4) ++ elixirOfVitality.times(2)
+    fireball.times(4) ++ magicMissile.times(4) ++ drain.times(4) ++ staticField.times(2) ++ pain.times(2) ++ massDrain.times(4) ++
+    assassinate.times(2) ++ quickStep.times(4) ++ shatter.times(2) ++
+    elixirOfIntelligence.times(4) ++ elixirOfVitality.times(2) ++
     restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
   def strengthDeck =
@@ -57,7 +57,8 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     usefulCards ++
     massDrain.times(4) ++
     quickStep.times(4) ++
-    groundStrike.times(4) ++ crushingBlow.times(4) ++ quickAttack.times(4) ++ elixirOfStrength.times(4) ++ elixirOfDexterity.times(4) ++ elixirOfVitality.times(4) ++
+    groundStrike.times(4) ++ crushingBlow.times(4) ++ quickAttack.times(4) ++ elixirOfStrength.times(4) ++
+      elixirOfDexterity.times(4) ++ elixirOfVitality.times(4) ++
     restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
   def usefulCards = healWounds.times(4) ++ rarePepe.times(4)
