@@ -47,7 +47,7 @@ object CardActionHandler extends ActionHandler {
       .map(c => CardManager.discard(c))
         .foldLeft(cs)((c, ca) => ca(c))
 
-    val handSize = Math.min(3, cs.hand.size)
+    val handSize = Math.max(3, cs.hand.size)
 
     @scala.annotation.tailrec
     def populate(cards: Cards, amount: Int): Cards = {
