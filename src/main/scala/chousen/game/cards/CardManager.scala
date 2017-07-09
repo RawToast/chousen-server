@@ -15,7 +15,7 @@ trait CardManager {
   lazy val MAX_HAND_SIZE = 7
 
   def playCard(card: data.Card)(f: data.Card => GameState): (GameState) => GameState = { game: GameState =>
-    import chousen.api.types.Implicits._
+    import chousen.Implicits._
     game.cards.hand
       .find(_ ~= card)
       .fold(game){c =>
@@ -54,7 +54,7 @@ trait CardManager {
 
   def moveCardToBottomOfDeck(card: data.Card): Cards => Cards = {
     (cards:Cards) =>
-      import chousen.api.types.Implicits._
+      import chousen.Implicits._
       cards.hand
         .find(_ ~= card)
         .fold(cards){ c =>
@@ -66,7 +66,7 @@ trait CardManager {
 
 
   def discard(card: data.Card): (Cards) => Cards = { cards: Cards =>
-    import chousen.api.types.Implicits._
+    import chousen.Implicits._
     cards.hand.find(_ ~= card).fold(cards) { c =>
       val newHand = cards.hand.filterNot(_ ~= c)
       Cards(newHand, cards.deck, cards.discard :+ c)

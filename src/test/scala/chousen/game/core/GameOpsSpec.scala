@@ -12,7 +12,7 @@ class GameOpsSpec extends WordSpec {
   def speed8Char = CharStats(100, 100, speed = 8)
 
   def resetActive(t:(Player, Set[Enemy], Seq[GameMessage])): (Player, Set[Enemy]) = {
-    import chousen.api.types.Implicits._
+    import chousen.Implicits._
     val (p, es, _) = t
 
     val enemy = es.maxBy(_.position)

@@ -32,7 +32,7 @@ class GameStateManagerSpec extends WordSpec {
             result.dungeon.currentEncounter.enemies, result.messages))
           assert(active.isLeft)
 
-          import chousen.api.types.Implicits._
+          import chousen.Implicits._
           active.swap.foreach(_ ~= startedGame.player)
         }
 
@@ -73,7 +73,7 @@ class GameStateManagerSpec extends WordSpec {
             result.dungeon.currentEncounter.enemies, result.messages))
           assert(active.isLeft)
 
-          import chousen.api.types.Implicits._
+          import chousen.Implicits._
           active.swap.foreach(_ ~= startedGame.player)
         }
 
@@ -168,7 +168,7 @@ class GameStateManagerSpec extends WordSpec {
       }
 
       "Transition to the next battle if the encounter is empty" in {
-        import chousen.api.types.Implicits._
+        import chousen.Implicits._
         val initialState = removeEnemies(gameState)
         val result = GameStateManager.transition(initialState)
 

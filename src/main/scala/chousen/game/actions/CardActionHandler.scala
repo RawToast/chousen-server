@@ -90,6 +90,4 @@ object CardActionHandler extends ActionHandler {
 
     (p.copy(position = p.position - 70), cs2, gameMessages)
   }
-
-
 }

@@ -31,7 +31,7 @@ object GameStateGenerator {
 
   private def gameStateWithPlayer(player:Player) = {
     import cats.implicits._
-    import chousen.api.types.Implicits._
+    import chousen.Implicits._
 
     val cards = CardManager.startGame(CardCatalogue.defaultDeck)
     def mkBattle(e: Enemy) = Battle(Set(e))

@@ -62,7 +62,7 @@ object EnemyTurnOps {
 
     // Then reset
     def reset(e: Enemy) = e.copy(position = e.position - 100)
-    import chousen.api.types.Implicits._
+    import chousen.Implicits._
     val es = enemies.map(e => if (e ~= activeEnemy) reset(e) else e)
 
     (hpLens.apply(player), es, messages :+ attackMessage)
@@ -74,7 +74,7 @@ object EncounterOps extends EncounterOps {
 
   @tailrec
   override def ensureActive(encounterData: EncounterData): EncounterData = {
-    import chousen.api.types.Implicits._
+    import chousen.Implicits._
 
     val (p, es, msgs) = encounterData
     val (player, enemies) = p.copy(position = p.position + p.stats.speed) ->

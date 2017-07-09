@@ -51,7 +51,7 @@ trait GameStateCreation {
       case _ => CardManager.startGame(CardCatalogue.defaultDeck)
     }
 
-    import chousen.api.types.Implicits._
+    import chousen.Implicits._
 
     def toBattle(e: Enemy): Battle = Battle(Set(e))
 
