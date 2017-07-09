@@ -3,7 +3,6 @@ package chousen.game.actions
 import chousen.api.data.PlayerOptics._
 import chousen.api.data._
 import chousen.game.core.GameStateOptics.{MessagesLens, PlayerLens}
-import chousen.game.status.StatusBuilder
 import chousen.util.LensUtil
 import monocle.Lens
 
@@ -26,11 +25,6 @@ object SelfActionHandler {
       case ElixirOfVitality => elixirOfVitality
       case RarePepe => rarePepe
       case QuickStep => quickStep
-      case Haste => haste
-      case PotionOfMight => haste
-      case PotionOfDexterity => haste
-      case PotionOfIntelligence => haste
-      case PotionOfStoneSkin => haste
     }
 
 
@@ -87,23 +81,5 @@ object SelfActionHandler {
     val message = GameMessage(s"${p.name} uses Quick Step!")
 
     (PlayerPositionLens.modify(_ + 100 + p.stats.dexterity)(p), msgs :+ message)
-  }
-
-  def haste(p: Player, msgs: Seq[GameMessage]) = {
-    val message = GameMessage(s"${p.name} uses Haste!")
-
-    val hasteStatus: Status = StatusBuilder.makeHaste(4)
-
-    (PlayerStatusLens.modify(_ :+ hasteStatus)
-      .andThen(PlayerSpeedLens.modify(_ + 4))(p), msgs :+ message)
-  }
-
-  def might(p: Player, msgs: Seq[GameMessage]) = {
-    val message = GameMessage(s"${p.name} uses Potion of Might!")
-
-    val hasteStatus: Status = StatusBuilder.makeMight(4)
-
-    (PlayerStatusLens.modify(_ :+ hasteStatus)
-      .andThen(PlayerSpeedLens.modify(_ + 4))(p), msgs :+ message)
   }
 }

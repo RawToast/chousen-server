@@ -1,6 +1,6 @@
 package chousen.api.data
 
-import monocle.{Lens, PLens}
+import monocle.Lens
 import monocle.macros.GenLens
 
 object PlayerOptics extends PlayerOptics
@@ -8,17 +8,17 @@ object PlayerOptics extends PlayerOptics
 trait PlayerOptics {
   val PlayerCharStatsLens = GenLens[Player](_.stats)
 
+  val PlayerHealthLens: Lens[Player, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.HpLens)
+  val PlayerMaxHealthLens: Lens[Player, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.MaxHpLens)
+  val PlayerStrengthLens: Lens[Player, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.StrengthLens)
+  val PlayerDexterityLens: Lens[Player, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.DexterityLens)
+  val PlayerIntellectLens: Lens[Player, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.IntellectLens)
+  val PlayerVitalityLens: Lens[Player, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.VitalityLens)
+  val PlayerSpeedLens: Lens[Player, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.SpeedLens)
+  val PlayerPositionLens: Lens[Player, Int] = GenLens[Player](_.position)
+
   val SetPlayerStats = (s: Int, d: Int, i: Int, v: Int) => PlayerStrengthLens.modify(_ + s).andThen(PlayerDexterityLens.modify(_ + d))
     .andThen(PlayerVitalityLens.modify(_ + v).andThen(PlayerIntellectLens.modify(_ + i)))
-  val PlayerHealthLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.HpLens)
-  val PlayerMaxHealthLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.MaxHpLens)
-  val PlayerStrengthLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.StrengthLens)
-  val PlayerDexterityLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.DexterityLens)
-  val PlayerIntellectLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.IntellectLens)
-  val PlayerVitalityLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.VitalityLens)
-  val PlayerSpeedLens: PLens[Player, Player, Int, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.SpeedLens)
-  val PlayerStatusLens: Lens[Player, Seq[Status]] = GenLens[Player](_.status)
-  val PlayerPositionLens = GenLens[Player](_.position)
 }
 
 object CharStatsOptics extends CharStatsOptics

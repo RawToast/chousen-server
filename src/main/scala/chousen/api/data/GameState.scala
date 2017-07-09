@@ -13,7 +13,7 @@ case class CharStats(maxHp: Int,
                      speed: Int = 8)
 
 
-case class Player(name:String, stats: CharStats, position: Int, status: Seq[Status] = Seq.empty)
+case class Player(name:String, stats: CharStats, position: Int)
 
 case class Cards(hand: Seq[Card], deck: Seq[Card], discard: Seq[Card])
 
@@ -33,14 +33,3 @@ object Deck {
     val description: String
   }
 }
-
-
-case class Status(effect: StatusEffect, description: String, turns: Int, amount: Option[Int] = None)
-
-sealed trait StatusEffect
-
-case object Fast extends StatusEffect
-case object StoneSkin extends StatusEffect
-case object Might extends StatusEffect
-case object Dexterity extends StatusEffect
-case object Smart extends StatusEffect
