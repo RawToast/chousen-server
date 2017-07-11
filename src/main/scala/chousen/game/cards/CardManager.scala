@@ -14,6 +14,8 @@ object CardManager extends CardManager {
 trait CardManager {
 
   lazy val MAX_HAND_SIZE = 7
+  lazy val PRE_DISCARD_MAX_HAND_SIZE = 7
+  lazy val ABSOLUTE_MAX = 15
 
   def playCard(card: data.Card)(f: data.Card => GameState): (GameState) => GameState = { game: GameState =>
     import chousen.Implicits._
@@ -40,8 +42,8 @@ trait CardManager {
   }
 
   @tailrec
-  final def drawCard(cards: Cards): Cards = {
-    if (cards.hand.size < MAX_HAND_SIZE) {
+  final def drawCard(cards: Cards, limit:Int=MAX_HAND_SIZE): Cards = {
+    if (cards.hand.size < limit) {
       if (cards.deck.isEmpty) drawCard(cards.copy(deck = cards.discard, discard = Seq.empty))
         else Cards(cards.hand :+ cards.deck.head, cards.deck.tail, cards.discard)
     } else cards

@@ -11,21 +11,15 @@ trait ActionHandler {
       val deadEnemies = es.filter(_.stats.currentHp < 0).toSeq
 
       val battleExp = deadEnemies.size
-      val expMsg =battleExp match {
-        case 0 => Seq.empty
-        case _ => Seq(GameMessage(s"${p.name} gained $battleExp experience."))
-      }
 
-      val (pl, lvlupMsgs) = levelUp(PlayerCurrentExperienceLens.modify(_+deadEnemies.size)(p))
-
-
+      val (pl, lvlupMsgs) = levelUp(PlayerCurrentExperienceLens.modify(xp => xp + battleExp)(p))
 
       val newMessages = deadEnemies
         .map(e =>
           if (e.stats.currentHp > -10) GameMessage(s"${e.name} dies")
           else GameMessage(s"${e.name} is annihilated!")) ++ lvlupMsgs
 
-      (pl, aliveEnemies, msgs ++: expMsg ++: newMessages)
+      (pl, aliveEnemies, msgs ++: newMessages)
   }
 
   def levelUp(player: Player): (Player, Seq[GameMessage]) = {

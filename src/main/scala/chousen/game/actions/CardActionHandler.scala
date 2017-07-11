@@ -65,8 +65,8 @@ object CardActionHandler extends ActionHandler {
 
     @scala.annotation.tailrec
     def populate(cards: Cards): Cards = {
-      if (cards.hand.size >= 7) cards
-      else populate(CardManager.drawCard(cards))
+      if (cards.hand.size >= CardManager.PRE_DISCARD_MAX_HAND_SIZE) cards
+      else populate(CardManager.drawCard(cards, CardManager.PRE_DISCARD_MAX_HAND_SIZE))
     }
     val newCards = populate(h)
     val foundCards = newCards.hand.filter(c => !h.hand.contains(c))
@@ -79,8 +79,8 @@ object CardActionHandler extends ActionHandler {
   }
 
   def rummage(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
-    val cs1 = CardManager.drawCard(cs)
-    val cs2 = CardManager.drawCard(cs1)
+    val cs1 = CardManager.drawCard(cs, limit = CardManager.MAX_HAND_SIZE)
+    val cs2 = CardManager.drawCard(cs1, limit = CardManager.MAX_HAND_SIZE)
 
     val foundCards = cs2.hand.filter(c => !cs.hand.contains(c))
 

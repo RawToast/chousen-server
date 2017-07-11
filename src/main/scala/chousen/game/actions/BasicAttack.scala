@@ -5,7 +5,7 @@ import java.util.UUID
 import chousen.api.data.{CharStatsOptics, EnemyOptics, GameMessage}
 import chousen.game.core.GameStateOptics
 
-object BasicAttack {
+object BasicAttack extends ActionHandler{
 
   def attack(targetId: UUID) = GameStateOptics.targettedLens(targetId).modify {
     case (p, optE, msgs) =>
@@ -26,16 +26,4 @@ object BasicAttack {
         case None => (p, optE, msgs)
       }
   }.andThen(handleDead)
-
-
-  private def handleDead = GameStateOptics.EncounterLens.modify {
-    case (p, es, msgs) =>
-
-      val aliveEnemies = es.filter(_.stats.currentHp > 0)
-      val newMessages = es.filter(_.stats.currentHp < 0)
-        .map(e => GameMessage(s"${e.name} dies"))
-        .toSeq
-
-      (p, aliveEnemies, msgs ++: newMessages)
-  }
 }

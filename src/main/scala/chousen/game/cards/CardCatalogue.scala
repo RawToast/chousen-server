@@ -3,6 +3,7 @@ package chousen.game.cards
 import java.util.UUID
 
 import chousen.api.data._
+import chousen.game.cards.CardCatalogue.elixirOfIntelligence
 
 object CardCatalogue extends Potions with PermanentEffects with Magic with Strength with Dexterity with Utility {
 
@@ -23,13 +24,14 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
       crushingBlow.times(4) ++ groundStrike.times(4) ++ stunningStrike.times(4) ++
       assassinate.times(4) ++ windStrike.times(4) ++ quickStep.times(4) ++
       staticField.times(4) ++ drain.times(4) ++ fireball.times(4) ++
-      restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4) :+ shatter
+      elixirOfStrength.times(2) ++ elixirOfDexterity.times(2) ++ elixirOfVitality.times(2) ++
+      restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4) ++ shatter.times(2)
 
   def magicDeck: Seq[Card] = // 13
     usefulCards ++
     fireball.times(4) ++ magicMissile.times(4) ++ drain.times(4) ++ staticField.times(2) ++ pain.times(2) ++ massDrain.times(4) ++
     assassinate.times(2) ++ quickStep.times(4) ++ shatter.times(2) ++
-    elixirOfIntelligence.times(4) ++ elixirOfVitality.times(2) ++
+    elixirOfIntelligence.times(4) ++ elixirOfVitality.times(4) ++
     restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
   def strengthDeck =

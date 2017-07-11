@@ -250,7 +250,7 @@ object GameStateManager extends GameManager[GameState] with GameStateCreation {
       (newPlayer, newDungeon, msgs :+ restMsg :+ strongerMsg :+ progressMsg :+ encounterMsg)
     }.andThen(GameStateOptics.EncounterLens.modify(GameOps.updateUntilPlayerIsActive)).apply(gs)
 
-    g.copy(cards = CardManager.drawCard(CardManager.drawCard(g.cards)))
+    g.copy(cards = CardManager.drawCard(CardManager.drawCard(g.cards, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)))
   }
 
   def startEncounterMessage(enemies: Set[Enemy], player: Player): GameMessage = {
