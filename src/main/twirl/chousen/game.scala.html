@@ -17,8 +17,8 @@
                     <div class="col-md-2">@{gameState.player.name}</div>
                     <div class="col-md-2"></div>
                     <div class="col-md-2">HP: @{gameState.player.stats.currentHp} / @{gameState.player.stats.maxHp}</div>
-                    <div class="col-md-2"></div>
-                    <div class="col-md-2"></div>
+                    <div class="col-md-2">CLS: @{gameState.player.className}</div>
+                    <div class="col-md-2">LV: @{gameState.player.experience.level}</div>
                     <div class="col-md-2">@{gameState.player.position}</div>
                 </div>
 
@@ -46,7 +46,7 @@
             <div id="gameMessagesRow" class="row" style="padding: 8px 0px">
                 <div id="gameMessagesOffSet" class=".col-md-8 .col-md-offset-2">
                     <textarea id="gameMessagesText" class="form-control noresize"
-                        style="resize: none" rows="15" data-role="none">@{gameState.messages.map(m => {{m.text + "\r\n"}})}
+                        style="resize: none" rows="15" data-role="none">@{gameState.messages.filterNot(gm => gm.text.contains("s turn")).map(m => {{m.text + "\r\n"}})}
                     </textarea>
                 </div>
             </div>
@@ -54,7 +54,7 @@
                 <div id="inputRow" class="row" style="padding: 8px 0px">
                     <div id="input" class=".col-md-8 .col-md-offset-2">
                     @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
-                        <button id=@{e.id.toString} type="button" class="btn btn-atk btn-default" uri="@{s"game/" + gameState.id + "/attack"}">
+                        <button id=@{e.id.toString} type="button" class="btn btn-atk btn-default" uri="@{s"game/" + gameState.uuid + "/attack"}">
                             Attack @{e.name}
                         </button>
                     }
@@ -72,7 +72,7 @@
                             @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
                                 <li>
                                     <a href="#" class="btn btn-com" eid="@{e.id.toString}" action="@{c.action}"
-                                    uri="@{s"game/" + gameState.id + "/single/" + c.id}">
+                                    uri="@{s"game/" + gameState.uuid + "/single/" + c.id}">
                                         @{e.name}
                                     </a>
                                 </li>
@@ -84,7 +84,7 @@
                     @for(c <- gameState.cards.hand.filter(_.action.isInstanceOf[chousen.api.data.SelfAction])) {
                             <button type="button" class="btn btn-default btn-self" action="@{c.action}"
                                     title="@{c.description}"
-                                    uri="@{s"game/" + gameState.id + "/self/" + c.id}">
+                                    uri="@{s"game/" + gameState.uuid + "/self/" + c.id}">
                                     @{c.name}
                                     </button>
                     }
@@ -96,7 +96,7 @@
                         <button type="button" class="btn btn-default btn-multi" action="@{c.action}"
                             title="@{c.description}"
                             eids="@{gameState.dungeon.currentEncounter.enemies.map(_.id).mkString(",")}"
-                            uri="@{s"game/" + gameState.id + "/multi/" + c.id}">
+                            uri="@{s"game/" + gameState.uuid + "/multi/" + c.id}">
                             @{c.name}
                         </button>
                     }
@@ -106,7 +106,7 @@
                     @for(c <- gameState.cards.hand.filter(_.action.isInstanceOf[chousen.api.data.CardAction])) {
                         <button type="button" class="btn btn-default btn-card" action="@{c.action}"
                         title="@{c.description}"
-                        uri="@{s"game/" + gameState.id + "/card/" + c.id}">
+                        uri="@{s"game/" + gameState.uuid + "/card/" + c.id}">
                         @{c.name}
                         </button>
                     }

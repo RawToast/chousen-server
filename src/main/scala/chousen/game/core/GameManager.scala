@@ -31,15 +31,19 @@ trait GameStateCreation {
   def create(name: String, uuid: UUID = UUID.randomUUID()): GameState = {
     import cats.syntax.all._
     val seed = new scala.util.Random().nextInt(6)
-    val p = Player(name, CharStats(100, 100), 0)
+    val dungeonSeed = new scala.util.Random().nextInt(6)
+    val dungeonSeed2 = new scala.util.Random().nextInt(6)
+    val dungeonSeed3 = new scala.util.Random().nextInt(6)
+
+    val p = Player(name, "Rouge", CharStats(100, 100), Experience(), 0)
 
     val player = seed match {
-      case 0 => SetPlayerStats.apply(2, 0, 0, 1)(p)
-      case 1 => SetPlayerStats.apply(0, 3, 0, 0)(p)
-      case 2 => SetPlayerStats.apply(-1, 0, 4, 0)(p)
-      case 3 => SetPlayerStats.apply(0, 1, 1, 1)(p)
-      case 4 => SetPlayerStats.apply(1, 1, 0, 1)(p)
-      case _ => SetPlayerStats.apply(0, 0, 0, 2)(p)
+      case 0 => SetPlayerStats.apply(2, 0, 0, 1).compose(PlayerClassLens.set("Warrior"))(p)
+      case 1 => SetPlayerStats.apply(0, 3, 0, 0).compose(PlayerClassLens.set("Assassin"))(p)
+      case 2 => SetPlayerStats.apply(-1, 0, 4, 0).compose(PlayerClassLens.set("Wizard"))(p)
+      case 3 => SetPlayerStats.apply(0, 1, 1, 1).compose(PlayerClassLens.set("Jester"))(p)
+      case 4 => SetPlayerStats.apply(1, 1, 0, 1).compose(PlayerClassLens.set("Barbarian"))(p)
+      case _ => SetPlayerStats.apply(0, 0, 0, 2).compose(PlayerClassLens.set("Rogue"))(p)
     }
 
     val cards: Cards = seed match {
@@ -53,46 +57,107 @@ trait GameStateCreation {
 
     import chousen.Implicits._
 
-    def toBattle(e: Enemy): Battle = Battle(Set(e))
-
     def campFire = Battle(Set(Enemy("Camp Fire", UUID.randomUUID(), CharStats(3, 3, strength = 6, speed = 0), 0)))
 
-    def createSlime = Battle(Set(Enemy("Slime", UUID.randomUUID(), CharStats(13, 13, vitality = 6), 0)))
 
-    def createSloth = Battle(Set(Enemy("Sloth", UUID.randomUUID(), CharStats(26, 26, strength = 12, vitality = 4, speed = 4), 0)))
+    // T1
+    def mkEnemy(name: String, stats: CharStats) = Battle(Set(Enemy(name, UUID.randomUUID(), stats, 0)))
+    def createSlime = mkEnemy("Slime", CharStats(13, 13, vitality = 6))
+    def createSloth = mkEnemy("Sloth", CharStats(26, 26, strength = 12, vitality = 4, speed = 4))
+    def createRat = mkEnemy("Rat", CharStats(7, 7, strength = 4, vitality = 4, speed = 12))
 
-    def createRat = Battle(Set(Enemy("Rat", UUID.randomUUID(), CharStats(7, 7, strength = 4, vitality = 4, speed = 12), 0)))
-    def giantRat = Battle(Set(Enemy("Giant Rat", UUID.randomUUID(), CharStats(26, 26, dexterity = 9, vitality = 6, speed = 11), 0)))
+    // T2
+    def gnoll = mkEnemy("Gnoll", CharStats(35, 35, strength = 8, dexterity = 8, vitality = 8))
+    def giantWorm = mkEnemy("Giant Worm", CharStats(50, 50, strength = 15, vitality = 6, speed = 3))
 
-    def oldOrc = toBattle(Enemy("Old Orc", UUID.randomUUID(), CharStats(70, 70, strength = 14, dexterity = 6, vitality = 10, speed = 4), 0))
 
-    def orc = toBattle(Enemy("Orc", UUID.randomUUID(), CharStats(85, 85, strength = 20, dexterity = 7, vitality = 13, speed = 7), 0))
+    // T3
+    def giantRat = mkEnemy("Giant Rat", CharStats(26, 26, dexterity = 9, vitality = 6, speed = 11))
+    def oldOrc = mkEnemy("Old Orc", CharStats(70, 70, strength = 14, dexterity = 6, vitality = 10, speed = 4))
+    def goblin = mkEnemy("Goblin", CharStats(50, 50, strength = 9, dexterity = 10, vitality = 9, speed = 9))
+    def golem = mkEnemy("Golem", CharStats(100, 100, strength = 17, dexterity = 4, vitality = 15, speed = 2))
 
-    def goblin = toBattle(Enemy("Goblin", UUID.randomUUID(), CharStats(50, 50, strength = 9, dexterity = 10, vitality = 9, speed = 9), 0))
 
-    def oldWarrior = toBattle(Enemy("Old Warrior", UUID.randomUUID(), CharStats(60, 60, strength = 15, dexterity = 10, vitality = 22), 0))
+    // T4
+    def warrior = mkEnemy("Warrior", CharStats(65, 65, strength = 17, dexterity = 10, vitality = 25))
+    def orc = mkEnemy("Orc", CharStats(85, 85, strength = 22, dexterity = 7, vitality = 15, speed = 7))
+    def troll = mkEnemy("Troll", CharStats(160, 160, strength = 42, intellect = 5, vitality = 14, speed = 2))
 
-    def troll = toBattle(Enemy("Troll", UUID.randomUUID(), CharStats(160, 160, strength = 40, intellect = 5, vitality = 14, speed = 2), 0))
+    // T5
+    def orcPrince = mkEnemy("Orc Prince", CharStats(100, 100, strength = 25, vitality = 16, speed = 7))
 
-    def orcKing = toBattle(Enemy("Orc King", UUID.randomUUID(), CharStats(130, 130, strength = 28, vitality = 17), -25))
+
+    def orcKing1 = mkEnemy("Orc King", CharStats(130, 130, strength = 32, vitality = 20))
+    def orcKing2 = mkEnemy("Orc King", CharStats(125, 125, strength = 28, vitality = 15, speed = 10))
+    def orcKing3 = mkEnemy("Orc King", CharStats(135, 135, strength = 30, vitality = 30, speed = 7))
+
 
     val battle1 = createSloth
-    val battle2 = createRat |+| createRat |+| createRat |+| createRat
+
+    val battle2 = dungeonSeed match {
+      case (0 | 1 | 2) => createRat |+| createRat |+| createRat |+| createRat
+      case (3 | 4) => createSlime |+| createSlime
+      case _ => giantWorm
+    }
     val battle3 = createSlime |+| campFire
 
-    val battle4 = oldOrc |+| createRat |+| createSloth |+| createRat |+| createSlime
-    val battle5 = campFire
+    val battle4 = dungeonSeed2 match {
+      case (0 | 1 | 2) => oldOrc |+| createRat |+| createSloth |+| createRat |+| createSlime
+      case (3 | 4) => gnoll |+| gnoll
+      case _ => oldOrc |+| createRat |+| createRat
+    }
 
-    val battle6 = orc |+| troll
-    val battle7 = oldOrc |+| campFire
+    val battle5 = dungeonSeed match {
+      case (0 | 2 | 4) => golem |+| gnoll
+      case (1 | 3) => giantWorm |+| giantWorm |+| createSloth
+      case _ => warrior
+    }
 
-    val battle8 = giantRat |+| goblin |+| giantRat |+| campFire
+    val battle6 = dungeonSeed3 match {
+      case (1 | 2 | 3) => orc |+| troll
+      case (4 | 5) => golem |+| troll |+| golem
+      case _ => warrior |+| troll
+    }
 
-    val battle9 = oldWarrior
-    val battle10 = troll |+| orcKing |+| troll
+    val battle8 = dungeonSeed2 match {
+      case (5 | 4 | 3) => giantRat |+| goblin |+| giantRat
+      case (2 | 1) => giantRat |+| giantRat |+| giantRat
+      case _ => giantRat |+| golem |+| giantRat
+    }
+
+    val battle9 = dungeonSeed match {
+      case (0 | 1 | 2) => warrior
+      case (3 | 4) => orcPrince
+      case _ => warrior |+| warrior
+    }
+
+    val battle10Left = dungeonSeed match {
+      case (0 | 1 | 2) => troll
+      case (3 | 4) => orc
+      case _ => orcPrince
+    }
+    val battle10Right = dungeonSeed2 match {
+      case (0 | 1 | 2) => troll
+      case 3 => oldOrc |+| oldOrc
+      case 4 => warrior |+| golem
+      case _ => orcPrince
+    }
+    val boss = dungeonSeed3 match {
+      case (0 | 1 ) => orcKing1
+      case (2 | 3) => orcKing3
+      case 4 => orcPrince |+| orcPrince
+      case _ => orcKing2
+    }
+
+    val battle10 = battle10Left |+| boss |+| battle10Right
 
 
-    val dungeon = Dungeon(battle1, LinearSeq(battle2, battle3, battle4, battle5, battle6, battle7, battle8, battle9, battle10))
+    val dungeon = Dungeon(battle1, LinearSeq(battle2, battle3, battle4, campFire,
+      battle5, battle6, campFire,
+      battle8, campFire,
+      battle9, campFire,
+      battle10))
+
     val msgs = Seq.empty[GameMessage]
 
     GameState(uuid, player, cards, dungeon, msgs)

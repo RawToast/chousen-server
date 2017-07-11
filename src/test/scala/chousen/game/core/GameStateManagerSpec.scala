@@ -160,7 +160,7 @@ class GameStateManagerSpec extends WordSpec {
         val initialState = deadPlayerLens(gameState)
         val result = GameStateManager.transition(initialState)
 
-        assert(result.id == initialState.id)
+        assert(result.uuid == initialState.uuid)
         assert(result.player == initialState.player)
         assert(result.dungeon == initialState.dungeon)
         assert(result.messages.size > initialState.messages.size)
@@ -173,7 +173,7 @@ class GameStateManagerSpec extends WordSpec {
         val result = GameStateManager.transition(initialState)
 
 
-        assert(result.id == initialState.id)
+        assert(result.uuid == initialState.uuid)
         assert(result.player != initialState.player)
         assert(result.player.stats.currentHp <= result.player.stats.maxHp)
         assert(result.player ~= initialState.player)
@@ -187,7 +187,7 @@ class GameStateManagerSpec extends WordSpec {
           .modify(pdm => (pdm._1, Dungeon(Battle(Set.empty), Seq.empty), pdm._3))(gameState)
         val result = GameStateManager.transition(initialState)
 
-        assert(result.id == initialState.id)
+        assert(result.uuid == initialState.uuid)
         assert(result.player == initialState.player)
         assert(result.dungeon == initialState.dungeon)
         assert(result.dungeon.currentEncounter.enemies.isEmpty)

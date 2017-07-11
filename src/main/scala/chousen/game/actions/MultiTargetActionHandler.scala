@@ -122,8 +122,10 @@ object MultiTargetActionHandler extends ActionHandler {
       .modify(hp => hp - dmg)(e)
 
     val newPlayer = PlayerOptics.PlayerHealthLens.modify(hp => Math.min(hp + dmg, p.stats.maxHp))(p)
-    val gameMessages = msgs :+ dmgMsg :+ dmgMsg
+    val gameMessages = msgs :+ dmgMsg
 
     (newPlayer, Option(newEnemy), gameMessages)
   }
+
+
 }

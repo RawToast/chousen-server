@@ -29,7 +29,7 @@
                     $(this).attr("disabled", "");
 
                     jQuery.post(uri, function(result) {
-                        window.location.replace(result.id)
+                        window.location.replace(result.uuid)
                     });
                 }
             });

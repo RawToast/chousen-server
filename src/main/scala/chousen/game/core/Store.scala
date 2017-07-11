@@ -19,7 +19,7 @@ object GameStore extends Store[UUID, GameState] {
 
   private var db = Map.empty[UUID, GameState]
 
-  override val key: (GameState) => UUID = _.id
+  override val key: (GameState) => UUID = _.uuid
 
   override def store(b: GameState): Map[UUID, GameState] = {
     db = db + (key(b) -> b)

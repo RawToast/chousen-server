@@ -31,10 +31,11 @@ libraryDependencies ++= http4s
 libraryDependencies ++= circe
 libraryDependencies ++= monocle
 
-//mango
+// mango
 // libraryDependencies += "org.lyranthe" %% "fs2-mongodb" % "0.0.5"
-libraryDependencies += "com.rawtoast" %% "fs2-mongodb" % "0.1.0-SNAPSHOT"
-// libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.0.0"
+//libraryDependencies += "com.rawtoast" %% "fs2-mongodb" % "0.1.0-SNAPSHOT"
+libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.1.0"
+
 
 def finch = Seq(
     "com.github.finagle" %% "finch-core" % FINCH_VERSION,
@@ -56,7 +57,8 @@ def circe = Seq(
   "io.circe" %% "circe-generic" % CIRCE_VERSION,
   "io.circe" %% "circe-generic-extras" % CIRCE_VERSION,
   "io.circe" %% "circe-literal" % CIRCE_VERSION,
-  "io.circe" %% "circe-optics" % CIRCE_VERSION
+  "io.circe" %% "circe-optics" % CIRCE_VERSION,
+  "io.circe" %% "circe-parser" % CIRCE_VERSION
 )
 
 

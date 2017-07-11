@@ -16,6 +16,10 @@ trait PlayerOptics {
   val PlayerVitalityLens: Lens[Player, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.VitalityLens)
   val PlayerSpeedLens: Lens[Player, Int] = PlayerCharStatsLens.composeLens(CharStatsOptics.SpeedLens)
   val PlayerPositionLens: Lens[Player, Int] = GenLens[Player](_.position)
+  val PlayerClassLens: Lens[Player, String] = GenLens[Player](_.className)
+  val PlayerExperienceLens: Lens[Player, Experience] = GenLens[Player](_.experience)
+  val PlayerCurrentExperienceLens: Lens[Player, Int] = GenLens[Player](_.experience.current)
+
 
   val SetPlayerStats = (s: Int, d: Int, i: Int, v: Int) => PlayerStrengthLens.modify(_ + s).andThen(PlayerDexterityLens.modify(_ + d))
     .andThen(PlayerVitalityLens.modify(_ + v).andThen(PlayerIntellectLens.modify(_ + i)))

@@ -35,14 +35,14 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
   def strengthDeck =
       usefulCards ++ /*4 of might, 4 of stoneSkin, 4 of haste, */
       (4 of crushingBlow) ++ (4 of hamstring) ++ (4 of stunningStrike) ++ (4 of groundStrike) ++ (4 of counter) ++
-      (4 of quickStep) ++
+      (4 of quickStep) ++ (4 of destruction)
       (4 of elixirOfStrength) ++ (2 of elixirOfDexterity) ++ (4 of elixirOfVitality) ++
       (4 of rummage) ++ (4 of replace) ++ (2 of restore)
 
   def dexterityDeck = // 15
       usefulCards ++ /*4 of dexterity, 4 of stoneSkin, 4 of haste,*/
       (4 of quickStep) ++ (4 of tripleStrike) ++ (4 of assassinate) ++ (4 of windStrike) ++
-      (4 of pain) ++
+      (4 of pain)
       (4 of elixirOfDexterity) ++ (4 of elixirOfVitality) ++
       (4 of restore) ++ (4 of replace)
 
@@ -56,7 +56,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
   def strongManDeck = // 10
     usefulCards ++
     massDrain.times(4) ++
-    quickStep.times(4) ++
+    quickStep.times(4) ++ destruction.times(4)
     groundStrike.times(4) ++ crushingBlow.times(4) ++ quickAttack.times(4) ++ elixirOfStrength.times(4) ++
       elixirOfDexterity.times(4) ++ elixirOfVitality.times(4) ++
     restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
@@ -95,6 +95,7 @@ trait Strength extends CardBuilder{
   def groundStrike = Card(UUID.randomUUID(), "Ground Strike", "Slam the ground with your weapon, hitting all enemies and reducing their position", GroundStrike)
 
   def counter = Card(UUID.randomUUID(), "Counter", "Attack that deals more damage the stronger the enemy", Counter)
+  def destruction = Card(UUID.randomUUID(), "Counter", "Destructive attack that lowers an enemies defenses", Destruction)
 }
 
 trait Dexterity extends CardBuilder{

@@ -12,8 +12,7 @@ object BasicAttack {
 
       optE match {
         case Some(e) =>
-          // Not safe, could deal negative damage!
-          val dmg = p.stats.strength + p.stats.dexterity - e.stats.vitality
+          val dmg = Math.max(1, p.stats.strength + p.stats.dexterity - e.stats.vitality)
 
           val targetMsg = GameMessage(s"${p.name} attacks ${e.name}.")
           val dmgMsg = GameMessage(s"${p.name}'s attack deals $dmg to ${e.name}!")

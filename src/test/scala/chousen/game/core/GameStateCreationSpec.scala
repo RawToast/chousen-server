@@ -24,7 +24,7 @@ class GameStateCreationSpec extends WordSpec {
         val game2 = creator.create("Bob")
 
         assert(game1 != game2)
-        assert(game1.id != game2.id)
+        assert(game1.uuid != game2.uuid)
       }
 
     }
