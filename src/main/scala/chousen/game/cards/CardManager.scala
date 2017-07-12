@@ -14,7 +14,7 @@ object CardManager extends CardManager {
 trait CardManager {
 
   lazy val MAX_HAND_SIZE = 7
-  lazy val PRE_DISCARD_MAX_HAND_SIZE = 7
+  lazy val PRE_DISCARD_MAX_HAND_SIZE = 8
   lazy val ABSOLUTE_MAX = 15
 
   def playCard(card: data.Card)(f: data.Card => GameState): (GameState) => GameState = { game: GameState =>

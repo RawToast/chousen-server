@@ -79,8 +79,8 @@ object CardActionHandler extends ActionHandler {
   }
 
   def rummage(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
-    val cs1 = CardManager.drawCard(cs, limit = CardManager.MAX_HAND_SIZE)
-    val cs2 = CardManager.drawCard(cs1, limit = CardManager.MAX_HAND_SIZE)
+    val cs1 = CardManager.drawCard(cs, limit = CardManager.ABSOLUTE_MAX)
+    val cs2 = CardManager.drawCard(cs1, limit = CardManager.ABSOLUTE_MAX)
 
     val foundCards = cs2.hand.filter(c => !cs.hand.contains(c))
 

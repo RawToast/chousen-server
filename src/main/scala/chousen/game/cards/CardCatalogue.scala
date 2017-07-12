@@ -3,7 +3,6 @@ package chousen.game.cards
 import java.util.UUID
 
 import chousen.api.data._
-import chousen.game.cards.CardCatalogue.elixirOfIntelligence
 
 object CardCatalogue extends Potions with PermanentEffects with Magic with Strength with Dexterity with Utility {
 
@@ -97,7 +96,7 @@ trait Strength extends CardBuilder{
   def groundStrike = Card(UUID.randomUUID(), "Ground Strike", "Slam the ground with your weapon, hitting all enemies and reducing their position", GroundStrike)
 
   def counter = Card(UUID.randomUUID(), "Counter", "Attack that deals more damage the stronger the enemy", Counter)
-  def destruction = Card(UUID.randomUUID(), "Counter", "Destructive attack that lowers an enemies defenses", Destruction)
+  def destruction = Card(UUID.randomUUID(), "Destruction", "Destructive attack that lowers an enemies defenses", Destruction)
 }
 
 trait Dexterity extends CardBuilder{
