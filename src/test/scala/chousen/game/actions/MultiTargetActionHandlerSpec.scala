@@ -3,17 +3,19 @@ package chousen.game.actions
 import java.util.UUID
 
 import chousen.api.data._
-import chousen.game.core.GameStateManager
+import chousen.game.core.RandomGameStateCreator
 import org.scalatest.WordSpec
 
 class MultiTargetActionHandlerSpec extends WordSpec {
 
   "MultiTargetActionHandler" when {
 
+    val stateCreator = new RandomGameStateCreator()
+
     "Given an Action and an UUID that does not match any enemy" should {
 
       val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
-      val startedGame: GameState = GameStateManager.start(initialState)
+      val startedGame: GameState = stateCreator.start(initialState)
 
       val altUUID = UUID.fromString("0709daa1-5975-4f28-b0be-a676f87b70f0")
       lazy val result = MultiTargetActionHandler.handle(Set(altUUID), Fireball).apply(startedGame)
@@ -30,7 +32,7 @@ class MultiTargetActionHandlerSpec extends WordSpec {
 
     "Given an Action and a UUID for an enemy" should {
       val gameState = GameStateGenerator.gameStateWithFastPlayer
-      val startedGame: GameState = GameStateManager.start(gameState)
+      val startedGame: GameState = stateCreator.start(gameState)
 
       val targetId = GameStateGenerator.firstEnemy.id
       lazy val result = MultiTargetActionHandler.handle(Set(targetId), Fireball).apply(startedGame)
@@ -62,7 +64,7 @@ class MultiTargetActionHandlerSpec extends WordSpec {
 
     "Given an Action and a UUIDs for each enemy" should {
       val gameState = GameStateGenerator.gameStateWithFastPlayer
-      val startedGame: GameState = GameStateManager.start(gameState)
+      val startedGame: GameState = stateCreator.start(gameState)
 
       val targets = Set(GameStateGenerator.firstEnemy.id, GameStateGenerator.secondEnemy.id)
       lazy val result = MultiTargetActionHandler.handle(targets, Fireball).apply(startedGame)
@@ -125,7 +127,7 @@ class MultiTargetActionHandlerSpec extends WordSpec {
 
     def completeAction(action: MultiAction) = {
       val gameState = GameStateGenerator.gameStateWithFastPlayer
-      val startedGame: GameState = GameStateManager.start(gameState)
+      val startedGame: GameState = stateCreator.start(gameState)
 
       val targets = Set(GameStateGenerator.firstEnemy.id, GameStateGenerator.secondEnemy.id)
       lazy val result = MultiTargetActionHandler.handle(targets, Fireball).apply(startedGame)
@@ -159,10 +161,7 @@ class MultiTargetActionHandlerSpec extends WordSpec {
         assert(latestMessages.exists(!_.text.contains("Slime attacks Test Player")))
       }
     }
-
-
   }
-
 
   def getFirstEnemyHp(result: GameState) =
     result.dungeon.currentEncounter.enemies

@@ -5,15 +5,11 @@ import java.util.UUID
 import chousen.api.data.PlayerOptics.{PlayerClassLens, SetPlayerStats}
 import chousen.api.data._
 import chousen.game.cards.{CardCatalogue, CardManager}
-import chousen.game.core.GameStateManager.startEncounterMessage
 import chousen.game.core.GameStateOptics.EncounterLens
 
 import scala.collection.LinearSeq
 
-trait GameStateCreation {
-  def createAndStart(name: String, uuid: UUID = UUID.randomUUID()): GameState = {
-    start(create(name, uuid))
-  }
+class RandomGameStateCreator extends GameStateCreation {
 
   def create(name: String, uuid: UUID = UUID.randomUUID()): GameState = {
     import cats.syntax.all._
@@ -150,6 +146,16 @@ trait GameStateCreation {
     GameState(uuid, player, cards, dungeon, msgs)
   }
 
+}
+
+trait GameStateCreation {
+
+  def create(name: String, uuid: UUID = UUID.randomUUID()): GameState
+
+  def createAndStart(name: String, uuid: UUID = UUID.randomUUID()): GameState = {
+    start(create(name, uuid))
+  }
+
   def start(game: GameState): GameState = {
     val update = EncounterLens.modify {
       case (p: Player, es: Set[Enemy], m: Seq[GameMessage]) =>
@@ -161,5 +167,10 @@ trait GameStateCreation {
     }
 
     update(game)
+  }
+
+  def startEncounterMessage(enemies: Set[Enemy], player: Player): GameMessage = {
+    if (enemies.size == 1) GameMessage(s"${player.name} is attacked by ${enemies.head.name}!")
+    else GameMessage(s"${player.name} is attacked by: ${enemies.toList.map(_.name).mkString(", ")}!")
   }
 }

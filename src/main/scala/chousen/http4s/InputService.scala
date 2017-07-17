@@ -4,16 +4,16 @@ import java.util.UUID
 
 import chousen.api.core.GameAccess
 import chousen.api.data._
-import chousen.game.core.GameStateManager
+import chousen.game.core.GameManager
 import fs2.Task
 import io.circe.Decoder
 import io.circe.generic.auto._
 import io.circe.syntax._
-import org.http4s.{HttpService, Request, Response}
 import org.http4s.circe._
 import org.http4s.dsl._
+import org.http4s.{HttpService, Request, Response}
 
-class InputService(ga: GameAccess[Task, Response]) {
+class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState]) {
 
   private def getIds(uuid: String, cardUuid: String) =
     (UUID.fromString(uuid), UUID.fromString(cardUuid))
@@ -27,7 +27,7 @@ class InputService(ga: GameAccess[Task, Response]) {
         val id = UUID.fromString(uuid)
 
         ga.withGame(id) { g =>
-          basicRequest[AttackRequest](req, g)(GameStateManager.takeCommand)
+          basicRequest[AttackRequest](req, g)(gsm.takeCommand)
         }
 
 
@@ -37,7 +37,7 @@ class InputService(ga: GameAccess[Task, Response]) {
         val (id, cardId) = getIds(uuid, cardUuid)
 
         ga.withGame(id) { g =>
-          cardRequest[SingleTargetActionRequest](req, g, cardId)(GameStateManager.useCard)
+          cardRequest[SingleTargetActionRequest](req, g, cardId)(gsm.useCard)
         }
 
       case req@POST -> Root / "game" / uuid / "self" / cardUuid =>
@@ -46,7 +46,7 @@ class InputService(ga: GameAccess[Task, Response]) {
         val (id, cardId) = getIds(uuid, cardUuid)
 
         ga.withGame(id) { g =>
-          cardRequest[SelfInflictingActionRequest](req, g, cardId)(GameStateManager.useCard)
+          cardRequest[SelfInflictingActionRequest](req, g, cardId)(gsm.useCard)
         }
 
       case req@POST -> Root / "game" / uuid / "card" / cardUuid =>
@@ -55,7 +55,7 @@ class InputService(ga: GameAccess[Task, Response]) {
         val (id, cardId) = getIds(uuid, cardUuid)
 
         ga.withGame(id) { g =>
-          cardRequest[CardActionRequest](req, g, cardId)(GameStateManager.useCard)
+          cardRequest[CardActionRequest](req, g, cardId)(gsm.useCard)
         }
 
       case req@POST -> Root / "game" / uuid / "multi" / cardUuid =>
@@ -64,7 +64,7 @@ class InputService(ga: GameAccess[Task, Response]) {
         val (id, cardId) = getIds(uuid, cardUuid)
 
         ga.withGame(id) { g =>
-          cardRequest[MultiTargetActionRequest](req, g, cardId)(GameStateManager.useCard)
+          cardRequest[MultiTargetActionRequest](req, g, cardId)(gsm.useCard)
         }
     }
   }

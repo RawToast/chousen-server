@@ -10,9 +10,10 @@ class GameStateManagerSpec extends WordSpec {
 
   "GameStateManager" when {
 
-    val gameStateManager = GameStateManager
+    val gameStateManager = new GameStateManager()
+    val gameStateCreator = new RandomGameStateCreator()
     val gameState = GameStateGenerator.gameStateWithFastPlayer
-    val startedGame: GameState = gameStateManager.start(gameState)
+    val startedGame: GameState = gameStateCreator.start(gameState)
 
     "Accepting a command" which {
       "Is a basic attack" should {
@@ -151,14 +152,14 @@ class GameStateManagerSpec extends WordSpec {
       val removeEnemies = GameStateOptics.EncounterLens.modify(pem => (pem._1, Set.empty, pem._3))
 
       "Do nothing if the current encounter is still active" in {
-        val result = GameStateManager.transition(gameState)
+        val result = gameStateManager.transition(gameState)
 
         assert(result == gameState)
       }
 
       "Add new messages if the player is dead" in {
         val initialState = deadPlayerLens(gameState)
-        val result = GameStateManager.transition(initialState)
+        val result = gameStateManager.transition(initialState)
 
         assert(result.uuid == initialState.uuid)
         assert(result.player == initialState.player)
@@ -170,7 +171,7 @@ class GameStateManagerSpec extends WordSpec {
       "Transition to the next battle if the encounter is empty" in {
         import chousen.Implicits._
         val initialState = removeEnemies(gameState)
-        val result = GameStateManager.transition(initialState)
+        val result = gameStateManager.transition(initialState)
 
 
         assert(result.uuid == initialState.uuid)
@@ -185,7 +186,7 @@ class GameStateManagerSpec extends WordSpec {
       "Congratulate the player on victory" in {
         val initialState = DungeonTriLens
           .modify(pdm => (pdm._1, Dungeon(Battle(Set.empty), Seq.empty), pdm._3))(gameState)
-        val result = GameStateManager.transition(initialState)
+        val result = gameStateManager.transition(initialState)
 
         assert(result.uuid == initialState.uuid)
         assert(result.player == initialState.player)

@@ -3,17 +3,19 @@ package chousen.game.actions
 import java.util.UUID
 
 import chousen.api.data._
-import chousen.game.core.GameStateManager
+import chousen.game.core.RandomGameStateCreator
 import org.scalatest.WordSpec
 
 class SingleTargetActionHandlerSpec extends WordSpec {
+
+  val stateCreator = new RandomGameStateCreator()
 
   "SingleTargetActionHandler" when {
 
     "Given an Action and an UUID that does not match any enemy" should {
 
       val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
-      val startedGame: GameState = GameStateManager.start(initialState)
+      val startedGame: GameState = stateCreator.start(initialState)
 
       val altUUID = UUID.fromString("0709daa1-5975-4f28-b0be-a676f87b70f0")
       lazy val result = SingleTargetActionHandler.handle(altUUID, QuickAttack).apply(startedGame)
@@ -29,7 +31,7 @@ class SingleTargetActionHandlerSpec extends WordSpec {
 
     "Given an Action and a UUID for an enemy" should {
       val gameState = GameStateGenerator.gameStateWithFastPlayer
-      val startedGame: GameState = GameStateManager.start(gameState)
+      val startedGame: GameState = stateCreator.start(gameState)
 
       val target = GameStateGenerator.firstEnemy
       lazy val result = SingleTargetActionHandler.handle(target.id, QuickAttack).apply(startedGame)
@@ -116,7 +118,7 @@ class SingleTargetActionHandlerSpec extends WordSpec {
 
   private def completeAction(action: SingleTargetAction): (GameState, GameState, Enemy) = {
     val gameState = GameStateGenerator.gameStateWithFastPlayer
-    val startedGame: GameState = GameStateManager.start(gameState)
+    val startedGame: GameState = stateCreator.start(gameState)
 
     val target = GameStateGenerator.firstEnemy
     lazy val result = SingleTargetActionHandler.handle(target.id, action).apply(startedGame)
@@ -148,7 +150,6 @@ class SingleTargetActionHandlerSpec extends WordSpec {
 
       assert(latestMessages.exists(!_.text.contains("Slime attacks Test Player")))
     }
-
   }
 
 

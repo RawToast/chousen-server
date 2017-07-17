@@ -3,7 +3,7 @@ package chousen.game.actions
 import java.util.UUID
 
 import chousen.api.data.{GameMessage, GameState, GameStateGenerator}
-import chousen.game.core.GameStateManager
+import chousen.game.core.RandomGameStateCreator
 import org.scalatest.WordSpec
 
 class BasicAttackSpec extends WordSpec {
@@ -28,7 +28,8 @@ class BasicAttackSpec extends WordSpec {
 
     "Given a UUID for an enemy" should {
       val gameState = GameStateGenerator.gameStateWithFastPlayer
-      val startedGame: GameState = GameStateManager.start(gameState)
+      val stateCreator = new RandomGameStateCreator()
+      val startedGame: GameState = stateCreator.start(gameState)
 
       val target = GameStateGenerator.firstEnemy
       val result = BasicAttack.attack(target.id)(startedGame)

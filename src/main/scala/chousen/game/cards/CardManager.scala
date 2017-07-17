@@ -1,7 +1,7 @@
 package chousen.game.cards
 import chousen.api.data
 import chousen.api.data._
-import chousen.game.core.GameStateOptics
+import chousen.Optics._
 
 import scala.annotation.tailrec
 import scala.util.Random
@@ -26,8 +26,8 @@ trait CardManager {
         if (ng == game) ng
         else {
           // Move to discard
-          GameStateOptics.HandLens.modify((cs:Seq[data.Card]) => cs.filterNot(_ ~= c))
-            .andThen(GameStateOptics.DiscardLens.modify((ds: Seq[data.Card]) => c +: ds))
+          HandLens.modify((cs:Seq[data.Card]) => cs.filterNot(_ ~= c))
+            .andThen(DiscardLens.modify((ds: Seq[data.Card]) => c +: ds))
             .apply(ng)
         }
       }

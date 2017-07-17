@@ -3,8 +3,7 @@ package chousen.http4s
 import java.util.UUID
 
 import chousen.api.core.GameAccess
-import chousen.api.data.GameState
-import chousen.game.core.GameStateManager
+import chousen.game.core.GameStateCreation
 import fs2.Task
 import io.circe.generic.auto._
 import io.circe.syntax._
@@ -12,7 +11,7 @@ import org.http4s.circe._
 import org.http4s.dsl._
 import org.http4s.{HttpService, Response}
 
-class CrudService(ga: GameAccess[Task, Response]) {
+class CrudService(ga: GameAccess[Task, Response], creator: GameStateCreation) {
   object NameMatcher extends QueryParamDecoderMatcher[String]("name")
 
   val routes: HttpService = HttpService {
@@ -28,8 +27,7 @@ class CrudService(ga: GameAccess[Task, Response]) {
 
     //  create
     case POST -> Root / "game" / playerName / "start" => // used
-      val game: GameState = GameStateManager.create(playerName)
-      val startedGame = GameStateManager.start(game)
+      val startedGame = creator.createAndStart(playerName)
 
       for {
         game <- ga.storeGame(startedGame)

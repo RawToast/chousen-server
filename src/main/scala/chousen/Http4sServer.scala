@@ -1,6 +1,8 @@
 package chousen
 
 import chousen.api.core.{GameAccess, MongoDatastore, MongoGameAccess}
+import chousen.api.data.GameState
+import chousen.game.core.{GameManager, GameStateManager, RandomGameStateCreator}
 import chousen.http4s.{CrudService, FrontendService, InputService}
 import fs2.Task
 import org.http4s.Response
@@ -24,9 +26,13 @@ object Http4sServer extends StreamApp {
 
     val gameAccess: GameAccess[Task, Response] = new MongoGameAccess(mongo)
 
-    val crudService = new CrudService(gameAccess)
+    val gameCreator = new RandomGameStateCreator()
+    val gameStateManager: GameManager[GameState] = new GameStateManager()
+
+
+    val crudService = new CrudService(gameAccess, gameCreator)
     val frontendService = new FrontendService(gameAccess)
-    val inputService = new InputService(gameAccess)
+    val inputService = new InputService(gameAccess, gameStateManager)
 
 
     // Unconfigured, will bind to 8080

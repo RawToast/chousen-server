@@ -9,7 +9,7 @@ import org.scalatest.WordSpec
 class GameStateCreationSpec extends WordSpec {
 
   "GameStateCreation" when {
-    val creator = new GameStateCreation {}
+    val creator = new RandomGameStateCreator()
 
     "Creating a game" should {
 

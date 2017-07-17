@@ -32,8 +32,6 @@ libraryDependencies ++= circe
 libraryDependencies ++= monocle
 
 // mango
-// libraryDependencies += "org.lyranthe" %% "fs2-mongodb" % "0.0.5"
-//libraryDependencies += "com.rawtoast" %% "fs2-mongodb" % "0.1.0-SNAPSHOT"
 libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.1.0"
 
 

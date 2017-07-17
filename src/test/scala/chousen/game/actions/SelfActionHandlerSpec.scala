@@ -1,7 +1,7 @@
 package chousen.game.actions
 
 import chousen.api.data.{GameMessage, GameState, GameStateGenerator, HealWounds}
-import chousen.game.core.GameStateManager
+import chousen.game.core.RandomGameStateCreator
 import org.scalatest.WordSpec
 
 class SelfActionHandlerSpec extends WordSpec {
@@ -10,7 +10,8 @@ class SelfActionHandlerSpec extends WordSpec {
 
     "Given a self targeting action" should {
       val gameState = GameStateGenerator.gameStateWithFastPlayer
-      val startedGame: GameState = GameStateManager.start(gameState)
+      val stateCreator = new RandomGameStateCreator()
+      val startedGame: GameState = stateCreator.start(gameState)
 
       val result = SelfActionHandler.handle(HealWounds)(startedGame)
 

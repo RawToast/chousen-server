@@ -1,7 +1,5 @@
 package chousen.game.core
 
-import java.util.UUID
-
 import chousen.api.data.PlayerOptics._
 import chousen.api.data._
 import chousen.game.actions.{BasicAttack, CardActionHandler, MultiTargetActionHandler, SelfActionHandler, SingleTargetActionHandler}
@@ -9,9 +7,6 @@ import chousen.game.cards.CardManager
 import chousen.game.core.GameStateOptics.MessagesLens
 
 trait GameManager[A] {
-  def create(name: String, uuid: UUID = UUID.randomUUID()): A
-
-  def start(game: A): A
 
   def takeCommand(command: CommandRequest, game: A): A
 
@@ -20,7 +15,7 @@ trait GameManager[A] {
   def useCard(card: Card, commandRequest: CommandRequest, game: A): A
 }
 
-object GameStateManager extends GameManager[GameState] with GameStateCreation {
+class GameStateManager extends GameManager[GameState] {
 
   override def useCard(card: Card, commandRequest: CommandRequest, game: GameState): GameState = {
 
