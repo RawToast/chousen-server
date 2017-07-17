@@ -2,8 +2,14 @@ package chousen.game.dungeon
 
 import chousen.api.data.Dungeon
 
+trait DungeonBuilder {
+  def makeDungeon(dungeonSeed:Int,
+                  dungeonSeed2:Int,
+                  dungeonSeed3:Int): Dungeon
+}
 
-class DungeonBuilder() extends EnemyBuilder {
+
+class SimpleDungeonBuilder() extends DungeonBuilder with EnemyBuilder {
 
 
   def makeDungeon(dungeonSeed:Int = new scala.util.Random().nextInt(6),

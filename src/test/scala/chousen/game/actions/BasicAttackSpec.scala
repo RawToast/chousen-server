@@ -4,6 +4,7 @@ import java.util.UUID
 
 import chousen.api.data.{GameMessage, GameState, GameStateGenerator}
 import chousen.game.core.RandomGameStateCreator
+import chousen.game.dungeon.SimpleDungeonBuilder
 import org.scalatest.WordSpec
 
 class BasicAttackSpec extends WordSpec {
@@ -28,7 +29,9 @@ class BasicAttackSpec extends WordSpec {
 
     "Given a UUID for an enemy" should {
       val gameState = GameStateGenerator.gameStateWithFastPlayer
-      val stateCreator = new RandomGameStateCreator()
+      val dungeonBuilder = new SimpleDungeonBuilder()
+
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val startedGame: GameState = stateCreator.start(gameState)
 
       val target = GameStateGenerator.firstEnemy

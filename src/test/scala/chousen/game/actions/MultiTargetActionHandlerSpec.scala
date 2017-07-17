@@ -4,13 +4,14 @@ import java.util.UUID
 
 import chousen.api.data._
 import chousen.game.core.RandomGameStateCreator
+import chousen.game.dungeon.SimpleDungeonBuilder
 import org.scalatest.WordSpec
 
 class MultiTargetActionHandlerSpec extends WordSpec {
 
   "MultiTargetActionHandler" when {
-
-    val stateCreator = new RandomGameStateCreator()
+    val dungeonBuilder = new SimpleDungeonBuilder()
+    val stateCreator = new RandomGameStateCreator(dungeonBuilder)
 
     "Given an Action and an UUID that does not match any enemy" should {
 

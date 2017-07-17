@@ -4,11 +4,13 @@ import java.util.UUID
 
 import chousen.api.data._
 import chousen.game.core.RandomGameStateCreator
+import chousen.game.dungeon.SimpleDungeonBuilder
 import org.scalatest.WordSpec
 
 class SingleTargetActionHandlerSpec extends WordSpec {
 
-  val stateCreator = new RandomGameStateCreator()
+  val dungeonBuilder = new SimpleDungeonBuilder()
+  val stateCreator = new RandomGameStateCreator(dungeonBuilder)
 
   "SingleTargetActionHandler" when {
 

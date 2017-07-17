@@ -3,6 +3,7 @@ package chousen
 import chousen.api.core.{GameAccess, MongoDatastore, MongoGameAccess}
 import chousen.api.data.GameState
 import chousen.game.core.{GameManager, GameStateManager, RandomGameStateCreator}
+import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
 import chousen.http4s.{CrudService, FrontendService, InputService}
 import fs2.Task
 import org.http4s.Response
@@ -26,7 +27,9 @@ object Http4sServer extends StreamApp {
 
     val gameAccess: GameAccess[Task, Response] = new MongoGameAccess(mongo)
 
-    val gameCreator = new RandomGameStateCreator()
+    val dungeonBuilder: DungeonBuilder = new SimpleDungeonBuilder()
+
+    val gameCreator = new RandomGameStateCreator(dungeonBuilder)
     val gameStateManager: GameManager[GameState] = new GameStateManager()
 
 

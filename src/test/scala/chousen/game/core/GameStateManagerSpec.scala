@@ -4,6 +4,7 @@ import java.util.UUID
 
 import chousen.api.data.{GameStateGenerator, _}
 import chousen.game.core.GameStateOptics.DungeonTriLens
+import chousen.game.dungeon.SimpleDungeonBuilder
 import org.scalatest.WordSpec
 
 class GameStateManagerSpec extends WordSpec {
@@ -11,7 +12,8 @@ class GameStateManagerSpec extends WordSpec {
   "GameStateManager" when {
 
     val gameStateManager = new GameStateManager()
-    val gameStateCreator = new RandomGameStateCreator()
+    val dungeonBuilder = new SimpleDungeonBuilder()
+    val gameStateCreator = new RandomGameStateCreator(dungeonBuilder)
     val gameState = GameStateGenerator.gameStateWithFastPlayer
     val startedGame: GameState = gameStateCreator.start(gameState)
 
