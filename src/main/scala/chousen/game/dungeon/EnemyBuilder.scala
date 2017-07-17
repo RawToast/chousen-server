@@ -30,7 +30,7 @@ trait EnemyBuilder {
 
   // T4
   def warrior = mkEnemy("Warrior", CharStats(65, 65, strength = 17, dexterity = 10, vitality = 25))
-  def orc = mkEnemy("Orc", CharStats(85, 85, strength = 22, dexterity = 7, vitality = 15, speed = 7))
+  def orc = mkEnemy("Orc", CharStats(90, 90, strength = 23, dexterity = 6, vitality = 15, speed = 7))
   def troll = mkEnemy("Troll", CharStats(160, 160, strength = 42, intellect = 5, vitality = 14, speed = 2))
 
   // T5

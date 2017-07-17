@@ -36,7 +36,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
   def strengthDeck =
       usefulCards ++ /*4 of might, 4 of stoneSkin, 4 of haste, */
       (4 of crushingBlow) ++ (4 of hamstring) ++ (4 of stunningStrike) ++ (4 of groundStrike) ++ (4 of counter) ++
-      (4 of quickStep) ++ (4 of destruction)
+      (4 of quickStep) ++ (4 of destruction) ++
       (4 of elixirOfStrength) ++ (2 of elixirOfDexterity) ++ (4 of elixirOfVitality) ++
       (4 of rummage) ++ (4 of replace) ++ (2 of restore) ++ (2 of miracle)
 

@@ -25,6 +25,7 @@ class SimpleDungeonBuilder() extends DungeonBuilder with EnemyBuilder {
       case (3 | 4) => createSlime |+| createSlime
       case _ => giantWorm
     }
+
     val battle3 = createSlime |+| campFire
 
     val battle4 = dungeonSeed2 match {
@@ -33,28 +34,19 @@ class SimpleDungeonBuilder() extends DungeonBuilder with EnemyBuilder {
       case _ => oldOrc |+| createRat |+| createRat
     }
 
-    val battle5 = dungeonSeed match {
-      case (0 | 2 | 4) => golem |+| gnoll
-      case (1 | 3) => giantWorm |+| giantWorm |+| createSloth
-      case _ => warrior
+    val battle5 = orc |+| troll
+    val battle6 = giantRat |+| goblin |+| giantRat
+
+    val battle7 = (dungeonSeed + dungeonSeed2) match {
+      case 0 => giantWorm |+| warrior |+| giantWorm
+      case (1 | 2 | 3 | 4 | 5) => gnoll |+| golem |+| gnoll
+      case (6 | 7 | 8 | 9 | 10) => createRat |+| giantRat |+| createRat
     }
 
-    val battle6 = dungeonSeed3 match {
-      case (1 | 2 | 3) => orc |+| troll
-      case (4 | 5) => golem |+| troll |+| golem
-      case _ => warrior |+| troll
-    }
-
-    val battle8 = dungeonSeed2 match {
-      case (5 | 4 | 3) => giantRat |+| goblin |+| giantRat
-      case (2 | 1) => giantRat |+| giantRat |+| giantRat
-      case _ => giantRat |+| golem |+| giantRat
-    }
-
-    val battle9 = dungeonSeed match {
-      case (0 | 1 | 2) => warrior
-      case (3 | 4) => orcPrince
-      case _ => warrior |+| warrior
+    val battle8 = (dungeonSeed + dungeonSeed2) match {
+      case 0 => orc |+| orc
+      case (1 | 2 | 3 | 4 | 5) => orcPrince
+      case (6 | 7 | 8 | 9 | 10) => warrior |+| warrior
     }
 
     val battle10Left = dungeonSeed match {
@@ -75,12 +67,12 @@ class SimpleDungeonBuilder() extends DungeonBuilder with EnemyBuilder {
       case _ => orcKing2
     }
 
-    val battle10 = battle10Left |+| boss |+| battle10Right
+
+    val battle9 = battle10Left |+| boss |+| battle10Right
 
     Dungeon(battle1, Seq(battle2, battle3, battle4, campFire,
       battle5, battle6, campFire,
-      battle8, campFire,
-      battle9, campFire,
-      battle10))
+      battle7, battle8, campFire,
+      battle9))
   }
 }
