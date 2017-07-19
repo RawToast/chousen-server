@@ -15,46 +15,46 @@
             <h1 class="lead">Chousen Dev Client</h1>
 
             <div id="characterSheet" class="row">
-                <div class="row" style="padding: 8px 0px">
-                    <div class="col-md-2">@{gameState.player.name}</div>
-                    <div class="col-md-2"></div>
-                    <div class="col-md-2">HP: @{gameState.player.stats.currentHp} / @{gameState.player.stats.maxHp}</div>
-                    <div class="col-md-2">CLS: @{gameState.player.className}</div>
-                    <div class="col-md-2">LV: @{gameState.player.experience.level}</div>
-                    <div class="col-md-2">@{gameState.player.position}</div>
+                <div class="row" style="padding: 2px 0px">
+                    <div class="col-xs-2 col-sm-2 col-md-2">@{gameState.player.name}</div>
+                    <div class="col-xs-2 col-sm-2 col-md-2"></div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">HP @{gameState.player.stats.currentHp}/@{gameState.player.stats.maxHp}</div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">CS: @{gameState.player.className}</div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">LV: @{gameState.player.experience.level}</div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">@{gameState.player.position}</div>
                 </div>
 
-                <div class="row" style="padding: 8px 0px">
-                    <div class="col-md-2">STR: @{gameState.player.stats.strength}</div>
-                    <div class="col-md-2">DEX: @{gameState.player.stats.dexterity}</div>
-                    <div class="col-md-2">INT: @{gameState.player.stats.intellect}</div>
-                    <div class="col-md-2">VIT: @{gameState.player.stats.vitality}</div>
-                    <div class="col-md-2">SPD: @{gameState.player.stats.speed}</div>
-                    <div class="col-md-2">@{gameState.player.position}</div>
+                <div class="row" style="padding: 2px 0px">
+                    <div class="col-xs-2 col-sm-2 col-md-2">STR: @{gameState.player.stats.strength}</div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">DEX: @{gameState.player.stats.dexterity}</div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">INT: @{gameState.player.stats.intellect}</div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">VIT: @{gameState.player.stats.vitality}</div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">SPD: @{gameState.player.stats.speed}</div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">@{gameState.player.position}</div>
                 </div>
 
                 @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
-                    <div class="row" style="padding: 8px 0px">
-                        <div class="col-md-2">@{e.name}</div>
-                        <div class="col-md-2"></div>
-                        <div class="col-md-2">HP: @{e.stats.currentHp} / @{e.stats.maxHp}</div>
-                        <div class="col-md-2"></div>
-                        <div class="col-md-2"></div>
-                        <div class="col-md-2">@{e.position}</div>
+                    <div class="row" style="padding: 2px 0px">
+                        <div class="col-xs-2 col-sm-2 col-md-2">@{e.name}</div>
+                        <div class="col-xs-2 col-sm-2 col-md-2"></div>
+                        <div class="col-xs-2 col-sm-2 col-md-2">HP @{e.stats.currentHp}/@{e.stats.maxHp}</div>
+                        <div class="col-xs-2 col-sm-2 col-md-2"></div>
+                        <div class="col-xs-2 col-sm-2 col-md-2"></div>
+                        <div class="col-xs-2 col-sm-2 col-md-2">@{e.position}</div>
                     </div>
                 }
             </div>
 
             <div id="gameMessagesRow" class="row" style="padding: 8px 0px">
-                <div id="gameMessagesOffSet" class=".col-md-8 .col-md-offset-2">
+                <div id="gameMessagesOffSet" class="col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
                     <textarea id="gameMessagesText" class="form-control noresize"
                         style="resize: none" rows="15" data-role="none">@{gameState.messages.filterNot(gm => gm.text.contains("s turn")).map(m => {{m.text + "\r\n"}})}
                     </textarea>
                 </div>
             </div>
 
-                <div id="inputRow" class="row" style="padding: 8px 0px">
-                    <div id="input" class=".col-md-8 .col-md-offset-2">
+                <div id="inputRow" class="row" style="padding: 2px 0px">
+                    <div id="input" class="col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
                     @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
                         <button id=@{e.id.toString} type="button" class="btn btn-atk btn-default" uri="@{s"game/" + gameState.uuid + "/attack"}">
                             Attack @{e.name}
