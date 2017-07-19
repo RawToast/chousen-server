@@ -5,6 +5,8 @@
         <title>Chousen Beta</title>
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="assets/chousen.js"></script>
+
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     </head>
 
@@ -115,104 +117,5 @@
                 </div>
 
         </div>
-
-        <script type="text/javascript">
-
-                $('.btn-atk').click(function(evt) {
-                    evt.preventDefault();
-
-                        var id = $(this).attr("id");
-                        var uri = $(this).attr("uri");
-
-
-                    $.post(uri, JSON.stringify({ targetId: id }), function(result) {
-                            window.location.replace(window.location.href)
-                        });
-                });
-
-
-                $('.btn-multi').click(function(evt) {
-                    evt.preventDefault();
-
-                    var eids = [];
-                    var idsString = $(this).attr("eids");
-                    eids = idsString.split(",");
-                    var uri = $(this).attr("uri");
-                    var action = $(this).attr("action");
-
-                    jQuery.ajax ({
-                        url: uri,
-                        type: "POST",
-                        data: JSON.stringify({ targetId: eids, action: action }),
-                        dataType: "json",
-                        contentType: "application/json; charset=utf-8",
-                        success: function(){
-                            window.location.replace(window.location.href)
-                        }
-                    });
-                });
-
-                $('.btn-com').click(function(evt) {
-                    evt.preventDefault();
-
-                    var id = $(this).attr("eid");
-                    var uri = $(this).attr("uri");
-                    var action = $(this).attr("action");
-
-                    jQuery.ajax ({
-                        url: uri,
-                        type: "POST",
-                        data: JSON.stringify({ targetId: id, action: action }),
-                        dataType: "json",
-                        contentType: "application/json; charset=utf-8",
-                        success: function(){
-                            window.location.replace(window.location.href)
-                        }
-                    });
-                });
-
-                $('.btn-self').click(function(evt) {
-                    evt.preventDefault();
-
-                    var uri = $(this).attr("uri");
-                    var action = $(this).attr("action");
-
-                    jQuery.ajax ({
-                        url: uri,
-                        type: "POST",
-                        data: JSON.stringify({ action: action }),
-                        dataType: "json",
-                        contentType: "application/json; charset=utf-8",
-                        success: function(){
-                            window.location.replace(window.location.href)
-                        }
-                    });
-                });
-
-                $('.btn-card').click(function(evt) {
-                    evt.preventDefault();
-
-                    var uri = $(this).attr("uri");
-                    var action = $(this).attr("action");
-
-                    jQuery.ajax ({
-                        url: uri,
-                        type: "POST",
-                        data: JSON.stringify({ action: action }),
-                        dataType: "json",
-                        contentType: "application/json; charset=utf-8",
-                        success: function(){
-                            window.location.replace(window.location.href)
-                        }
-                    });
-                });
-
-
-                $(document).ready(function(){
-                    var textarea = $('#gameMessagesText');
-                    textarea.scrollTop(textarea[0].scrollHeight);
-                });
-        </script>
-
     </body>
 </html>

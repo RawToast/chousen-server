@@ -4,7 +4,7 @@ import chousen.api.core.{GameAccess, MongoDatastore, MongoGameAccess}
 import chousen.api.data.GameState
 import chousen.game.core.{GameManager, GameStateManager, RandomGameStateCreator}
 import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
-import chousen.http4s.{CrudService, FrontendService, InputService}
+import chousen.http4s.{AssetService, CrudService, FrontendService, InputService}
 import fs2.Task
 import org.http4s.Response
 import org.http4s.util.StreamApp
@@ -36,12 +36,13 @@ object Http4sServer extends StreamApp {
     val crudService = new CrudService(gameAccess, gameCreator)
     val frontendService = new FrontendService(gameAccess)
     val inputService = new InputService(gameAccess, gameStateManager)
+    val assetService = new AssetService()
 
 
     // Unconfigured, will bind to 8080
     BlazeBuilder.bindHttp(port, host)
       .withServiceExecutor(Executors.newCachedThreadPool())
-      .mountService(crudService.routes |+| frontendService.routes |+| inputService.routes, "/")
+      .mountService(crudService.routes |+| frontendService.routes |+| inputService.routes |+| assetService.routes, "/")
       .serve
   }
 }
