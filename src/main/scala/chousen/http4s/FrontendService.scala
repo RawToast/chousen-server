@@ -3,7 +3,7 @@ package chousen.http4s
 import java.util.UUID
 
 import chousen.api.core.GameAccess
-import chousen.html
+import chousen.{BuildInfo, html}
 import fs2.Task
 import org.http4s.{HttpService, Response}
 import org.http4s.dsl._
@@ -15,7 +15,7 @@ class FrontendService(ga: GameAccess[Task, Response]) {
   val routes: HttpService = HttpService {
     // init
     case GET -> Root =>
-      val index: Html = html.index()
+      val index: Html = html.index(BuildInfo.gitHash, BuildInfo.buildTimestamp)
       Ok(index)
 
     case GET -> Root / id =>
