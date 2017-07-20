@@ -5,23 +5,23 @@ name := "chousen-server"
 
 version := "0.3"
 
-lazy val root = (project in file(".")).
-  enablePlugins(BuildInfoPlugin).
-  settings(
-    buildInfoKeys := Seq[BuildInfoKey](
-      name, version, scalaVersion, sbtVersion,
-      "buildTimestamp" -> new java.util.Date(System.currentTimeMillis()),
-      "gitHash" -> new java.lang.Object(){
-        override def toString(): String = {
-          try {
-            val extracted = new java.io.InputStreamReader(
-              java.lang.Runtime.getRuntime().exec("git rev-parse HEAD").getInputStream())
-            (new java.io.BufferedReader(extracted)).readLine()
-          } catch {      case t: Throwable => "get git hash failed"}
-        }}.toString()
-    ),
-    buildInfoPackage := "chousen"
-  )
+//lazy val root = (project in file(".")).
+//  enablePlugins(BuildInfoPlugin).
+//  settings(
+//    buildInfoKeys := Seq[BuildInfoKey](
+//      name, version, scalaVersion, sbtVersion,
+//      "buildTimestamp" -> new java.util.Date(System.currentTimeMillis()),
+//      "gitHash" -> new java.lang.Object(){
+//        override def toString(): String = {
+//          try {
+//            val extracted = new java.io.InputStreamReader(
+//              java.lang.Runtime.getRuntime().exec("git rev-parse HEAD").getInputStream())
+//            (new java.io.BufferedReader(extracted)).readLine()
+//          } catch {      case t: Throwable => "get git hash failed"}
+//        }}.toString()
+//    ),
+//    buildInfoPackage := "chousen"
+//  )
 
 
 mainClass in(Compile, run) := Some("chousen.Http4sServer")
