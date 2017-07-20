@@ -24,7 +24,7 @@ object CardActionHandler extends ActionHandler {
     }
 
 
-  def restore(p: Player, h: Cards, msgs: Seq[GameMessage]) = {
+  def restore(p: Player, h: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
 
     val restoredCard = h.discard.head
     val remainingDiscard = h.discard.tail
@@ -38,7 +38,7 @@ object CardActionHandler extends ActionHandler {
     (p, newCards, gameMessages)
   }
 
-  def replace(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
+  def replace(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
     val targetMsg = GameMessage(s"${p.name} uses Replace!")
 
     val gameMessages = msgs :+ targetMsg
@@ -61,7 +61,7 @@ object CardActionHandler extends ActionHandler {
   }
 
 
-  def miracle(p: Player, h: Cards, msgs: Seq[GameMessage]) = {
+  def miracle(p: Player, h: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
 
     @scala.annotation.tailrec
     def populate(cards: Cards): Cards = {
@@ -78,7 +78,7 @@ object CardActionHandler extends ActionHandler {
     (p.copy(position = p.position - 100), newCards, gameMessages)
   }
 
-  def rummage(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
+  def rummage(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
     val cs1 = CardManager.drawCard(cs, limit = CardManager.ABSOLUTE_MAX)
     val cs2 = CardManager.drawCard(cs1, limit = CardManager.ABSOLUTE_MAX)
 

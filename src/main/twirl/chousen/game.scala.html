@@ -46,24 +46,28 @@
             </div>
 
             <div id="gameMessagesRow" class="row" style="padding: 8px 0px">
-                <div id="gameMessagesOffSet" class="col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+                <div id="gameMessagesOffSet" class="col-xs-10">
                     <textarea id="gameMessagesText" class="form-control noresize"
                         style="resize: none" rows="15" data-role="none">@{gameState.messages.filterNot(gm => gm.text.contains("s turn")).map(m => {{m.text + "\r\n"}})}
                     </textarea>
                 </div>
             </div>
 
-                <div id="inputRow" class="row" style="padding: 2px 0px">
-                    <div id="input" class="col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
-                    @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
-                        <button id=@{e.id.toString} type="button" class="btn btn-atk btn-default" uri="@{s"game/" + gameState.uuid + "/attack"}">
+            <div id="input">
+            @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
+                <button id=@{
+                    e.id.toString
+                } type="button" class="btn btn-atk btn-default" uri="@{
+                    s"game/" + gameState.uuid + "/attack"
+                }">
                             Attack @{e.name}
                         </button>
-                    }
-                    </div>
+            }
+            </div>
 
+            <div id="inputRow" class="row" style="padding: 2px 0px" class="col-xs-10">
 
-                    @for(c <- gameState.cards.hand.filter(_.action.isInstanceOf[chousen.api.data.SingleTargetAction])) {
+                @for(c <- gameState.cards.hand.filter(_.action.isInstanceOf[chousen.api.data.SingleTargetAction])) {
                         <div class="btn-group" role="group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false" title="@{c.description}">

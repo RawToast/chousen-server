@@ -9,7 +9,7 @@ class AssetService {
     StaticFile.fromResource("/" + file, Some(request)).map(Task.now).getOrElse(NotFound())
   // static: (file: String, request: org.http4s.Request)scalaz.concurrent.Task[org.http4s.Response]
 
-  val routes = HttpService {
+  val routes: HttpService = HttpService {
     case request @ GET -> Root / "assets" / path if List(".js", ".css").exists(path.endsWith) =>
       static(path, request)
   }
