@@ -17,12 +17,12 @@ object GameStateGenerator {
   val secondEnemy: Enemy = createBigSlime(UUID.fromString("403768ae-a336-4654-bebf-6920ff4d5eb8"))
 
   val staticGameState: GameState = {
-    val player = Player(playerName, CharStats(100, 100), 0)
+    val player = Player(playerName, "Static", CharStats(100, 100), Experience(), 0)
     gameStateWithPlayer(player)
   }
 
   val gameStateWithFastPlayer: GameState = {
-    val player = Player(playerName, CharStats(100, 100), 1)
+    val player = Player(playerName, "FastStatic", CharStats(100, 100), Experience(), 1)
     gameStateWithPlayer(player)
   }
 

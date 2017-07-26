@@ -21,6 +21,7 @@ sealed trait SingleTargetAction extends Action
 sealed trait MultiAction extends Action
 sealed trait SelfAction extends Action
 sealed trait CardAction extends Action
+sealed trait CampFireAction extends Action
 
 
 
@@ -28,10 +29,12 @@ case object CrushingBlow extends SingleTargetAction
 case object Hamstring extends SingleTargetAction
 case object StunningStrike extends SingleTargetAction
 case object Counter extends SingleTargetAction
+case object Destruction extends SingleTargetAction
 
 case object QuickAttack extends SingleTargetAction
 case object Assassinate extends SingleTargetAction
 case object TripleStrike extends SingleTargetAction
+
 
 case object Pain extends SingleTargetAction
 case object MagicMissile extends SingleTargetAction
@@ -42,12 +45,12 @@ case object Fireball extends MultiAction
 case object StaticField extends MultiAction
 case object MassDrain extends MultiAction
 case object Shatter extends MultiAction
+
 case object GroundStrike extends MultiAction
+
 case object WindStrike extends MultiAction
 
-
 case object HealWounds extends SelfAction
-
 
 case object ElixirOfStrength extends SelfAction
 case object ElixirOfDexterity extends SelfAction
@@ -60,3 +63,8 @@ case object Rummage extends CardAction
 case object Miracle extends CardAction
 case object Replace extends CardAction
 case object Restore extends CardAction
+
+
+case object Rest extends CampFireAction
+case object Explore extends CampFireAction
+case object RestAndExplore extends CampFireAction

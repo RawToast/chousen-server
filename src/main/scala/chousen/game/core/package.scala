@@ -9,5 +9,5 @@ package object core {
 
 
   type GameOperation = GameState => GameState
-  type ForkedGameOption = GameState => Either[GameState, GameState]
+  type ForkedGameOperation = GameState => Either[GameState, GameState]
 }

@@ -24,7 +24,7 @@ class GameStoreSpec extends WordSpec {
 
       val result = gs.store(GameStateGenerator.staticGameState)
 
-      assert(result.get(GameStateGenerator.staticGameState.id).isDefined)
+      assert(result.get(GameStateGenerator.staticGameState.uuid).isDefined)
     }
 
 
@@ -34,7 +34,7 @@ class GameStoreSpec extends WordSpec {
       val gs = GameStore
 
       gs.store(GameStateGenerator.staticGameState)
-      val result = gs.load(GameStateGenerator.staticGameState.id)
+      val result = gs.load(GameStateGenerator.staticGameState.uuid)
 
       assert(result.isDefined)
     }

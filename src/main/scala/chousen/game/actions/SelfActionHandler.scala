@@ -29,7 +29,7 @@ object SelfActionHandler {
 
 
   def healWounds(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = {
-    val healAmount = 10 + p.stats.intellect + (p.stats.maxHp / 10)
+    val healAmount = 10 + (2 + p.stats.intellect) + (p.stats.maxHp / 10)
     val message = GameMessage(s"${p.name} uses Heal Wounds and recovers ${healAmount}HP!")
     val gameMessages = msgs :+ message
 
@@ -60,7 +60,6 @@ object SelfActionHandler {
       }
     (effect.apply(p), gameMessages)
   }
-
 
   def rarePepe(p: Player, msgs: Seq[GameMessage]) = {
     val bonusStat = 2

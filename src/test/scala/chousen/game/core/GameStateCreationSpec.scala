@@ -3,13 +3,16 @@ package chousen.game.core
 import java.util.UUID
 
 import chousen.api.data.{GameStateGenerator, _}
+import chousen.game.dungeon.SimpleDungeonBuilder
 import monocle.macros.GenLens
 import org.scalatest.WordSpec
 
 class GameStateCreationSpec extends WordSpec {
 
   "GameStateCreation" when {
-    val creator = new GameStateCreation {}
+    val dungeonBuilder = new SimpleDungeonBuilder()
+
+    val creator = new RandomGameStateCreator(dungeonBuilder)
 
     "Creating a game" should {
 
@@ -24,7 +27,7 @@ class GameStateCreationSpec extends WordSpec {
         val game2 = creator.create("Bob")
 
         assert(game1 != game2)
-        assert(game1.id != game2.id)
+        assert(game1.uuid != game2.uuid)
       }
 
     }

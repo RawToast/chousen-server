@@ -8,6 +8,7 @@ class IndexSpec extends WordSpec {
 
   "Index.html" should {
 
+
     val indexPage: Html = chousen.html.index()
 
     "Include a box for the user to input their name" in {

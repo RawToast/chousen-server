@@ -2,8 +2,9 @@ package chousen.game.actions
 
 import java.util.UUID
 
+import chousen.Optics._
 import chousen.api.data._
-import chousen.Optics.{EnemyStats, EnemyPosition, targettedLens, HpLens}
+import chousen.util.LensUtil
 
 object SingleTargetActionHandler extends ActionHandler {
 
@@ -23,6 +24,7 @@ object SingleTargetActionHandler extends ActionHandler {
       case Hamstring => hamstring
       case StunningStrike => stunningStrike
       case Counter => counter
+      case Destruction => destruction
 
       case QuickAttack => quickAttack
       case Assassinate => assassinate
@@ -78,7 +80,7 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def hamstring(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, (2 * p.stats.strength) - e.stats.vitality - 2)
+    val dmg = Math.max(1, (2 * p.stats.strength) - (e.stats.vitality / 2) - 4)
 
     val targetMsg = GameMessage(s"${p.name} uses Hamstring!")
     val dmgMsg = GameMessage(s"${e.name} slows down and takes $dmg damage.")
@@ -124,10 +126,26 @@ object SingleTargetActionHandler extends ActionHandler {
     (p.copy(position = p.position - 100), Option(newEnemy), gameMessages)
   }
 
+  def destruction(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+    val dmg = Math.max(1, (p.stats.strength * 3) / 2)
+
+    val targetMsg = GameMessage(s"${p.name} lands a destructive blow on ${e.name}!")
+    val dmgMsg = GameMessage(s"${e.name}'s defense is broken and takes $dmg damage.")
+
+    // This should be replaced by a generic attack/damage function
+    val newEnemy = LensUtil.duoLens(EnemyStats.composeLens(HpLens), EnemyStats.composeLens(VitalityLens))
+        .modify{case (hp, vit) => hp - dmg -> Math.max(1, vit - (p.stats.strength / 2)) }
+          .apply(e)
+
+    val gameMessages = msgs :+ targetMsg :+ dmgMsg
+
+    (p.copy(position = p.position - 130 + (p.stats.strength / 4)), Option(newEnemy), gameMessages)
+  }
+
 
   // Dex
 
-  def assassinate(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+  def assassinate(p: Player, e: Enemy, msgs: Seq[GameMessage]): (Player, Option[Enemy], Seq[GameMessage]) = {
     val dmg = Math.max(p.stats.dexterity, e.stats.maxHp - e.stats.currentHp)
 
     val targetMsg = GameMessage(s"${p.name} uses Assassinate!")

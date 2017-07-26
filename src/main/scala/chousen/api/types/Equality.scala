@@ -26,17 +26,14 @@ trait EqualitySyntax {
 }
 
 trait EqualityInstances {
-  implicit val enemyEquality = new Equality[Enemy] {
-    override def hasSameIdentity(x: Enemy, y: Enemy) = x.id == y.id
-  }
+  implicit val enemyEquality: Equality[Enemy] =
+    (x: Enemy, y: Enemy) => x.id == y.id
 
-  implicit val playerEquality = new Equality[Player] {
-    override def hasSameIdentity(x: Player, y: Player) = x.name == y.name
-  }
+  implicit val playerEquality: Equality[Player] =
+    (x: Player, y: Player) => x.name == y.name
 
-  implicit val cardEquality = new Equality[Card] {
-    override def hasSameIdentity(x: Card, y: Card) = x.id == y.id
-  }
+  implicit val cardEquality: Equality[Card] =
+    (x: Card, y: Card) => x.id == y.id
 }
 
 object Equality {

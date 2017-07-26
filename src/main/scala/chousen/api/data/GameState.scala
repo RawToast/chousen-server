@@ -2,7 +2,7 @@ package chousen.api.data
 
 import java.util.UUID
 
-case class GameState(id: UUID, player: Player, cards: Cards, dungeon: Dungeon, messages: Seq[GameMessage])
+case class GameState(uuid: UUID, player: Player, cards: Cards, dungeon: Dungeon, messages: Seq[GameMessage])
 
 case class CharStats(maxHp: Int,
                      currentHp: Int,
@@ -13,7 +13,9 @@ case class CharStats(maxHp: Int,
                      speed: Int = 8)
 
 
-case class Player(name:String, stats: CharStats, position: Int)
+case class Player(name:String, className: String, stats: CharStats, experience: Experience, position: Int)
+
+case class Experience(current: Int=0, next: Int=3, level: Int=1)
 
 case class Cards(hand: Seq[Card], deck: Seq[Card], discard: Seq[Card])
 

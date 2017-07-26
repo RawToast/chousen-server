@@ -7,8 +7,8 @@ object GameTurnLoop extends TurnLoop(GameOperations.UpdateUntilPlayerIsActive,
   GameOperations.PreTurnValidation, GameOperations.PostTurnValidation, GameOperations.GameOvercheck)
 
 
-abstract class TurnLoop(takeEnemyTurns: GameOperation, preTurnValidation: ForkedGameOption,
-                        postTurnValidation: ForkedGameOption, gameOverCheck: ForkedGameOption) {
+abstract class TurnLoop(takeEnemyTurns: GameOperation, preTurnValidation: ForkedGameOperation,
+                        postTurnValidation: ForkedGameOperation, gameOverCheck: ForkedGameOperation) {
 
   def takeTurn(gameState: GameState, playerInput: GameOperation): GameState = {
 
@@ -37,13 +37,13 @@ abstract class GameOperations(gameops: GameOps) {
   val UpdateUntilPlayerIsActive: GameOperation =
     GameStateOptics.EncounterLens.modify(gameops.updateUntilPlayerIsActive)
 
-  val PreTurnValidation: ForkedGameOption = gs => {
+  val PreTurnValidation: ForkedGameOperation = gs => {
     val isActive = GameStateOptics.EncounterLens.get _ andThen gameops.isGameActive
     if (isActive(gs)) Right(gs)
     else Left(gs)
   }
 
-  val PostTurnValidation: ForkedGameOption = gs => {
+  val PostTurnValidation: ForkedGameOperation = gs => {
     val isActive = GameStateOptics.EncounterLens.get _ andThen gameops.isGameActive
     if (isActive(gs)) Right {
       GenLens[GameState](_.dungeon.currentEncounter.enemies).modify(_.filter(_.stats.currentHp > 0))(gs)
@@ -52,7 +52,7 @@ abstract class GameOperations(gameops: GameOps) {
   }
 
 
-  val GameOvercheck: ForkedGameOption = gs => {
+  val GameOvercheck: ForkedGameOperation = gs => {
     val isActive = GameStateOptics.EncounterLens.get _ andThen gameops.isGameActive
     if (isActive(gs)) Right(gs)
     else Left(gs)
