@@ -21,6 +21,7 @@ sealed trait SingleTargetAction extends Action
 sealed trait MultiAction extends Action
 sealed trait SelfAction extends Action
 sealed trait CardAction extends Action
+sealed trait CampFireAction extends Action
 
 
 
@@ -62,3 +63,8 @@ case object Rummage extends CardAction
 case object Miracle extends CardAction
 case object Replace extends CardAction
 case object Restore extends CardAction
+
+
+case object Rest extends CampFireAction
+case object Explore extends CampFireAction
+case object RestAndExplore extends CampFireAction

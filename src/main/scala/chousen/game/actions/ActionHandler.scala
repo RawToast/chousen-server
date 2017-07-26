@@ -5,6 +5,7 @@ import chousen.api.data.{Experience, GameMessage, GameState, Player}
 import chousen.util.LensUtil
 
 trait ActionHandler {
+
   def handleDead: (GameState) => GameState = EncounterLens.modify {
     case (p, es, msgs) =>
       val aliveEnemies = es.filter(_.stats.currentHp > 0)

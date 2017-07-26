@@ -49,6 +49,14 @@ trait CardManager {
     } else cards
   }
 
+  def fillHand(cards: Cards, limit: Int= MAX_HAND_SIZE): Cards = {
+    @scala.annotation.tailrec
+    def populate(cards: Cards): Cards = {
+      if (cards.hand.size >= limit) cards
+      else populate(CardManager.drawCard(cards, limit))
+    }
+    populate(cards)
+  }
   def moveLastDiscardToTopDeck(cards: Cards): Cards = {
     cards.discard.headOption.fold(cards){ (c: data.Card) =>
       Cards(cards.hand, Seq(c) ++ cards.deck, cards.discard.tail)

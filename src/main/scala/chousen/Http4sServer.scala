@@ -1,6 +1,6 @@
 package chousen
 
-import chousen.api.core.{GameAccess, MongoDatastore, MongoGameAccess}
+import chousen.api.core.{GameAccess, Http4sMappedGameAccess}
 import chousen.api.data.GameState
 import chousen.game.core.{GameManager, GameStateManager, RandomGameStateCreator}
 import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
@@ -20,12 +20,12 @@ object Http4sServer extends StreamApp {
     val port = Option(System.getProperty("http.port")).getOrElse("8080").toInt
     val host = Option(System.getProperty("http.host")).getOrElse("0.0.0.0")
 
-    lazy val mongo = new MongoDatastore(
-      "mongodb://chousen:chousen@ds123080.mlab.com:23080/?authSource=heroku_rm14s281&authMechanism=SCRAM-SHA-1",
-      "heroku_rm14s281",
-      "chousen")
+//    lazy val mongo = new MongoDatastore(
+//      "mongodb://chousen:chousen@ds123080.mlab.com:23080/?authSource=heroku_rm14s281&authMechanism=SCRAM-SHA-1",
+//      "heroku_rm14s281",
+//      "chousen")
 
-    val gameAccess: GameAccess[Task, Response] = new MongoGameAccess(mongo)
+    val gameAccess: GameAccess[Task, Response] = new Http4sMappedGameAccess()
 
     val dungeonBuilder: DungeonBuilder = new SimpleDungeonBuilder()
 
