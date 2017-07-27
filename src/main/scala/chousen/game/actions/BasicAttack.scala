@@ -3,11 +3,11 @@ package chousen.game.actions
 import java.util.UUID
 
 import chousen.Optics._
-import chousen.api.data.GameMessage
+import chousen.api.data.{GameMessage, GameState}
 
 object BasicAttack extends ActionHandler{
 
-  def attack(targetId: UUID) = targettedLens(targetId).modify {
+  def attack(targetId: UUID): (GameState) => GameState = targettedLens(targetId).modify {
     case (p, optE, msgs) =>
 
       optE match {

@@ -25,7 +25,7 @@ class MongoDatastore(connectionString: String, databaseName: String="heroku_rm14
       .getDatabase(databaseName)
       .getCollection(collectionName)
 
-  def get(id :UUID) = for {
+  def get(id :UUID): Task[GameState] = for {
     document <- getDocument(id)
     hs <- toGameState(document)
   } yield hs

@@ -46,7 +46,7 @@ abstract class GameOps(encOps: EncounterOps) {
 object EnemyTurnOps {
 
   // This method will use the enemy with the highest position
-  def takeTurn(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage]) = {
+  def takeTurn(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage]): (Player, Set[Enemy], Seq[GameMessage]) = {
 
     val activeEnemy = enemies.maxBy(_.position)
 

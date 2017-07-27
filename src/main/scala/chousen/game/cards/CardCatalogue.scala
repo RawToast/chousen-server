@@ -33,28 +33,28 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     elixirOfIntelligence.times(4) ++ elixirOfVitality.times(4) ++
     restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
-  def strengthDeck =
+  def strengthDeck: Seq[Card] =
       usefulCards ++ /*4 of might, 4 of stoneSkin, 4 of haste, */
       (4 of crushingBlow) ++ (4 of hamstring) ++ (4 of stunningStrike) ++ (4 of groundStrike) ++ (4 of counter) ++
       (4 of quickStep) ++ (4 of destruction) ++
       (4 of elixirOfStrength) ++ (2 of elixirOfDexterity) ++ (4 of elixirOfVitality) ++
       (4 of rummage) ++ (4 of replace) ++ (2 of restore) ++ (2 of miracle)
 
-  def dexterityDeck = // 15
+  def dexterityDeck: Seq[Card] = // 15
       usefulCards ++ /*4 of dexterity, 4 of stoneSkin, 4 of haste,*/
       (4 of quickStep) ++ (4 of tripleStrike) ++ (4 of assassinate) ++ (4 of windStrike) ++
       (4 of pain) ++
       (4 of elixirOfDexterity) ++ (4 of elixirOfVitality) ++
       restore.times(4) ++ replace.times(4) ++ miracle.times(2) ++ rummage.times(2)
 
-  def cheeseDeck = // 15
+  def cheeseDeck: Seq[Card] = // 15
     usefulCards ++
       (4 of assassinate) ++ (4 of windStrike) ++ (4 of quickStep) ++
       (4 of pain) ++ (4 of staticField) ++ (4 of fireball) ++
       (4 of elixirOfDexterity) ++ (4 of elixirOfIntelligence) ++
       restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
-  def strongManDeck = // 10
+  def strongManDeck: Seq[Card] = // 10
     usefulCards ++
     massDrain.times(4) ++
     quickStep.times(4) ++ destruction.times(4) ++
@@ -62,7 +62,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
       elixirOfDexterity.times(4) ++ elixirOfVitality.times(4) ++
     restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
-  def usefulCards = healWounds.times(4) ++ rarePepe.times(4)
+  def usefulCards: Seq[Card] = healWounds.times(4) ++ rarePepe.times(4)
 }
 
 sealed trait CardBuilder
