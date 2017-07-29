@@ -40,13 +40,13 @@ object SelfActionHandler {
     (lens.apply(p), gameMessages)
   }
 
-  def elixirOfStrength(p: Player, msgs: Seq[GameMessage]) = elixir(p, msgs, "Strength", PlayerStrengthLens)
+  def elixirOfStrength(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = elixir(p, msgs, "Strength", PlayerStrengthLens)
 
-  def elixirOfDexterity(p: Player, msgs: Seq[GameMessage]) = elixir(p, msgs, "Dexterity", PlayerDexterityLens)
+  def elixirOfDexterity(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = elixir(p, msgs, "Dexterity", PlayerDexterityLens)
 
-  def elixirOfIntellect(p: Player, msgs: Seq[GameMessage]) = elixir(p, msgs, "Intellect", PlayerIntellectLens)
+  def elixirOfIntellect(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = elixir(p, msgs, "Intellect", PlayerIntellectLens)
 
-  def elixirOfVitality(p: Player, msgs: Seq[GameMessage]) = elixir(p, msgs, "Vitality", PlayerVitalityLens)
+  def elixirOfVitality(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = elixir(p, msgs, "Vitality", PlayerVitalityLens)
 
 
   private def elixir(p: Player, msgs: Seq[GameMessage], stat: String, lens: Lens[Player, Int], amt: Int = 3) = {
@@ -61,7 +61,7 @@ object SelfActionHandler {
     (effect.apply(p), gameMessages)
   }
 
-  def rarePepe(p: Player, msgs: Seq[GameMessage]) = {
+  def rarePepe(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = {
     val bonusStat = 2
     val message = GameMessage(s"${p.name} looks at a Rare Pepe and becomes stronger!")
     val gameMessages = msgs :+ message
@@ -76,7 +76,7 @@ object SelfActionHandler {
     (lens.apply(p), gameMessages)
   }
 
-  def quickStep(p: Player, msgs: Seq[GameMessage]) = {
+  def quickStep(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} uses Quick Step!")
 
     (PlayerPositionLens.modify(_ + 100 + p.stats.dexterity)(p), msgs :+ message)

@@ -4,7 +4,7 @@ import java.util.UUID
 
 import chousen.api.data.GameState
 import fs2.{Strategy, Task}
-import io.circe.Json
+import io.circe.{DecodingFailure, Json, ParsingFailure}
 import io.circe.generic.auto._
 import io.circe.parser._
 import io.circe.syntax._
@@ -46,13 +46,13 @@ class MongoDatastore(connectionString: String, databaseName: String="heroku_rm14
   }
 
   private def parseJson(s: String): Task[Json] = parse(s) match {
-    case Left(err) => Task.fail(err.underlying)
+    case Left(err:ParsingFailure) => Task.fail(err.underlying)
     case Right(json) => Task.now(json)
   }
 
   private def parseGameState(j : Json): Task[GameState] = j.as[GameState] match {
-    case Left(err) => Task.fail(err.getCause)
-    case Right(json) => Task.now(json)
+    case Left(err: DecodingFailure) => Task.fail(err.getCause)
+    case Right(json: GameState) => Task.now(json)
   }
 
   private implicit class TaskSyntax[T](obs: Observable[T]) {

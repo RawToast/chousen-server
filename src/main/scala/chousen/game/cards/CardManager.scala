@@ -19,8 +19,14 @@ trait CardManager {
 
   def playCard(card: data.Card)(f: data.Card => GameState): (GameState) => GameState = { game: GameState =>
     import chousen.Implicits._
-    game.cards.hand
-      .find(_ ~= card)
+    val action = card.action match {
+      case _: CampFireAction => game.cards.passive
+        .find(_ ~= card)
+      case _: Action => game.cards.hand
+        .find(_ ~= card)
+    }
+
+    action
       .fold(game){c =>
         val ng = f(c)
         if (ng == game) ng
@@ -31,21 +37,22 @@ trait CardManager {
             .apply(ng)
         }
       }
+
   }
 
-  def startGame(cards:Seq[data.Card]): Cards = {
+  def startGame(cards:Seq[data.Card], passiveCards: Seq[data.Card]=Seq.empty): Cards = {
     val shuffledCards = Random.shuffle(Random.shuffle(cards))
 
     val (hand, deck) = shuffledCards.splitAt(MAX_HAND_SIZE)
 
-    Cards(hand, deck, Seq.empty)
+    Cards(hand, deck, Seq.empty, passiveCards)
   }
 
   @tailrec
   final def drawCard(cards: Cards, limit:Int=MAX_HAND_SIZE): Cards = {
     if (cards.hand.size < limit) {
       if (cards.deck.isEmpty) drawCard(cards.copy(deck = cards.discard, discard = Seq.empty))
-        else Cards(cards.hand :+ cards.deck.head, cards.deck.tail, cards.discard)
+        else cards.copy(hand = cards.hand :+ cards.deck.head, deck = cards.deck.tail)
     } else cards
   }
 
@@ -59,7 +66,7 @@ trait CardManager {
   }
   def moveLastDiscardToTopDeck(cards: Cards): Cards = {
     cards.discard.headOption.fold(cards){ (c: data.Card) =>
-      Cards(cards.hand, Seq(c) ++ cards.deck, cards.discard.tail)
+      cards.copy(deck = Seq(c) ++ cards.deck, discard=cards.discard.tail)
     }
   }
 
@@ -69,9 +76,7 @@ trait CardManager {
       cards.hand
         .find(_ ~= card)
         .fold(cards){ c =>
-          Cards(cards.hand.filterNot(_ ~= c),
-            cards.deck :+ c,
-            cards.discard)
+          cards.copy(hand = cards.hand.filterNot(_ ~= c), deck=cards.deck :+ c)
         }
   }
 
@@ -80,7 +85,7 @@ trait CardManager {
     import chousen.Implicits._
     cards.hand.find(_ ~= card).fold(cards) { c =>
       val newHand = cards.hand.filterNot(_ ~= c)
-      Cards(newHand, cards.deck, cards.discard :+ c)
+      cards.copy(hand=newHand, discard= cards.discard :+ c)
     }
   }
 }

@@ -14,6 +14,8 @@ case class MultiTargetActionRequest(targetId: Set[UUID], action: MultiAction) ex
 
 case class CardActionRequest(action: CardAction) extends CommandRequest
 
+case class CampfireActionRequest(action: CampFireAction) extends CommandRequest
+
 
 sealed trait Action
 

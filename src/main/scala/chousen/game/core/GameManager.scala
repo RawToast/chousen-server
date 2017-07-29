@@ -2,7 +2,7 @@ package chousen.game.core
 
 import chousen.api.data.PlayerOptics._
 import chousen.api.data._
-import chousen.game.actions.{BasicAttack, CardActionHandler, MultiTargetActionHandler, SelfActionHandler, SingleTargetActionHandler}
+import chousen.game.actions._
 import chousen.game.cards.CardManager
 import chousen.game.core.GameStateOptics.MessagesLens
 
@@ -26,6 +26,7 @@ class GameStateManager extends GameManager[GameState] {
         case SingleTargetActionRequest(_, action) => c.action == action
         case MultiTargetActionRequest(_, action) => c.action == action
         case CardActionRequest(action) => c.action == action
+        case CampfireActionRequest(action) => c.action == action
       }) takeCommand(commandRequest, game)
       else game
     }.apply(game)
@@ -51,6 +52,9 @@ class GameStateManager extends GameManager[GameState] {
       case CardActionRequest(action) =>
         val ns = GameTurnLoop.takeTurn(game, CardActionHandler.handle(action))
         transition(ns, usedCard = true)
+      case CampfireActionRequest(action) =>
+        val ns = GameTurnLoop.takeTurn(game, CampFireActionHandler.handle(action))
+        transition(ns)
     }
 
     newState

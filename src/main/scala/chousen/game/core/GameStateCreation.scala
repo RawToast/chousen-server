@@ -30,12 +30,12 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
     }
 
     val cards: Cards = seed match {
-      case 0 => CardManager.startGame(CardCatalogue.strengthDeck)
-      case 1 => CardManager.startGame(CardCatalogue.dexterityDeck)
-      case 2 => CardManager.startGame(CardCatalogue.magicDeck)
-      case 3 => CardManager.startGame(CardCatalogue.cheeseDeck)
-      case 4 => CardManager.startGame(CardCatalogue.strongManDeck)
-      case _ => CardManager.startGame(CardCatalogue.defaultDeck)
+      case 0 => CardManager.startGame(CardCatalogue.strengthDeck, CardCatalogue.passiveCards)
+      case 1 => CardManager.startGame(CardCatalogue.dexterityDeck, CardCatalogue.passiveCards)
+      case 2 => CardManager.startGame(CardCatalogue.magicDeck, CardCatalogue.passiveCards)
+      case 3 => CardManager.startGame(CardCatalogue.cheeseDeck, CardCatalogue.passiveCards)
+      case 4 => CardManager.startGame(CardCatalogue.strongManDeck, CardCatalogue.passiveCards)
+      case _ => CardManager.startGame(CardCatalogue.defaultDeck, CardCatalogue.passiveCards)
     }
 
     val msgs = Seq.empty[GameMessage]
