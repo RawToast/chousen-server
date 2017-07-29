@@ -33,7 +33,7 @@ object CardActionHandler extends ActionHandler {
 
     val gameMessages = msgs :+ targetMsg
 
-    val newCards = Cards(h.hand :+ restoredCard, h.deck, remainingDiscard)
+    val newCards = h.copy(hand = h.hand :+ restoredCard, discard = remainingDiscard)
 
     (p, newCards, gameMessages)
   }

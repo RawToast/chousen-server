@@ -8,12 +8,16 @@ import monocle.macros.GenLens
 
 object CampFireActionHandler extends ActionHandler {
 
-  def handle(action: CampFireAction): (GameState) => GameState = {
-    LensUtil.triLens(PlayerLens, GenLens[GameState](_.cards), MessagesLens).modify {
-      case (p, cs, msgs) =>
-        cardActions(action)(p, cs, msgs)
+  def handle(action: CampFireAction): (GameState) => GameState = { gs: GameState =>
+    if (gs.dungeon.currentEncounter.enemies.forall(_.name != "Camp Fire")) { gs }
+    else {
+      LensUtil.triLens(PlayerLens, GenLens[GameState](_.cards), MessagesLens).modify {
+        case (p, cs, msgs) =>
+          cardActions(action)(p, cs, msgs)
+      }.compose(CurrentEncounterLens.composeLens(BattleEnemiesLens).modify(es =>
+       es.map(e => EnemyStats.composeLens(HpLens).set(0)(e))))(gs)
     }
-  }
+  }.andThen(handleDead)
 
   private def cardActions(actionId: CampFireAction): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) =
     actionId match {
@@ -35,7 +39,22 @@ object CampFireActionHandler extends ActionHandler {
   }
 
   def explore(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
-    val newCards = CardManager.fillHand(cs)
+
+    val newCards = {
+      val nh = CardManager.fillHand(cs)
+      val handDiff = diffHands(cs, nh)
+
+      if (handDiff.isEmpty) {
+        val c1 = CardManager.drawCard(nh, CardManager.ABSOLUTE_MAX)
+        val c2 = CardManager.drawCard(c1, CardManager.ABSOLUTE_MAX)
+        c2
+      } else if (handDiff.size == 1) {
+        val c1 = CardManager.drawCard(nh, CardManager.ABSOLUTE_MAX)
+        c1
+      } else nh
+    }
+
+
     val foundCards = diffHands(cs, newCards)
 
     val targetMsg = GameMessage(s"${p.name} extensively searches the area and finds: ${printCards(foundCards)}")
@@ -51,7 +70,7 @@ object CampFireActionHandler extends ActionHandler {
     val healAmount: Int = Math.min(maxHeal, 10 + p.stats.vitality + (p.experience.level * 3))
 
     val c1 = CardManager.drawCard(h)
-    val newCards = CardManager.drawCard(c1)
+    val newCards = CardManager.drawCard(c1, CardManager.ABSOLUTE_MAX)
     val foundCards = newCards.hand.filter(c => !h.hand.contains(c))
 
     val msg1 = GameMessage(s"${p.name} takes a quick rest and heals $healAmount")
@@ -65,7 +84,6 @@ object CampFireActionHandler extends ActionHandler {
     newCards.hand.filter(c => !oldCards.hand.contains(c))
 
   private def printCards(cs: Seq[Card]): String = cs.map(_.name).mkString(", ")
-
 
 
 }

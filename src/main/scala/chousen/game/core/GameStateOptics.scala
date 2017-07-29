@@ -13,6 +13,7 @@ object GameStateOptics extends GameStateOptics
 trait GameStateOptics {
 
   val DungeonLens: Lens[GameState, Dungeon] = GenLens[GameState](_.dungeon)
+  val CurrentEncounterLens: Lens[GameState, Battle] = GenLens[GameState](_.dungeon.currentEncounter)
 
   val PlayerLens: Lens[GameState, Player] = GenLens[GameState](_.player)
   val MessagesLens: Lens[GameState, Seq[GameMessage]] = GenLens[GameState](_.messages)

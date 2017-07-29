@@ -65,21 +65,44 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState]) 
         ga.withGame(id) { g =>
           cardRequest[MultiTargetActionRequest](req, g, cardId)(gsm.useCard)
         }
+
+      case req@POST -> Root / "game" / uuid / "camp" / cardUuid =>
+        implicit val enumDecoder = deriveEnumerationDecoder[CampFireAction]
+
+        val (id, cardId) = getIds(uuid, cardUuid)
+
+        ga.withGame(id) { g =>
+          passiveRequest[CampfireActionRequest](req, g, cardId)(gsm.useCard)
+        }
     }
   }
 
   private def cardRequest[T <: CommandRequest](req: Request, g: GameState, cardId: UUID)
-                                      (f: (Card, CommandRequest, GameState) => GameState)
-                                      (implicit decoder: Decoder[T]): Task[Response] = {
-      g.cards.hand.find(_.id == cardId) match {
-        case Some(card) => for {
-          ar <- req.as(jsonOf[T])
-          ng = f(card, ar, g)
-          _ <- ga.storeGame(ng)
-          res <- Ok.apply(ng.asJson)
-        } yield res
-        case None => NotFound(g.asJson)
-      }
+                                               (f: (Card, CommandRequest, GameState) => GameState)
+                                               (implicit decoder: Decoder[T]): Task[Response] = {
+    g.cards.hand.find(_.id == cardId) match {
+      case Some(card) => for {
+        ar <- req.as(jsonOf[T])
+        ng = f(card, ar, g)
+        _ <- ga.storeGame(ng)
+        res <- Ok.apply(ng.asJson)
+      } yield res
+      case None => NotFound(g.asJson)
+    }
+  }
+
+  private def passiveRequest[T <: CommandRequest](req: Request, g: GameState, cardId: UUID)
+                                              (f: (Card, CommandRequest, GameState) => GameState)
+                                              (implicit decoder: Decoder[T]): Task[Response] = {
+    g.cards.passive.find(_.id == cardId) match {
+      case Some(card) => for {
+        ar <- req.as(jsonOf[T])
+        ng = f(card, ar, g)
+        _ <- ga.storeGame(ng)
+        res <- Ok.apply(ng.asJson)
+      } yield res
+      case None => NotFound(g.asJson)
+    }
   }
 
   private def basicRequest[T <: CommandRequest](req: Request, g: GameState)

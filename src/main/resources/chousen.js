@@ -4,6 +4,7 @@ $(document).ready(function(){
     registerCommandButton();
     registerSelfButtons();
     registerCardButtons();
+    registerCampfireButtons();
     scrollText();
 });
 
@@ -25,9 +26,8 @@ function registerMultiButtons() {
     $('.btn-multi').click(function(evt) {
         evt.preventDefault();
 
-        var eids = [];
         var idsString = $(this).attr("eids");
-        eids = idsString.split(",");
+        var eids = idsString.split(",");
         var uri = $(this).attr("uri");
         var action = $(this).attr("action");
 
@@ -52,16 +52,7 @@ function registerCommandButton() {
         var uri = $(this).attr("uri");
         var action = $(this).attr("action");
 
-        jQuery.ajax ({
-            url: uri,
-            type: "POST",
-            data: JSON.stringify({ targetId: id, action: action }),
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            success: function(){
-                window.location.replace(window.location.href)
-            }
-        });
+        sendMessage(uri, action);
     });
 }
 
@@ -72,16 +63,7 @@ function registerSelfButtons(){
         var uri = $(this).attr("uri");
         var action = $(this).attr("action");
 
-        jQuery.ajax ({
-            url: uri,
-            type: "POST",
-            data: JSON.stringify({ action: action }),
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            success: function(){
-                window.location.replace(window.location.href)
-            }
-        });
+        sendMessage(uri, action);
     });
 }
 
@@ -92,16 +74,33 @@ function registerCardButtons() {
         var uri = $(this).attr("uri");
         var action = $(this).attr("action");
 
-        jQuery.ajax ({
-            url: uri,
-            type: "POST",
-            data: JSON.stringify({ action: action }),
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            success: function(){
-                window.location.replace(window.location.href)
-            }
-        });
+        sendMessage(uri, action);
+    });
+}
+
+function registerCampfireButtons() {
+    $('.btn-camp').click(function(evt) {
+        evt.preventDefault();
+
+        var uri = $(this).attr("uri");
+        var action = $(this).attr("action");
+
+        sendMessage(uri, action);
+    });
+}
+
+function sendMessage(uri, action) {
+    console.log("Clicked " + action );
+
+    jQuery.ajax ({
+        url: uri,
+        type: "POST",
+        data: JSON.stringify({ action: action }),
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        success: function(){
+            window.location.replace(window.location.href)
+        }
     });
 }
 
