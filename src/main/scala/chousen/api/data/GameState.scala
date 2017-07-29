@@ -27,7 +27,9 @@ case class Dungeon(currentEncounter: Battle, remainingEncounters: Seq[Battle])
 
 case class Battle(enemies: Set[Enemy])
 
-case class Enemy(name: String, id: UUID, stats: CharStats, position: Int)
+sealed trait Encounterable
+
+case class Enemy(name: String, id: UUID, stats: CharStats, position: Int) extends Encounterable
 
 object Deck {
   sealed trait Card {

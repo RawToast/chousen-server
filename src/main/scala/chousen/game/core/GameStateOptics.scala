@@ -47,3 +47,11 @@ trait GameStateOptics {
   }
 
 }
+
+trait BattleOptics {
+
+  val BattleEnemiesLens = GenLens[Battle](_.enemies)
+
+}
+
+
