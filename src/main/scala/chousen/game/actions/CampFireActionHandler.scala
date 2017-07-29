@@ -77,7 +77,7 @@ object CampFireActionHandler extends ActionHandler {
     val msg2 = GameMessage(s"${p.name} quickly searches the area and finds: ${printCards(foundCards)}")
     val gameMessages = msgs :+ msg1 :+ msg2
 
-    (p, newCards, gameMessages)
+    (PlayerHealthLens.modify(hp => hp + healAmount)(p), newCards, gameMessages)
   }
 
   private def diffHands(oldCards: Cards, newCards: Cards) =

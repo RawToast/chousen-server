@@ -1,7 +1,8 @@
 package chousen.game.actions
 
   import chousen.api.data._
-  import chousen.game.core.{GameStateOptics, RandomGameStateCreator}
+import chousen.Optics._
+  import chousen.game.core.RandomGameStateCreator
   import chousen.game.dungeon.SimpleDungeonBuilder
   import org.scalatest.WordSpec
 
@@ -41,7 +42,7 @@ package chousen.game.actions
         val game: GameState = stateCreator.start(initialState)
 
         val startedGame =
-          GameStateOptics.DungeonLens
+          DungeonLens
             .set(game.dungeon.copy(currentEncounter = Battle(Set(dungeonBuilder.campFire))))
             .apply(game)
 
@@ -57,28 +58,87 @@ package chousen.game.actions
         }
       }
 
-      "Explore is used" should {
-          val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
-          val game: GameState = stateCreator.start(initialState)
-
-          val startedGame =
-            GameStateOptics.DungeonLens
-              .set(game.dungeon.copy(currentEncounter = Battle(Set(dungeonBuilder.campFire))))
-              .apply(game)
-
-          lazy val result = CampFireActionHandler.handle(Explore).apply(startedGame)
-
-          "Have an affect on messages" in {
-            assert(result.messages != startedGame.messages)
-          }
-
-          "The card remains available" in {
-            assert(result.cards.passive.size == startedGame.cards.passive.size)
-            assert(result.cards.passive.exists(_.action == Explore))
-          }
 
 
+      "Rest is used" should {
+        val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
+        val game: GameState = stateCreator.start(initialState)
+
+        val startedGame =
+          DungeonLens
+            .set(game.dungeon.copy(currentEncounter = Battle(Set(dungeonBuilder.campFire))))
+            .compose(PlayerLens.composeLens(PlayerHealthLens).modify(hp => hp / 2))(game)
+
+        lazy val result = CampFireActionHandler.handle(Rest).apply(startedGame)
+
+        "Have an affect on messages" in {
+          assert(result.messages != startedGame.messages)
         }
+
+        "The card remains available" in {
+          assert(result.cards.passive.size == startedGame.cards.passive.size)
+          assert(result.cards.passive.exists(_.action == Rest))
+        }
+
+        "Heal the player" in {
+          assert(result.player.stats.currentHp == result.player.stats.maxHp)
+          assert(result.player.stats.currentHp != startedGame.player.stats.currentHp)
+        }
+      }
+
+      "Rest and Explore is used" should {
+        val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
+        val game: GameState = stateCreator.start(initialState)
+
+        val startedGame =
+          DungeonLens
+            .set(game.dungeon.copy(currentEncounter = Battle(Set(dungeonBuilder.campFire))))
+            .compose(PlayerLens.composeLens(PlayerHealthLens).modify(hp => hp / 2))(game)
+
+        lazy val result = CampFireActionHandler.handle(RestAndExplore).apply(startedGame)
+
+        "Have an affect on messages" in {
+          assert(result.messages != startedGame.messages)
+        }
+
+        "The card remains available" in {
+          assert(result.cards.passive.size == startedGame.cards.passive.size)
+          assert(result.cards.passive.exists(_.action == RestAndExplore))
+        }
+
+        "Heal the player" in {
+          assert(result.player.stats.currentHp > startedGame.player.stats.currentHp)
+        }
+
+        "Draw a card" in {
+          assert(result.cards.hand.size > startedGame.cards.hand.size)
+        }
+      }
+
+      "Explore is used" should {
+        val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
+        val game: GameState = stateCreator.start(initialState)
+
+        val startedGame =
+          DungeonLens
+            .set(game.dungeon.copy(currentEncounter = Battle(Set(dungeonBuilder.campFire))))
+            .compose(PlayerLens.composeLens(PlayerHealthLens).modify(hp => hp / 2))(game)
+
+        lazy val result = CampFireActionHandler.handle(Explore).apply(startedGame)
+
+        "Have an affect on messages" in {
+          assert(result.messages != startedGame.messages)
+        }
+
+        "The card remains available" in {
+          assert(result.cards.passive.size == startedGame.cards.passive.size)
+          assert(result.cards.passive.exists(_.action == Explore))
+        }
+
+        "Draw two cards" in {
+          assert(result.cards.hand.size > (1 + startedGame.cards.hand.size))
+        }
+      }
 
 
     }
