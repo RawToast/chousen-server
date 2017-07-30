@@ -16,15 +16,15 @@ object Http4sServer extends StreamApp {
 
   import org.http4s.server.blaze.BlazeBuilder
 
-  override def stream(args: List[String]) = {
+  def buildServer: BlazeBuilder = {
     import cats.implicits._
     val port = Option(System.getProperty("http.port")).getOrElse("8080").toInt
     val host = Option(System.getProperty("http.host")).getOrElse("0.0.0.0")
 
-//    lazy val mongo = new MongoDatastore(
-//      "mongodb://chousen:chousen@ds123080.mlab.com:23080/?authSource=heroku_rm14s281&authMechanism=SCRAM-SHA-1",
-//      "heroku_rm14s281",
-//      "chousen")
+    //    lazy val mongo = new MongoDatastore(
+    //      "mongodb://chousen:chousen@ds123080.mlab.com:23080/?authSource=heroku_rm14s281&authMechanism=SCRAM-SHA-1",
+    //      "heroku_rm14s281",
+    //      "chousen")
 
     val gameAccess: GameAccess[Task, Response] = new Http4sMappedGameAccess()
 
@@ -44,7 +44,10 @@ object Http4sServer extends StreamApp {
     // Unconfigured, will bind to 8080
     BlazeBuilder.bindHttp(port, host)
       .withServiceExecutor(Executors.newCachedThreadPool())
-      .mountService(crudService.routes |+| frontendService.routes |+| inputService.routes |+| assetService.routes, "/")
-      .serve
+      .mountService(crudService.routes |+| frontendService.routes |+|
+        inputService.routes |+| assetService.routes, "/")
+  }
+  override def stream(args: List[String]) = {
+    buildServer.serve
   }
 }
