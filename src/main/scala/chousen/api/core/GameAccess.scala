@@ -25,12 +25,11 @@ class MongoGameAccess(mongoDatastore: MongoDatastore) extends GameAccess[Task, R
     mongoDatastore.put(g)
 }
 
-class Http4sMappedGameAccess extends GameAccess[Task, Response] {
+class Http4sMappedGameAccess(private var store: Map[UUID, GameState] = Map.empty) extends GameAccess[Task, Response] {
   import io.circe.generic.auto._
   import io.circe.syntax._
   import org.http4s.circe._
   import org.http4s.dsl._
-  private var store = Map.empty[UUID, GameState]
 
   def withGame(id: UUID)(f: GameState => Task[Response]): Task[Response] = {
 
