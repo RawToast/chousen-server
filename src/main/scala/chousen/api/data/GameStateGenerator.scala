@@ -27,7 +27,6 @@ object GameStateGenerator {
   }
 
   lazy val crushingBlowCard = Card(UUID.fromString("614e566c-03a5-43b0-ae55-e131f4428fc3"), "Crushing Blow", "Deals heavy damage to a single target", CrushingBlow)
-  lazy val quickAttackCard = Card(UUID.fromString("e5992111-b751-4cbb-8be0-22e0b6d8f4a6"), "Quick Attack", "Attack with reduced movement penalty", QuickAttack)
 
   private def gameStateWithPlayer(player:Player) = {
     import cats.implicits._

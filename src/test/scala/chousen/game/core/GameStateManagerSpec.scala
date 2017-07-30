@@ -119,8 +119,8 @@ class GameStateManagerSpec extends WordSpec {
       "Is different to the specified action" should {
 
         "Return the game state with no changes" in {
-          lazy val incorrectCard = GameStateGenerator.quickAttackCard
-          val request = SingleTargetActionRequest(GameStateGenerator.firstEnemy.id, CrushingBlow)
+          lazy val incorrectCard = GameStateGenerator.crushingBlowCard
+          val request = SingleTargetActionRequest(GameStateGenerator.firstEnemy.id, Hamstring)
 
           val result = gameStateManager.useCard(incorrectCard, request, gameState)
 

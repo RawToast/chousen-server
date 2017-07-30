@@ -22,7 +22,7 @@ class MultiTargetActionHandlerSpec extends WordSpec {
       val startedGame: GameState = stateCreator.start(initialState)
 
       val altUUID = UUID.fromString("0709daa1-5975-4f28-b0be-a676f87b70f0")
-      lazy val result = multiTargetActionHandler.handle(Set(altUUID), Fireball).apply(startedGame)
+      lazy val result = multiTargetActionHandler.handle(Set(altUUID), GroundStrike).apply(startedGame)
 
       "Have no affect on the player" in {
         assert(result.player == startedGame.player)
@@ -39,7 +39,7 @@ class MultiTargetActionHandlerSpec extends WordSpec {
       val startedGame: GameState = stateCreator.start(gameState)
 
       val targetId = GameStateGenerator.firstEnemy.id
-      lazy val result = multiTargetActionHandler.handle(Set(targetId), Fireball).apply(startedGame)
+      lazy val result = multiTargetActionHandler.handle(Set(targetId), GroundStrike).apply(startedGame)
 
       "Lower the targeted enemies health" in {
         assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == targetId))
@@ -71,7 +71,7 @@ class MultiTargetActionHandlerSpec extends WordSpec {
       val startedGame: GameState = stateCreator.start(gameState)
 
       val targets = Set(GameStateGenerator.firstEnemy.id, GameStateGenerator.secondEnemy.id)
-      lazy val result = multiTargetActionHandler.handle(targets, Fireball).apply(startedGame)
+      lazy val result = multiTargetActionHandler.handle(targets, GroundStrike).apply(startedGame)
 
       "Lower the targeted enemies health" in {
         targets.foreach(t => assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == t)))
@@ -99,32 +99,8 @@ class MultiTargetActionHandlerSpec extends WordSpec {
       }
     }
 
-    "Given WindStrike" should {
-      val (startedGame, result, targets) = completeAction(WindStrike)
-
-      standardAssertions(startedGame, result, targets)
-    }
-
-    "Given Shatter" should {
-      val (startedGame, result, targets) = completeAction(Shatter)
-
-      standardAssertions(startedGame, result, targets)
-    }
-
-    "Given Static Field" should {
-      val (startedGame, result, targets) = completeAction(StaticField)
-
-      standardAssertions(startedGame, result, targets)
-    }
-
     "Given Ground Strike" should {
       val (startedGame, result, targets) = completeAction(GroundStrike)
-
-      standardAssertions(startedGame, result, targets)
-    }
-
-    "Given MassDrain" should {
-      val (startedGame, result, targets) = completeAction(MassDrain)
 
       standardAssertions(startedGame, result, targets)
     }
@@ -134,7 +110,7 @@ class MultiTargetActionHandlerSpec extends WordSpec {
       val startedGame: GameState = stateCreator.start(gameState)
 
       val targets = Set(GameStateGenerator.firstEnemy.id, GameStateGenerator.secondEnemy.id)
-      lazy val result = multiTargetActionHandler.handle(targets, Fireball).apply(startedGame)
+      lazy val result = multiTargetActionHandler.handle(targets, action).apply(startedGame)
       (startedGame, result, targets)
     }
 

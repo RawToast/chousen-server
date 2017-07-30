@@ -92,7 +92,7 @@ class CardActionHandlerSpec extends WordSpec {
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val game: GameState = stateCreator.start(gameState)
 
-      val startedGame: GameState = DiscardLens.set(Seq(Card(UUID.randomUUID(), "Test", "Test", TripleStrike)))(game)
+      val startedGame: GameState = DiscardLens.set(Seq(Card(UUID.randomUUID(), "Test", "Test", CrushingBlow)))(game)
 
       val result = CardActionHandler.handle(Restore)(startedGame)
 
