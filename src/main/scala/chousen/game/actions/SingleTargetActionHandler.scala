@@ -4,9 +4,10 @@ import java.util.UUID
 
 import chousen.Optics._
 import chousen.api.data._
+import chousen.game.status.StatusCalculator
 import chousen.util.LensUtil
 
-object SingleTargetActionHandler extends ActionHandler {
+class SingleTargetActionHandler(sc: StatusCalculator) extends ActionHandler {
 
   def handle(targetId: UUID, action: SingleTargetAction): (GameState) => GameState = {
     targettedLens(targetId).modify {
@@ -37,7 +38,9 @@ object SingleTargetActionHandler extends ActionHandler {
 
 
   def crushingBlow(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-        val dmg = Math.max(1, (p.stats.strength * 2) + p.stats.dexterity - e.stats.vitality)
+        val sePlayer = sc.calculate(p)
+
+        val dmg = Math.max(1, (sePlayer.stats.strength * 2) + sePlayer.stats.dexterity - e.stats.vitality)
 
         val targetMsg = GameMessage(s"${p.name} jumps in the air and lands a crushing blow to ${e.name}!")
         val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
@@ -52,7 +55,9 @@ object SingleTargetActionHandler extends ActionHandler {
 
 
   def quickAttack(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-      val dmg = Math.max(1, (p.stats.dexterity * 2) - e.stats.vitality)
+      val sePlayer = sc.calculate(p)
+
+      val dmg = Math.max(1, (sePlayer.stats.dexterity * 2) - e.stats.vitality)
 
       val targetMsg = GameMessage(s"${p.name} uses Quick Attack!")
       val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
@@ -66,7 +71,9 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def tripleStrike(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(3, (1 + ((p.stats.dexterity * 3) / 2) - e.stats.vitality) * 3)
+    val sePlayer = sc.calculate(p)
+
+    val dmg = Math.max(3, (1 + ((sePlayer.stats.dexterity * 3) / 2) - e.stats.vitality) * 3)
 
     val targetMsg = GameMessage(s"${p.name} uses Triple Strike!")
     val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
@@ -80,7 +87,9 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def hamstring(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, (2 * p.stats.strength) - (e.stats.vitality / 2) - 4)
+    val sePlayer = sc.calculate(p)
+
+    val dmg = Math.max(1, (2 * sePlayer.stats.strength) - (e.stats.vitality / 2) - 4)
 
     val targetMsg = GameMessage(s"${p.name} uses Hamstring!")
     val dmgMsg = GameMessage(s"${e.name} slows down and takes $dmg damage.")
@@ -97,7 +106,9 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def stunningStrike(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, (2 * p.stats.strength) - e.stats.vitality - 2)
+    val sePlayer = sc.calculate(p)
+
+    val dmg = Math.max(1, (2 * sePlayer.stats.strength) - e.stats.vitality - 2)
 
     val targetMsg = GameMessage(s"${p.name} uses Stunning Strike!")
     val dmgMsg = GameMessage(s"${e.name} is stunned and takes $dmg damage!")
@@ -113,7 +124,9 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def counter(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, (p.stats.strength * 2) + e.stats.strength - e.stats.vitality)
+    val sePlayer = sc.calculate(p)
+
+    val dmg = Math.max(1, (sePlayer.stats.strength * 2) + e.stats.strength - e.stats.vitality)
 
     val targetMsg = GameMessage(s"${p.name} uses Counter!")
     val dmgMsg = GameMessage(s"${e.name} is countered and takes $dmg damage.")
@@ -127,7 +140,9 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def destruction(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, (p.stats.strength * 3) / 2)
+    val sePlayer = sc.calculate(p)
+
+    val dmg = Math.max(1, (sePlayer.stats.strength * 3) / 2)
 
     val targetMsg = GameMessage(s"${p.name} lands a destructive blow on ${e.name}!")
     val dmgMsg = GameMessage(s"${e.name}'s defense is broken and takes $dmg damage.")
@@ -146,7 +161,9 @@ object SingleTargetActionHandler extends ActionHandler {
   // Dex
 
   def assassinate(p: Player, e: Enemy, msgs: Seq[GameMessage]): (Player, Option[Enemy], Seq[GameMessage]) = {
-    val dmg = Math.max(p.stats.dexterity, e.stats.maxHp - e.stats.currentHp)
+    val sePlayer = sc.calculate(p)
+
+    val dmg = Math.max(sePlayer.stats.dexterity, e.stats.maxHp - e.stats.currentHp)
 
     val targetMsg = GameMessage(s"${p.name} uses Assassinate!")
     val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
@@ -160,7 +177,9 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def pain(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(p.stats.intellect / 2, e.stats.currentHp / 2)
+    val sePlayer = sc.calculate(p)
+
+    val dmg = Math.max(sePlayer.stats.intellect / 2, e.stats.currentHp / 2)
 
     val targetMsg = GameMessage(s"${p.name} uses Pain!")
     val dmgMsg = GameMessage(s"${e.name} convulses in pain and takes $dmg damage!")
@@ -174,7 +193,9 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def magicMissile(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, 2 + p.stats.intellect * 2)
+    val sePlayer = sc.calculate(p)
+
+    val dmg = Math.max(1, 2 + sePlayer.stats.intellect * 2)
 
     val targetMsg = GameMessage(s"${p.name} uses Magic Missile!")
     val dmgMsg = GameMessage(s"The missile strikes ${e.name} for $dmg damage!")
@@ -188,7 +209,9 @@ object SingleTargetActionHandler extends ActionHandler {
   }
 
   def drain(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, 1 + p.stats.intellect + (e.stats.maxHp / 5))
+    val sePlayer = sc.calculate(p)
+
+    val dmg = Math.max(1, 1 + sePlayer.stats.intellect + (e.stats.maxHp / 5))
 
     val targetMsg = GameMessage(s"${p.name} uses Drain!")
     val dmgMsg = GameMessage(s"${p.name} drains $dmg health from ${e.name}!")

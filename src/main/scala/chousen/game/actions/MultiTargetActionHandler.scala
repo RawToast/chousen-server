@@ -5,8 +5,9 @@ import java.util.UUID
 import chousen.Optics.{EnemyStats, HpLens}
 import chousen.api.data._
 import chousen.game.core.GameStateOptics._
+import chousen.game.status.StatusCalculator
 
-object MultiTargetActionHandler extends ActionHandler {
+class MultiTargetActionHandler(sc: StatusCalculator) extends ActionHandler {
 
   def handle(targetId: Set[UUID], action: MultiAction): (GameState) => GameState = (gs: GameState) => {
 
@@ -55,7 +56,9 @@ object MultiTargetActionHandler extends ActionHandler {
   }
 
   def fireball(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, (p.stats.intellect * 3) / 2)
+    val sePlayer = sc.calculate(p)
+
+    val dmg = Math.max(1, (sePlayer.stats.intellect * 3) / 2)
     val gameMessages = msgs :+ GameMessage(s"${e.name} is engulfed in flames and takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function
@@ -78,7 +81,9 @@ object MultiTargetActionHandler extends ActionHandler {
   }
 
   def shatter(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(p.stats.intellect, p.stats.intellect + p.stats.currentHp - e.stats.vitality)
+    val sePlayer = sc.calculate(p)
+
+    val dmg = Math.max(sePlayer.stats.intellect, p.stats.intellect + p.stats.currentHp - e.stats.vitality)
 
     val gameMessages = msgs :+ GameMessage(s"The world shakes around ${e.name} dealing $dmg damage!")
 
@@ -90,7 +95,9 @@ object MultiTargetActionHandler extends ActionHandler {
   }
 
   def groundStrike(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, 4 + p.stats.strength - e.stats.vitality)
+    val sePlayer = sc.calculate(p)
+
+    val dmg = Math.max(1, 4 + sePlayer.stats.strength - e.stats.vitality)
     val gameMessages = msgs :+ GameMessage(s"${e.name} takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function
@@ -102,7 +109,9 @@ object MultiTargetActionHandler extends ActionHandler {
   }
 
   def windStrike(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, (p.stats.dexterity * 2) + (p.stats.intellect / 2) - e.stats.vitality)
+    val sePlayer = sc.calculate(p)
+
+    val dmg = Math.max(1, (sePlayer.stats.dexterity * 2) + (p.stats.intellect / 2) - e.stats.vitality)
     val gameMessages = msgs :+ GameMessage(s"${e.name} takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function
@@ -113,7 +122,9 @@ object MultiTargetActionHandler extends ActionHandler {
   }
 
   def massDrain(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = Math.max(1, p.stats.intellect + (e.stats.maxHp / 12))
+    val sePlayer = sc.calculate(p)
+
+    val dmg = Math.max(1, sePlayer.stats.intellect + (e.stats.maxHp / 12))
 
     val dmgMsg = GameMessage(s"${p.name} drains $dmg health from ${e.name}!")
 

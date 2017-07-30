@@ -4,15 +4,17 @@ import java.util.UUID
 
 import chousen.Optics._
 import chousen.api.data.{GameMessage, GameState}
+import chousen.game.status.StatusCalculator
 
-object BasicAttack extends ActionHandler{
+class BasicAttack(sc: StatusCalculator) extends ActionHandler{
 
   def attack(targetId: UUID): (GameState) => GameState = targettedLens(targetId).modify {
     case (p, optE, msgs) =>
 
       optE match {
         case Some(e) =>
-          val dmg = Math.max(1, p.stats.strength + p.stats.dexterity - e.stats.vitality)
+          val sePlayer = sc.calculate(p)
+          val dmg = Math.max(1, sePlayer.stats.strength + sePlayer.stats.dexterity - e.stats.vitality)
 
           val targetMsg = GameMessage(s"${p.name} attacks ${e.name}.")
           val dmgMsg = GameMessage(s"${p.name}'s attack deals $dmg to ${e.name}!")

@@ -4,17 +4,20 @@ import java.util.UUID
 
 import chousen.api.data.{GameStateGenerator, _}
 import chousen.game.dungeon.SimpleDungeonBuilder
+import chousen.game.status.StatusCalculator
 import org.scalatest.WordSpec
 
 class GameStateManagerSpec extends WordSpec {
 
   "GameStateManager" when {
 
-    val gameStateManager = new GameStateManager()
+    val sc = new StatusCalculator()
+    val gameStateManager = new GameStateManager(sc)
     val dungeonBuilder = new SimpleDungeonBuilder()
     val gameStateCreator = new RandomGameStateCreator(dungeonBuilder)
     val gameState = GameStateGenerator.gameStateWithFastPlayer
     val startedGame: GameState = gameStateCreator.start(gameState)
+    val encOps = new EncounterOp(new StatusCalculator)
 
     "Accepting a command" which {
       "Is a basic attack" should {
@@ -30,7 +33,7 @@ class GameStateManagerSpec extends WordSpec {
 
         "the player is set back to active" in {
           assert(result.player.position > 100)
-          val active = EncounterOps.getActive((result.player,
+          val active = encOps.getActive((result.player,
             result.dungeon.currentEncounter.enemies, result.messages))
           assert(active.isLeft)
 
@@ -71,7 +74,7 @@ class GameStateManagerSpec extends WordSpec {
 
         "the player is set back to active" in {
           assert(result.player.position > 100)
-          val active = EncounterOps.getActive((result.player,
+          val active = encOps.getActive((result.player,
             result.dungeon.currentEncounter.enemies, result.messages))
           assert(active.isLeft)
 

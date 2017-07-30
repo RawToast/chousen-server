@@ -56,7 +56,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
   def strongManDeck: Seq[Card] = // 10
     usefulCards ++
-    massDrain.times(4) ++
+    haste.times(4) ++ might.times(4) ++ stoneSkin.times(4) ++ dexterity.times(4) ++
     quickStep.times(4) ++ destruction.times(4) ++
     groundStrike.times(4) ++ crushingBlow.times(4) ++ quickAttack.times(4) ++ elixirOfStrength.times(4) ++
       elixirOfDexterity.times(4) ++ elixirOfVitality.times(4) ++

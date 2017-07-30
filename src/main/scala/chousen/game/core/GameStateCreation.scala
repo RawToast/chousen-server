@@ -11,7 +11,7 @@ import chousen.game.dungeon.DungeonBuilder
 class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCreation {
 
   def create(name: String, uuid: UUID = UUID.randomUUID()): GameState = {
-    val seed = new scala.util.Random().nextInt(6)
+    val seed = 4 //new scala.util.Random().nextInt(6)
     val dungeonSeed = new scala.util.Random().nextInt(6)
     val dungeonSeed2 = new scala.util.Random().nextInt(6)
     val dungeonSeed3 = new scala.util.Random().nextInt(6)

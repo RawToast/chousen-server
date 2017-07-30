@@ -3,11 +3,15 @@ package chousen.game.actions
 import chousen.api.data._
 import chousen.game.core.RandomGameStateCreator
 import chousen.game.dungeon.SimpleDungeonBuilder
+import chousen.game.status.StatusCalculator
 import org.scalatest.WordSpec
 
 class SelfActionHandlerSpec extends WordSpec {
 
   "Self Targeting Action Handler" when {
+
+    val sc = new StatusCalculator
+    val selfActionHandler = new SelfActionHandler(sc)
 
     "Given a self targeting action" should {
       val gameState = GameStateGenerator.gameStateWithFastPlayer
@@ -16,7 +20,7 @@ class SelfActionHandlerSpec extends WordSpec {
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val startedGame: GameState = stateCreator.start(gameState)
 
-      val result = SelfActionHandler.handle(HealWounds)(startedGame)
+      val result = selfActionHandler.handle(HealWounds)(startedGame)
 
       lazy val numberOfNewMessages = result.messages.size - startedGame.messages.size
       lazy val latestMessages = result.messages.takeRight(numberOfNewMessages)
@@ -44,7 +48,7 @@ class SelfActionHandlerSpec extends WordSpec {
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val startedGame: GameState = stateCreator.start(gameState)
 
-      val result = SelfActionHandler.handle(Haste)(startedGame)
+      val result = selfActionHandler.handle(Haste)(startedGame)
 
       "State the action was used" in {
         assert(result.messages.size > startedGame.messages.size)
@@ -68,7 +72,7 @@ class SelfActionHandlerSpec extends WordSpec {
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val startedGame: GameState = stateCreator.start(gameState)
 
-      val result = SelfActionHandler.handle(PotionOfMight)(startedGame)
+      val result = selfActionHandler.handle(PotionOfMight)(startedGame)
 
       "State the action was used" in {
         assert(result.messages.size > startedGame.messages.size)
@@ -92,7 +96,7 @@ class SelfActionHandlerSpec extends WordSpec {
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val startedGame: GameState = stateCreator.start(gameState)
 
-      val result = SelfActionHandler.handle(PotionOfDexterity)(startedGame)
+      val result = selfActionHandler.handle(PotionOfDexterity)(startedGame)
 
       "State the action was used" in {
         assert(result.messages.size > startedGame.messages.size)
@@ -116,7 +120,7 @@ class SelfActionHandlerSpec extends WordSpec {
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val startedGame: GameState = stateCreator.start(gameState)
 
-      val result = SelfActionHandler.handle(PotionOfIntelligence)(startedGame)
+      val result = selfActionHandler.handle(PotionOfIntelligence)(startedGame)
 
       "State the action was used" in {
         assert(result.messages.size > startedGame.messages.size)
@@ -140,7 +144,7 @@ class SelfActionHandlerSpec extends WordSpec {
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val startedGame: GameState = stateCreator.start(gameState)
 
-      val result = SelfActionHandler.handle(PotionOfStoneSkin)(startedGame)
+      val result = selfActionHandler.handle(PotionOfStoneSkin)(startedGame)
 
       "State the action was used" in {
         assert(result.messages.size > startedGame.messages.size)

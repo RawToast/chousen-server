@@ -2,12 +2,12 @@ package chousen.game.actions
 
 import chousen.api.data._
 import chousen.Optics._
-import chousen.game.status.StatusBuilder
+import chousen.game.status.{StatusBuilder, StatusCalculator}
 import chousen.util.LensUtil
 import monocle.Lens
 
 
-object SelfActionHandler {
+class SelfActionHandler(sc: StatusCalculator) {
 
   def handle(action: SelfAction): (GameState) => GameState = {
     LensUtil.duoLens(PlayerLens, MessagesLens).modify{
@@ -34,7 +34,9 @@ object SelfActionHandler {
 
 
   def healWounds(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = {
-    val healAmount = 10 + (2 + p.stats.intellect) + (p.stats.maxHp / 10)
+    val sePlayer = sc.calculate(p)
+
+    val healAmount = 10 + (2 + sePlayer.stats.intellect) + (p.stats.maxHp / 10)
     val message = GameMessage(s"${p.name} uses Heal Wounds and recovers ${healAmount}HP!")
     val gameMessages = msgs :+ message
 
@@ -54,7 +56,7 @@ object SelfActionHandler {
   def elixirOfVitality(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = elixir(p, msgs, "Vitality", PlayerVitalityLens)
 
 
-  private def elixir(p: Player, msgs: Seq[GameMessage], stat: String, lens: Lens[Player, Int], amt: Int = 3) = {
+  private def elixir(p: Player, msgs: Seq[GameMessage], stat: String, lens: Lens[Player, Int], amt: Int = 2) = {
     val bonusStat = amt
     val message = GameMessage(s"${p.name} uses Elixir of $stat and gains $bonusStat $stat!")
     val gameMessages = msgs :+ message
@@ -67,7 +69,7 @@ object SelfActionHandler {
   }
 
   def rarePepe(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = {
-    val bonusStat = 2
+    val bonusStat = 1
     val message = GameMessage(s"${p.name} looks at a Rare Pepe and becomes stronger!")
     val gameMessages = msgs :+ message
 
@@ -76,15 +78,16 @@ object SelfActionHandler {
         val newMax = maxHp + 10
         (newMax, Math.min(newMax, hp + bonusStat), position - 100)
       }}.andThen(LensUtil.triLens(PlayerStrengthLens, PlayerDexterityLens, PlayerIntellectLens).modify {
-      case (s: Int, d: Int, i: Int) => (s + 1, d + 1, i + 1)
-    }).andThen(PlayerVitalityLens.modify(_ + 1))
+      case (s: Int, d: Int, i: Int) => (s + bonusStat, d + bonusStat, i + bonusStat)
+    }).andThen(PlayerVitalityLens.modify(_ + bonusStat))
     (lens.apply(p), gameMessages)
   }
 
   def quickStep(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = {
+    val sePlayer = sc.calculate(p)
     val message = GameMessage(s"${p.name} uses Quick Step!")
 
-    (PlayerPositionLens.modify(_ + 100 + p.stats.dexterity)(p), msgs :+ message)
+    (PlayerPositionLens.modify(_ + 100 + sePlayer.stats.dexterity)(p), msgs :+ message)
   }
 
   def haste(p: Player, msgs: Seq[GameMessage]) = {
@@ -100,7 +103,7 @@ object SelfActionHandler {
   def might(p: Player, msgs: Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} drinks a Potion of Might!")
 
-    val hasteStatus: Status = StatusBuilder.makeMight(4)
+    val hasteStatus: Status = StatusBuilder.makeMight(6)
 
     (PlayerStatusLens.modify(_ :+ hasteStatus)
       .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
@@ -109,7 +112,7 @@ object SelfActionHandler {
   def dexterity(p: Player, msgs: Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} drinks a Potion of Dexterity!")
 
-    val status: Status = StatusBuilder.makeDexterity(4)
+    val status: Status = StatusBuilder.makeDexterity(6)
 
     (PlayerStatusLens.modify(_ :+ status)
       .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
@@ -118,7 +121,7 @@ object SelfActionHandler {
   def stoneskin(p: Player, msgs: Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} drinks a Potion of Stone Skin!")
 
-    val status: Status = StatusBuilder.makeStoneSkin(4)
+    val status: Status = StatusBuilder.makeStoneSkin(6)
 
     (PlayerStatusLens.modify(_ :+ status)
       .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
@@ -127,7 +130,7 @@ object SelfActionHandler {
   def intelligence(p: Player, msgs: Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} drinks a Potion of Intelligence!")
 
-    val status: Status = StatusBuilder.makeSmart(4)
+    val status: Status = StatusBuilder.makeSmart(6)
 
     (PlayerStatusLens.modify(_ :+ status)
       .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
