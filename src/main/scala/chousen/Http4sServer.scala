@@ -4,6 +4,7 @@ import chousen.api.core.{GameAccess, Http4sMappedGameAccess}
 import chousen.api.data.GameState
 import chousen.game.core.{GameManager, GameStateManager, RandomGameStateCreator}
 import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
+import chousen.game.status.StatusCalculator
 import chousen.http4s.{AssetService, CrudService, FrontendService, InputService}
 import fs2.Task
 import org.http4s.Response
@@ -30,12 +31,13 @@ object Http4sServer extends StreamApp {
     val dungeonBuilder: DungeonBuilder = new SimpleDungeonBuilder()
 
     val gameCreator = new RandomGameStateCreator(dungeonBuilder)
-    val gameStateManager: GameManager[GameState] = new GameStateManager()
+    val statusCalculator = new StatusCalculator
+    val gameStateManager: GameManager[GameState] = new GameStateManager(statusCalculator)
 
 
-    val crudService = new CrudService(gameAccess, gameCreator)
-    val frontendService = new FrontendService(gameAccess)
-    val inputService = new InputService(gameAccess, gameStateManager)
+    val crudService = new CrudService(gameAccess, gameCreator, statusCalculator)
+    val frontendService = new FrontendService(gameAccess, statusCalculator)
+    val inputService = new InputService(gameAccess, gameStateManager, statusCalculator)
     val assetService = new AssetService()
 
 

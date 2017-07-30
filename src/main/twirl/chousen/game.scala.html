@@ -19,10 +19,10 @@
             <div id="characterSheet" class="row">
                 <div class="row" style="padding: 2px 0px">
                     <div class="col-xs-2 col-sm-2 col-md-2">@{gameState.player.name}</div>
-                    <div class="col-xs-2 col-sm-2 col-md-2"></div>
                     <div class="col-xs-2 col-sm-2 col-md-2">HP @{gameState.player.stats.currentHp}/@{gameState.player.stats.maxHp}</div>
                     <div class="col-xs-2 col-sm-2 col-md-2">CS: @{gameState.player.className}</div>
                     <div class="col-xs-2 col-sm-2 col-md-2">LV: @{gameState.player.experience.level}</div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">ST: @{gameState.player.status.map(_.effect).mkString(", ")}</div>
                     <div class="col-xs-2 col-sm-2 col-md-2">@{gameState.player.position}</div>
                 </div>
 

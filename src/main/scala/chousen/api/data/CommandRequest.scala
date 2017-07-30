@@ -53,6 +53,12 @@ case object GroundStrike extends MultiAction
 case object WindStrike extends MultiAction
 
 case object HealWounds extends SelfAction
+case object Haste extends SelfAction
+
+case object PotionOfMight extends SelfAction
+case object PotionOfDexterity extends SelfAction
+case object PotionOfIntelligence extends SelfAction
+case object PotionOfStoneSkin extends SelfAction
 
 case object ElixirOfStrength extends SelfAction
 case object ElixirOfDexterity extends SelfAction

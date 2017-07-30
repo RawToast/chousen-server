@@ -1,14 +1,15 @@
 package chousen.game.core
 
 import chousen.api.data._
+import chousen.game.status.StatusCalculator
 
 import scala.annotation.tailrec
 import scala.util.{Left, Right}
 
 
-object GameOps extends GameOps(EncounterOps)
+object GameOps extends GameOps(new EncounterOp(new StatusCalculator), new StatusCalculator)
 
-abstract class GameOps(encOps: EncounterOps) {
+abstract class GameOps(encOps: EncounterOps, statusCalculator: StatusCalculator) {
 
   final def updateUntilPlayerIsActive(ed: EncounterData): EncounterData =
     updateUntilPlayerIsActive(ed._1, ed._2, ed._3)
@@ -20,7 +21,7 @@ abstract class GameOps(encOps: EncounterOps) {
     encOps.getActive(next) match {
       case Left(_) => next
       case Right(_) =>
-        val (p, es, msgs) = EnemyTurnOps.takeTurn(next._1, next._2, next._3)
+        val (p, es, msgs) = EnemyTurnOps.takeTurn(next._1, next._2, next._3)(statusCalculator)
 
         updateUntilPlayerIsActive(p, es, msgs)
     }
@@ -46,12 +47,14 @@ abstract class GameOps(encOps: EncounterOps) {
 object EnemyTurnOps {
 
   // This method will use the enemy with the highest position
-  def takeTurn(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage]): (Player, Set[Enemy], Seq[GameMessage]) = {
+  def takeTurn(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage])(sc: StatusCalculator): (Player, Set[Enemy], Seq[GameMessage]) = {
+
+    val p = sc.calculate(player)
 
     val activeEnemy = enemies.maxBy(_.position)
 
     val atkPwr = 3 + activeEnemy.stats.strength + activeEnemy.stats.dexterity
-    val defPwr = player.stats.vitality
+    val defPwr = p.stats.vitality
     val dmg = Math.max(1, atkPwr - defPwr)
 
     val playerHp = PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.HpLens)
@@ -70,14 +73,16 @@ object EnemyTurnOps {
 }
 
 
-object EncounterOps extends EncounterOps {
+final class EncounterOp(sc: StatusCalculator) extends EncounterOps {
 
   @tailrec
   override def ensureActive(encounterData: EncounterData): EncounterData = {
     import chousen.Implicits._
 
     val (p, es, msgs) = encounterData
-    val (player, enemies) = p.copy(position = p.position + p.stats.speed) ->
+    val sePlayer = sc.calculate(p)
+
+    val (player, enemies) = p.copy(position = p.position + sePlayer.stats.speed) ->
       es.map(e => e.copy(position = e.position + e.stats.speed))
 
     val maxPosition = math.max(player.position, enemies.maxBy(_.position).position)
@@ -94,7 +99,7 @@ object EncounterOps extends EncounterOps {
       numWithMaxPosition match {
         case 1 => (player, enemies, msgs)
         case 2 if player.position == maxPosition =>
-          if (player.stats.speed != fastestEnemySpeed) ensureActive((player, enemies, msgs))
+          if (sePlayer.stats.speed != fastestEnemySpeed) ensureActive((player, enemies, msgs))
           else {
             val incEnemies: Set[Enemy] = enemies.map(e =>
               if (e ~= enemies.maxBy(_.position)) {
@@ -104,7 +109,7 @@ object EncounterOps extends EncounterOps {
             ensureActive(Tuple3(player, incEnemies, msgs))
           }
         case _ if player.position == maxPosition =>
-          if (player.stats.speed != fastestEnemySpeed) ensureActive((player, enemies, msgs))
+          if (sePlayer.stats.speed != fastestEnemySpeed) ensureActive((player, enemies, msgs))
           else {
             val fastestSpeeds = enemiesWithPosition.filter(_.stats.speed == fastestEnemySpeed)
 

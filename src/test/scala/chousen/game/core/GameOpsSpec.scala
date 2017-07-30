@@ -3,6 +3,7 @@ package chousen.game.core
 import java.util.UUID
 
 import chousen.api.data._
+import chousen.game.status.StatusCalculator
 import org.scalatest.WordSpec
 
 class GameOpsSpec extends WordSpec {
@@ -241,7 +242,8 @@ class GameOpsSpec extends WordSpec {
       }
 
       "result in the player being active" in {
-        assert(EncounterOps.getActive(next) == Left(nextPlayer))
+        val encOps = new EncounterOp(new StatusCalculator)
+        assert(encOps.getActive(next) == Left(nextPlayer))
       }
     }
 

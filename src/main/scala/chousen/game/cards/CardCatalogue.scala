@@ -56,7 +56,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
   def strongManDeck: Seq[Card] = // 10
     usefulCards ++
-    massDrain.times(4) ++
+    haste.times(4) ++ might.times(4) ++ stoneSkin.times(4) ++ dexterity.times(4) ++
     quickStep.times(4) ++ destruction.times(4) ++
     groundStrike.times(4) ++ crushingBlow.times(4) ++ quickAttack.times(4) ++ elixirOfStrength.times(4) ++
       elixirOfDexterity.times(4) ++ elixirOfVitality.times(4) ++
@@ -73,6 +73,11 @@ sealed trait CardBuilder {
 
 trait Potions extends CardBuilder {
   def healWounds: Card = mkCard("Heal Wounds", "Heals around 30HP", HealWounds)
+  def haste: Card = Card(UUID.randomUUID(), "Potion of Haste", "Temporarily increases player speed", Haste)
+  def might: Card = Card(UUID.randomUUID(), "Potion of Might", "Temporarily increases player strength", PotionOfMight)
+  def intelligence: Card = Card(UUID.randomUUID(), "Potion of Intelligence", "Temporarily increases player intelligence", PotionOfIntelligence)
+  def stoneSkin: Card = Card(UUID.randomUUID(), "Stone Skin", "Temporarily increases player defence", PotionOfStoneSkin)
+  def dexterity: Card = Card(UUID.randomUUID(), "Potion of Dexterity", "Temporarily increases player dexterity", PotionOfDexterity)
 }
 
 trait PermanentEffects extends CardBuilder {

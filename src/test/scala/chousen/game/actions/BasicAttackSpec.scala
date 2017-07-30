@@ -5,17 +5,19 @@ import java.util.UUID
 import chousen.api.data.{GameMessage, GameState, GameStateGenerator}
 import chousen.game.core.RandomGameStateCreator
 import chousen.game.dungeon.SimpleDungeonBuilder
+import chousen.game.status.StatusCalculator
 import org.scalatest.WordSpec
 
 class BasicAttackSpec extends WordSpec {
 
   "Basic Attack" when {
 
+    val basicAttack = new BasicAttack(new StatusCalculator)
     "Given a UUID that does not match any enemy" should {
 
       val initialState: GameState = GameStateGenerator.staticGameState
       val altUUID = UUID.fromString("0709daa1-5975-4f28-b0be-a676f87b70f0")
-      lazy val result = BasicAttack.attack(altUUID).apply(GameStateGenerator.staticGameState)
+      lazy val result = basicAttack.attack(altUUID).apply(GameStateGenerator.staticGameState)
 
       "Have no affect on the player" in {
         assert(result.player == initialState.player)
@@ -35,7 +37,7 @@ class BasicAttackSpec extends WordSpec {
       val startedGame: GameState = stateCreator.start(gameState)
 
       val target = GameStateGenerator.firstEnemy
-      val result = BasicAttack.attack(target.id)(startedGame)
+      val result = basicAttack.attack(target.id)(startedGame)
 
       "Lower the targeted enemies health" in {
         assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == target.id))

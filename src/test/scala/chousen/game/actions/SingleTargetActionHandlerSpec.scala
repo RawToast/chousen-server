@@ -5,12 +5,15 @@ import java.util.UUID
 import chousen.api.data._
 import chousen.game.core.RandomGameStateCreator
 import chousen.game.dungeon.SimpleDungeonBuilder
+import chousen.game.status.StatusCalculator
 import org.scalatest.WordSpec
 
 class SingleTargetActionHandlerSpec extends WordSpec {
 
   val dungeonBuilder = new SimpleDungeonBuilder()
   val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+  val sc = new StatusCalculator
+  val singleTargetActionHandler = new SingleTargetActionHandler(sc)
 
   "SingleTargetActionHandler" when {
 
@@ -20,7 +23,7 @@ class SingleTargetActionHandlerSpec extends WordSpec {
       val startedGame: GameState = stateCreator.start(initialState)
 
       val altUUID = UUID.fromString("0709daa1-5975-4f28-b0be-a676f87b70f0")
-      lazy val result = SingleTargetActionHandler.handle(altUUID, QuickAttack).apply(startedGame)
+      lazy val result = singleTargetActionHandler.handle(altUUID, QuickAttack).apply(startedGame)
 
       "Have no affect on the player" in {
         assert(result.player == startedGame.player)
@@ -36,7 +39,7 @@ class SingleTargetActionHandlerSpec extends WordSpec {
       val startedGame: GameState = stateCreator.start(gameState)
 
       val target = GameStateGenerator.firstEnemy
-      lazy val result = SingleTargetActionHandler.handle(target.id, QuickAttack).apply(startedGame)
+      lazy val result = singleTargetActionHandler.handle(target.id, QuickAttack).apply(startedGame)
 
       "Lower the targeted enemies health" in {
         assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == target.id))
@@ -123,7 +126,7 @@ class SingleTargetActionHandlerSpec extends WordSpec {
     val startedGame: GameState = stateCreator.start(gameState)
 
     val target = GameStateGenerator.firstEnemy
-    lazy val result = SingleTargetActionHandler.handle(target.id, action).apply(startedGame)
+    lazy val result = singleTargetActionHandler.handle(target.id, action).apply(startedGame)
     (startedGame, result, target)
   }
 

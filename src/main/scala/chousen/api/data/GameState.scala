@@ -13,7 +13,7 @@ case class CharStats(maxHp: Int,
                      speed: Int = 8)
 
 
-case class Player(name:String, className: String, stats: CharStats, experience: Experience, position: Int)
+case class Player(name:String, className: String, stats: CharStats, experience: Experience, position: Int, status: Seq[Status] = Seq.empty)
 
 case class Experience(current: Int=0, next: Int=3, level: Int=1)
 
@@ -31,9 +31,12 @@ sealed trait Encounterable
 
 case class Enemy(name: String, id: UUID, stats: CharStats, position: Int) extends Encounterable
 
-object Deck {
-  sealed trait Card {
-    val name: String
-    val description: String
-  }
-}
+case class Status(effect: StatusEffect, description: String, turns: Int, amount: Option[Int] = None)
+
+sealed trait StatusEffect
+
+case object Fast extends StatusEffect
+case object StoneSkin extends StatusEffect
+case object Might extends StatusEffect
+case object Dexterity extends StatusEffect
+case object Smart extends StatusEffect

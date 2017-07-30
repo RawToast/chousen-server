@@ -5,6 +5,7 @@ import java.util.UUID
 import chousen.api.core.GameAccess
 import chousen.api.data._
 import chousen.game.core.GameManager
+import chousen.game.status.StatusCalculator
 import fs2.Task
 import io.circe.Decoder
 import io.circe.generic.auto._
@@ -13,7 +14,7 @@ import org.http4s.circe._
 import org.http4s.dsl._
 import org.http4s.{HttpService, Request, Response}
 
-class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState]) {
+class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], sc: StatusCalculator) {
 
   private def getIds(uuid: String, cardUuid: String) =
     (UUID.fromString(uuid), UUID.fromString(cardUuid))
@@ -85,7 +86,8 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState]) 
         ar <- req.as(jsonOf[T])
         ng = f(card, ar, g)
         _ <- ga.storeGame(ng)
-        res <- Ok.apply(ng.asJson)
+        game = ng.copy(player = sc.calculate(ng.player))
+        res <- Ok.apply(game.asJson)
       } yield res
       case None => NotFound(g.asJson)
     }
@@ -99,7 +101,8 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState]) 
         ar <- req.as(jsonOf[T])
         ng = f(card, ar, g)
         _ <- ga.storeGame(ng)
-        res <- Ok.apply(ng.asJson)
+        game = ng.copy(player = sc.calculate(ng.player))
+        res <- Ok.apply(game.asJson)
       } yield res
       case None => NotFound(g.asJson)
     }
@@ -112,7 +115,8 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState]) 
         ar <- req.as(jsonOf[T])
         ng = f(ar, g)
         _ <- ga.storeGame(ng)
-        res <- Ok.apply(ng.asJson)
+        game = ng.copy(player = sc.calculate(ng.player))
+        res <- Ok.apply(game.asJson)
       } yield res
   }
 
