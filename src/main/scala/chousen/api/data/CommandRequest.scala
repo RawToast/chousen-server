@@ -33,24 +33,24 @@ case object StunningStrike extends SingleTargetAction
 case object Counter extends SingleTargetAction
 case object Destruction extends SingleTargetAction
 
-case object QuickAttack extends SingleTargetAction
-case object Assassinate extends SingleTargetAction
-case object TripleStrike extends SingleTargetAction
+//case object QuickAttack extends SingleTargetAction
+//case object Assassinate extends SingleTargetAction
+//case object TripleStrike extends SingleTargetAction
 
 
-case object Pain extends SingleTargetAction
-case object MagicMissile extends SingleTargetAction
-case object Drain extends SingleTargetAction
+//case object Pain extends SingleTargetAction
+//case object MagicMissile extends SingleTargetAction
+//case object Drain extends SingleTargetAction
 
 
-case object Fireball extends MultiAction
-case object StaticField extends MultiAction
-case object MassDrain extends MultiAction
-case object Shatter extends MultiAction
+//case object Fireball extends MultiAction
+//case object StaticField extends MultiAction
+//case object MassDrain extends MultiAction
+//case object Shatter extends MultiAction
 
 case object GroundStrike extends MultiAction
 
-case object WindStrike extends MultiAction
+//case object WindStrike extends MultiAction
 
 case object HealWounds extends SelfAction
 case object Haste extends SelfAction

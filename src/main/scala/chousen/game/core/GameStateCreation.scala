@@ -11,7 +11,7 @@ import chousen.game.dungeon.DungeonBuilder
 class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCreation {
 
   def create(name: String, uuid: UUID = UUID.randomUUID()): GameState = {
-    val seed = 4 //new scala.util.Random().nextInt(6)
+    val seed = new scala.util.Random().nextInt(2)
     val dungeonSeed = new scala.util.Random().nextInt(6)
     val dungeonSeed2 = new scala.util.Random().nextInt(6)
     val dungeonSeed3 = new scala.util.Random().nextInt(6)
@@ -21,22 +21,12 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
     val dungeon = dungeonBuilder.makeDungeon(dungeonSeed, dungeonSeed2, dungeonSeed3)
 
     val player = seed match {
-      case 0 => SetPlayerStats.apply(2, 0, 0, 1).compose(PlayerClassLens.set("Warrior"))(p)
-      case 1 => SetPlayerStats.apply(0, 3, 0, 0).compose(PlayerClassLens.set("Assassin"))(p)
-      case 2 => SetPlayerStats.apply(-1, 0, 4, 0).compose(PlayerClassLens.set("Wizard"))(p)
-      case 3 => SetPlayerStats.apply(0, 1, 1, 1).compose(PlayerClassLens.set("Jester"))(p)
-      case 4 => SetPlayerStats.apply(1, 1, 0, 1).compose(PlayerClassLens.set("Barbarian"))(p)
-      case _ => SetPlayerStats.apply(0, 0, 0, 2).compose(PlayerClassLens.set("Rogue"))(p)
+      case 0 => SetPlayerStats.apply(2, 0, 0, 1).compose(PlayerClassLens.set("Barbarian"))(p)
+      case 1 => SetPlayerStats.apply(1, 1, 0, 1).compose(PlayerClassLens.set("Gladiator"))(p)
+      case _ => SetPlayerStats.apply(0, 0, 0, 2).compose(PlayerClassLens.set("Warrior"))(p)
     }
 
-    val cards: Cards = seed match {
-      case 0 => CardManager.startGame(CardCatalogue.strengthDeck, CardCatalogue.passiveCards)
-      case 1 => CardManager.startGame(CardCatalogue.dexterityDeck, CardCatalogue.passiveCards)
-      case 2 => CardManager.startGame(CardCatalogue.magicDeck, CardCatalogue.passiveCards)
-      case 3 => CardManager.startGame(CardCatalogue.cheeseDeck, CardCatalogue.passiveCards)
-      case 4 => CardManager.startGame(CardCatalogue.strongManDeck, CardCatalogue.passiveCards)
-      case _ => CardManager.startGame(CardCatalogue.defaultDeck, CardCatalogue.passiveCards)
-    }
+    val cards: Cards = CardManager.startGame(CardCatalogue.defaultDeck, CardCatalogue.passiveCards)
 
     val msgs = Seq.empty[GameMessage]
 
