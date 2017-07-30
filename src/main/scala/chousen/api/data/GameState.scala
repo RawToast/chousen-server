@@ -31,14 +31,6 @@ sealed trait Encounterable
 
 case class Enemy(name: String, id: UUID, stats: CharStats, position: Int) extends Encounterable
 
-object Deck {
-  sealed trait Card {
-    val name: String
-    val description: String
-  }
-}
-
-
 case class Status(effect: StatusEffect, description: String, turns: Int, amount: Option[Int] = None)
 
 sealed trait StatusEffect

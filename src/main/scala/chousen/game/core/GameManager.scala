@@ -15,7 +15,7 @@ trait GameManager[A] {
   def useCard(card: Card, commandRequest: CommandRequest, game: A): A
 }
 
-class GameStateManager extends GameManager[GameState] {
+class GameStateManager extends GameManager[GameState] with TurnTransition {
 
   override def useCard(card: Card, commandRequest: CommandRequest, game: GameState): GameState = {
 
@@ -60,7 +60,13 @@ class GameStateManager extends GameManager[GameState] {
     newState
   }
 
-  override def transition(game: GameState, usedCard:Boolean = false): GameState = {
+
+
+
+}
+
+trait TurnTransition {
+  def transition(game: GameState, usedCard:Boolean = false): GameState = {
     val playerIsDead = game.player.stats.currentHp <= 0
     lazy val deathMessage = GameMessage(s"${game.player.name} dies.")
     lazy val winMessage = GameMessage(s"A winner is ${game.player.name}!")
@@ -94,9 +100,10 @@ class GameStateManager extends GameManager[GameState] {
     g.copy(cards = CardManager.drawCard(CardManager.drawCard(g.cards, drawLimit), drawLimit))
   }
 
-  def startEncounterMessage(enemies: Set[Enemy], player: Player): GameMessage = {
+
+
+  private def startEncounterMessage(enemies: Set[Enemy], player: Player): GameMessage = {
     if (enemies.size == 1) GameMessage(s"${player.name} is attacked by ${enemies.head.name}!")
     else GameMessage(s"${player.name} is attacked by: ${enemies.toList.map(_.name).mkString(", ")}!")
   }
-
 }

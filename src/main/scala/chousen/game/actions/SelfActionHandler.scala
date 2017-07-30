@@ -27,9 +27,9 @@ object SelfActionHandler {
       case QuickStep => quickStep
       case Haste => haste
       case PotionOfMight => might
-      case PotionOfDexterity => might
-      case PotionOfIntelligence => might
-      case PotionOfStoneSkin => might
+      case PotionOfDexterity => dexterity
+      case PotionOfIntelligence => intelligence
+      case PotionOfStoneSkin => stoneskin
     }
 
 
@@ -93,15 +93,43 @@ object SelfActionHandler {
     val hasteStatus: Status = StatusBuilder.makeHaste(4)
 
     (PlayerStatusLens.modify(_ :+ hasteStatus)
-      .andThen(PlayerSpeedLens.modify(_ + 4))(p), msgs :+ message)
+//      .andThen(PlayerSpeedLens.modify(_ + 4))
+      .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
   }
 
   def might(p: Player, msgs: Seq[GameMessage]) = {
-    val message = GameMessage(s"${p.name} uses Potion of Might!")
+    val message = GameMessage(s"${p.name} drinks a Potion of Might!")
 
     val hasteStatus: Status = StatusBuilder.makeMight(4)
 
     (PlayerStatusLens.modify(_ :+ hasteStatus)
-      .andThen(PlayerSpeedLens.modify(_ + 4))(p), msgs :+ message)
+      .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
+  }
+
+  def dexterity(p: Player, msgs: Seq[GameMessage]) = {
+    val message = GameMessage(s"${p.name} drinks a Potion of Dexterity!")
+
+    val status: Status = StatusBuilder.makeDexterity(4)
+
+    (PlayerStatusLens.modify(_ :+ status)
+      .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
+  }
+
+  def stoneskin(p: Player, msgs: Seq[GameMessage]) = {
+    val message = GameMessage(s"${p.name} drinks a Potion of Stone Skin!")
+
+    val status: Status = StatusBuilder.makeStoneSkin(4)
+
+    (PlayerStatusLens.modify(_ :+ status)
+      .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
+  }
+
+  def intelligence(p: Player, msgs: Seq[GameMessage]) = {
+    val message = GameMessage(s"${p.name} drinks a Potion of Intelligence!")
+
+    val status: Status = StatusBuilder.makeSmart(4)
+
+    (PlayerStatusLens.modify(_ :+ status)
+      .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
   }
 }

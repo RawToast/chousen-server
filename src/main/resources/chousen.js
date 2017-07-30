@@ -52,7 +52,16 @@ function registerCommandButton() {
         var uri = $(this).attr("uri");
         var action = $(this).attr("action");
 
-        sendMessage(uri, action);
+        jQuery.ajax ({
+            url: uri,
+            type: "POST",
+            data: JSON.stringify({ targetId: id, action: action }),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function(){
+                window.location.replace(window.location.href)
+            }
+        });
     });
 }
 
