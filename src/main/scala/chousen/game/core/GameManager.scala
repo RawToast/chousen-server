@@ -16,8 +16,8 @@ trait GameManager[A] {
 class GameStateManager(damageCalculator: DamageCalculator) extends GameManager[GameState] with TurnTransition {
 
   val basicAttack = new BasicAttack(damageCalculator)
-  val singleTargetActionHandler = new SingleTargetActionHandler(damageCalculator.sc)
-  val multiTargetActionHandler = new MultiTargetActionHandler(damageCalculator.sc)
+  val singleTargetActionHandler = new SingleTargetActionHandler(damageCalculator)
+  val multiTargetActionHandler = new MultiTargetActionHandler(damageCalculator)
   val selfActionHandler = new SelfActionHandler(damageCalculator.sc)
 
   override def useCard(card: Card, commandRequest: CommandRequest, game: GameState): GameState = {

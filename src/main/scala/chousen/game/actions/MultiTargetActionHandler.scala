@@ -4,9 +4,8 @@ import java.util.UUID
 
 import chousen.api.data._
 import chousen.game.core.GameStateOptics._
-import chousen.game.status.StatusCalculator
 
-class MultiTargetActionHandler(sc: StatusCalculator) extends ActionHandler {
+class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
   def handle(targetId: Set[UUID], action: MultiAction): (GameState) => GameState = (gs: GameState) => {
 
@@ -46,9 +45,8 @@ class MultiTargetActionHandler(sc: StatusCalculator) extends ActionHandler {
   }
 
   def groundStrike(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val sePlayer = sc.calculate(p)
+    val dmg = dc.calculatePlayerDamage(p, e, Multipliers.lowStrengthSkill)
 
-    val dmg = Math.max(1, 4 + sePlayer.stats.strength - e.stats.vitality)
     val gameMessages = msgs :+ GameMessage(s"${e.name} takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function
