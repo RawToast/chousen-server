@@ -13,7 +13,8 @@ class SingleTargetActionHandlerSpec extends WordSpec {
   val dungeonBuilder = new SimpleDungeonBuilder()
   val stateCreator = new RandomGameStateCreator(dungeonBuilder)
   val sc = new StatusCalculator
-  val singleTargetActionHandler = new SingleTargetActionHandler(sc)
+  val dc = new DamageCalculator(sc)
+  val singleTargetActionHandler = new SingleTargetActionHandler(dc)
 
   "SingleTargetActionHandler" when {
 
@@ -132,7 +133,7 @@ class SingleTargetActionHandlerSpec extends WordSpec {
   }
 
 
-  def getFirstEnemyHp(result: GameState) =
+  private def getFirstEnemyHp(result: GameState) =
     result.dungeon.currentEncounter.enemies
       .find(_.id == GameStateGenerator.firstEnemy.id)
       .map(_.stats.currentHp).getOrElse(404)

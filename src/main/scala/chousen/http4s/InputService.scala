@@ -31,6 +31,13 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
           basicRequest[AttackRequest](req, g)(gsm.takeCommand)
         }
 
+      case req@POST -> Root / "game" / uuid / "block" =>
+        val id = UUID.fromString(uuid)
+
+        ga.withGame(id) { g =>
+          basicRequest[BlockRequest](req, g)(gsm.takeCommand)
+        }
+
       case req@POST -> Root / "game" / uuid / "single" / cardUuid =>
         implicit val enumDecoder = deriveEnumerationDecoder[SingleTargetAction]
 

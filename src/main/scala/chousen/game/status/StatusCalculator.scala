@@ -20,15 +20,18 @@ class StatusCalculator {
   }
 
   private def foldStatus(p: Player, s: Status): Player = {
-    val func = s.effect match {
+    val func: (Player, Status) => Player = s.effect match {
       case Fast => fast
       case StoneSkin => stoneskin
       case Might => might
       case Dexterity => dexterity
       case Smart => smart
+      case Block => nop
     }
     func(p, s)
   }
+
+  private def nop = (p: Player, _: Status) => p
 
   private def fast = (p: Player, s: Status) =>
     doSmt(PlayerSpeedLens)(i => i + s.amount.getOrElse(0))(p)

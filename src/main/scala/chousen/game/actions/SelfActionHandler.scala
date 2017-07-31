@@ -103,7 +103,7 @@ class SelfActionHandler(sc: StatusCalculator) {
   def might(p: Player, msgs: Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} drinks a Potion of Might!")
 
-    val hasteStatus: Status = StatusBuilder.makeMight(6)
+    val hasteStatus: Status = StatusBuilder.makeMight(8)
 
     (PlayerStatusLens.modify(_ :+ hasteStatus)
       .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
@@ -112,7 +112,7 @@ class SelfActionHandler(sc: StatusCalculator) {
   def dexterity(p: Player, msgs: Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} drinks a Potion of Dexterity!")
 
-    val status: Status = StatusBuilder.makeDexterity(6)
+    val status: Status = StatusBuilder.makeDexterity(8)
 
     (PlayerStatusLens.modify(_ :+ status)
       .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
@@ -121,7 +121,7 @@ class SelfActionHandler(sc: StatusCalculator) {
   def stoneskin(p: Player, msgs: Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} drinks a Potion of Stone Skin!")
 
-    val status: Status = StatusBuilder.makeStoneSkin(6)
+    val status: Status = StatusBuilder.makeStoneSkin(8)
 
     (PlayerStatusLens.modify(_ :+ status)
       .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
@@ -130,7 +130,7 @@ class SelfActionHandler(sc: StatusCalculator) {
   def intelligence(p: Player, msgs: Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} drinks a Potion of Intelligence!")
 
-    val status: Status = StatusBuilder.makeSmart(6)
+    val status: Status = StatusBuilder.makeSmart(8)
 
     (PlayerStatusLens.modify(_ :+ status)
       .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)

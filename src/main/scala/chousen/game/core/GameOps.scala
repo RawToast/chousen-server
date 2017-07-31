@@ -1,15 +1,16 @@
 package chousen.game.core
 
 import chousen.api.data._
+import chousen.game.actions.DamageCalculator
 import chousen.game.status.StatusCalculator
 
 import scala.annotation.tailrec
 import scala.util.{Left, Right}
 
 
-object GameOps extends GameOps(new EncounterOp(new StatusCalculator), new StatusCalculator)
+object GameOps extends GameOps(new EncounterOp(new StatusCalculator), new DamageCalculator(new StatusCalculator))
 
-abstract class GameOps(encOps: EncounterOps, statusCalculator: StatusCalculator) {
+abstract class GameOps(encOps: EncounterOps, damageCalculator: DamageCalculator) {
 
   final def updateUntilPlayerIsActive(ed: EncounterData): EncounterData =
     updateUntilPlayerIsActive(ed._1, ed._2, ed._3)
@@ -21,7 +22,7 @@ abstract class GameOps(encOps: EncounterOps, statusCalculator: StatusCalculator)
     encOps.getActive(next) match {
       case Left(_) => next
       case Right(_) =>
-        val (p, es, msgs) = EnemyTurnOps.takeTurn(next._1, next._2, next._3)(statusCalculator)
+        val (p, es, msgs) = EnemyTurnOps.takeTurn(next._1, next._2, next._3)(damageCalculator)
 
         updateUntilPlayerIsActive(p, es, msgs)
     }
@@ -47,15 +48,11 @@ abstract class GameOps(encOps: EncounterOps, statusCalculator: StatusCalculator)
 object EnemyTurnOps {
 
   // This method will use the enemy with the highest position
-  def takeTurn(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage])(sc: StatusCalculator): (Player, Set[Enemy], Seq[GameMessage]) = {
-
-    val p = sc.calculate(player)
+  def takeTurn(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage])(dc: DamageCalculator): (Player, Set[Enemy], Seq[GameMessage]) = {
 
     val activeEnemy = enemies.maxBy(_.position)
+    val dmg = dc.calculateEnemyDamage(activeEnemy, player)
 
-    val atkPwr = 3 + activeEnemy.stats.strength + activeEnemy.stats.dexterity
-    val defPwr = p.stats.vitality
-    val dmg = Math.max(1, atkPwr - defPwr)
 
     val playerHp = PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.HpLens)
     val hpLens: (Player) => Player = playerHp.modify(hp => hp - dmg)

@@ -6,6 +6,8 @@ sealed trait CommandRequest
 
 case class AttackRequest(targetId: UUID) extends CommandRequest
 
+case class BlockRequest() extends CommandRequest
+
 case class SelfInflictingActionRequest(action: SelfAction) extends CommandRequest
 
 case class SingleTargetActionRequest(targetId: UUID, action: SingleTargetAction) extends CommandRequest
@@ -66,6 +68,7 @@ case object ElixirOfIntelligence extends SelfAction
 case object ElixirOfVitality extends SelfAction
 case object RarePepe extends SelfAction
 case object QuickStep extends SelfAction
+
 
 case object Rummage extends CardAction
 case object Miracle extends CardAction

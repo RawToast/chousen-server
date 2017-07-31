@@ -2,6 +2,7 @@ package chousen.http4s
 
 import chousen.api.core.{GameAccess, Http4sMappedGameAccess}
 import chousen.api.data.{AttackRequest, GameState}
+import chousen.game.actions.DamageCalculator
 import chousen.game.core.{GameManager, GameStateManager, RandomGameStateCreator}
 import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
 import chousen.game.status.StatusCalculator
@@ -23,7 +24,8 @@ class InputServiceSpec extends WordSpec {
     val gameAccess: GameAccess[Task, Response] = new Http4sMappedGameAccess(gameMap)
 
     val statusCalculator = new StatusCalculator
-    val gameStateManager: GameManager[GameState] = new GameStateManager(statusCalculator)
+    val damageCalculator = new DamageCalculator(statusCalculator)
+    val gameStateManager: GameManager[GameState] = new GameStateManager(damageCalculator)
 
     val service = new InputService(gameAccess, gameStateManager, statusCalculator)
 

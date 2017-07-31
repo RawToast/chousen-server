@@ -3,7 +3,6 @@ package chousen.game.core
 import chousen.api.data._
 import chousen.game.actions.{MultiTargetActionHandler, SelfActionHandler, SingleTargetActionHandler, _}
 import chousen.game.cards.CardManager
-import chousen.game.status.StatusCalculator
 
 trait GameManager[A] {
 
@@ -14,18 +13,20 @@ trait GameManager[A] {
   def useCard(card: Card, commandRequest: CommandRequest, game: A): A
 }
 
-class GameStateManager(sc: StatusCalculator) extends GameManager[GameState] with TurnTransition {
+class GameStateManager(damageCalculator: DamageCalculator) extends GameManager[GameState] with TurnTransition {
 
-  val basicAttack = new BasicAttack(sc)
-  val singleTargetActionHandler = new SingleTargetActionHandler(sc)
-  val multiTargetActionHandler = new MultiTargetActionHandler(sc)
-  val selfActionHandler = new SelfActionHandler(sc)
+  val basicAttack = new BasicAttack(damageCalculator)
+  val blockHandler = new BlockActionHandler()
+  val singleTargetActionHandler = new SingleTargetActionHandler(damageCalculator)
+  val multiTargetActionHandler = new MultiTargetActionHandler(damageCalculator)
+  val selfActionHandler = new SelfActionHandler(damageCalculator.sc)
 
   override def useCard(card: Card, commandRequest: CommandRequest, game: GameState): GameState = {
 
     CardManager.playCard(card) { (c: Card) =>
       if (commandRequest match {
         case AttackRequest(_) => false
+        case BlockRequest() => false
         case SelfInflictingActionRequest(action) => c.action == action
         case SingleTargetActionRequest(_, action) => c.action == action
         case MultiTargetActionRequest(_, action) => c.action == action
@@ -40,6 +41,9 @@ class GameStateManager(sc: StatusCalculator) extends GameManager[GameState] with
     val newState = command match {
       case AttackRequest(targetId) =>
         val newState = GameTurnLoop.takeTurn(game, basicAttack.attack(targetId))
+        transition(newState)
+      case BlockRequest() =>
+        val newState = GameTurnLoop.takeTurn(game, blockHandler.block())
         transition(newState)
       case SelfInflictingActionRequest(a) =>
         val ns = GameTurnLoop.takeTurn(game,

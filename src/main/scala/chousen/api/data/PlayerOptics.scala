@@ -52,6 +52,8 @@ object EnemyOptics extends EnemyOptics
 trait EnemyOptics {
   val EnemyStats: Lens[Enemy, CharStats] = GenLens[Enemy](_.stats)
   val EnemyPosition: Lens[Enemy, Int] = GenLens[Enemy](_.position)
+
+  val EnemyHpLens: Lens[Enemy, Int] = GenLens[Enemy](_.stats.currentHp)
 }
 
 trait CharacterOptics extends PlayerOptics with CharStatsOptics with EnemyOptics

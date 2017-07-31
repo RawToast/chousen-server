@@ -4,10 +4,9 @@ import java.util.UUID
 
 import chousen.Optics._
 import chousen.api.data._
-import chousen.game.status.StatusCalculator
 import chousen.util.LensUtil
 
-class SingleTargetActionHandler(sc: StatusCalculator) extends ActionHandler {
+class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends ActionHandler {
 
   def handle(targetId: UUID, action: SingleTargetAction): (GameState) => GameState = {
     targettedLens(targetId).modify {
@@ -30,14 +29,14 @@ class SingleTargetActionHandler(sc: StatusCalculator) extends ActionHandler {
 
 
   def crushingBlow(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-        val sePlayer = sc.calculate(p)
+    import chousen.game.actions.Multipliers._
 
-        val dmg = Math.max(1, (sePlayer.stats.strength * 2) + sePlayer.stats.dexterity - e.stats.vitality)
+        val dmg = damageCalculator.calculatePlayerDamage(p, e,
+          builder.strMulti(highMulti).dexMulti(medMulti).m)
 
         val targetMsg = GameMessage(s"${p.name} jumps in the air and lands a crushing blow to ${e.name}!")
         val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
 
-        // This should be replaced by a generic attack/damage function
         val newEnemy = EnemyStats.composeLens(HpLens)
           .modify(hp => hp - dmg)(e)
         val gameMessages = msgs :+ targetMsg :+ dmgMsg
@@ -46,14 +45,11 @@ class SingleTargetActionHandler(sc: StatusCalculator) extends ActionHandler {
   }
 
   def hamstring(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val sePlayer = sc.calculate(p)
-
-    val dmg = Math.max(1, (2 * sePlayer.stats.strength) - (e.stats.vitality / 2) - 4)
+    val dmg = damageCalculator.calculatePlayerDamage(p, e, Multipliers.lowStrengthSkill)
 
     val targetMsg = GameMessage(s"${p.name} uses Hamstring!")
     val dmgMsg = GameMessage(s"${e.name} slows down and takes $dmg damage.")
 
-    // This should be replaced by a generic attack/damage function
     val newEnemy = EnemyOptics.EnemyStats.composeLens(CharStatsOptics.HpLens)
         .modify(hp => hp - dmg).
       andThen(EnemyOptics.EnemyStats.composeLens(CharStatsOptics.SpeedLens)
@@ -65,14 +61,11 @@ class SingleTargetActionHandler(sc: StatusCalculator) extends ActionHandler {
   }
 
   def stunningStrike(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val sePlayer = sc.calculate(p)
-
-    val dmg = Math.max(1, (2 * sePlayer.stats.strength) - e.stats.vitality - 2)
+    val dmg = damageCalculator.calculatePlayerDamage(p, e, Multipliers.strengthSkill)
 
     val targetMsg = GameMessage(s"${p.name} uses Stunning Strike!")
     val dmgMsg = GameMessage(s"${e.name} is stunned and takes $dmg damage!")
 
-    // This should be replaced by a generic attack/damage function
     val newEnemy = EnemyStats.composeLens(HpLens)
         .modify(hp => hp - dmg).
       andThen(EnemyPosition
@@ -83,9 +76,9 @@ class SingleTargetActionHandler(sc: StatusCalculator) extends ActionHandler {
   }
 
   def counter(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val sePlayer = sc.calculate(p)
-
-    val dmg = Math.max(1, (sePlayer.stats.strength * 2) + e.stats.strength - e.stats.vitality)
+    //TODO use status effected enemy strength
+    val dmg = damageCalculator.calculatePlayerDamage(p, e, Multipliers.strengthSkill) + e.stats.strength
+    //val dmg = Math.max(1, (sePlayer.stats.strength * 2) + e.stats.strength - e.stats.vitality)
 
     val targetMsg = GameMessage(s"${p.name} uses Counter!")
     val dmgMsg = GameMessage(s"${e.name} is countered and takes $dmg damage.")
@@ -99,14 +92,11 @@ class SingleTargetActionHandler(sc: StatusCalculator) extends ActionHandler {
   }
 
   def destruction(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val sePlayer = sc.calculate(p)
-
-    val dmg = Math.max(1, (sePlayer.stats.strength * 3) / 2)
+    val dmg = damageCalculator.calculatePlayerDamage(p, e, Multipliers.lowStrengthSkill)
 
     val targetMsg = GameMessage(s"${p.name} lands a destructive blow on ${e.name}!")
     val dmgMsg = GameMessage(s"${e.name}'s defense is broken and takes $dmg damage.")
 
-    // This should be replaced by a generic attack/damage function
     val newEnemy = LensUtil.duoLens(EnemyStats.composeLens(HpLens), EnemyStats.composeLens(VitalityLens))
         .modify{case (hp, vit) => hp - dmg -> Math.max(1, vit - (p.stats.strength / 2)) }
           .apply(e)

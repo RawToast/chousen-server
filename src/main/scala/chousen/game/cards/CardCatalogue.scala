@@ -10,21 +10,23 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
   def defaultDeck: Seq[Card] = // 15
       Seq(healWounds, healWounds, healWounds, healWounds,
         rarePepe, rarePepe, rarePepe, rarePepe,
+
         might, might, might, might,
         stoneSkin, stoneSkin, stoneSkin, stoneSkin,
         haste, haste, haste, haste,
         elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
-        elixirOfVitality, elixirOfVitality, elixirOfVitality, elixirOfVitality,
+        elixirOfVitality, elixirOfVitality,
+
+        groundStrike, groundStrike, groundStrike, groundStrike,
 
         crushingBlow, crushingBlow, crushingBlow, crushingBlow,
-        hamstring, hamstring, hamstring, hamstring,
-        stunningStrike, stunningStrike, stunningStrike, stunningStrike,
-        groundStrike, groundStrike, groundStrike, groundStrike,
+        hamstring, hamstring,
+        stunningStrike, stunningStrike,
         counter, counter, counter, counter,
         destruction, destruction, destruction, destruction,
 
         rummage, rummage, rummage, rummage,
-        replace, replace, replace, replace,
+        replace, replace,
         restore, restore,
         miracle, miracle
       )

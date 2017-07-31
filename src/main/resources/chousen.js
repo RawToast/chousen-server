@@ -1,5 +1,6 @@
 $(document).ready(function(){
     registerAttackButtton();
+    registerBlockButtton();
     registerMultiButtons();
     registerCommandButton();
     registerSelfButtons();
@@ -17,6 +18,18 @@ function registerAttackButtton() {
 
 
         $.post(uri, JSON.stringify({ targetId: id }), function(result) {
+            window.location.replace(window.location.href)
+        });
+    });
+}
+
+function registerBlockButtton() {
+    $('.btn-blk').click(function(evt) {
+        evt.preventDefault();
+
+        var uri = $(this).attr("uri");
+
+        $.post(uri, JSON.stringify({}), function(result) {
             window.location.replace(window.location.href)
         });
     });

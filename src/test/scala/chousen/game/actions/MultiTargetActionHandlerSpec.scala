@@ -14,7 +14,8 @@ class MultiTargetActionHandlerSpec extends WordSpec {
     val dungeonBuilder = new SimpleDungeonBuilder()
     val stateCreator = new RandomGameStateCreator(dungeonBuilder)
     val sc = new StatusCalculator
-    val multiTargetActionHandler = new MultiTargetActionHandler(sc)
+    val damageCalculator = new DamageCalculator(sc)
+    val multiTargetActionHandler = new MultiTargetActionHandler(damageCalculator)
 
     "Given an Action and an UUID that does not match any enemy" should {
 
