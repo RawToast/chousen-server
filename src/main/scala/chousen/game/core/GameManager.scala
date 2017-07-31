@@ -16,6 +16,7 @@ trait GameManager[A] {
 class GameStateManager(damageCalculator: DamageCalculator) extends GameManager[GameState] with TurnTransition {
 
   val basicAttack = new BasicAttack(damageCalculator)
+  val blockHandler = new BlockActionHandler()
   val singleTargetActionHandler = new SingleTargetActionHandler(damageCalculator)
   val multiTargetActionHandler = new MultiTargetActionHandler(damageCalculator)
   val selfActionHandler = new SelfActionHandler(damageCalculator.sc)
@@ -25,6 +26,7 @@ class GameStateManager(damageCalculator: DamageCalculator) extends GameManager[G
     CardManager.playCard(card) { (c: Card) =>
       if (commandRequest match {
         case AttackRequest(_) => false
+        case BlockRequest() => false
         case SelfInflictingActionRequest(action) => c.action == action
         case SingleTargetActionRequest(_, action) => c.action == action
         case MultiTargetActionRequest(_, action) => c.action == action
@@ -39,6 +41,9 @@ class GameStateManager(damageCalculator: DamageCalculator) extends GameManager[G
     val newState = command match {
       case AttackRequest(targetId) =>
         val newState = GameTurnLoop.takeTurn(game, basicAttack.attack(targetId))
+        transition(newState)
+      case BlockRequest() =>
+        val newState = GameTurnLoop.takeTurn(game, blockHandler.block())
         transition(newState)
       case SelfInflictingActionRequest(a) =>
         val ns = GameTurnLoop.takeTurn(game,

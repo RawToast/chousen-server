@@ -38,5 +38,6 @@ sealed trait StatusEffect
 case object Fast extends StatusEffect
 case object StoneSkin extends StatusEffect
 case object Might extends StatusEffect
+case object Block extends StatusEffect
 case object Dexterity extends StatusEffect
 case object Smart extends StatusEffect

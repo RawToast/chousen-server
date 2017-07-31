@@ -3,7 +3,7 @@ package chousen.game.actions
 import java.util.UUID
 
 import chousen.Optics._
-import chousen.api.data.{GameMessage, GameState}
+import chousen.api.data.{Block, GameMessage, GameState, Status}
 
 class BasicAttack(damageCalculator: DamageCalculator) extends ActionHandler{
 
@@ -26,4 +26,17 @@ class BasicAttack(damageCalculator: DamageCalculator) extends ActionHandler{
         case None => (p, optE, msgs)
       }
   }.andThen(handleDead)
+}
+
+class BlockActionHandler() extends ActionHandler{
+
+  def block(): (GameState) => GameState = { gs =>
+    val statusLens = PlayerLens.composeLens(PlayerStatusLens)
+    val positionLens = PlayerLens.composeLens(PlayerPositionLens)
+
+    statusLens.modify(_ :+ Status(Block, "Block attacks", 0))
+      .andThen(positionLens.modify(_-100))
+          .andThen(MessagesLens.modify(_ :+ GameMessage(s"${gs.player.name} blocks")))
+        .andThen(handleDead)(gs)
+}
 }

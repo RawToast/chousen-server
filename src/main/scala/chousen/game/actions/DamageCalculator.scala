@@ -26,15 +26,23 @@ class DamageCalculator(val sc: StatusCalculator) {
 
   private def calcDamage(attacker: Participant, defender: Participant, m: Multipliers): Int = {
     val atkStatusEffects = attacker.status.map(_.effect)
+    val defStatusEffects = defender.status.map(_.effect)
+
     val mightDamage = if (atkStatusEffects.contains(Might)) defender.stats.maxHp / 10 else 0
+    val stoneSkin = if (defStatusEffects.contains(StoneSkin)) 3  else 0
+    val blockEffect = if (defStatusEffects.contains(Block)) 0.5 else 1
 
     val atkStr = m.str(attacker.stats.strength)
     val atkDex = m.dex(attacker.stats.dexterity)
 
-    val min = atkDex / 2
-    val max = atkStr + (atkDex / 2) - defender.stats.vitality
+    implicit class BlockEffect(i:Int) {
+      def block: Int = {i * blockEffect}.toInt
+    }
 
-    val dmg: Int = Math.max(min, max) + mightDamage
+    val min = Math.max(1, (atkDex / 2) - stoneSkin).block
+    val max:Int = ((atkStr + (atkDex / 2) + mightDamage) - defender.stats.vitality).block
+
+    val dmg: Int = Math.max(min, max)
 
     dmg
   }
