@@ -12,7 +12,7 @@ class BasicAttackSpec extends WordSpec {
 
   "Basic Attack" when {
 
-    val basicAttack = new BasicAttack(new StatusCalculator)
+    val basicAttack = new BasicAttack(new DamageCalculator(new StatusCalculator))
     "Given a UUID that does not match any enemy" should {
 
       val initialState: GameState = GameStateGenerator.staticGameState

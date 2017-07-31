@@ -3,7 +3,6 @@ package chousen.game.core
 import chousen.api.data._
 import chousen.game.actions.{MultiTargetActionHandler, SelfActionHandler, SingleTargetActionHandler, _}
 import chousen.game.cards.CardManager
-import chousen.game.status.StatusCalculator
 
 trait GameManager[A] {
 
@@ -14,12 +13,12 @@ trait GameManager[A] {
   def useCard(card: Card, commandRequest: CommandRequest, game: A): A
 }
 
-class GameStateManager(sc: StatusCalculator) extends GameManager[GameState] with TurnTransition {
+class GameStateManager(damageCalculator: DamageCalculator) extends GameManager[GameState] with TurnTransition {
 
-  val basicAttack = new BasicAttack(sc)
-  val singleTargetActionHandler = new SingleTargetActionHandler(sc)
-  val multiTargetActionHandler = new MultiTargetActionHandler(sc)
-  val selfActionHandler = new SelfActionHandler(sc)
+  val basicAttack = new BasicAttack(damageCalculator)
+  val singleTargetActionHandler = new SingleTargetActionHandler(damageCalculator.sc)
+  val multiTargetActionHandler = new MultiTargetActionHandler(damageCalculator.sc)
+  val selfActionHandler = new SelfActionHandler(damageCalculator.sc)
 
   override def useCard(card: Card, commandRequest: CommandRequest, game: GameState): GameState = {
 

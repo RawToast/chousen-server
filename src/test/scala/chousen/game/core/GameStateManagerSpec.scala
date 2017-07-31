@@ -3,6 +3,7 @@ package chousen.game.core
 import java.util.UUID
 
 import chousen.api.data.{GameStateGenerator, _}
+import chousen.game.actions.DamageCalculator
 import chousen.game.dungeon.SimpleDungeonBuilder
 import chousen.game.status.StatusCalculator
 import org.scalatest.WordSpec
@@ -12,7 +13,8 @@ class GameStateManagerSpec extends WordSpec {
   "GameStateManager" when {
 
     val sc = new StatusCalculator()
-    val gameStateManager = new GameStateManager(sc)
+    val damageCalculator = new DamageCalculator(sc)
+    val gameStateManager = new GameStateManager(damageCalculator)
     val dungeonBuilder = new SimpleDungeonBuilder()
     val gameStateCreator = new RandomGameStateCreator(dungeonBuilder)
     val gameState = GameStateGenerator.gameStateWithFastPlayer

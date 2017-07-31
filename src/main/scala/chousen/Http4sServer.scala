@@ -2,6 +2,7 @@ package chousen
 
 import chousen.api.core.{GameAccess, Http4sMappedGameAccess}
 import chousen.api.data.GameState
+import chousen.game.actions.DamageCalculator
 import chousen.game.core.{GameManager, GameStateManager, RandomGameStateCreator}
 import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
 import chousen.game.status.StatusCalculator
@@ -32,7 +33,9 @@ object Http4sServer extends StreamApp {
 
     val gameCreator = new RandomGameStateCreator(dungeonBuilder)
     val statusCalculator = new StatusCalculator
-    val gameStateManager: GameManager[GameState] = new GameStateManager(statusCalculator)
+    val damageCalculator = new DamageCalculator(statusCalculator)
+
+    val gameStateManager: GameManager[GameState] = new GameStateManager(damageCalculator)
 
 
     val crudService = new CrudService(gameAccess, gameCreator, statusCalculator)
