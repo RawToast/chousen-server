@@ -79,8 +79,8 @@ object EnemyTurnOps {
     def diceRoll = Random.nextInt(6) + 1
 
     if (activeEnemy.name == "Warrior" && diceRoll == 6) {
-      val message = GameMessage(s"${activeEnemy.name} drinks a Potion of Stone Skin.")
-      val es = finish(enemies, activeEnemy, Some(StatusBuilder.makeStoneSkin(4)))
+      val message = GameMessage(s"${activeEnemy.name} blocks.")
+      val es = finish(enemies, activeEnemy, Some(StatusBuilder.makeBlock()))
       (player, es, messages :+ message)
     } else if ((activeEnemy.name.contains("Orc") && activeEnemy.stats.currentHp <= 65) && diceRoll == 1) {
       val message = GameMessage(s"${activeEnemy.name} goes into an Orcish Rage.")

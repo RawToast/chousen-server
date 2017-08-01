@@ -23,7 +23,7 @@ class GameStateManager(damageCalculator: DamageCalculator) extends GameManager[G
 
   override def useCard(card: Card, commandRequest: CommandRequest, game: GameState): GameState = {
 
-    if (game.player.status.map(_.effect).contains(Rage) && !card.action.isInstanceOf[CampfireActionRequest]) {
+    if (game.player.status.map(_.effect).contains(Rage) && !card.action.isInstanceOf[CampFireAction]) {
       val msg = GameMessage(s"Cannot use ${card.name} whilst Berserk")
       game.copy(messages = game.messages :+ msg)
     } else {
