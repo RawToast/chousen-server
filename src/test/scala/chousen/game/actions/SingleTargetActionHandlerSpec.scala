@@ -92,6 +92,17 @@ class SingleTargetActionHandlerSpec extends WordSpec {
       val (startedGame, result, target) = completeAction(Counter)
       standardAssertions(startedGame, result, target)
     }
+
+    "Given Destruction" should {
+      val (startedGame, result, target) = completeAction(Destruction)
+      standardAssertions(startedGame, result, target)
+
+      "Lower the targets vitality" in {
+        lazy val targetEnemy = result.dungeon.currentEncounter.enemies.find(p => p.id == target.id)
+
+        assert(target.stats.vitality > targetEnemy.map(_.stats.vitality).getOrElse(999))
+      }
+    }
   }
 
   private def completeAction(action: SingleTargetAction): (GameState, GameState, Enemy) = {
