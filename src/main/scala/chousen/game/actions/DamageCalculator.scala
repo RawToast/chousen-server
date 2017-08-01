@@ -7,17 +7,20 @@ class DamageCalculator(val sc: StatusCalculator) {
 
   def calculatePlayerDamage(p: Player, e: Enemy, m: Multipliers=Multipliers()): Int = {
     val sePlayer = sc.calculate(p)
+    val seEnemy = sc.calculate(e)
+
     val player = Participant(sePlayer.stats, sePlayer.status, sePlayer.position)
-    val enemy =  Participant(e.stats, Seq.empty, e.position)
+    val enemy =  Participant(seEnemy.stats, seEnemy.status, seEnemy.position)
 
     calcDamage(player, enemy, m)
   }
 
   def calculateEnemyDamage(e: Enemy, p: Player, m: Multipliers=Multipliers()): Int = {
     val sePlayer = sc.calculate(p)
+    val seEnemy = sc.calculate(e)
 
     val player = Participant(sePlayer.stats, sePlayer.status, sePlayer.position)
-    val enemy =  Participant(e.stats, Seq.empty, e.position)
+    val enemy =  Participant(seEnemy.stats, seEnemy.status, seEnemy.position)
 
     calcDamage(enemy, player, m)
   }
@@ -29,6 +32,7 @@ class DamageCalculator(val sc: StatusCalculator) {
     val defStatusEffects = defender.status.map(_.effect)
 
     val mightDamage = if (atkStatusEffects.contains(Might)) defender.stats.maxHp / 10 else 0
+    val berserkDamage = if (atkStatusEffects.contains(Rage)) attacker.stats.strength / 2 else 0
     val stoneSkin = if (defStatusEffects.contains(StoneSkin)) 3  else 0
     val blockEffect = if (defStatusEffects.contains(Block)) 0.5 else 1
 
@@ -40,7 +44,7 @@ class DamageCalculator(val sc: StatusCalculator) {
     }
 
     val min = Math.max(1, (atkDex / 2) - stoneSkin).block
-    val max:Int = ((atkStr + (atkDex / 2) + mightDamage) - defender.stats.vitality).block
+    val max:Int = ((atkStr + (atkDex / 2) + mightDamage + berserkDamage) - defender.stats.vitality).block
 
     val dmg: Int = Math.max(min, max)
 
@@ -67,6 +71,4 @@ object Multipliers {
 
 
   val dexteritySkill = Multipliers(dex = medMulti)
-
-
 }

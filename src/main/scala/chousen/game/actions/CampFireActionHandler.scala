@@ -15,7 +15,7 @@ object CampFireActionHandler extends ActionHandler {
         case (p, cs, msgs) =>
           cardActions(action)(p, cs, msgs)
       }.compose(CurrentEncounterLens.composeLens(BattleEnemiesLens).modify(es =>
-       es.map(e => EnemyStats.composeLens(HpLens).set(0)(e))))(gs)
+       es.map(e => EnemyStatsLens.composeLens(HpLens).set(0)(e))))(gs)
     }
   }.andThen(handleDead)
 

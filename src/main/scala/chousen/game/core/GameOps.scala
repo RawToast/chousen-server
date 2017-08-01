@@ -2,10 +2,10 @@ package chousen.game.core
 
 import chousen.api.data._
 import chousen.game.actions.DamageCalculator
-import chousen.game.status.StatusCalculator
-
+import chousen.game.status.{StatusBuilder, StatusCalculator}
+import chousen.Optics._
 import scala.annotation.tailrec
-import scala.util.{Left, Right}
+import scala.util.{Left, Random, Right}
 
 
 object GameOps extends GameOps(new EncounterOp(new StatusCalculator), new DamageCalculator(new StatusCalculator))
@@ -49,6 +49,7 @@ object EnemyTurnOps {
 
   // This method will use the enemy with the highest position
   def takeTurn(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage])(dc: DamageCalculator): (Player, Set[Enemy], Seq[GameMessage]) = {
+    import chousen.Optics.EnemyStatusLens
 
     val activeEnemy = enemies.maxBy(_.position)
     val dmg = dc.calculateEnemyDamage(activeEnemy, player)
@@ -57,15 +58,46 @@ object EnemyTurnOps {
     val playerHp = PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.HpLens)
     val hpLens: (Player) => Player = playerHp.modify(hp => hp - dmg)
 
-    // Message
-    val attackMessage = GameMessage(s"${activeEnemy.name} attacks ${player.name} for $dmg damage.")
 
-    // Then reset
-    def reset(e: Enemy) = e.copy(position = e.position - 100)
-    import chousen.Implicits._
-    val es = enemies.map(e => if (e ~= activeEnemy) reset(e) else e)
 
-    (hpLens.apply(player), es, messages :+ attackMessage)
+    def finish(es: Set[Enemy], ae: Enemy, st: Option[Status]=None) = {
+      def affectStatus = EnemyStatusLens.modify(handleStatus)
+      def handleStatus(status: Seq[Status]): Seq[Status] =
+                  status.filter(_.turns > 0)
+                    .map(s => s.copy(turns = s.turns - 1))
+
+      def reset(e: Enemy) = e.copy(position = e.position - 100)
+
+
+      // Then reset
+      import chousen.Implicits._
+      es.map(e => if (e ~= ae) affectStatus.andThen(reset).andThen(EnemyStatusLens.modify(s => s ++ st.toSeq))(e) else e)
+    }
+
+    //TODO: Move elsewhere
+
+    def diceRoll = Random.nextInt(6) + 1
+
+    if (activeEnemy.name == "Warrior" && diceRoll == 6) {
+      val message = GameMessage(s"${activeEnemy.name} blocks.")
+      val es = finish(enemies, activeEnemy, Some(StatusBuilder.makeBlock()))
+      (player, es, messages :+ message)
+    } else if ((activeEnemy.name.contains("Orc") && activeEnemy.stats.currentHp <= 65) && diceRoll == 1) {
+      val message = GameMessage(s"${activeEnemy.name} goes into an Orcish Rage.")
+      val es = finish(enemies, activeEnemy, Some(StatusBuilder.makeBerserk(2, turns = 2)))
+      (player, es, messages :+ message)
+    } else if (activeEnemy.name.contains("Steam Golem") && diceRoll >= 5) {
+      val message = GameMessage(s"Steam spouts from the ${activeEnemy.name} as it speeds up!")
+      val es = finish(enemies, EnemyStatsLens.composeLens(SpeedLens).modify(i => i + 1)(activeEnemy))
+      (player, es, messages :+ message)
+    } else {
+      // Message
+      val attackMessage = GameMessage(s"${activeEnemy.name} attacks ${player.name} for $dmg damage.")
+
+      // Then reset
+      val es = finish(enemies, activeEnemy)
+      (hpLens.apply(player), es, messages :+ attackMessage)
+    }
   }
 }
 
@@ -80,7 +112,7 @@ final class EncounterOp(sc: StatusCalculator) extends EncounterOps {
     val sePlayer = sc.calculate(p)
 
     val (player, enemies) = p.copy(position = p.position + sePlayer.stats.speed) ->
-      es.map(e => e.copy(position = e.position + e.stats.speed))
+      es.map(e => e.copy(position = e.position + sc.calculate(e).stats.speed))
 
     val maxPosition = math.max(player.position, enemies.maxBy(_.position).position)
     lazy val numWithMaxPosition = if (player.position == maxPosition) 1 + enemies.count(_.position == maxPosition)
@@ -91,7 +123,7 @@ final class EncounterOp(sc: StatusCalculator) extends EncounterOps {
     else {
       lazy val withPosition = (es: Set[Enemy]) => es.filter(_.position >= maxPosition)
       lazy val enemiesWithPosition = withPosition(enemies)
-      lazy val fastestEnemySpeed = enemiesWithPosition.maxBy(_.stats.speed).stats.speed
+      lazy val fastestEnemySpeed = enemiesWithPosition.map(e => sc.calculate(e)).maxBy(_.stats.speed).stats.speed
 
       numWithMaxPosition match {
         case 1 => (player, enemies, msgs)
@@ -124,8 +156,8 @@ final class EncounterOp(sc: StatusCalculator) extends EncounterOps {
             }
           }
         case _ =>
-          enemiesWithPosition.map(e => e.copy(position = e.stats.speed + e.position))
-          val fastestSpeeds = enemiesWithPosition.filter(_.stats.speed == fastestEnemySpeed)
+          //enemiesWithPosition.map(e => e.copy(position = e.stats.speed + e.position))
+          val fastestSpeeds = enemiesWithPosition.map(sc.calculate).filter(_.stats.speed == fastestEnemySpeed)
 
           fastestSpeeds.size match {
             case 1 => ensureActive((player, enemies, msgs))
@@ -147,8 +179,8 @@ final class EncounterOp(sc: StatusCalculator) extends EncounterOps {
 
     val fastestEnemy = enemies.maxBy(_.position)
 
-    val newMessages = if (player.position > fastestEnemy.position) msgs :+GameMessage(s"${player.name}'s turn.")
-        else msgs
+    val newMessages = if (player.position > fastestEnemy.position) msgs :+ GameMessage(s"${player.name}'s turn.")
+    else msgs
     (player, enemies, newMessages)
   }
 

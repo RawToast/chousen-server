@@ -107,6 +107,24 @@ class StatusCalculatorSpec extends WordSpec {
       }
     }
 
+    "Calculating a Player affected by Berserk" must {
+
+      val playerWithEffect: Player = playerWithStatus(StatusBuilder.makeBerserk(4))
+      val resultPlayer = statusCalculator.calculate(playerWithEffect)
+
+      "Return a player with different values" in {
+        assert(resultPlayer != playerWithEffect)
+      }
+
+      "Increase the player's strength" in {
+        assert(resultPlayer.stats.strength > playerWithEffect.stats.strength)
+      }
+
+      "Increase the player's speed" in {
+        assert(resultPlayer.stats.speed > playerWithEffect.stats.speed)
+      }
+    }
+
   }
 
 }

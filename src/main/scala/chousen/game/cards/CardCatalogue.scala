@@ -12,16 +12,17 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         rarePepe, rarePepe, rarePepe, rarePepe,
 
         might, might, might, might,
-        stoneSkin, stoneSkin, stoneSkin, stoneSkin,
         haste, haste, haste, haste,
+        stoneSkin, stoneSkin, stoneSkin, stoneSkin,
+        beserkRage, beserkRage, beserkRage, beserkRage,
         elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
         elixirOfVitality, elixirOfVitality,
 
         groundStrike, groundStrike, groundStrike, groundStrike,
 
         crushingBlow, crushingBlow, crushingBlow, crushingBlow,
-        hamstring, hamstring,
-        stunningStrike, stunningStrike,
+        stunningStrike, stunningStrike, stunningStrike, stunningStrike,
+
         counter, counter, counter, counter,
         destruction, destruction, destruction, destruction,
 
@@ -58,16 +59,17 @@ trait Potions extends CardBuilder {
   def healWounds: Card = mkCard("Heal Wounds", "Heals around 30HP", HealWounds)
   def haste: Card = Card(UUID.randomUUID(), "Potion of Haste", "Temporarily increases player speed", Haste)
   def might: Card = Card(UUID.randomUUID(), "Potion of Might", "Temporarily increases player strength", PotionOfMight)
-  def intelligence: Card = Card(UUID.randomUUID(), "Potion of Intelligence", "Temporarily increases player intelligence", PotionOfIntelligence)
+//  def intelligence: Card = Card(UUID.randomUUID(), "Potion of Intelligence", "Temporarily increases player intelligence", PotionOfIntelligence)
   def stoneSkin: Card = Card(UUID.randomUUID(), "Stone Skin", "Temporarily increases player defence", PotionOfStoneSkin)
-  def dexterity: Card = Card(UUID.randomUUID(), "Potion of Dexterity", "Temporarily increases player dexterity", PotionOfDexterity)
+//  def dexterity: Card = Card(UUID.randomUUID(), "Potion of Dexterity", "Temporarily increases player dexterity", PotionOfDexterity)
+  def beserkRage: Card = Card(UUID.randomUUID(), "Potion of Rage", "Temporarily increases health, damage, and speed", PotionOfBeserk)
 }
 
 trait PermanentEffects extends CardBuilder {
-  def elixirOfStrength: Card = mkCard("Elixir of Strength ", "Permanently increases Strength by 3", ElixirOfStrength)
-  def elixirOfDexterity: Card = mkCard("Elixir of Dexterity ", "Permanently increases Dexterity by 3", ElixirOfDexterity)
-  def elixirOfIntelligence: Card = mkCard("Elixir of Intelligence ", "Permanently increases Intelligence by 3", ElixirOfIntelligence)
-  def elixirOfVitality: Card = mkCard("Elixir of Vitality ", "Permanently increases Vitality by 3", ElixirOfVitality)
+  def elixirOfStrength: Card = mkCard("Elixir of Strength ", "Permanently increases Strength by 2", ElixirOfStrength)
+//  def elixirOfDexterity: Card = mkCard("Elixir of Dexterity ", "Permanently increases Dexterity by 2", ElixirOfDexterity)
+//  def elixirOfIntelligence: Card = mkCard("Elixir of Intelligence ", "Permanently increases Intelligence by 2", ElixirOfIntelligence)
+  def elixirOfVitality: Card = mkCard("Elixir of Vitality ", "Permanently increases Vitality by 2", ElixirOfVitality)
   def rarePepe: Card = mkCard("Rare Pepe ", "Level up, increasing all stats", RarePepe)
 }
 
@@ -83,8 +85,7 @@ trait Magic extends CardBuilder{
 
 trait Strength extends CardBuilder{
   def crushingBlow: Card = mkCard("Crushing Blow", "Deals heavy damage, but has an increased movement penalty", CrushingBlow)
-  def hamstring: Card = mkCard("Hamstring", "Attack that reduces the speed of a single enemy", Hamstring)
-  def stunningStrike: Card = mkCard("Stunning Strike", "Attack that stuns a single enemy", StunningStrike)
+  def stunningStrike: Card = mkCard("Stunning Strike", "Attack that stuns and reduces the speed of a single enemy", StunningStrike)
   def groundStrike: Card = mkCard("Ground Strike", "Slam the ground with your weapon, hitting all enemies and reducing their position", GroundStrike)
 
   def counter: Card = mkCard("Counter", "Attack that deals more damage the stronger the enemy", Counter)

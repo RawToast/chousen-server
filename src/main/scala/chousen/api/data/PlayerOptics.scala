@@ -50,8 +50,9 @@ trait CharStatsOptics {
 object EnemyOptics extends EnemyOptics
 
 trait EnemyOptics {
-  val EnemyStats: Lens[Enemy, CharStats] = GenLens[Enemy](_.stats)
+  val EnemyStatsLens: Lens[Enemy, CharStats] = GenLens[Enemy](_.stats)
   val EnemyPosition: Lens[Enemy, Int] = GenLens[Enemy](_.position)
+  val EnemyStatusLens: Lens[Enemy, Seq[Status]] = GenLens[Enemy](_.status)
 
   val EnemyHpLens: Lens[Enemy, Int] = GenLens[Enemy](_.stats.currentHp)
 }

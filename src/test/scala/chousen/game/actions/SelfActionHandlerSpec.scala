@@ -41,6 +41,117 @@ class SelfActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given a Strength Elixir" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(ElixirOfStrength)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Reduce the player's position" in {
+        assert(result.player.position < 100)
+      }
+
+      "The Player's strength increases" in {
+        assert(result.player.stats.strength > startedGame.player.stats.strength)
+      }
+    }
+
+    "Given a Dexterity Elixir" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(ElixirOfDexterity)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Reduce the player's position" in {
+        assert(result.player.position < 100)
+      }
+
+      "The Player's dexterity increases" in {
+        assert(result.player.stats.dexterity > startedGame.player.stats.dexterity)
+      }
+    }
+
+
+    "Given an Elixir of Intellegence" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(ElixirOfIntelligence)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Reduce the player's position" in {
+        assert(result.player.position < 100)
+      }
+
+      "The Player's intellect increases" in {
+        assert(result.player.stats.intellect > startedGame.player.stats.intellect)
+      }
+    }
+
+    "Given an Elixir of Vitality" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(ElixirOfVitality)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Reduce the player's position" in {
+        assert(result.player.position < 100)
+      }
+
+      "The Player's vitality increases" in {
+        assert(result.player.stats.vitality > startedGame.player.stats.vitality)
+      }
+    }
+
+    "Given a Rare Pepe" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(ElixirOfVitality)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Reduce the player's position" in {
+        assert(result.player.position < 100)
+      }
+
+      "The Player's stats change" in {
+        assert(result.player.stats != startedGame.player.stats)
+      }
+    }
+
     "Given a Haste action" should {
       val gameState = GameStateGenerator.gameStateWithFastPlayer
 
@@ -159,6 +270,32 @@ class SelfActionHandlerSpec extends WordSpec {
         assert(result.player.status.nonEmpty)
         assert(result.player.status.exists(_.effect == StoneSkin))
       }
+    }
+
+    "Given a Potion of Rage" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(PotionOfBeserk)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+        assert(result.messages.contains(GameMessage(s"${GameStateGenerator.playerName} drinks a Potion of Rage!")))
+      }
+
+      "Reduce the player's position" in {
+        assert(result.player.position < 100)
+      }
+
+      "The Player gains the Berserk status" in {
+        assert(result.player.status.nonEmpty)
+        assert(result.player.status.exists(_.effect == Rage))
+      }
+
+
     }
   }
 }

@@ -23,18 +23,23 @@ class GameStateManager(damageCalculator: DamageCalculator) extends GameManager[G
 
   override def useCard(card: Card, commandRequest: CommandRequest, game: GameState): GameState = {
 
-    CardManager.playCard(card) { (c: Card) =>
-      if (commandRequest match {
-        case AttackRequest(_) => false
-        case BlockRequest() => false
-        case SelfInflictingActionRequest(action) => c.action == action
-        case SingleTargetActionRequest(_, action) => c.action == action
-        case MultiTargetActionRequest(_, action) => c.action == action
-        case CardActionRequest(action) => c.action == action
-        case CampfireActionRequest(action) => c.action == action
-      }) takeCommand(commandRequest, game)
-      else game
-    }.apply(game)
+    if (game.player.status.map(_.effect).contains(Rage) && !card.action.isInstanceOf[CampFireAction]) {
+      val msg = GameMessage(s"Cannot use ${card.name} whilst Berserk")
+      game.copy(messages = game.messages :+ msg)
+    } else {
+      CardManager.playCard(card) { (c: Card) =>
+        if (commandRequest match {
+          case AttackRequest(_) => false
+          case BlockRequest() => false
+          case SelfInflictingActionRequest(action) => c.action == action
+          case SingleTargetActionRequest(_, action) => c.action == action
+          case MultiTargetActionRequest(_, action) => c.action == action
+          case CardActionRequest(action) => c.action == action
+          case CampfireActionRequest(action) => c.action == action
+        }) takeCommand(commandRequest, game)
+        else game
+      }.apply(game)
+    }
   }
 
   override def takeCommand(command: CommandRequest, game: GameState): GameState = {
