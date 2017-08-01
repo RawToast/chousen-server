@@ -88,8 +88,9 @@ object EnemyTurnOps {
       (player, es, messages :+ message)
     } else if (activeEnemy.name.contains("Steam Golem") && diceRoll >= 5) {
       val message = GameMessage(s"Steam spouts from the ${activeEnemy.name} as it speeds up!")
-      val es = finish(enemies, EnemyStatsLens.composeLens(SpeedLens).modify(i => i + 1)(activeEnemy))
-      (player, es, messages :+ message)
+      val es = finish(enemies, activeEnemy)
+      val ez = es.map(e => if(e.id == activeEnemy.id) EnemyStatsLens.composeLens(SpeedLens).modify(i => i + 2)(activeEnemy) else e)
+      (player, ez, messages :+ message)
     } else {
       // Message
       val attackMessage = GameMessage(s"${activeEnemy.name} attacks ${player.name} for $dmg damage.")
