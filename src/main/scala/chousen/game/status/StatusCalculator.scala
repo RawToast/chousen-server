@@ -11,48 +11,72 @@ class StatusCalculator {
     else calcStatusEffects(p)
   }
 
+  def calculate(p: Enemy): Enemy = {
+
+    if (p.status.isEmpty) p
+    else calcStatusEffects(p)
+  }
+
 
   private def calcStatusEffects(player: Player): Player = {
 
     val status: Seq[Status] = player.status
+    val stats = player.stats
 
-    status.foldLeft(player)(foldStatus)
+    val newStats = status.foldLeft(stats)(foldStatus)
+
+    player.copy(stats = newStats)
   }
 
-  private def foldStatus(p: Player, s: Status): Player = {
-    val func: (Player, Status) => Player = s.effect match {
+  private def calcStatusEffects(enemy: Enemy): Enemy = {
+
+    val status: Seq[Status] = enemy.status
+    val stats = enemy.stats
+
+    val newStats = status.foldLeft(stats)(foldStatus)
+
+    enemy.copy(stats = newStats)
+  }
+
+  private def foldStatus(p: CharStats, s: Status): CharStats = {
+    val func: (CharStats, Status) => CharStats = s.effect match {
       case Fast => fast
+      case Slow => slow
       case StoneSkin => stoneskin
       case Might => might
       case Dexterity => dexterity
       case Smart => smart
-      case Rage => {
-        val m = might(_: Player, s)
-        val f = fast(_: Player, s)
+      case Rage =>
+        val m = might(_: CharStats, s)
+        val f = fast(_: CharStats, s)
 
-        (p: Player, _: Status) => m.andThen(f).apply(p)
-      }
+        (p: CharStats, _: Status) => m.andThen(f).apply(p)
       case Block => nop
     }
     func(p, s)
   }
 
-  private def nop = (p: Player, _: Status) => p
 
-  private def fast = (p: Player, s: Status) =>
-    doSmt(PlayerSpeedLens)(i => i + s.amount.getOrElse(0))(p)
+  private def nop = (p: CharStats, _: Status) => p
 
-  private def stoneskin = (p: Player, s: Status) =>
-    doSmt(PlayerVitalityLens)(i => i + s.amount.getOrElse(0))(p)
+  private def fast = (p: CharStats, s: Status) =>
+    doSmt(SpeedLens)(i => i + s.amount.getOrElse(0))(p)
 
-  private def might = (p: Player, s: Status) =>
-    doSmt(PlayerStrengthLens)(i => i + s.amount.getOrElse(0))(p)
+  private def slow = (p: CharStats, s: Status) =>
+    doSmt(SpeedLens)(i => Math.max(1, i - s.amount.getOrElse(0)))(p)
 
-  private def dexterity = (p: Player, s: Status) =>
-    doSmt(PlayerDexterityLens)(i => i + s.amount.getOrElse(0))(p)
+  private def stoneskin = (p: CharStats, s: Status) =>
+    doSmt(VitalityLens)(i => i + s.amount.getOrElse(0))(p)
 
-  private def smart = (p: Player, s: Status) =>
-    doSmt(PlayerIntellectLens)(i => i + s.amount.getOrElse(0))(p)
+  private def might = (p: CharStats, s: Status) =>
+    doSmt(StrengthLens)(i => i + s.amount.getOrElse(0))(p)
+
+  private def dexterity = (p: CharStats, s: Status) =>
+    doSmt(DexterityLens)(i => i + s.amount.getOrElse(0))(p)
+
+  private def smart = (p: CharStats, s: Status) =>
+    doSmt(IntellectLens)(i => i + s.amount.getOrElse(0))(p)
+
 
 
   private def doSmt[T](lens: Lens[T, Int])(f: Int => Int) = lens.modify(f)

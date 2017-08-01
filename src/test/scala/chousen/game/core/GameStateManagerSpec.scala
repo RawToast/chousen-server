@@ -122,7 +122,7 @@ class GameStateManagerSpec extends WordSpec {
 
         "Return the game state with no changes" in {
           lazy val incorrectCard = GameStateGenerator.crushingBlowCard
-          val request = SingleTargetActionRequest(GameStateGenerator.firstEnemy.id, Hamstring)
+          val request = SingleTargetActionRequest(GameStateGenerator.firstEnemy.id, StunningStrike)
 
           val result = gameStateManager.useCard(incorrectCard, request, gameState)
 

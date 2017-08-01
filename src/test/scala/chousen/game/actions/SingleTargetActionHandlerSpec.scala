@@ -72,21 +72,19 @@ class SingleTargetActionHandlerSpec extends WordSpec {
       standardAssertions(startedGame, result, target)
     }
 
-    "Given Hamstring" should {
-      val (startedGame, result, target) = completeAction(Hamstring)
-      standardAssertions(startedGame, result, target)
-
-      "Lower the target's speed" in {
-        assert(target.stats.speed > result.dungeon.currentEncounter.enemies.find(p => p.id == target.id).map(_.stats.speed).getOrElse(99))
-      }
-    }
-
     "Given Stunning Strike" should {
       val (startedGame, result, target) = completeAction(StunningStrike)
       standardAssertions(startedGame, result, target)
 
+      lazy val targetEnemy = result.dungeon.currentEncounter.enemies.find(p => p.id == target.id)
+
       "Lower the target's position" in {
-        assert(target.position >= result.dungeon.currentEncounter.enemies.find(p => p.id == target.id).map(_.position).getOrElse(999))
+        // Will not be anywhere near active
+        assert(50 >= targetEnemy.map(_.position).getOrElse(999))
+      }
+
+      "Apply the Slow status" in {
+        assert(targetEnemy.map(_.status).getOrElse(Seq.empty).map(_.effect).contains(Slow))
       }
     }
 

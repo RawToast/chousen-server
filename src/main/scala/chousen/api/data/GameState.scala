@@ -29,13 +29,15 @@ case class Battle(enemies: Set[Enemy])
 
 sealed trait Encounterable
 
-case class Enemy(name: String, id: UUID, stats: CharStats, position: Int) extends Encounterable
+case class Enemy(name: String, id: UUID, stats: CharStats, position: Int, status: Seq[Status]=Seq.empty) extends Encounterable
 
 case class Status(effect: StatusEffect, description: String, turns: Int, amount: Option[Int] = None)
 
 sealed trait StatusEffect
 
 case object Fast extends StatusEffect
+case object Slow extends StatusEffect
+
 case object StoneSkin extends StatusEffect
 case object Might extends StatusEffect
 case object Block extends StatusEffect

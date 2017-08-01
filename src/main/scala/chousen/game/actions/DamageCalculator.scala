@@ -7,17 +7,20 @@ class DamageCalculator(val sc: StatusCalculator) {
 
   def calculatePlayerDamage(p: Player, e: Enemy, m: Multipliers=Multipliers()): Int = {
     val sePlayer = sc.calculate(p)
+    val seEnemy = sc.calculate(e)
+
     val player = Participant(sePlayer.stats, sePlayer.status, sePlayer.position)
-    val enemy =  Participant(e.stats, Seq.empty, e.position)
+    val enemy =  Participant(seEnemy.stats, seEnemy.status, seEnemy.position)
 
     calcDamage(player, enemy, m)
   }
 
   def calculateEnemyDamage(e: Enemy, p: Player, m: Multipliers=Multipliers()): Int = {
     val sePlayer = sc.calculate(p)
+    val seEnemy = sc.calculate(e)
 
     val player = Participant(sePlayer.stats, sePlayer.status, sePlayer.position)
-    val enemy =  Participant(e.stats, Seq.empty, e.position)
+    val enemy =  Participant(seEnemy.stats, seEnemy.status, seEnemy.position)
 
     calcDamage(enemy, player, m)
   }

@@ -25,7 +25,7 @@ trait EnemyBuilder {
   def giantRat: Enemy = mkEnemy("Giant Rat", CharStats(26, 26, dexterity = 10, vitality = 6, speed = 11))
   def oldOrc: Enemy = mkEnemy("Old Orc", CharStats(70, 70, strength = 25, dexterity = 2, vitality = 10, speed = 4))
   def goblin: Enemy = mkEnemy("Goblin", CharStats(50, 50, strength = 6, dexterity = 14, vitality = 9, speed = 9))
-  def golem: Enemy = mkEnemy("Golem", CharStats(100, 100, strength = 24, dexterity = 4, vitality = 16, speed = 2))
+  def golem: Enemy = mkEnemy("Steam Golem", CharStats(100, 100, strength = 24, dexterity = 4, vitality = 16, speed = 2))
 
 
   // T4

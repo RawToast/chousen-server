@@ -30,7 +30,6 @@ sealed trait CampFireAction extends Action
 
 
 case object CrushingBlow extends SingleTargetAction
-case object Hamstring extends SingleTargetAction
 case object StunningStrike extends SingleTargetAction
 case object Counter extends SingleTargetAction
 case object Destruction extends SingleTargetAction
