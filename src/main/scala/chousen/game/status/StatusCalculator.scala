@@ -26,6 +26,12 @@ class StatusCalculator {
       case Might => might
       case Dexterity => dexterity
       case Smart => smart
+      case Rage => {
+        val m = might(_: Player, s)
+        val f = fast(_: Player, s)
+
+        (p: Player, _: Status) => m.andThen(f).apply(p)
+      }
       case Block => nop
     }
     func(p, s)
@@ -47,6 +53,7 @@ class StatusCalculator {
 
   private def smart = (p: Player, s: Status) =>
     doSmt(PlayerIntellectLens)(i => i + s.amount.getOrElse(0))(p)
+
 
   private def doSmt[T](lens: Lens[T, Int])(f: Int => Int) = lens.modify(f)
 

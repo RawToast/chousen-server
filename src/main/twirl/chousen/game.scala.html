@@ -71,7 +71,7 @@
                     }
                 }
 
-            @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
+            @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.filterNot(_.name == "Camp Fire").sortBy(_.id)) {
                 <button id=@{
                     e.id.toString
                 } type="button" class="btn btn-atk btn-default" uri="@{
@@ -98,7 +98,7 @@
                             <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                            @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
+                            @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.filterNot(_.name == "Camp Fire").sortBy(_.id)) {
                                 <li>
                                     <a href="#" class="btn btn-com" eid="@{e.id.toString}" action="@{c.action}"
                                     uri="@{s"game/" + gameState.uuid + "/single/" + c.id}">

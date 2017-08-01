@@ -160,5 +160,31 @@ class SelfActionHandlerSpec extends WordSpec {
         assert(result.player.status.exists(_.effect == StoneSkin))
       }
     }
+
+    "Given a Potion of Rage" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(PotionOfBeserk)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+        assert(result.messages.contains(GameMessage(s"${GameStateGenerator.playerName} drinks a Potion of Rage!")))
+      }
+
+      "Reduce the player's position" in {
+        assert(result.player.position < 100)
+      }
+
+      "The Player gains the Berserk status" in {
+        assert(result.player.status.nonEmpty)
+        assert(result.player.status.exists(_.effect == Rage))
+      }
+
+
+    }
   }
 }

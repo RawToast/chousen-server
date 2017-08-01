@@ -53,7 +53,7 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     val newEnemy = EnemyOptics.EnemyStats.composeLens(CharStatsOptics.HpLens)
         .modify(hp => hp - dmg).
       andThen(EnemyOptics.EnemyStats.composeLens(CharStatsOptics.SpeedLens)
-        .modify(s => Math.min(1, s - 1)))(e)
+        .modify(s => Math.max(1, s - 1)))(e)
 
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 

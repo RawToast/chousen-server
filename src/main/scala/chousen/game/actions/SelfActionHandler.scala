@@ -30,6 +30,7 @@ class SelfActionHandler(sc: StatusCalculator) {
       case PotionOfDexterity => dexterity
       case PotionOfIntelligence => intelligence
       case PotionOfStoneSkin => stoneskin
+      case PotionOfBeserk => berserk
     }
 
 
@@ -131,6 +132,15 @@ class SelfActionHandler(sc: StatusCalculator) {
     val message = GameMessage(s"${p.name} drinks a Potion of Intelligence!")
 
     val status: Status = StatusBuilder.makeSmart(8)
+
+    (PlayerStatusLens.modify(_ :+ status)
+      .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
+  }
+
+  def berserk(p: Player, msgs: Seq[GameMessage]) = {
+    val message = GameMessage(s"${p.name} drinks a Potion of Rage!")
+
+    val status: Status = StatusBuilder.makeBerserk(4)
 
     (PlayerStatusLens.modify(_ :+ status)
       .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)

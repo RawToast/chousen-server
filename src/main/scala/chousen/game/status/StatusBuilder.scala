@@ -8,4 +8,5 @@ object StatusBuilder {
   def makeDexterity(amount: Int, turns:Int=6) = Status(Dexterity, "Significantly increases the player's dexterity", turns, Option(amount))
   def makeSmart(amount: Int, turns:Int=6) = Status(Smart, "Significantly increases the player's intellect", turns, Option(amount))
   def makeStoneSkin(amount: Int, turns:Int=6) = Status(StoneSkin, "Significantly increases the player's defense", turns, Option(amount))
+  def makeBerserk(amount: Int, turns:Int=6) = Status(Rage, "Berserker rage", turns, Option(amount))
 }

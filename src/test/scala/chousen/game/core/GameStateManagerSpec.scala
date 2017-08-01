@@ -151,6 +151,33 @@ class GameStateManagerSpec extends WordSpec {
       }
     }
 
+    "Accepting an action card" when {
+
+      "The player is berserk" should {
+
+        import chousen.Optics.{PlayerStatusLens, PlayerLens}
+
+        val initialState = (PlayerLens ^|-> PlayerStatusLens).set(Seq(Status(Rage, "test", 4, Some(5))))(gameState)
+        val anotherCard = GameStateGenerator.crushingBlowCard.copy(id = UUID.fromString("221c878f-5a6f-4276-a52e-862cfa90e114"))
+
+        val request = SingleTargetActionRequest(GameStateGenerator.firstEnemy.id, CrushingBlow)
+
+        lazy val result = gameStateManager.useCard(anotherCard, request, initialState)
+
+        "Change the game state" in {
+          assert(result != initialState)
+        }
+
+        "Add a new message" in {
+          assert(result.messages.size > initialState.messages.size)
+        }
+
+        "Not affect the current encounter" in {
+          assert(result.dungeon.currentEncounter == initialState.dungeon.currentEncounter)
+        }
+      }
+    }
+
   }
 
   def getFirstEnemyHp(result: GameState) =
