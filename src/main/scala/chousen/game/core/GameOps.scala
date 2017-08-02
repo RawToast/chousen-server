@@ -86,7 +86,7 @@ object EnemyTurnOps {
       val message = GameMessage(s"${activeEnemy.name} goes into an Orcish Rage.")
       val es = finish(enemies, activeEnemy, Some(StatusBuilder.makeBerserk(2, turns = 2)))
       (player, es, messages :+ message)
-    } else if (activeEnemy.name.contains("Steam Golem") && diceRoll >= 5) {
+    } else if (activeEnemy.name.contains("Steam Golem") && diceRoll >= 6) {
       val message = GameMessage(s"Steam spouts from the ${activeEnemy.name} as it speeds up!")
       val es = finish(enemies, activeEnemy)
       val ez = es.map(e => if(e.id == activeEnemy.id) EnemyStatsLens.composeLens(SpeedLens).modify(i => i + 2)(activeEnemy) else e)
