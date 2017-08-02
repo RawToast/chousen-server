@@ -279,7 +279,7 @@ class SelfActionHandlerSpec extends WordSpec {
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val startedGame: GameState = stateCreator.start(gameState)
 
-      val result = selfActionHandler.handle(PotionOfBeserk)(startedGame)
+      val result = selfActionHandler.handle(PotionOfRage)(startedGame)
 
       "State the action was used" in {
         assert(result.messages.size > startedGame.messages.size)

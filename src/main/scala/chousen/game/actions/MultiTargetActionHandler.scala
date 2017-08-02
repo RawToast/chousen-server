@@ -4,6 +4,7 @@ import java.util.UUID
 
 import chousen.api.data._
 import chousen.game.core.GameStateOptics._
+import chousen.game.status.StatusBuilder
 
 class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
@@ -52,6 +53,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
     // This should be replaced by a generic attack/damage function
     val newE = EnemyOptics.EnemyStatsLens.composeLens(CharStatsOptics.HpLens).modify(hp => hp - dmg)
       .andThen(EnemyOptics.EnemyPosition.modify(ep => ep - 10 - (p.stats.strength / 2)))
+      .andThen(EnemyOptics.EnemyStatusLens.modify(ss => ss :+ StatusBuilder.makeSlow(2, turns = 2)))
       .apply(e)
 
     (p, Option(newE), gameMessages)

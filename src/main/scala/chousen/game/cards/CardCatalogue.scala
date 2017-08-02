@@ -14,7 +14,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         might, might, might, might,
         haste, haste, haste, haste,
         stoneSkin, stoneSkin, stoneSkin, stoneSkin,
-        beserkRage, beserkRage, beserkRage, beserkRage,
+        rage, rage, rage, rage,
         elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
         elixirOfVitality, elixirOfVitality,
 
@@ -62,7 +62,7 @@ trait Potions extends CardBuilder {
 //  def intelligence: Card = Card(UUID.randomUUID(), "Potion of Intelligence", "Temporarily increases player intelligence", PotionOfIntelligence)
   def stoneSkin: Card = Card(UUID.randomUUID(), "Stone Skin", "Temporarily increases player defence", PotionOfStoneSkin)
 //  def dexterity: Card = Card(UUID.randomUUID(), "Potion of Dexterity", "Temporarily increases player dexterity", PotionOfDexterity)
-  def beserkRage: Card = Card(UUID.randomUUID(), "Potion of Rage", "Temporarily increases health, damage, and speed", PotionOfBeserk)
+  def rage: Card = Card(UUID.randomUUID(), "Potion of Rage", "Temporarily increases health, damage, and speed", PotionOfRage)
 }
 
 trait PermanentEffects extends CardBuilder {

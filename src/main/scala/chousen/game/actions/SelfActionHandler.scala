@@ -30,7 +30,7 @@ class SelfActionHandler(sc: StatusCalculator) {
       case PotionOfDexterity => dexterity
       case PotionOfIntelligence => intelligence
       case PotionOfStoneSkin => stoneskin
-      case PotionOfBeserk => berserk
+      case PotionOfRage => berserk
     }
 
 
