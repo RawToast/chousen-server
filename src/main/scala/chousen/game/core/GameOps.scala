@@ -83,7 +83,7 @@ object EnemyTurnOps {
       val es = finish(enemies, activeEnemy, Some(StatusBuilder.makeBlock()))
       (player, es, messages :+ message)
     } else if ((activeEnemy.name.contains("Orc") && activeEnemy.stats.currentHp <= 65) && diceRoll == 1) {
-      val message = GameMessage(s"${activeEnemy.name} goes into an Orcish Rage.")
+      val message = GameMessage(s"${activeEnemy.name} bursts into an Orcish Rage!")
       val es = finish(enemies, activeEnemy, Some(StatusBuilder.makeBerserk(2, turns = 2)))
       (player, es, messages :+ message)
     } else if (activeEnemy.name.contains("Steam Golem") && diceRoll >= 6) {
@@ -91,9 +91,22 @@ object EnemyTurnOps {
       val es = finish(enemies, activeEnemy)
       val ez = es.map(e => if(e.id == activeEnemy.id) EnemyStatsLens.composeLens(SpeedLens).modify(i => i + 2)(activeEnemy) else e)
       (player, ez, messages :+ message)
+    } else if (activeEnemy.name.contains("Orc King") && activeEnemy.status.map(_.effect).contains(Might) && diceRoll >= 4) {
+      val message = GameMessage(s"The Orc King drinks a Potion of Might!")
+
+      val es = finish(enemies, activeEnemy)
+      val ez = es.map(e => if(e.id == activeEnemy.id) EnemyStatusLens.modify(i => i :+ StatusBuilder.makeMight(4))(activeEnemy) else e)
+
+      (player, ez, messages :+ message)
     } else {
       // Message
-      val attackMessage = GameMessage(s"${activeEnemy.name} attacks ${player.name} for $dmg damage.")
+      val attackMessage = if (dmg < 5) GameMessage(s"${activeEnemy.name} grazes ${player.name} for $dmg damage.")
+      else if (dmg < 10) GameMessage(s"${activeEnemy.name} hits ${player.name} for $dmg damage.")
+      else if (dmg < 20) GameMessage(s"${activeEnemy.name} attacks ${player.name} for $dmg damage!")
+      else if (dmg < 30) GameMessage(s"${activeEnemy.name} smashes ${player.name} for $dmg damage!!")
+      else if (dmg < 40) GameMessage(s"${activeEnemy.name} crushes ${player.name} for $dmg damage!!!")
+      else if (dmg < 50) GameMessage(s"${activeEnemy.name} bops ${player.name} for $dmg damage!!!")
+      else GameMessage(s"${activeEnemy.name} crits ${player.name} for $dmg damage!!!!!")
 
       // Then reset
       val es = finish(enemies, activeEnemy)
