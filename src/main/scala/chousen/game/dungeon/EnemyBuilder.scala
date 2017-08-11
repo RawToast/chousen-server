@@ -13,18 +13,18 @@ trait EnemyBuilder {
 
   // T1
   def createSlime: Enemy = mkEnemy("Slime", CharStats(13, 13, strength = 9, vitality = 6))
-  def createSloth: Enemy = mkEnemy("Sloth", CharStats(26, 26, strength = 14, dexterity = 2, vitality = 4, speed = 4))
+  def createSloth: Enemy = mkEnemy("Sloth", CharStats(26, 26, strength = 16, dexterity = 4, vitality = 6, speed = 4))
   def createRat: Enemy = mkEnemy("Rat", CharStats(7, 7, strength = 4, dexterity = 6, vitality = 4, speed = 12))
 
   // T2
-  def gnoll: Enemy = mkEnemy("Gnoll", CharStats(35, 35, strength = 14, dexterity = 8, vitality = 8))
-  def giantWorm: Enemy = mkEnemy("Giant Worm", CharStats(50, 50, strength = 20, vitality = 6, speed = 3))
+  def gnoll: Enemy = mkEnemy("Gnoll", CharStats(35, 35, strength = 15, dexterity = 8, vitality = 8))
+  def giantWorm: Enemy = mkEnemy("Giant Worm", CharStats(50, 50, strength = 22, vitality = 6, speed = 3))
 
 
   // T3
   def giantRat: Enemy = mkEnemy("Giant Rat", CharStats(26, 26, dexterity = 10, vitality = 6, speed = 11))
   def oldOrc: Enemy = mkEnemy("Old Orc", CharStats(70, 70, strength = 28, dexterity = 2, vitality = 10, speed = 4))
-  def goblin: Enemy = mkEnemy("Goblin", CharStats(50, 50, strength = 6, dexterity = 20, vitality = 9, speed = 9))
+  def goblin: Enemy = mkEnemy("Goblin", CharStats(50, 50, strength = 7, dexterity = 22, vitality = 9, speed = 9))
   def golem: Enemy = mkEnemy("Steam Golem", CharStats(100, 100, strength = 30, dexterity = 4, vitality = 16, speed = 2))
 
 

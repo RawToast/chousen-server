@@ -21,9 +21,11 @@ case class Cards(hand: Seq[Card], deck: Seq[Card], discard: Seq[Card], passive: 
 
 case class Equipment(weapon: Option[Weapon], armour: Option[Armour])
 
-case class Weapon(cardId: UUID, name: String)
+case class Weapon(cardId: UUID, name: String, requirements: Requirements, effects: Seq[WeaponEffect]=List.empty)
 
-case class Armour(cardId: UUID, name: String)
+case class Armour(cardId: UUID, name: String, requirements: Requirements)
+
+case class Requirements(str: Option[Int]=None, dex: Option[Int]=None, int: Option[Int]=None)
 
 case class Card(id: UUID, name: String, description: String, action: Action)
 
@@ -50,3 +52,10 @@ case object Block extends StatusEffect
 case object Dexterity extends StatusEffect
 case object Smart extends StatusEffect
 case object Rage extends StatusEffect
+case object Poison extends StatusEffect
+
+sealed trait WeaponEffect
+
+case object Magic extends WeaponEffect
+case object Crush extends WeaponEffect
+case object Toxic extends WeaponEffect

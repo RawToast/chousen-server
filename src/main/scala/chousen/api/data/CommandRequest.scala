@@ -26,6 +26,7 @@ sealed trait MultiAction extends Action
 sealed trait SelfAction extends Action
 sealed trait CardAction extends Action
 sealed trait CampFireAction extends Action
+sealed trait EquipAction extends Action
 
 
 
@@ -79,3 +80,8 @@ case object Restore extends CardAction
 case object Rest extends CampFireAction
 case object Explore extends CampFireAction
 case object RestAndExplore extends CampFireAction
+
+
+case object GiantClub extends EquipAction
+case object BroadSword extends EquipAction
+case object SwordOfIntellect extends EquipAction
