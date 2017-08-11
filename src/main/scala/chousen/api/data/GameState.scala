@@ -13,11 +13,17 @@ case class CharStats(maxHp: Int,
                      speed: Int = 8)
 
 
-case class Player(name:String, className: String, stats: CharStats, experience: Experience, position: Int, status: Seq[Status] = Seq.empty)
+case class Player(name:String, className: String, stats: CharStats, experience: Experience, equipment: Equipment, position: Int, status: Seq[Status] = Seq.empty)
 
 case class Experience(current: Int=0, next: Int=3, level: Int=1)
 
 case class Cards(hand: Seq[Card], deck: Seq[Card], discard: Seq[Card], passive: Seq[Card])
+
+case class Equipment(weapon: Option[Weapon], armour: Option[Armour])
+
+case class Weapon(cardId: UUID, name: String)
+
+case class Armour(cardId: UUID, name: String)
 
 case class Card(id: UUID, name: String, description: String, action: Action)
 

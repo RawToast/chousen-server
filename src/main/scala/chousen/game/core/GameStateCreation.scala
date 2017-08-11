@@ -16,7 +16,7 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
     val dungeonSeed2 = new scala.util.Random().nextInt(6)
     val dungeonSeed3 = new scala.util.Random().nextInt(6)
 
-    val p = Player(name, "Rouge", CharStats(100, 100), Experience(), 0)
+    val p = Player(name, "Rouge", CharStats(100, 100), Experience(), Equipment(None, None), 0)
 
     val dungeon = dungeonBuilder.makeDungeon(dungeonSeed, dungeonSeed2, dungeonSeed3)
 
