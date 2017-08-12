@@ -21,7 +21,7 @@ case class Cards(hand: Seq[Card], deck: Seq[Card], discard: Seq[Card], passive: 
 
 case class EquippedCards(weapon: Option[Card]=None, armour: Option[Card]=None)
 
-case class Equipment(weapon: Option[Weapon], armour: Option[Armour])
+case class Equipment(weapon: Option[Weapon]=None, armour: Option[Armour]=None)
 
 case class Weapon(cardId: UUID, name: String, requirements: Requirements, effects: Seq[WeaponEffect]=List.empty)
 
