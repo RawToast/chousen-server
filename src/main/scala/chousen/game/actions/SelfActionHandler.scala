@@ -70,17 +70,16 @@ class SelfActionHandler(sc: StatusCalculator) {
   }
 
   def rarePepe(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = {
-    val bonusStat = 1
-    val message = GameMessage(s"${p.name} looks at a Rare Pepe and becomes stronger!")
-    val gameMessages = msgs :+ message
+    val cardMsg = GameMessage(s"${p.name} quickly looks at a Rare Pepe and becomes stronger!")
 
-    val lens = LensUtil.triLens(PlayerMaxHealthLens, PlayerHealthLens, PlayerPositionLens)
-      .modify { case (maxHp: Int, hp: Int, position: Int) => {
-        val newMax = maxHp + 10
-        (newMax, Math.min(newMax, hp + bonusStat), position - 100)
-      }}.andThen(LensUtil.triLens(PlayerStrengthLens, PlayerDexterityLens, PlayerIntellectLens).modify {
-      case (s: Int, d: Int, i: Int) => (s + bonusStat, d + bonusStat, i + bonusStat)
-    }).andThen(PlayerVitalityLens.modify(_ + bonusStat))
+    val bonusExp = 3 + (p.experience.level * 5)
+    val expMsg = GameMessage(s"${p.name} gains $bonusExp experience.")
+
+    val lens = PlayerCurrentExperienceLens.modify(_ + 5)
+      .andThen(PlayerPositionLens.modify(_ - 50))
+
+    val gameMessages = msgs :+ cardMsg :+ expMsg
+
     (lens.apply(p), gameMessages)
   }
 

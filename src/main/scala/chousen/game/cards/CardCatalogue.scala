@@ -70,7 +70,7 @@ trait PermanentEffects extends CardBuilder {
 //  def elixirOfDexterity: Card = mkCard("Elixir of Dexterity ", "Permanently increases Dexterity by 2", ElixirOfDexterity)
 //  def elixirOfIntelligence: Card = mkCard("Elixir of Intelligence ", "Permanently increases Intelligence by 2", ElixirOfIntelligence)
   def elixirOfVitality: Card = mkCard("Elixir of Vitality ", "Permanently increases Vitality by 2", ElixirOfVitality)
-  def rarePepe: Card = mkCard("Rare Pepe ", "Level up, increasing all stats", RarePepe)
+  def rarePepe: Card = mkCard("Rare Pepe ", "Gives the player a chunk of experience", RarePepe)
 }
 
 trait Magic extends CardBuilder{

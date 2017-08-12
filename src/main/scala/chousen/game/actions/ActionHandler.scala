@@ -4,6 +4,8 @@ import chousen.Optics._
 import chousen.api.data.{Experience, GameMessage, GameState, Player}
 import chousen.util.LensUtil
 
+import scala.annotation.tailrec
+
 trait ActionHandler {
 
   def handleDead: (GameState) => GameState = EncounterLens.modify {
@@ -28,21 +30,31 @@ trait ActionHandler {
     val exp = player.experience
 
     if (exp.current >= exp.next) {
-      val remainder = exp.current - exp.next
-      val newLevel =  exp.level + 1
-      val newNext = exp.next + exp.level
 
-      val newExp = Experience(remainder, newNext, newLevel)
+      @tailrec
+      def numberOfLevels(e: Experience, acc: Int=0): (Experience, Int) = {
+        if (e.current >= e.next) {
+          val remainder = e.current - e.next
+          val newLevel =  e.level + 1
+          val newNext = e.next + (((e.level + 1) * e.level) / 2)
+
+          val newExp = Experience(remainder, newNext, newLevel)
+
+          numberOfLevels(newExp, acc + 1)
+        } else e -> acc
+      }
+
+      val (newExp, lvls) = numberOfLevels(player.experience)
 
       val lens = LensUtil.duoLens(PlayerMaxHealthLens, PlayerHealthLens)
         .modify { case (maxHp: Int, hp: Int) => {
           val newMax = maxHp + 10
-          (newMax, Math.min(newMax, hp + newLevel))
-        }}.andThen(SetPlayerStats(1, 1, 1, 1))
+          (newMax, Math.min(newMax, hp + (10 * lvls)))
+        }}.andThen(SetPlayerStats(lvls, lvls, lvls, lvls))
             .andThen(PlayerExperienceLens.set(newExp))
 
 
-      (lens(player), Seq(GameMessage(s"${player.name} leveled up to level $newLevel!")))
+      (lens(player), Seq(GameMessage(s"${player.name} leveled up to level ${newExp.level}!")))
 
     } else {
       (player, Seq.empty)
