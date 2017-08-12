@@ -17,7 +17,9 @@ case class Player(name:String, className: String, stats: CharStats, experience: 
 
 case class Experience(current: Int=0, next: Int=3, level: Int=1)
 
-case class Cards(hand: Seq[Card], deck: Seq[Card], discard: Seq[Card], passive: Seq[Card])
+case class Cards(hand: Seq[Card], deck: Seq[Card], discard: Seq[Card], passive: Seq[Card], equippedCards: EquippedCards)
+
+case class EquippedCards(weapon: Option[Card]=None, armour: Option[Card]=None)
 
 case class Equipment(weapon: Option[Weapon], armour: Option[Armour])
 

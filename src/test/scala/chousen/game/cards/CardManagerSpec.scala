@@ -1,7 +1,7 @@
 package chousen.game.cards
 
 import chousen.api.data
-import chousen.api.data.Cards
+import chousen.api.data.{Cards, EquippedCards}
 import org.scalatest.{Matchers, WordSpec}
 
 
@@ -15,7 +15,7 @@ class CardManagerSpec extends WordSpec with Matchers {
     "starting a new makeChar" should {
       "shuffle the cards" in {
         // FIXME Not a real test for shuffling, spy object may be best here
-        shuffledCards shouldNot equal(Cards(cards, Seq.empty, Seq.empty, Seq.empty))
+        shuffledCards shouldNot equal(Cards(cards, Seq.empty, Seq.empty, Seq.empty, EquippedCards()))
       }
 
       "deal cards to the player" in {

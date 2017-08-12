@@ -20,6 +20,7 @@ class EquipmentActionHandler {
       case GiantClub => giantClub
       case BroadSword => boardSword
       case SwordOfIntellect => swordOfIntellect
+      case Chainmail => chainmail
     }
   }
 
@@ -49,6 +50,20 @@ class EquipmentActionHandler {
     val message = GameMessage(s"${p.name} equips the Sword of Intellect.")
 
     val lens = PlayerWeaponLens.set(Option(Weapon(uuid, "Sword of Intellect", Requirements(), Seq(Magic))))
+      .andThen(PlayerPositionLens.modify(p => p - 200))
+
+    lens.apply(p) -> (msgs :+ message)
+  }
+
+
+
+  // Armour
+
+  def chainmail(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
+
+    val message = GameMessage(s"${p.name} puts on some chainmail.")
+
+    val lens = PlayerArmourLens.set(Option(Armour(uuid, "Chainmail", Requirements())))
       .andThen(PlayerPositionLens.modify(p => p - 200))
 
     lens.apply(p) -> (msgs :+ message)
