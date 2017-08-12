@@ -137,7 +137,7 @@ class SelfActionHandlerSpec extends WordSpec {
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val startedGame: GameState = stateCreator.start(gameState)
 
-      val result = selfActionHandler.handle(ElixirOfVitality)(startedGame)
+      val result = selfActionHandler.handle(RarePepe)(startedGame)
 
       "State the action was used" in {
         assert(result.messages.size > startedGame.messages.size)
@@ -147,8 +147,8 @@ class SelfActionHandlerSpec extends WordSpec {
         assert(result.player.position < 100)
       }
 
-      "The Player's stats change" in {
-        assert(result.player.stats != startedGame.player.stats)
+      "The Player gains experience" in {
+        assert(result.player.experience != startedGame.player.experience)
       }
     }
 
@@ -294,8 +294,7 @@ class SelfActionHandlerSpec extends WordSpec {
         assert(result.player.status.nonEmpty)
         assert(result.player.status.exists(_.effect == Rage))
       }
-
-
     }
+
   }
 }
