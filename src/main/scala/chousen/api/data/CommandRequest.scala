@@ -18,6 +18,8 @@ case class CardActionRequest(action: CardAction) extends CommandRequest
 
 case class CampfireActionRequest(action: CampFireAction) extends CommandRequest
 
+case class EquipmentActionRequest(id: UUID, action: EquipAction) extends CommandRequest
+
 
 sealed trait Action
 

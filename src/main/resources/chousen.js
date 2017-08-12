@@ -6,6 +6,8 @@ $(document).ready(function(){
     registerSelfButtons();
     registerCardButtons();
     registerCampfireButtons();
+    registerEquipmentButtons();
+
     scrollText();
 });
 
@@ -108,6 +110,27 @@ function registerCampfireButtons() {
         var action = $(this).attr("action");
 
         sendMessage(uri, action);
+    });
+}
+
+function registerEquipmentButtons() {
+    $('.btn-equip').click(function(evt) {
+        evt.preventDefault();
+
+        var cid = $(this).attr("cid");
+        var uri = $(this).attr("uri");
+        var action = $(this).attr("action");
+
+        jQuery.ajax ({
+            url: uri,
+            type: "POST",
+            data: JSON.stringify({ id: cid, action: action }),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function(){
+                window.location.replace(window.location.href)
+            }
+        });
     });
 }
 

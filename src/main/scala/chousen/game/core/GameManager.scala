@@ -17,6 +17,7 @@ class GameStateManager(damageCalculator: DamageCalculator) extends GameManager[G
 
   val basicAttack = new BasicAttack(damageCalculator)
   val blockHandler = new BlockActionHandler()
+  val equipmentActionHandler = new EquipmentActionHandler()
   val singleTargetActionHandler = new SingleTargetActionHandler(damageCalculator)
   val multiTargetActionHandler = new MultiTargetActionHandler(damageCalculator)
   val selfActionHandler = new SelfActionHandler(damageCalculator.sc)
@@ -36,6 +37,7 @@ class GameStateManager(damageCalculator: DamageCalculator) extends GameManager[G
           case MultiTargetActionRequest(_, action) => c.action == action
           case CardActionRequest(action) => c.action == action
           case CampfireActionRequest(action) => c.action == action
+          case EquipmentActionRequest(_, action) => c.action == action
         }) takeCommand(commandRequest, game)
         else game
       }.apply(game)
@@ -67,6 +69,9 @@ class GameStateManager(damageCalculator: DamageCalculator) extends GameManager[G
         transition(ns, usedCard = true)
       case CampfireActionRequest(action) =>
         val ns = GameTurnLoop.takeTurn(game, CampFireActionHandler.handle(action))
+        transition(ns)
+      case EquipmentActionRequest(id, action) =>
+        val ns = GameTurnLoop.takeTurn(game, equipmentActionHandler.handle(action, id))
         transition(ns)
     }
 
