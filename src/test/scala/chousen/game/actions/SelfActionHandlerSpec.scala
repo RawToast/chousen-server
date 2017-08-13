@@ -296,5 +296,23 @@ class SelfActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given a QuickStep" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(QuickStep)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Increase the player's position" in {
+        assert(result.player.position > 100)
+      }
+    }
+
   }
 }

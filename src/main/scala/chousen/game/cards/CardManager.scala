@@ -88,6 +88,7 @@ trait CardManager {
     }
     populate(cards)
   }
+
   def moveLastDiscardToTopDeck(cards: Cards): Cards = {
     cards.discard.headOption.fold(cards){ (c: data.Card) =>
       cards.copy(deck = Seq(c) ++ cards.deck, discard=cards.discard.tail)
