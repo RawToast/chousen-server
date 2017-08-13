@@ -19,7 +19,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
         elixirOfVitality, elixirOfVitality,
 
-        broadsword, giantClub, giantClub, swordOfIntellect, chainmail,
+        broadsword, giantClub, swordOfIntellect, chainmail,
 
         groundStrike, groundStrike, groundStrike, groundStrike,
 
