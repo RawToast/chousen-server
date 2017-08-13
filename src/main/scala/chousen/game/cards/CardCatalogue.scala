@@ -123,7 +123,7 @@ trait CampFire extends CardBuilder {
 trait Equipment extends CardBuilder {
   def broadsword: Card = mkCard("Broadsword", "Generic Broadsword, significant increase to damage", BroadSword)
   def giantClub: Card = mkCard("Giant Club", "Giant Club, increases damage and deals additional damage based on the enemies current HP", GiantClub)
-  def swordOfIntellect: Card = mkCard("Broad Sword", "Sword of Intellect, increases damage and applies Intellect to attack damage", SwordOfIntellect)
+  def swordOfIntellect: Card = mkCard("Sword of Intellect", "Sword of Intellect, increases damage and applies Intellect to attack damage", SwordOfIntellect)
 
   def chainmail: Card = mkCard("Chainmail", "Generic armour, reduces damage taken", Chainmail)
 }

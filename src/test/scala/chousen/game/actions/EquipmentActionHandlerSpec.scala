@@ -64,7 +64,7 @@ class EquipmentActionHandlerSpec extends WordSpec {
       val startedGame: GameState = stateCreator.start(gameState)
 
       import chousen.Optics._
-      PlayerLens.composeLens(PlayerWeaponLens).set(Option(Weapon(UUID.randomUUID(), "Test", Requirements())))(startedGame)
+      PlayerLens.composeLens(PlayerWeaponLens).set(Option(Weapon(UUID.randomUUID(), "Test", 10)))(startedGame)
 
       val result = equipActionHandler.handle(GiantClub, uuid)(startedGame)
 

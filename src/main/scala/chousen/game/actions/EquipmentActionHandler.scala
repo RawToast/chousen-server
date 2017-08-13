@@ -28,7 +28,7 @@ class EquipmentActionHandler {
 
     val message = GameMessage(s"${p.name} equips a Giant Club.")
 
-    val lens = PlayerWeaponLens.set(Option(Weapon(uuid, "Giant Club", Requirements(), Seq(Crush))))
+    val lens = PlayerWeaponLens.set(Option(Weapon(uuid, "Giant Club", 5, Requirements(), Seq(Crush))))
       .andThen(PlayerPositionLens.modify(p => p - 200))
 
     lens.apply(p) -> (msgs :+ message)
@@ -39,7 +39,7 @@ class EquipmentActionHandler {
 
     val message = GameMessage(s"${p.name} equips a Broad Sword.")
 
-    val lens = PlayerWeaponLens.set(Option(Weapon(uuid, "Broad Sword", Requirements())))
+    val lens = PlayerWeaponLens.set(Option(Weapon(uuid, "Broad Sword", 10, Requirements())))
       .andThen(PlayerPositionLens.modify(p => p - 200))
 
     lens.apply(p) -> (msgs :+ message)
@@ -49,7 +49,7 @@ class EquipmentActionHandler {
 
     val message = GameMessage(s"${p.name} equips the Sword of Intellect.")
 
-    val lens = PlayerWeaponLens.set(Option(Weapon(uuid, "Sword of Intellect", Requirements(), Seq(Magic))))
+    val lens = PlayerWeaponLens.set(Option(Weapon(uuid, "Sword of Intellect", 2, Requirements(), Seq(Magic))))
       .andThen(PlayerPositionLens.modify(p => p - 200))
 
     lens.apply(p) -> (msgs :+ message)
@@ -63,7 +63,7 @@ class EquipmentActionHandler {
 
     val message = GameMessage(s"${p.name} puts on some chainmail.")
 
-    val lens = PlayerArmourLens.set(Option(Armour(uuid, "Chainmail", Requirements())))
+    val lens = PlayerArmourLens.set(Option(Armour(uuid, "Chainmail", 8)))
       .andThen(PlayerPositionLens.modify(p => p - 200))
 
     lens.apply(p) -> (msgs :+ message)

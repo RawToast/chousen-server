@@ -23,9 +23,9 @@ case class EquippedCards(weapon: Option[Card]=None, armour: Option[Card]=None)
 
 case class Equipment(weapon: Option[Weapon]=None, armour: Option[Armour]=None)
 
-case class Weapon(cardId: UUID, name: String, requirements: Requirements, effects: Seq[WeaponEffect]=List.empty)
+case class Weapon(cardId: UUID, name: String, dmg: Int, requirements: Requirements=Requirements(), effects: Seq[WeaponEffect]=List.empty)
 
-case class Armour(cardId: UUID, name: String, requirements: Requirements)
+case class Armour(cardId: UUID, name: String, defense: Int, requirements: Requirements=Requirements())
 
 case class Requirements(str: Option[Int]=None, dex: Option[Int]=None, int: Option[Int]=None)
 
