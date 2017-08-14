@@ -20,7 +20,8 @@ trait GameStateOptics {
 
   val HandLens: Lens[GameState, Seq[Card]] = GenLens[GameState](_.cards.hand)
   val DiscardLens: Lens[GameState, Seq[Card]] = GenLens[GameState](_.cards.discard)
-
+  val PassivesLens: Lens[GameState, Seq[Card]] = GenLens[GameState](_.cards.passive)
+  val EquipmentLens: Lens[GameState, EquippedCards] = GenLens[GameState](_.cards.equippedCards)
 
   val EncounterLens: Lens[GameState, (Player, Set[Enemy], Seq[GameMessage])] =
     LensUtil.triLens(PlayerLens,

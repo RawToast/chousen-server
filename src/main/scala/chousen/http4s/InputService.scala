@@ -82,6 +82,15 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         ga.withGame(id) { g =>
           passiveRequest[CampfireActionRequest](req, g, cardId)(gsm.useCard)
         }
+
+      case req@POST -> Root / "game" / uuid / "equip" / cardUuid =>
+        implicit val enumDecoder = deriveEnumerationDecoder[EquipAction]
+
+        val (id, cardId) = getIds(uuid, cardUuid)
+
+        ga.withGame(id) { g =>
+          cardRequest[EquipmentActionRequest](req, g, cardId)(gsm.useCard)
+        }
     }
   }
 

@@ -13,11 +13,21 @@ case class CharStats(maxHp: Int,
                      speed: Int = 8)
 
 
-case class Player(name:String, className: String, stats: CharStats, experience: Experience, position: Int, status: Seq[Status] = Seq.empty)
+case class Player(name:String, className: String, stats: CharStats, experience: Experience, equipment: Equipment, position: Int, status: Seq[Status] = Seq.empty)
 
 case class Experience(current: Int=0, next: Int=3, level: Int=1)
 
-case class Cards(hand: Seq[Card], deck: Seq[Card], discard: Seq[Card], passive: Seq[Card])
+case class Cards(hand: Seq[Card], deck: Seq[Card], discard: Seq[Card], passive: Seq[Card], equippedCards: EquippedCards)
+
+case class EquippedCards(weapon: Option[Card]=None, armour: Option[Card]=None)
+
+case class Equipment(weapon: Option[Weapon]=None, armour: Option[Armour]=None)
+
+case class Weapon(cardId: UUID, name: String, dmg: Int, requirements: Requirements=Requirements(), effects: Seq[WeaponEffect]=List.empty)
+
+case class Armour(cardId: UUID, name: String, defense: Int, requirements: Requirements=Requirements())
+
+case class Requirements(str: Option[Int]=None, dex: Option[Int]=None, int: Option[Int]=None)
 
 case class Card(id: UUID, name: String, description: String, action: Action)
 
@@ -44,3 +54,10 @@ case object Block extends StatusEffect
 case object Dexterity extends StatusEffect
 case object Smart extends StatusEffect
 case object Rage extends StatusEffect
+case object Poison extends StatusEffect
+
+sealed trait WeaponEffect
+
+case object Magic extends WeaponEffect
+case object Crush extends WeaponEffect
+case object Toxic extends WeaponEffect

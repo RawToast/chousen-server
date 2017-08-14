@@ -1,7 +1,9 @@
 package chousen.game.cards
+import chousen.Optics._
 import chousen.api.data
 import chousen.api.data._
-import chousen.Optics._
+import monocle.Lens
+import monocle.macros.GenLens
 
 import scala.annotation.tailrec
 import scala.util.Random
@@ -27,14 +29,36 @@ trait CardManager {
     }
 
     action
-      .fold(game){c =>
+      .fold(game) { c =>
         val ng = f(c)
         if (ng == game) ng
         else {
           // Move to discard
-          HandLens.modify((cs:Seq[data.Card]) => cs.filterNot(_ ~= c))
-            .andThen(DiscardLens.modify((ds: Seq[data.Card]) => c +: ds))
-            .apply(ng)
+          c.action match {
+            case _: CampFireAction => ng
+            case eq: EquipAction => {
+              def equip(optCard: Option[Card], lens: Lens[EquippedCards, Option[Card]]) = {
+               optCard match {
+                  case Some(k) =>
+                    EquipmentLens.composeLens(lens).set(Option(c))
+                      .andThen(HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= c)))
+                      .andThen(HandLens.modify(_ :+ k))
+                  case None =>
+                    EquipmentLens.composeLens(lens).set(Option(c)).andThen(
+                      HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= c)))
+                }
+
+              }
+
+              eq match {
+                case _: EquipWeapon => equip(game.cards.equippedCards.weapon, GenLens[EquippedCards](_.weapon))
+                case _: EquipArmour => equip(game.cards.equippedCards.armour, GenLens[EquippedCards](_.armour))
+              }
+            }.apply(ng)
+            case _ => HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= c))
+              .andThen(DiscardLens.modify((ds: Seq[data.Card]) => c +: ds))
+              .apply(ng)
+          }
         }
       }
 
@@ -45,7 +69,7 @@ trait CardManager {
 
     val (hand, deck) = shuffledCards.splitAt(MAX_HAND_SIZE)
 
-    Cards(hand, deck, Seq.empty, passiveCards)
+    Cards(hand, deck, Seq.empty, passiveCards, EquippedCards())
   }
 
   @tailrec
@@ -64,6 +88,7 @@ trait CardManager {
     }
     populate(cards)
   }
+
   def moveLastDiscardToTopDeck(cards: Cards): Cards = {
     cards.discard.headOption.fold(cards){ (c: data.Card) =>
       cards.copy(deck = Seq(c) ++ cards.deck, discard=cards.discard.tail)

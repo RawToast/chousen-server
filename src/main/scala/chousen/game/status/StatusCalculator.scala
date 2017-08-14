@@ -52,6 +52,7 @@ class StatusCalculator {
 
         (p: CharStats, _: Status) => m.andThen(f).apply(p)
       case Block => nop
+      case Poison => nop
     }
     func(p, s)
   }

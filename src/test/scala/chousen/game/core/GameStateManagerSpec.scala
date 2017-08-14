@@ -56,7 +56,7 @@ class GameStateManagerSpec extends WordSpec {
         "the enemy takes their turn" in {
           assert(result.player.stats.currentHp < startedGame.player.stats.currentHp)
 
-          assert(latestMessages.exists(_.text.contains("Slime attacks Test Player")))
+          assert(latestMessages.exists(_.text.contains("Slime grazes Test Player")))
           assert(latestMessages.exists(_.text.contains(" damage.")))
         }
       }
@@ -97,7 +97,7 @@ class GameStateManagerSpec extends WordSpec {
         "the enemy takes their turn" in {
           assert(result.player.stats.currentHp < startedGame.player.stats.currentHp)
 
-          assert(latestMessages.exists(_.text.contains("Slime attacks Test Player")))
+          assert(latestMessages.exists(_.text.contains("Slime grazes Test Player")))
           assert(latestMessages.exists(_.text.contains(" damage.")))
         }
       }

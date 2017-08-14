@@ -18,6 +18,8 @@ case class CardActionRequest(action: CardAction) extends CommandRequest
 
 case class CampfireActionRequest(action: CampFireAction) extends CommandRequest
 
+case class EquipmentActionRequest(id: UUID, action: EquipAction) extends CommandRequest
+
 
 sealed trait Action
 
@@ -26,6 +28,12 @@ sealed trait MultiAction extends Action
 sealed trait SelfAction extends Action
 sealed trait CardAction extends Action
 sealed trait CampFireAction extends Action
+
+
+sealed trait EquipAction extends Action
+
+sealed trait EquipWeapon extends EquipAction
+sealed trait EquipArmour extends EquipAction
 
 
 
@@ -79,3 +87,10 @@ case object Restore extends CardAction
 case object Rest extends CampFireAction
 case object Explore extends CampFireAction
 case object RestAndExplore extends CampFireAction
+
+
+case object GiantClub extends EquipWeapon
+case object BroadSword extends EquipWeapon
+case object SwordOfIntellect extends EquipWeapon
+
+case object Chainmail extends EquipArmour

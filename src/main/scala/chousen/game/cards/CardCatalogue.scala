@@ -4,7 +4,7 @@ import java.util.UUID
 
 import chousen.api.data._
 
-object CardCatalogue extends Potions with PermanentEffects with Magic with Strength with Dexterity with Utility with CampFire {
+object CardCatalogue extends Potions with PermanentEffects with Magic with Strength with Dexterity with Utility with CampFire with Equipment {
 
 
   def defaultDeck: Seq[Card] = // 15
@@ -15,14 +15,16 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         haste, haste, haste, haste,
         stoneSkin, stoneSkin, stoneSkin, stoneSkin,
         rage, rage, rage, rage,
+
         elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
         elixirOfVitality, elixirOfVitality,
+
+        broadsword, giantClub, swordOfIntellect, chainmail,
 
         groundStrike, groundStrike, groundStrike, groundStrike,
 
         crushingBlow, crushingBlow, crushingBlow, crushingBlow,
         stunningStrike, stunningStrike, stunningStrike, stunningStrike,
-
         counter, counter, counter, counter,
         destruction, destruction, destruction, destruction,
 
@@ -116,4 +118,12 @@ trait CampFire extends CardBuilder {
   def rest: Card = mkCard("Rest", "Rest until you are fully recovered", Rest)
   def explore: Card = mkCard("Explore", "Draw until your hand is full (always draw at least two cards)", Explore)
   def restAndExplore: Card = mkCard("Rest and Explore", "Recover some health and draw two cards (or one if full)", RestAndExplore)
+}
+
+trait Equipment extends CardBuilder {
+  def broadsword: Card = mkCard("Broadsword", "Generic Broadsword, significant increase to damage", BroadSword)
+  def giantClub: Card = mkCard("Giant Club", "Giant Club, increases damage and deals additional damage based on the enemies current HP", GiantClub)
+  def swordOfIntellect: Card = mkCard("Sword of Intellect", "Sword of Intellect, increases damage and applies Intellect to attack damage", SwordOfIntellect)
+
+  def chainmail: Card = mkCard("Chainmail", "Generic armour, reduces damage taken", Chainmail)
 }
