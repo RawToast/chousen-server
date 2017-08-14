@@ -4,6 +4,7 @@ import java.util.UUID
 
 import chousen.api.data.{GameStateGenerator, _}
 import chousen.game.actions.DamageCalculator
+import chousen.game.cards.CardCatalogue
 import chousen.game.dungeon.SimpleDungeonBuilder
 import chousen.game.status.StatusCalculator
 import org.scalatest.WordSpec
@@ -149,6 +150,41 @@ class GameStateManagerSpec extends WordSpec {
           assert(!result.cards.hand.contains(card))
         }
       }
+
+      "Is a valid single target request for a card with charges" should {
+
+        lazy val card = GameStateGenerator.crushingBlowCard.copy(charges = Option(2))
+
+        val initialState = GameStateOptics.HandLens.modify(_ :+ card)(gameState)
+
+        val request = SingleTargetActionRequest(GameStateGenerator.firstEnemy.id, CrushingBlow)
+
+        lazy val result = gameStateManager.useCard(card, request, initialState)
+
+        "Change the game state" in {
+          assert(result != initialState)
+        }
+
+        "Does not remove the card from the player's hand" in {
+          assert(result.cards.hand.exists(_.id == card.id))
+        }
+
+        "Reduces the number of charges" in {
+          assert(result.cards.hand.find(_.id == card.id)
+            .flatMap(_.charges) == Option(1))
+        }
+
+        "Discards the card if it has a single charge" in {
+          lazy val singleChargeCard = GameStateGenerator.crushingBlowCard.copy(charges = Option(1))
+          val testState = GameStateOptics.HandLens.modify(_ :+ singleChargeCard)(gameState)
+          val r2 = SingleTargetActionRequest(GameStateGenerator.firstEnemy.id, CrushingBlow)
+
+          lazy val result2 = gameStateManager.useCard(singleChargeCard.copy(charges = Option(1)), r2, testState)
+
+
+          assert(!result2.cards.hand.exists(_.id == singleChargeCard.id))
+        }
+      }
     }
 
     "Accepting an action card" when {
@@ -174,6 +210,35 @@ class GameStateManagerSpec extends WordSpec {
 
         "Not affect the current encounter" in {
           assert(result.dungeon.currentEncounter == initialState.dungeon.currentEncounter)
+        }
+      }
+    }
+
+    "Accepting equipment card" when {
+
+      "The player is already equipped" should {
+        import chousen.Optics._
+
+        val broardsword = CardCatalogue.broadsword
+
+        val swordOfIntellect = CardCatalogue.swordOfIntellect
+        val swordId = swordOfIntellect.id
+        val request = EquipmentActionRequest(swordId, SwordOfIntellect)
+
+
+        val initialState = GameStateOptics.HandLens.modify(_ :+ swordOfIntellect)
+          .andThen(PlayerLens.composeLens(PlayerWeaponLens).set(Option(Weapon(broardsword.id, "Broadsword", 10))))
+            .andThen(EquipmentLens.set(EquippedCards(Option(broardsword))))(gameState)
+
+        lazy val result = gameStateManager.useCard(swordOfIntellect, request, initialState)
+
+        "Equip the new card" in {
+          assert(result.cards.equippedCards.weapon != initialState.cards.equippedCards.weapon)
+        }
+
+        "Place the old item in the Player's hand" in {
+          assert(!initialState.cards.hand.contains(broardsword))
+          assert(result.cards.hand.contains(broardsword))
         }
       }
     }

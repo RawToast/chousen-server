@@ -13,20 +13,20 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
         might, might, might, might,
         haste, haste, haste, haste,
-        stoneSkin, stoneSkin, stoneSkin, stoneSkin,
-        rage, rage, rage, rage,
+        stoneSkin, stoneSkin,
+        rage, rage,
 
         elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
         elixirOfVitality, elixirOfVitality,
 
         broadsword, giantClub, swordOfIntellect, chainmail,
 
-        groundStrike, groundStrike, groundStrike, groundStrike,
+        groundStrike, groundStrike, groundStrike,
 
-        crushingBlow, crushingBlow, crushingBlow, crushingBlow,
-        stunningStrike, stunningStrike, stunningStrike, stunningStrike,
-        counter, counter, counter, counter,
-        destruction, destruction, destruction, destruction,
+        crushingBlow, crushingBlow,
+        stunningStrike, stunningStrike,
+        counter, counter,
+        destruction, destruction,
 
         rummage, rummage, rummage, rummage,
         replace, replace,
@@ -54,7 +54,8 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 }
 
 sealed trait CardBuilder {
-  def mkCard(name: String, description: String, action: Action) = Card(UUID.randomUUID(), name, description, action)
+  def mkCard(name: String, description: String, action: Action, charges:Int=0) =
+    Card(UUID.randomUUID(), name, description, action, if (charges == 0) None else Some(charges))
 }
 
 trait Potions extends CardBuilder {
@@ -86,12 +87,12 @@ trait Magic extends CardBuilder{
 }
 
 trait Strength extends CardBuilder{
-  def crushingBlow: Card = mkCard("Crushing Blow", "Deals heavy damage, but has an increased movement penalty", CrushingBlow)
-  def stunningStrike: Card = mkCard("Stunning Strike", "Attack that stuns and reduces the speed of a single enemy", StunningStrike)
-  def groundStrike: Card = mkCard("Ground Strike", "Slam the ground with your weapon, hitting all enemies and reducing their position", GroundStrike)
+  def crushingBlow: Card = mkCard("Crushing Blow", "Deals heavy damage, but has an increased movement penalty", CrushingBlow, 4)
+  def stunningStrike: Card = mkCard("Stunning Strike", "Attack that stuns and reduces the speed of a single enemy", StunningStrike, 4)
+  def groundStrike: Card = mkCard("Ground Strike", "Slam the ground with your weapon, hitting all enemies and reducing their position", GroundStrike, 2)
 
-  def counter: Card = mkCard("Counter", "Attack that deals more damage the stronger the enemy", Counter)
-  def destruction: Card = mkCard("Destruction", "Destructive attack that lowers an enemies defenses", Destruction)
+  def counter: Card = mkCard("Counter", "Attack that deals more damage the stronger the enemy", Counter, 2)
+  def destruction: Card = mkCard("Destruction", "Destructive attack that lowers an enemies defenses", Destruction, 4)
 }
 
 trait Dexterity extends CardBuilder{
