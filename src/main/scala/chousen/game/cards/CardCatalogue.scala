@@ -13,15 +13,15 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
         might, might, might, might,
         haste, haste, haste, haste,
-        stoneSkin, stoneSkin, stoneSkin, stoneSkin,
-        rage, rage, rage, rage,
+        stoneSkin, stoneSkin,
+        rage, rage,
 
         elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
         elixirOfVitality, elixirOfVitality,
 
         broadsword, giantClub, swordOfIntellect, chainmail,
 
-        groundStrike, groundStrike, groundStrike, groundStrike,
+        groundStrike, groundStrike, groundStrike,
 
         crushingBlow, crushingBlow,
         stunningStrike, stunningStrike,
