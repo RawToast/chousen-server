@@ -85,7 +85,7 @@ trait CardManager {
   @tailrec
   final def drawCard(cards: Cards, limit:Int=MAX_HAND_SIZE): Cards = {
     if (cards.hand.size < limit) {
-      if (cards.deck.isEmpty) drawCard(cards.copy(deck = cards.discard, discard = Seq.empty))
+      if (cards.deck.isEmpty) drawCard(cards.copy(deck = cards.discard.map(c => c.copy(charges = c.maxCharges)), discard = Seq.empty))
         else cards.copy(hand = cards.hand :+ cards.deck.head, deck = cards.deck.tail)
     } else cards
   }
