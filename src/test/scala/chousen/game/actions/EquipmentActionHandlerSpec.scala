@@ -30,7 +30,6 @@ class EquipmentActionHandlerSpec extends WordSpec {
       lazy val latestMessages = result.messages.takeRight(numberOfNewMessages)
 
       "State the action was used" in {
-        result.messages.foreach(m => println(m.text))
         assert(result.messages.size > startedGame.messages.size)
         assert(result.messages.contains(GameMessage(s"${GameStateGenerator.playerName} equips a Broad Sword.")))
       }
