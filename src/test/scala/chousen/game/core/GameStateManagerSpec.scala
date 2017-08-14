@@ -149,6 +149,41 @@ class GameStateManagerSpec extends WordSpec {
           assert(!result.cards.hand.contains(card))
         }
       }
+
+      "Is a valid single target request for a card with charges" should {
+
+        lazy val card = GameStateGenerator.crushingBlowCard.copy(charges = Option(2))
+
+        val initialState = GameStateOptics.HandLens.modify(_ :+ card)(gameState)
+
+        val request = SingleTargetActionRequest(GameStateGenerator.firstEnemy.id, CrushingBlow)
+
+        lazy val result = gameStateManager.useCard(card, request, initialState)
+
+        "Change the game state" in {
+          assert(result != initialState)
+        }
+
+        "Does not remove the card from the player's hand" in {
+          assert(result.cards.hand.exists(_.id == card.id))
+        }
+
+        "Reduces the number of charges" in {
+          assert(result.cards.hand.find(_.id == card.id)
+            .flatMap(_.charges) == Option(1))
+        }
+
+        "Discards the card if it has a single charge" in {
+          lazy val singleChargeCard = GameStateGenerator.crushingBlowCard.copy(charges = Option(1))
+          val testState = GameStateOptics.HandLens.modify(_ :+ singleChargeCard)(gameState)
+          val r2 = SingleTargetActionRequest(GameStateGenerator.firstEnemy.id, CrushingBlow)
+
+          lazy val result2 = gameStateManager.useCard(singleChargeCard.copy(charges = Option(1)), r2, testState)
+
+
+          assert(!result2.cards.hand.exists(_.id == singleChargeCard.id))
+        }
+      }
     }
 
     "Accepting an action card" when {

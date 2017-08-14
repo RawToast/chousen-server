@@ -28,6 +28,29 @@ trait CardManager {
         .find(_ ~= card)
     }
 
+    def discard(card: Card, ng: GameState) =  HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= card))
+      .andThen(DiscardLens.modify((ds: Seq[data.Card]) => card +: ds)).apply(ng)
+
+    def handleEquipAction(ea: EquipAction, c: Card): (GameState) => GameState = {
+      def equip(optCard: Option[Card], lens: Lens[EquippedCards, Option[Card]]): (GameState) => GameState = {
+        optCard match {
+          case Some(k) =>
+            EquipmentLens.composeLens(lens).set(Option(c))
+              .andThen(HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= c)))
+              .andThen(HandLens.modify(_ :+ k))
+          case None =>
+            EquipmentLens.composeLens(lens).set(Option(c)).andThen(
+              HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= c)))
+        }
+
+      }
+
+      ea match {
+        case _: EquipWeapon => equip(game.cards.equippedCards.weapon, GenLens[EquippedCards](_.weapon))
+        case _: EquipArmour => equip(game.cards.equippedCards.armour, GenLens[EquippedCards](_.armour))
+      }
+    }
+
     action
       .fold(game) { c =>
         val ng = f(c)
@@ -36,31 +59,18 @@ trait CardManager {
           // Move to discard
           c.action match {
             case _: CampFireAction => ng
-            case eq: EquipAction => {
-              def equip(optCard: Option[Card], lens: Lens[EquippedCards, Option[Card]]) = {
-               optCard match {
-                  case Some(k) =>
-                    EquipmentLens.composeLens(lens).set(Option(c))
-                      .andThen(HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= c)))
-                      .andThen(HandLens.modify(_ :+ k))
-                  case None =>
-                    EquipmentLens.composeLens(lens).set(Option(c)).andThen(
-                      HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= c)))
-                }
-
+            case eq: EquipAction => handleEquipAction(eq, c)(ng)
+            case _ =>
+              c.charges match {
+                case Some(i) =>
+                  if (i > 1) HandLens.modify(_.map(x => if(x ~= c) c.copy(charges = c.charges.map(_ - 1)) else x))(ng)
+                  else discard(c, ng)
+                case None => discard(c, ng)
               }
-
-              eq match {
-                case _: EquipWeapon => equip(game.cards.equippedCards.weapon, GenLens[EquippedCards](_.weapon))
-                case _: EquipArmour => equip(game.cards.equippedCards.armour, GenLens[EquippedCards](_.armour))
-              }
-            }.apply(ng)
-            case _ => HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= c))
-              .andThen(DiscardLens.modify((ds: Seq[data.Card]) => c +: ds))
-              .apply(ng)
           }
         }
       }
+
 
   }
 
