@@ -22,7 +22,7 @@
                     <div class="col-xs-2 col-sm-2 col-md-2">HP @{gameState.player.stats.currentHp}/@{gameState.player.stats.maxHp}</div>
                     <div class="col-xs-2 col-sm-2 col-md-2">CS: @{gameState.player.className}</div>
                     <div class="col-xs-2 col-sm-2 col-md-2">LV: @{gameState.player.experience.level}</div>
-                    <div class="col-xs-2 col-sm-2 col-md-2">ST: @{gameState.player.status.map(_.effect).mkString(", ")}</div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">ST: @{gameState.player.status.map(_.effect).toSet.mkString(", ")}</div>
                     <div class="col-xs-2 col-sm-2 col-md-2">@{gameState.player.position}</div>
                 </div>
 
@@ -39,20 +39,21 @@
                     <div class="col-xs-2 col-sm-2 col-md-2">Weapon: @{gameState.player.equipment.weapon.map(_.name).getOrElse("None")}</div>
                     <div class="col-xs-2 col-sm-2 col-md-2">Armour: @{gameState.player.equipment.armour.map(_.name).getOrElse("None")}</div>
                 </div>
-
+                <br>
                 <!-- Enemy Stats -->
                 @for(e <- gameState.dungeon.currentEncounter.enemies.toSeq.sortBy(_.id)) {
                     <div class="row" style="padding: 2px 0px">
                         <div class="col-xs-2 col-sm-2 col-md-2">@{e.name}</div>
                         <div class="col-xs-2 col-sm-2 col-md-2"></div>
                         <div class="col-xs-2 col-sm-2 col-md-2">HP @{e.stats.currentHp}/@{e.stats.maxHp}</div>
-                        <div class="col-xs-2 col-sm-2 col-md-2">ST: @{e.status.map(_.effect).mkString(", ")}</div>
+                        <div class="col-xs-2 col-sm-2 col-md-2">ST: @{e.status.map(_.effect).toSet.mkString(", ")}</div>
                         <div class="col-xs-2 col-sm-2 col-md-2"></div>
                         <div class="col-xs-2 col-sm-2 col-md-2">@{e.position}</div>
                     </div>
                 }
             </div>
 
+            <br>
             <!-- Game message area -->
             <div id="gameMessagesRow" class="row" style="padding: 8px 0px">
                 <div id="gameMessagesOffSet" class="col-xs-10">

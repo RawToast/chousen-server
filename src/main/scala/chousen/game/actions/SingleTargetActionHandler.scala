@@ -79,16 +79,20 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
 
   def destruction(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
     val dmg = damageCalculator.calculatePlayerDamage(p, e, Multipliers.lowStrengthSkill)
-
-    val targetMsg = GameMessage(s"${p.name} lands a destructive blow on ${e.name}!")
-    val dmgMsg = GameMessage(s"${e.name}'s defense is broken and takes $dmg damage.")
+    val sePlayer = damageCalculator.sc.calculate(p)
 
     val newEnemy = LensUtil.duoLens(EnemyStatsLens.composeLens(HpLens), EnemyStatsLens.composeLens(VitalityLens))
-        .modify{case (hp, vit) => hp - dmg -> Math.max(1, vit - (p.stats.strength / 2)) }
+        .modify{case (hp, vit) => hp - dmg -> Math.max(1, vit - (sePlayer.stats.strength / 2)) }
           .apply(e)
 
-    val gameMessages = msgs :+ targetMsg :+ dmgMsg
+    val vitLoss = e.stats.vitality - newEnemy.stats.vitality
 
-    (p.copy(position = p.position - 130 + (p.stats.strength / 4)), Option(newEnemy), gameMessages)
+    val gameMessages = if (vitLoss > 0) {
+      val targetMsg = GameMessage(s"${p.name} lands a destructive blow on ${e.name}!")
+      val dmgMsg = GameMessage(s"${e.name}'s loses $vitLoss Vitality and takes $dmg damage.")
+      msgs :+ targetMsg :+ dmgMsg
+    } else msgs :+ GameMessage(s"${p.name} lands a destructive blow on ${e.name} and deals $dmg damage!")
+
+    (p.copy(position = p.position - 110 + (p.stats.strength / 4)), Option(newEnemy), gameMessages)
   }
 }

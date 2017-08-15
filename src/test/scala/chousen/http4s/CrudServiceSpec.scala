@@ -41,6 +41,24 @@ class CrudServiceSpec extends WordSpec {
 
     }
 
+    "Creating a game with a choice" should {
+
+      val callService: (Request) => Task[MaybeResponse] = service.routes.apply(_: Request)
+      val req: Request = Request(method = Method.POST, uri = Uri.unsafeFromString("/game/david/start/1"))
+      val task: Task[MaybeResponse] = callService(req)
+
+      lazy val result: Response = task.unsafeRun().orNotFound
+
+      "Return successfully" in {
+        assert(result.status.responseClass.isSuccess)
+      }
+
+      "Return with a status of Created" in {
+        assert(result.status.code == 201)
+      }
+
+    }
+
 
     "Loading a game that does not exist" should {
 

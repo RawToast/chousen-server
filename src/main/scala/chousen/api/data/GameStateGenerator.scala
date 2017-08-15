@@ -32,7 +32,7 @@ object GameStateGenerator {
     import cats.implicits._
     import chousen.Implicits._
 
-    val cards = CardManager.startGame(CardCatalogue.defaultDeck, CardCatalogue.passiveCards)
+    val cards = CardManager.startGame(CardCatalogue.fighterDeck, CardCatalogue.passiveCards)
     def mkBattle(e: Enemy) = Battle(Set(e))
     def createBattle = mkBattle(firstEnemy) |+| mkBattle(secondEnemy)
 

@@ -9,7 +9,7 @@ import scala.annotation.tailrec
 import scala.util.Random
 
 object CardManager extends CardManager {
-  val initialCards: Seq[Card] = CardCatalogue.defaultDeck
+  val initialCards: Seq[Card] = CardCatalogue.fighterDeck
 }
 
 

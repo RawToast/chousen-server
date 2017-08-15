@@ -6,28 +6,26 @@ import chousen.api.data._
 
 object CardCatalogue extends Potions with PermanentEffects with Magic with Strength with Dexterity with Utility with CampFire with Equipment {
 
-
-  def defaultDeck: Seq[Card] = // 15
+  // Deck built around stun/counter ST
+  def fighterDeck: Seq[Card] = // 15
       Seq(healWounds, healWounds, healWounds, healWounds,
         rarePepe, rarePepe, rarePepe, rarePepe,
 
         might, might, might, might,
         haste, haste, haste, haste,
         stoneSkin, stoneSkin,
-        rage, rage,
-        continuation, continuation, regen, regen,
+        continuation, continuation,
+        regen, regen,
 
         elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
         elixirOfVitality, elixirOfVitality,
 
-        broadsword, giantClub, swordOfIntellect, chainmail,
+        broadsword, swordOfIntellect, chainmail, chainmail,
 
         groundStrike, groundStrike, groundStrike,
 
-        crushingBlow, crushingBlow,
         stunningStrike, stunningStrike,
         counter, counter,
-        destruction, destruction,
 
         rummage, rummage, rummage, rummage,
         replace, replace,
@@ -35,30 +33,62 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         miracle, miracle
       )
 
-//  // Deck built around auto-attacks and rage
-//  def berserkerDeck = {
-//
-//    healWounds, healWounds, healWounds, healWounds,
-//    regen, regen, regen, regen,
-//    rarePepe, rarePepe, rarePepe, rarePepe,
-//
-//    elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
-//    elixirOfDexterity, elixirOfDexterity, elixirOfVitality, elixirOfVitality,
-//
-//
-//    rage, rage, rage, rage,
-//    might, might, might, might,
-//    haste, haste, haste, haste,
-//    stoneSkin, stoneSkin, continuation, continuation,
-//
-//    GiantClub is better for this build -- no other access to % damage
-//    giantClub, giantClub, chainmail, chainmail,
-//
-//    rummage, rummage, rummage, rummage,
-//    restore, restore, miracle,
-//    // Need Replace to drop armour/weapon until discarding actions are available
-//    replace
-//  }
+  // Deck built around auto-attacks and rage
+  def berserkerDeck: Seq[Card] = Seq(
+
+    healWounds, healWounds,
+    regen, regen, regen, regen,
+    rarePepe, rarePepe, rarePepe, rarePepe,
+
+    elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
+    elixirOfDexterity, elixirOfDexterity, elixirOfVitality, elixirOfVitality,
+
+
+    rage, rage, rage, rage,
+    might, might, might, might,
+    haste, haste, haste, haste,
+    continuation, continuation, continuation, continuation,
+    stoneSkin, stoneSkin,
+
+    // GiantClub is better for this build -- no other access to % damage
+    giantClub, giantClub, chainmail, chainmail,
+
+    groundStrike, groundStrike,
+
+    rummage, rummage, rummage, rummage,
+    restore, restore, miracle,
+    // Need Replace to drop armour/weapon until discarding actions are available
+    replace
+  )
+
+  // Deck built around high strength skills
+  def warriorDeck: Seq[Card] = Seq(
+
+    healWounds, healWounds, healWounds, healWounds,
+    regen, regen, regen, regen,
+    rarePepe, rarePepe, rarePepe, rarePepe,
+
+    elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
+    elixirOfDexterity, elixirOfDexterity, elixirOfVitality, elixirOfVitality,
+
+    might, might, might, might,
+    haste, haste, haste, haste,
+    continuation, continuation,
+    stoneSkin, stoneSkin,
+
+    // GiantClub is better for this build -- no other access to % damage
+    broadsword, broadsword, chainmail, chainmail,
+
+    destruction, destruction, destruction, destruction,
+    crushingBlow, crushingBlow, crushingBlow, crushingBlow,
+
+    groundStrike, groundStrike,
+
+    rummage, rummage, rummage, rummage,
+    miracle, miracle, miracle,
+    // Need Replace to drop armour/weapon until discarding actions are available
+    replace
+  )
 
 
 //  def cheeseDeck: Seq[Card] = // 15
@@ -109,7 +139,7 @@ trait Magic extends CardBuilder{
 
 trait Strength extends CardBuilder{
   def crushingBlow: Card = mkCard("Crushing Blow", "Deals heavy damage, but has an increased movement penalty", CrushingBlow, 4)
-  def stunningStrike: Card = mkCard("Stunning Strike", "Attack that stuns and reduces the speed of a single enemy", StunningStrike, 4)
+  def stunningStrike: Card = mkCard("Stunning Strike", "Attack that stuns and reduces the speed of a single enemy", StunningStrike, 3)
   def groundStrike: Card = mkCard("Ground Strike", "Slam the ground with your weapon, hitting all enemies and reducing their position", GroundStrike, 2)
 
   def counter: Card = mkCard("Counter", "Attack that deals more damage the stronger the enemy", Counter, 2)

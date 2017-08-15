@@ -28,8 +28,18 @@ class CrudService(ga: GameAccess[Task, Response], creator: GameStateCreation, sc
       }
 
     //  create
-    case POST -> Root / "game" / playerName / "start" => // used
+    case POST -> Root / "game" / playerName / "start"  => // used
       val startedGame = creator.createAndStart(playerName)
+
+      for {
+        game <- ga.storeGame(startedGame)
+        asJson = game.asJson
+        result <- Created(asJson)
+      } yield result
+
+    //  create
+    case POST -> Root / "game" / playerName / "start" / IntVar(choice) => // used
+      val startedGame = creator.createAndStart(playerName, choice)
 
       for {
         game <- ga.storeGame(startedGame)

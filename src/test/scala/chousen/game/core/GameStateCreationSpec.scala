@@ -28,7 +28,25 @@ class GameStateCreationSpec extends WordSpec {
 
         assert(game1 != game2)
         assert(game1.uuid != game2.uuid)
+
+        assert(game1.player.className == game2.player.className)
       }
+
+      "Set a different class with a different choice value" in {
+        val game1 = creator.create("Bob", 1)
+        val game2 = creator.create("Bob", 2)
+        val game3 = creator.create("Bob", 3)
+
+
+        assert(game1 != game2)
+        assert(game1.uuid != game2.uuid)
+
+        assert(game1.player.className != game2.player.className)
+        assert(game2.player.className != game3.player.className)
+        assert(game1.player.className != game3.player.className)
+        }
+
+
 
     }
 
