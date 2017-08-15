@@ -30,7 +30,8 @@ class SelfActionHandler(sc: StatusCalculator) {
       case PotionOfDexterity => dexterity
       case PotionOfIntelligence => intelligence
       case PotionOfStoneSkin => stoneskin
-      case PotionOfRage => berserk
+      case PotionOfRage => rage
+      case PotionOfContinuation => continuation
     }
 
 
@@ -136,12 +137,19 @@ class SelfActionHandler(sc: StatusCalculator) {
       .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
   }
 
-  def berserk(p: Player, msgs: Seq[GameMessage]) = {
+  def rage(p: Player, msgs: Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} drinks a Potion of Rage!")
 
-    val status: Status = StatusBuilder.makeBerserk(4)
+    val status: Status = StatusBuilder.makeBerserk(4, turns = 8)
 
     (PlayerStatusLens.modify(_ :+ status)
+      .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
+  }
+
+  def continuation(p: Player, msgs: Seq[GameMessage]) = {
+    val message = GameMessage(s"${p.name} drinks a Potion of Continuation!")
+
+    (PlayerStatusLens.modify(_.map(s => s.copy(turns = s.turns + 5)))
       .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
   }
 }
