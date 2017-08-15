@@ -6,7 +6,7 @@ import chousen.api.data.{GameStateGenerator, _}
 import chousen.game.actions.DamageCalculator
 import chousen.game.cards.CardCatalogue
 import chousen.game.dungeon.SimpleDungeonBuilder
-import chousen.game.status.StatusCalculator
+import chousen.game.status.{PostTurnStatusCalculator, StatusCalculator}
 import org.scalatest.WordSpec
 
 class GameStateManagerSpec extends WordSpec {
@@ -15,7 +15,8 @@ class GameStateManagerSpec extends WordSpec {
 
     val sc = new StatusCalculator()
     val damageCalculator = new DamageCalculator(sc)
-    val gameStateManager = new GameStateManager(damageCalculator)
+    val postTurnStatusCalc = new PostTurnStatusCalculator
+    val gameStateManager = new GameStateManager(damageCalculator, postTurnStatusCalc)
     val dungeonBuilder = new SimpleDungeonBuilder()
     val gameStateCreator = new RandomGameStateCreator(dungeonBuilder)
     val gameState = GameStateGenerator.gameStateWithFastPlayer

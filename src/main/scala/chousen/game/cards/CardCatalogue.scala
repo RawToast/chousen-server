@@ -15,7 +15,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         haste, haste, haste, haste,
         stoneSkin, stoneSkin,
         rage, rage,
-        continuation, continuation,
+        continuation, continuation, regen, regen,
 
         elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
         elixirOfVitality, elixirOfVitality,
@@ -39,20 +39,25 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 //  def berserkerDeck = {
 //
 //    healWounds, healWounds, healWounds, healWounds,
-//      /* regen, regen, regen, regen, */
+//    regen, regen, regen, regen,
 //    rarePepe, rarePepe, rarePepe, rarePepe,
 //
 //    elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
 //    elixirOfDexterity, elixirOfDexterity, elixirOfVitality, elixirOfVitality,
 //
 //
-//    rage, rage, rage, rage§
+//    rage, rage, rage, rage,
+//    might, might, might, might,
+//    haste, haste, haste, haste,
+//    stoneSkin, stoneSkin, continuation, continuation,
 //
-//
-//    broadsword, giantClub, chainmail, chainmail,
+//    GiantClub is better for this build -- no other access to % damage
+//    giantClub, giantClub, chainmail, chainmail,
 //
 //    rummage, rummage, rummage, rummage,
-//    replace, replace
+//    restore, restore, miracle,
+//    // Need Replace to drop armour/weapon until discarding actions are available
+//    replace
 //  }
 
 
@@ -63,13 +68,6 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 //      (4 of elixirOfDexterity) ++ (4 of elixirOfIntelligence) ++
 //      restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
-//  def strongManDeck: Seq[Card] = // 10
-//    usefulCards ++
-//    haste.times(4) ++ might.times(4) ++ stoneSkin.times(4) ++ dexterity.times(4) ++
-//    quickStep.times(4) ++ destruction.times(4) ++
-//    groundStrike.times(4) ++ crushingBlow.times(4) ++ quickAttack.times(4) ++ elixirOfStrength.times(4) ++
-//      elixirOfDexterity.times(4) ++ elixirOfVitality.times(4) ++
-//    restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
   def passiveCards: Seq[Card] = Seq(rest, explore, restAndExplore)
 }

@@ -3,6 +3,7 @@ package chousen.game.core
 import chousen.api.data._
 import chousen.game.actions.{MultiTargetActionHandler, SelfActionHandler, SingleTargetActionHandler, _}
 import chousen.game.cards.CardManager
+import chousen.game.status.PostTurnStatusCalc
 
 trait GameManager[A] {
 
@@ -13,7 +14,7 @@ trait GameManager[A] {
   def useCard(card: Card, commandRequest: CommandRequest, game: A): A
 }
 
-class GameStateManager(damageCalculator: DamageCalculator) extends GameManager[GameState] with TurnTransition {
+class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostTurnStatusCalc) extends GameManager[GameState] with TurnTransition {
 
   val basicAttack = new BasicAttack(damageCalculator)
   val blockHandler = new BlockActionHandler()
@@ -43,6 +44,9 @@ class GameStateManager(damageCalculator: DamageCalculator) extends GameManager[G
       }.apply(game)
     }
   }
+
+  override def transition(game: GameState, usedCard: Boolean): GameState =
+    transitionGame(game, postStatusCalc, usedCard)
 
   override def takeCommand(command: CommandRequest, game: GameState): GameState = {
     val newState = command match {
@@ -84,7 +88,7 @@ class GameStateManager(damageCalculator: DamageCalculator) extends GameManager[G
 trait TurnTransition {
   import chousen.Optics._
 
-  def transition(game: GameState, usedCard:Boolean = false): GameState = {
+  def transitionGame(game: GameState, statusCalc: PostTurnStatusCalc, usedCard: Boolean = false): GameState = {
     val playerIsDead = game.player.stats.currentHp <= 0
     lazy val deathMessage = GameMessage(s"${game.player.name} dies.")
     lazy val winMessage = GameMessage(s"A winner is ${game.player.name}!")
@@ -94,12 +98,12 @@ trait TurnTransition {
       if (game.dungeon.currentEncounter.enemies.isEmpty && game.dungeon.remainingEncounters.isEmpty)
         MessagesLens.modify(msgs => msgs :+ winMessage)(game)
       else if (game.dungeon.currentEncounter.enemies.isEmpty && game.dungeon.remainingEncounters.nonEmpty) {
-        postTurn(game, usedCard)
-      } else PlayerLens.composeLens(PlayerStatusLens).modify(handleStatus)(game)
+        postBattle(game, statusCalc, usedCard)
+      } else statusCalc.applyStatusEffects(game)
     }
   }
 
-  private def postTurn(gs:GameState, playedCard: Boolean): GameState = {
+  private def postBattle(gs: GameState, statusCalc: PostTurnStatusCalc, playedCard: Boolean): GameState = {
 
     val g = DungeonTriLens.modify { (pdm: (Player, Dungeon, Seq[GameMessage])) =>
       val (p, d, msgs) = pdm
@@ -113,17 +117,12 @@ trait TurnTransition {
       val newPlayer = PlayerCharStatsLens.composeLens(HpLens).modify(_ + healAmount).apply(p)
       (newPlayer, newDungeon, msgs :+ restMsg :+ progressMsg :+ encounterMsg)
     }.andThen(EncounterLens.modify(GameOps.updateUntilPlayerIsActive))
-      .andThen(PlayerLens.composeLens(PlayerStatusLens).modify(handleStatus)).apply(gs)
+      .andThen(PlayerLens.composeLens(PlayerStatusLens).modify(statusCalc.reduceStatusLength)).apply(gs)
 
-    val drawLimit = if(playedCard) CardManager.PRE_DISCARD_MAX_HAND_SIZE else CardManager.MAX_HAND_SIZE
+    val drawLimit = if (playedCard) CardManager.PRE_DISCARD_MAX_HAND_SIZE else CardManager.MAX_HAND_SIZE
 
     g.copy(cards = CardManager.drawCard(CardManager.drawCard(g.cards, drawLimit), drawLimit))
   }
-
-
-  private def handleStatus(status: Seq[Status]): Seq[Status] =
-    status.filter(_.turns != 0)
-      .map(s => s.copy(turns = s.turns - 1))
 
 
   private def startEncounterMessage(enemies: Set[Enemy], player: Player): GameMessage = {
