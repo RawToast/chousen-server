@@ -70,6 +70,7 @@ case object PotionOfIntelligence extends SelfAction
 case object PotionOfStoneSkin extends SelfAction
 case object PotionOfRage extends SelfAction
 case object PotionOfContinuation extends SelfAction
+case object PotionOfRegeneration extends SelfAction
 
 case object ElixirOfStrength extends SelfAction
 case object ElixirOfDexterity extends SelfAction

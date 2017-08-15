@@ -28,7 +28,7 @@ class SelfActionHandlerSpec extends WordSpec {
 
       "State the action was used" in {
         assert(result.messages.size > startedGame.messages.size)
-        assert(result.messages.contains(GameMessage(s"${GameStateGenerator.playerName} uses Heal Wounds and recovers 30HP!")))
+        assert(result.messages.contains(GameMessage(s"${GameStateGenerator.playerName} uses Heal Wounds and recovers 35HP!")))
       }
 
       "Reduce the player's position" in {
@@ -324,6 +324,30 @@ class SelfActionHandlerSpec extends WordSpec {
         assert(result.player.status.nonEmpty)
         assert(result.player.status.head.turns > initialState.player.status.head.turns)
         assert(result.player.status.tail.head.turns > initialState.player.status.tail.head.turns)
+      }
+    }
+
+    "Given Potion of Regeneration" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(PotionOfRegeneration)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+        assert(result.messages.contains(GameMessage(s"${GameStateGenerator.playerName} drinks a Potion of Regeneration!")))
+      }
+
+      "Reduce the player's position" in {
+        assert(result.player.position < 100)
+      }
+
+      "The Player gains the Regen status" in {
+        assert(result.player.status.nonEmpty)
+        assert(result.player.status.exists(_.effect == Regen))
       }
     }
 
