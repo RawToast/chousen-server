@@ -4,6 +4,7 @@ import chousen.api.data._
 import chousen.game.core.RandomGameStateCreator
 import chousen.game.dungeon.SimpleDungeonBuilder
 import chousen.game.status.StatusCalculator
+import monocle.macros.GenLens
 import org.scalatest.WordSpec
 
 class SelfActionHandlerSpec extends WordSpec {
@@ -27,7 +28,7 @@ class SelfActionHandlerSpec extends WordSpec {
 
       "State the action was used" in {
         assert(result.messages.size > startedGame.messages.size)
-        assert(result.messages.contains(GameMessage(s"${GameStateGenerator.playerName} uses Heal Wounds and recovers 30HP!")))
+        assert(result.messages.contains(GameMessage(s"${GameStateGenerator.playerName} uses Heal Wounds and recovers 35HP!")))
       }
 
       "Reduce the player's position" in {
@@ -272,7 +273,7 @@ class SelfActionHandlerSpec extends WordSpec {
       }
     }
 
-    "Given a Potion of Rage" should {
+    "Given Potion of Rage" should {
       val gameState = GameStateGenerator.gameStateWithFastPlayer
 
       val dungeonBuilder = new SimpleDungeonBuilder()
@@ -296,7 +297,62 @@ class SelfActionHandlerSpec extends WordSpec {
       }
     }
 
-    "Given a QuickStep" should {
+    "Given Potion of Continuation" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val initialState = GenLens[GameState](_.player.status)
+        .set(Seq(Status(Rage, "test", 3), Status(Fast, "test", 3)))
+        .apply(startedGame)
+
+      val result = selfActionHandler.handle(PotionOfContinuation)(initialState)
+
+      "State the action was used" in {
+        assert(result.messages.size > initialState.messages.size)
+        assert(result.messages.contains(GameMessage(s"${GameStateGenerator.playerName} drinks a Potion of Continuation!")))
+      }
+
+      "Reduce the player's position" in {
+        assert(result.player.position < 100)
+      }
+
+      "The Player's status effects length has increased" in {
+        assert(initialState.player.status.nonEmpty)
+        assert(result.player.status.nonEmpty)
+        assert(result.player.status.head.turns > initialState.player.status.head.turns)
+        assert(result.player.status.tail.head.turns > initialState.player.status.tail.head.turns)
+      }
+    }
+
+    "Given Potion of Regeneration" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(PotionOfRegeneration)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+        assert(result.messages.contains(GameMessage(s"${GameStateGenerator.playerName} drinks a Potion of Regeneration!")))
+      }
+
+      "Reduce the player's position" in {
+        assert(result.player.position < 100)
+      }
+
+      "The Player gains the Regen status" in {
+        assert(result.player.status.nonEmpty)
+        assert(result.player.status.exists(_.effect == Regen))
+      }
+    }
+
+
+    "Given QuickStep" should {
       val gameState = GameStateGenerator.gameStateWithFastPlayer
 
       val dungeonBuilder = new SimpleDungeonBuilder()

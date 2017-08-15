@@ -30,14 +30,16 @@ class SelfActionHandler(sc: StatusCalculator) {
       case PotionOfDexterity => dexterity
       case PotionOfIntelligence => intelligence
       case PotionOfStoneSkin => stoneskin
-      case PotionOfRage => berserk
+      case PotionOfRage => rage
+      case PotionOfContinuation => continuation
+      case PotionOfRegeneration => regeneration
     }
 
 
   def healWounds(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = {
     val sePlayer = sc.calculate(p)
 
-    val healAmount = 10 + (2 + sePlayer.stats.intellect) + (p.stats.maxHp / 10)
+    val healAmount = 15 + (2 + sePlayer.stats.intellect) + (p.stats.maxHp / 10)
     val message = GameMessage(s"${p.name} uses Heal Wounds and recovers ${healAmount}HP!")
     val gameMessages = msgs :+ message
 
@@ -136,10 +138,33 @@ class SelfActionHandler(sc: StatusCalculator) {
       .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
   }
 
-  def berserk(p: Player, msgs: Seq[GameMessage]) = {
+  def rage(p: Player, msgs: Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} drinks a Potion of Rage!")
 
-    val status: Status = StatusBuilder.makeBerserk(4)
+    val status: Status = StatusBuilder.makeBerserk(4, turns = 8)
+
+    (PlayerStatusLens.modify(_ :+ status)
+      .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
+  }
+
+  def continuation(p: Player, msgs: Seq[GameMessage]) = {
+    val message = GameMessage(s"${p.name} drinks a Potion of Continuation!")
+
+    (PlayerStatusLens.modify(_.map(s => s.copy(turns = s.turns + 5)))
+      .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)
+  }
+
+  def regeneration(p: Player, msgs: Seq[GameMessage]) = {
+    val message = GameMessage(s"${p.name} drinks a Potion of Regeneration!")
+    val sePlayer = sc.calculate(p)
+
+    val hpFactor: Double = sePlayer.stats.maxHp / 20d
+    val vitFactor: Double = sePlayer.stats.vitality / 8d
+
+    val regenAmount:Int = {1 + hpFactor + vitFactor}.toInt
+
+
+    val status: Status = StatusBuilder.makeRegen(regenAmount, turns = 8)
 
     (PlayerStatusLens.modify(_ :+ status)
       .andThen(PlayerPositionLens.modify(i => i - 50))(p), msgs :+ message)

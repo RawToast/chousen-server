@@ -55,6 +55,7 @@ case object Dexterity extends StatusEffect
 case object Smart extends StatusEffect
 case object Rage extends StatusEffect
 case object Poison extends StatusEffect
+case object Regen extends StatusEffect
 
 sealed trait WeaponEffect
 

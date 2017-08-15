@@ -15,6 +15,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         haste, haste, haste, haste,
         stoneSkin, stoneSkin,
         rage, rage,
+        continuation, continuation, regen, regen,
 
         elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
         elixirOfVitality, elixirOfVitality,
@@ -34,6 +35,31 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         miracle, miracle
       )
 
+//  // Deck built around auto-attacks and rage
+//  def berserkerDeck = {
+//
+//    healWounds, healWounds, healWounds, healWounds,
+//    regen, regen, regen, regen,
+//    rarePepe, rarePepe, rarePepe, rarePepe,
+//
+//    elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
+//    elixirOfDexterity, elixirOfDexterity, elixirOfVitality, elixirOfVitality,
+//
+//
+//    rage, rage, rage, rage,
+//    might, might, might, might,
+//    haste, haste, haste, haste,
+//    stoneSkin, stoneSkin, continuation, continuation,
+//
+//    GiantClub is better for this build -- no other access to % damage
+//    giantClub, giantClub, chainmail, chainmail,
+//
+//    rummage, rummage, rummage, rummage,
+//    restore, restore, miracle,
+//    // Need Replace to drop armour/weapon until discarding actions are available
+//    replace
+//  }
+
 
 //  def cheeseDeck: Seq[Card] = // 15
 //    usefulCards ++
@@ -42,13 +68,6 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 //      (4 of elixirOfDexterity) ++ (4 of elixirOfIntelligence) ++
 //      restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
-//  def strongManDeck: Seq[Card] = // 10
-//    usefulCards ++
-//    haste.times(4) ++ might.times(4) ++ stoneSkin.times(4) ++ dexterity.times(4) ++
-//    quickStep.times(4) ++ destruction.times(4) ++
-//    groundStrike.times(4) ++ crushingBlow.times(4) ++ quickAttack.times(4) ++ elixirOfStrength.times(4) ++
-//      elixirOfDexterity.times(4) ++ elixirOfVitality.times(4) ++
-//    restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
   def passiveCards: Seq[Card] = Seq(rest, explore, restAndExplore)
 }
@@ -66,11 +85,13 @@ trait Potions extends CardBuilder {
   def stoneSkin: Card = Card(UUID.randomUUID(), "Stone Skin", "Temporarily increases player defence", PotionOfStoneSkin)
 //  def dexterity: Card = Card(UUID.randomUUID(), "Potion of Dexterity", "Temporarily increases player dexterity", PotionOfDexterity)
   def rage: Card = Card(UUID.randomUUID(), "Potion of Rage", "Temporarily increases health, damage, and speed", PotionOfRage)
+  def continuation: Card = Card(UUID.randomUUID(), "Potion of Continuation", "Prolongs any temporary status effects", PotionOfContinuation)
+  def regen: Card = Card(UUID.randomUUID(), "Potion of Regeneration", "Temporarily increases life regeneration", PotionOfRegeneration)
 }
 
 trait PermanentEffects extends CardBuilder {
   def elixirOfStrength: Card = mkCard("Elixir of Strength ", "Permanently increases Strength by 2", ElixirOfStrength)
-//  def elixirOfDexterity: Card = mkCard("Elixir of Dexterity ", "Permanently increases Dexterity by 2", ElixirOfDexterity)
+  def elixirOfDexterity: Card = mkCard("Elixir of Dexterity ", "Permanently increases Dexterity by 2", ElixirOfDexterity)
 //  def elixirOfIntelligence: Card = mkCard("Elixir of Intelligence ", "Permanently increases Intelligence by 2", ElixirOfIntelligence)
   def elixirOfVitality: Card = mkCard("Elixir of Vitality ", "Permanently increases Vitality by 2", ElixirOfVitality)
   def rarePepe: Card = mkCard("Rare Pepe ", "Gives the player a chunk of experience", RarePepe)

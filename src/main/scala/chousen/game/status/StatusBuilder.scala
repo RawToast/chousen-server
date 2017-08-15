@@ -11,4 +11,5 @@ object StatusBuilder {
   def makeBerserk(amount: Int, turns:Int=6) = Status(Rage, "Berserker rage", turns, Option(amount))
   def makeSlow(amount: Int, turns:Int=6) = Status(Slow, "Reduces the affected's speed", turns, Option(amount))
   def makeBlock(amount: Int=0, turns:Int=0) = Status(Block, "Reduces damage", turns, Option(amount))
+  def makeRegen(amount: Int=0, turns:Int=0) = Status(Regen, "Regenerate health", turns, Option(amount))
 }

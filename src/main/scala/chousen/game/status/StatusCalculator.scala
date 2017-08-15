@@ -48,11 +48,13 @@ class StatusCalculator {
       case Smart => smart
       case Rage =>
         val m = might(_: CharStats, s)
+        val d = dexterity(_: CharStats, s)
         val f = fast(_: CharStats, s)
 
-        (p: CharStats, _: Status) => m.andThen(f).apply(p)
+        (p: CharStats, _: Status) => m.andThen(f).andThen(d).apply(p)
       case Block => nop
       case Poison => nop
+      case Regen => nop
     }
     func(p, s)
   }

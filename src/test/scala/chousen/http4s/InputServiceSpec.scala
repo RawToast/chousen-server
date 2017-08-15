@@ -8,7 +8,7 @@ import chousen.api.data._
 import chousen.game.actions.DamageCalculator
 import chousen.game.core.{GameManager, GameStateManager, RandomGameStateCreator}
 import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
-import chousen.game.status.StatusCalculator
+import chousen.game.status.{PostTurnStatusCalculator, StatusCalculator}
 import fs2.Task
 import io.circe.generic.auto._
 import io.circe.generic.extras.semiauto.deriveEnumerationEncoder
@@ -35,7 +35,9 @@ class InputServiceSpec extends WordSpec {
 
     val statusCalculator = new StatusCalculator
     val damageCalculator = new DamageCalculator(statusCalculator)
-    val gameStateManager: GameManager[GameState] = new GameStateManager(damageCalculator)
+    val postTurnCalc = new PostTurnStatusCalculator
+
+    val gameStateManager: GameManager[GameState] = new GameStateManager(damageCalculator, postTurnCalc)
 
     val service = new InputService(gameAccess, gameStateManager, statusCalculator)
 
