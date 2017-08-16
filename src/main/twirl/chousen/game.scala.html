@@ -67,13 +67,34 @@
             <div id="input">
                 @if(gameState.dungeon.currentEncounter.enemies.forall(_.name == "Camp Fire")) {
                     @for(c <- gameState.cards.passive.filter(_.action.isInstanceOf[CampFireAction])) {
-                        <div id="camp-group" class="btn-group" role="group">
-                            <button type="button" class="btn btn-default btn-camp" action="@{c.action}"
-                            title="@{c.description}"
-                            uri="@{s"game/" + gameState.uuid + "/camp/" + c.id}">
-                            @{c.name}
-                            </button>
-                        </div>
+
+                        @if(c.action == chousen.api.data.Drop) {
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-default btn-camp2 dropdown-toggle" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false" title="@{c.description}">
+                                    @{c.name}
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                @for(e <- gameState.cards.hand.sortBy(_.name)) {
+                                    <li>
+                                        <a href="#" class="btn btn-drop" cid="@{e.id.toString}" action="@{c.action}"
+                                        uri="@{s"game/" + gameState.uuid + "/camp/" + c.id}">
+                                        @{e.name}
+                                        </a>
+                                    </li>
+                                }
+                                </ul>
+                            </div>
+                        } else {
+                            <div id="camp-group" class="btn-group" role="group">
+                                <button type="button" class="btn btn-default btn-camp" action="@{c.action}"
+                                title="@{c.description}"
+                                uri="@{s"game/" + gameState.uuid + "/camp/" + c.id}">
+                                @{c.name}
+                                </button>
+                            </div>
+                        }
                     }
                 }
 

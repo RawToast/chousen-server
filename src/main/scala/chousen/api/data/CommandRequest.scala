@@ -16,7 +16,7 @@ case class MultiTargetActionRequest(targetId: Set[UUID], action: MultiAction) ex
 
 case class CardActionRequest(action: CardAction) extends CommandRequest
 
-case class CampfireActionRequest(action: CampFireAction) extends CommandRequest
+case class CampfireActionRequest(action: CampFireAction, cardId: Option[UUID]) extends CommandRequest
 
 case class EquipmentActionRequest(id: UUID, action: EquipAction) extends CommandRequest
 
@@ -89,6 +89,7 @@ case object Restore extends CardAction
 case object Rest extends CampFireAction
 case object Explore extends CampFireAction
 case object RestAndExplore extends CampFireAction
+case object Drop extends CampFireAction
 
 
 case object GiantClub extends EquipWeapon

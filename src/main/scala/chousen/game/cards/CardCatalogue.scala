@@ -56,9 +56,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     groundStrike, groundStrike,
 
     rummage, rummage, rummage, rummage,
-    restore, restore, miracle,
-    // Need Replace to drop armour/weapon until discarding actions are available
-    replace
+    restore, restore, miracle, miracle,
   )
 
   // Deck built around high strength skills
@@ -85,9 +83,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     groundStrike, groundStrike,
 
     rummage, rummage, rummage, rummage,
-    miracle, miracle, miracle,
-    // Need Replace to drop armour/weapon until discarding actions are available
-    replace
+    miracle, miracle, miracle, miracle
   )
 
 
@@ -99,12 +95,12 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 //      restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
 
-  def passiveCards: Seq[Card] = Seq(rest, explore, restAndExplore)
+  def passiveCards: Seq[Card] = Seq(rest, explore, restAndExplore, drop)
 }
 
 sealed trait CardBuilder {
   def mkCard(name: String, description: String, action: Action, charges:Int=0) =
-    Card(UUID.randomUUID(), name, description, action, if (charges == 0) None else Some(charges))
+    Card(UUID.randomUUID(), name, description, action, if (charges == 0) None else Some(charges), if (charges == 0) None else Some(charges))
 }
 
 trait Potions extends CardBuilder {
@@ -170,6 +166,7 @@ trait CampFire extends CardBuilder {
   def rest: Card = mkCard("Rest", "Rest until you are fully recovered", Rest)
   def explore: Card = mkCard("Explore", "Draw until your hand is full (always draw at least two cards)", Explore)
   def restAndExplore: Card = mkCard("Rest and Explore", "Recover some health and draw two cards (or one if full)", RestAndExplore)
+  def drop: Card = mkCard("Drop", "Drop an item by the Camp Fire", Drop)
 }
 
 trait Equipment extends CardBuilder {
