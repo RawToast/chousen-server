@@ -7,6 +7,7 @@ import chousen.game.core.RandomGameStateCreator
 import chousen.game.dungeon.SimpleDungeonBuilder
 import org.scalatest.WordSpec
 import chousen.Optics._
+import monocle.macros.GenLens
 
 class CardActionHandlerSpec extends WordSpec {
 
@@ -110,7 +111,7 @@ class CardActionHandlerSpec extends WordSpec {
 
       val dungeonBuilder = new SimpleDungeonBuilder()
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
-      val startedGame: GameState = stateCreator.start(gameState)
+      val startedGame: GameState = GenLens[GameState](_.cards.discard).modify(_ :+ Card(UUID.randomUUID(), "test", "test", SwordOfIntellect))(stateCreator.start(gameState))
 
       val cardToDiscard = startedGame.cards.hand.head
 
@@ -138,7 +139,8 @@ class CardActionHandlerSpec extends WordSpec {
 
       val dungeonBuilder = new SimpleDungeonBuilder()
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
-      val startedGame: GameState = stateCreator.start(gameState)
+
+      val startedGame: GameState = GenLens[GameState](_.cards.discard).modify(_ :+ Card(UUID.randomUUID(), "test", "test", Chainmail))(stateCreator.start(gameState))
 
       val cardToDiscard = startedGame.cards.hand.head
 
@@ -153,7 +155,7 @@ class CardActionHandlerSpec extends WordSpec {
         assert(result.cards.hand.size == startedGame.cards.hand.size)
       }
 
-      "Place a new Weapon card into the Player's hand" in {
+      "Place a new Armour card into the Player's hand" in {
         val previousItems = startedGame.cards.hand.filter(_.action.isInstanceOf[EquipArmour])
         val resultWeapons = result.cards.hand.filter(_.action.isInstanceOf[EquipArmour])
         assert(resultWeapons.nonEmpty)
