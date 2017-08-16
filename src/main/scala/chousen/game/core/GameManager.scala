@@ -36,8 +36,14 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
           case SelfInflictingActionRequest(action) => c.action == action
           case SingleTargetActionRequest(_, action) => c.action == action
           case MultiTargetActionRequest(_, action) => c.action == action
-          case CardActionRequest(action) => c.action == action
-          case CampfireActionRequest(action) => c.action == action
+          case CardActionRequest(action, id) =>
+            val isCorrectAction = c.action == action
+            val inHand = id.fold(true)(uuid => game.cards.hand.exists(_.id == uuid))
+            isCorrectAction && inHand
+          case CampfireActionRequest(action, id) =>
+            val isCorrectAction = c.action == action
+            val inHand = id.fold(true)(uuid => game.cards.hand.exists(_.id == uuid))
+            isCorrectAction && inHand
           case EquipmentActionRequest(_, action) => c.action == action
         }) takeCommand(commandRequest, game)
         else game
@@ -68,11 +74,11 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
         val ns = GameTurnLoop.takeTurn(game,
           multiTargetActionHandler.handle(targets, action))
         transition(ns, usedCard = true)
-      case CardActionRequest(action) =>
-        val ns = GameTurnLoop.takeTurn(game, CardActionHandler.handle(action))
+      case CardActionRequest(action, id) =>
+        val ns = GameTurnLoop.takeTurn(game, CardActionHandler.handle(action, id))
         transition(ns, usedCard = true)
-      case CampfireActionRequest(action) =>
-        val ns = GameTurnLoop.takeTurn(game, CampFireActionHandler.handle(action))
+      case CampfireActionRequest(action, cardId) =>
+        val ns = GameTurnLoop.takeTurn(game, CampFireActionHandler.handle(action, cardId))
         transition(ns)
       case EquipmentActionRequest(id, action) =>
         val ns = GameTurnLoop.takeTurn(game, equipmentActionHandler.handle(action, id))
@@ -85,7 +91,7 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
 }
 
 
-trait TurnTransition {
+trait  TurnTransition {
   import chousen.Optics._
 
   def transitionGame(game: GameState, statusCalc: PostTurnStatusCalc, usedCard: Boolean = false): GameState = {

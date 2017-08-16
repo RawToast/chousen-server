@@ -27,6 +27,8 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         stunningStrike, stunningStrike,
         counter, counter,
 
+        forgeWeapon, forgeArmour, trade, trade,
+
         rummage, rummage, rummage, rummage,
         replace, replace,
         restore, restore,
@@ -55,10 +57,10 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
     groundStrike, groundStrike,
 
+    forgeWeapon, forgeArmour, trade, trade,
+
     rummage, rummage, rummage, rummage,
-    restore, restore, miracle,
-    // Need Replace to drop armour/weapon until discarding actions are available
-    replace
+    restore, restore, miracle, miracle,
   )
 
   // Deck built around high strength skills
@@ -84,10 +86,10 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
     groundStrike, groundStrike,
 
+    forgeWeapon, forgeArmour, trade, trade,
+
     rummage, rummage, rummage, rummage,
-    miracle, miracle, miracle,
-    // Need Replace to drop armour/weapon until discarding actions are available
-    replace
+    miracle, miracle, miracle, miracle
   )
 
 
@@ -99,12 +101,12 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 //      restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
 
-  def passiveCards: Seq[Card] = Seq(rest, explore, restAndExplore)
+  def passiveCards: Seq[Card] = Seq(rest, explore, restAndExplore, drop)
 }
 
 sealed trait CardBuilder {
   def mkCard(name: String, description: String, action: Action, charges:Int=0) =
-    Card(UUID.randomUUID(), name, description, action, if (charges == 0) None else Some(charges))
+    Card(UUID.randomUUID(), name, description, action, if (charges == 0) None else Some(charges), if (charges == 0) None else Some(charges))
 }
 
 trait Potions extends CardBuilder {
@@ -159,17 +161,23 @@ trait Utility extends CardBuilder {
   def miracle: Card = mkCard("Miracle", "Draw cards until your hand is full", Miracle)
 
   // Cost 70
-  def rummage: Card = mkCard("Rummage", "Quickly search the area and draw 2 cards", Rummage)
+  def rummage: Card = mkCard("Rummage", "Quickly search the area and always draw 2 cards (no hand limit)", Rummage)
+  def trade: Card = mkCard("Trade", "Discard one card and draw up to 3 cards, stop if the hand limit is reached)", Trade)
+
 
   // Cost 0
   def replace: Card = mkCard("Replace", "Instantly replaces the player's hand (will draw at least 3 cards)", Replace)
   def restore: Card = mkCard("Restore", "Instantly places the top discarded card into your hand", Restore)
+
+  def forgeWeapon: Card = mkCard("Forge Weapon", "Discard one card and place the next weapon in your deck in your hand", ForgeWeapon)
+  def forgeArmour: Card = mkCard("Forge Armour", "Discard one card and place the next armour in your deck in your hand", ForgeArmour)
 }
 
 trait CampFire extends CardBuilder {
   def rest: Card = mkCard("Rest", "Rest until you are fully recovered", Rest)
   def explore: Card = mkCard("Explore", "Draw until your hand is full (always draw at least two cards)", Explore)
   def restAndExplore: Card = mkCard("Rest and Explore", "Recover some health and draw two cards (or one if full)", RestAndExplore)
+  def drop: Card = mkCard("Drop", "Drop an item by the Camp Fire", Drop)
 }
 
 trait Equipment extends CardBuilder {

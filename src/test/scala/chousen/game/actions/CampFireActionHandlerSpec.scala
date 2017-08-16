@@ -17,7 +17,7 @@ import chousen.Optics._
         val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
         val startedGame: GameState = stateCreator.start(initialState)
 
-        lazy val result = CampFireActionHandler.handle(Explore).apply(startedGame)
+        lazy val result = CampFireActionHandler.handle(Explore, None).apply(startedGame)
 
         "Have no affect on the player" in {
           assert(result.player == startedGame.player)
@@ -46,10 +46,14 @@ import chousen.Optics._
             .set(game.dungeon.copy(currentEncounter = Battle(Set(dungeonBuilder.campFire))))
             .apply(game)
 
-        lazy val result = CampFireActionHandler.handle(RestAndExplore).apply(startedGame)
+        lazy val result = CampFireActionHandler.handle(RestAndExplore, None).apply(startedGame)
+
+        "Does not consume the passive action card" in {
+          assert(startedGame.cards.passive.size == 4)
+          assert(result.cards.passive.size == 4)
+        }
 
         "Have an affect on messages" in {
-          assert(startedGame.cards.passive.size == 3)
           assert(result.messages != startedGame.messages)
         }
 
@@ -69,7 +73,7 @@ import chousen.Optics._
             .set(game.dungeon.copy(currentEncounter = Battle(Set(dungeonBuilder.campFire))))
             .compose(PlayerLens.composeLens(PlayerHealthLens).modify(hp => hp / 2))(game)
 
-        lazy val result = CampFireActionHandler.handle(Rest).apply(startedGame)
+        lazy val result = CampFireActionHandler.handle(Rest, None).apply(startedGame)
 
         "Have an affect on messages" in {
           assert(result.messages != startedGame.messages)
@@ -95,7 +99,7 @@ import chousen.Optics._
             .set(game.dungeon.copy(currentEncounter = Battle(Set(dungeonBuilder.campFire))))
             .compose(PlayerLens.composeLens(PlayerHealthLens).modify(hp => hp / 2))(game)
 
-        lazy val result = CampFireActionHandler.handle(RestAndExplore).apply(startedGame)
+        lazy val result = CampFireActionHandler.handle(RestAndExplore, None).apply(startedGame)
 
         "Have an affect on messages" in {
           assert(result.messages != startedGame.messages)
@@ -124,7 +128,7 @@ import chousen.Optics._
             .set(game.dungeon.copy(currentEncounter = Battle(Set(dungeonBuilder.campFire))))
             .compose(PlayerLens.composeLens(PlayerHealthLens).modify(hp => hp / 2))(game)
 
-        lazy val result = CampFireActionHandler.handle(Explore).apply(startedGame)
+        lazy val result = CampFireActionHandler.handle(Explore, None).apply(startedGame)
 
         "Have an affect on messages" in {
           assert(result.messages != startedGame.messages)
@@ -137,6 +141,37 @@ import chousen.Optics._
 
         "Draw two cards" in {
           assert(result.cards.hand.size > (1 + startedGame.cards.hand.size))
+        }
+      }
+
+      "Drop is used" should {
+        val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
+        val game: GameState = stateCreator.start(initialState)
+
+        val startedGame =
+          DungeonLens
+            .set(game.dungeon.copy(currentEncounter = Battle(Set(dungeonBuilder.campFire))))
+            .compose(PlayerLens.composeLens(PlayerHealthLens).modify(hp => hp / 2))(game)
+
+        val cardToDiscard = startedGame.cards.hand.head
+
+        lazy val result = CampFireActionHandler.handle(Drop, Some(cardToDiscard.id)).apply(startedGame)
+
+        "Have an affect on messages" in {
+          assert(result.messages != startedGame.messages)
+        }
+
+        "The card remains available" in {
+          assert(result.cards.passive.size == startedGame.cards.passive.size)
+          assert(result.cards.passive.exists(_.action == Explore))
+        }
+
+        "Hand size is reduced" in {
+          assert(startedGame.cards.hand.size > result.cards.hand.size)
+        }
+
+        "Card placed in discard pile" in {
+          assert(result.cards.discard.exists(_.id == cardToDiscard.id))
         }
       }
 

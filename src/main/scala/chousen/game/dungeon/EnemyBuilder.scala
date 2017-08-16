@@ -23,13 +23,13 @@ trait EnemyBuilder {
 
   // T3
   def giantRat: Enemy = mkEnemy("Giant Rat", CharStats(26, 26, dexterity = 10, vitality = 6, speed = 11))
-  def oldOrc: Enemy = mkEnemy("Old Orc", CharStats(70, 70, strength = 28, dexterity = 2, vitality = 10, speed = 4))
+  def oldOrc: Enemy = mkEnemy("Old Orc", CharStats(70, 70, strength = 28, dexterity = 2, vitality = 10, speed = 5))
   def goblin: Enemy = mkEnemy("Goblin", CharStats(50, 50, strength = 7, dexterity = 22, vitality = 9, speed = 9))
-  def golem: Enemy = mkEnemy("Steam Golem", CharStats(100, 100, strength = 30, dexterity = 4, vitality = 16, speed = 2))
+  def golem: Enemy = mkEnemy("Steam Golem", CharStats(100, 100, strength = 30, dexterity = 4, vitality = 16, speed = 3))
 
 
   // T4
-  def warrior: Enemy = mkEnemy("Warrior", CharStats(65, 65, strength = 22, dexterity = 10, vitality = 25))
+  def warrior: Enemy = mkEnemy("Warrior", CharStats(70, 70, strength = 22, dexterity = 10, vitality = 25))
   def orc: Enemy = mkEnemy("Orc", CharStats(90, 90, strength = 30, dexterity = 6, vitality = 15, speed = 7))
   def troll: Enemy = mkEnemy("Troll", CharStats(160, 160, strength = 46, dexterity = 4, intellect = 5, vitality = 14, speed = 2))
 

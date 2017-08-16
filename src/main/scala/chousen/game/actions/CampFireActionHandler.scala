@@ -1,5 +1,7 @@
 package chousen.game.actions
 
+import java.util.UUID
+
 import chousen.Optics._
 import chousen.api.data._
 import chousen.game.cards.CardManager
@@ -8,24 +10,43 @@ import monocle.macros.GenLens
 
 object CampFireActionHandler extends ActionHandler {
 
-  def handle(action: CampFireAction): (GameState) => GameState = { gs: GameState =>
+  def handle(action: CampFireAction, cardId: Option[UUID]): (GameState) => GameState = { gs: GameState =>
     if (gs.dungeon.currentEncounter.enemies.forall(_.name != "Camp Fire")) { gs }
     else {
+      val hp = action match {
+        case Drop => 1
+        case _ => 0
+      }
       LensUtil.triLens(PlayerLens, GenLens[GameState](_.cards), MessagesLens).modify {
         case (p, cs, msgs) =>
-          cardActions(action)(p, cs, msgs)
+          cardActions(action, cardId)(p, cs, msgs)
       }.compose(CurrentEncounterLens.composeLens(BattleEnemiesLens).modify(es =>
-       es.map(e => EnemyStatsLens.composeLens(HpLens).set(0)(e))))(gs)
+       es.map(e => EnemyStatsLens.composeLens(HpLens).set(hp)(e))))(gs)
     }
   }.andThen(handleDead)
 
-  private def cardActions(actionId: CampFireAction): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) =
+  private def cardActions(actionId: CampFireAction, cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) =
     actionId match {
       case Rest => rest
       case Explore => explore
       case RestAndExplore => restAndExplore
+      case Drop => drop(cardId)
     }
 
+
+  def drop(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      val newCards = for {
+        id <- cardId
+        discardCard <- h.hand.find(_.id == id)
+        m = GameMessage(s"${p.name} dropped ${discardCard.name} by the camp fire")
+        nh = h.hand.filterNot(_.id == id)
+        nc = h.copy(hand = nh, discard = h.discard :+ discardCard)
+      } yield (nc, m)
+
+      newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
 
   def rest(p: Player, h: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
 
