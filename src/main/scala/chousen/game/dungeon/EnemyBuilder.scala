@@ -34,10 +34,13 @@ trait EnemyBuilder {
   def troll: Enemy = mkEnemy("Troll", CharStats(160, 160, strength = 46, dexterity = 4, intellect = 5, vitality = 14, speed = 2))
 
   // T5
-  def orcPrince: Enemy = mkEnemy("Orc Prince", CharStats(100, 100, strength = 27, dexterity = 25, vitality = 16, speed = 7))
+  def orcFighter: Enemy = mkEnemy("Orc Fighter", CharStats(100, 100, strength = 27, dexterity = 25, vitality = 16, speed = 7))
 
 
-  def orcKing1: Enemy = mkEnemy("Orc King", CharStats(130, 130, strength = 37, vitality = 20))
-  def orcKing2: Enemy = mkEnemy("Orc King", CharStats(125, 125, strength = 32, dexterity = 12, vitality = 15, speed = 10))
-  def orcKing3: Enemy = mkEnemy("Orc King", CharStats(135, 135, strength = 35, vitality = 30, speed = 7))
+  def orcWarriorS: Enemy = mkEnemy("Orc Warrior", CharStats(130, 130, strength = 37, vitality = 20))
+  def orcWarriorQ: Enemy = mkEnemy("Orc Warrior", CharStats(125, 125, strength = 32, dexterity = 12, vitality = 15, speed = 9))
+  def orcWarriorD: Enemy = mkEnemy("Orc Warrior", CharStats(135, 135, strength = 35, vitality = 30, speed = 7))
+
+
+  def orcWizard: Enemy = mkEnemy("Orkish Wizard", CharStats(90, 90, strength = 20, vitality = 14, intellect = 15))
 }

@@ -86,19 +86,42 @@ object EnemyTurnOps {
       val message = GameMessage(s"${activeEnemy.name} bursts into an Orcish Rage!")
       val es = finish(enemies, activeEnemy, Some(StatusBuilder.makeBerserk(2, turns = 2)))
       (player, es, messages :+ message)
-    } else if (activeEnemy.name.contains("Steam Golem") && diceRoll >= 6) {
+    } else if (activeEnemy.name.contains("Steam Golem") && activeEnemy.stats.speed < 16 && diceRoll >= 5) {
       val message = GameMessage(s"Steam spouts from the ${activeEnemy.name} as it speeds up!")
       val es = finish(enemies, activeEnemy)
       val ez = es.map(e => if(e.id == activeEnemy.id) EnemyStatsLens.composeLens(SpeedLens).modify(i => i + 2)(activeEnemy) else e)
       (player, ez, messages :+ message)
-    } else if (activeEnemy.name.contains("Orc King") && activeEnemy.status.map(_.effect).contains(Might) && diceRoll >= 4) {
-      val message = GameMessage(s"The Orc King drinks a Potion of Might!")
+    } else if (activeEnemy.name.contains("Orc Fighter") && !activeEnemy.status.map(_.effect).contains(Might) && diceRoll == 3) {
+      val message = GameMessage(s"The Orc Fighter drinks a Potion of Might!")
 
       val es = finish(enemies, activeEnemy)
       val ez = es.map(e => if(e.id == activeEnemy.id) EnemyStatusLens.modify(i => i :+ StatusBuilder.makeMight(4))(activeEnemy) else e)
 
       (player, ez, messages :+ message)
-    } else {
+    } else if (activeEnemy.name.contains("Orkish") && diceRoll == 4) {
+      val message = GameMessage(s"${activeEnemy.name} casts Blockade!")
+      val eMsgs =enemies.map(e => GameMessage(s"${e.name} is protected by a barrier"))
+
+      val es = enemies.map(e => e.copy(status = e.status :+ StatusBuilder.makeBlock(turns = 1)))
+        .map(e => if (e.id == activeEnemy.id) e.copy(position = e.position - 100) else e)
+
+      (player, es, (messages :+ message) ++ eMsgs)
+    } else if (activeEnemy.name.contains("Orkish") && diceRoll == 5) {
+      val message = GameMessage(s"${activeEnemy.name} casts Mass Haste!")
+      val eMsgs =enemies.map(e => GameMessage(s"${e.name} speeds up!"))
+
+      val es = enemies.map(e => e.copy(status = e.status :+ StatusBuilder.makeHaste(4, turns = 3)))
+        .map(e => if (e.id == activeEnemy.id) e.copy(position = e.position - 100) else e)
+
+      (player, es, (messages :+ message) ++ eMsgs)
+    } else if (activeEnemy.name.contains("Orkish") && diceRoll == 6) {
+      val message = GameMessage(s"${activeEnemy.name} casts Mass Might!")
+      val eMsgs =enemies.map(e => GameMessage(s"${e.name} becomes stronger!"))
+
+      val es = enemies.map(e => e.copy(status = e.status :+ StatusBuilder.makeMight(4, turns = 3)))
+          .map(e => if (e.id == activeEnemy.id) e.copy(position = e.position - 100) else e)
+      (player, es, (messages :+ message) ++ eMsgs)
+    }else {
       // Message
       val attackMessage = if (dmg < 5) GameMessage(s"${activeEnemy.name} grazes ${player.name} for $dmg damage.")
       else if (dmg < 10) GameMessage(s"${activeEnemy.name} hits ${player.name} for $dmg damage.")

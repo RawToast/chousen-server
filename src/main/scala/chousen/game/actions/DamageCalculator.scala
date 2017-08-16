@@ -66,7 +66,7 @@ class DamageCalculator(val sc: StatusCalculator) {
     }
 
     val min = Math.max(1, (atkDex / 2) - stoneSkin).block
-    val max: Int = ((atkStr + (atkDex / 2) + mightDamage + berserkDamage + weaponDamage) - defender.stats.vitality - armour).block
+    val max: Int = m.max((atkStr + (atkDex / 2) + mightDamage + berserkDamage + weaponDamage) - defender.stats.vitality - armour).block
 
     val dmg: Int = Math.max(min, max)
 
@@ -76,7 +76,8 @@ class DamageCalculator(val sc: StatusCalculator) {
 
 case class Multipliers(str: Int => Int = i => i,
                        dex: Int => Int = i => i,
-                       int: Int => Int = i => i)
+                       int: Int => Int = i => i,
+                       max: Int => Int = i => i)
 
 object Multipliers {
 
@@ -86,9 +87,15 @@ object Multipliers {
     def strMulti(i: Int => Int) = Builder(m.copy(str = i))
 
     def intMulti(i: Int => Int) = Builder(m.copy(int = i))
+
+    def maxMulti(i: Int => Int) = Builder(m.copy(int = i))
   }
 
   def builder = Builder(Multipliers())
+
+  val multiTarget = (i: Int) => {
+    i * 0.5
+  }.toInt
 
   val lowMulti = (i: Int) => {
     i * 1.5
@@ -104,4 +111,6 @@ object Multipliers {
 
 
   val dexteritySkill = Multipliers(dex = medMulti)
+
+  val multiTargetSkill = Multipliers(max = multiTarget)
 }

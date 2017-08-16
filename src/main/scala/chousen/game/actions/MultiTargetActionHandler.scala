@@ -46,7 +46,9 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
   }
 
   def groundStrike(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val dmg = dc.calculatePlayerDamage(p, e, Multipliers.lowStrengthSkill)
+    val dmg = dc.calculatePlayerDamage(p, e,
+      Multipliers.builder.strMulti(Multipliers.lowMulti).maxMulti(Multipliers.multiTarget).m)
+
     val sePlayer = dc.sc.calculate(p)
     val gameMessages = msgs :+ GameMessage(s"${e.name} takes $dmg damage.")
 

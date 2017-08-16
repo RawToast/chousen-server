@@ -30,55 +30,63 @@ class SimpleDungeonBuilder() extends DungeonBuilder with EnemyBuilder {
       case _ => BattleBuilder() + giantWorm + createRat
     }}.battle
 
-    val battle3: Battle = (BattleBuilder() + gnoll + campFire).battle
-
-    val battle4: Battle = {dungeonSeed2 match {
+    val battle3: Battle = {dungeonSeed2 match {
       case (0 | 1 | 2) => BattleBuilder() + oldOrc + createRat + createSloth + createRat + createSlime
       case (3 | 4) => BattleBuilder() + golem + gnoll
       case _ => BattleBuilder() + oldOrc + createRat + createRat
     }}.battle
 
-    val battle5: Battle = (BattleBuilder() + orc + troll).battle
-    val battle6: Battle = (BattleBuilder() + giantRat + goblin + giantRat).battle
+    val battle4: Battle = (BattleBuilder() + orc + troll).battle
+    val battle5: Battle = (BattleBuilder() + giantRat + goblin + giantRat).battle
 
-    val battle7: Battle = {(dungeonSeed + dungeonSeed2) match {
+    val battle6: Battle = {(dungeonSeed + dungeonSeed2) match {
       case 0 => BattleBuilder() + giantWorm + warrior + giantWorm
       case (1 | 2 | 3 | 4 | 5) => BattleBuilder() + gnoll + golem + gnoll
-      case (6 | 7 | 8 | 9 | 10) => BattleBuilder() + createRat + giantRat + createRat
+      case (6 | 7 | 8 | 9 | 10) => BattleBuilder() + giantRat + giantRat + giantRat
     }}.battle
 
-    val battle8: Battle = {(dungeonSeed + dungeonSeed2) match {
+    val battle7: Battle = {(dungeonSeed + dungeonSeed2) match {
       case 0 => BattleBuilder() + orc + orc
-      case (1 | 2 | 3 | 4 | 5) => BattleBuilder() + orcPrince
+      case (1 | 2 | 3 | 4 | 5) => BattleBuilder() + orcFighter
       case (6 | 7 | 8 | 9 | 10) => BattleBuilder() + warrior + warrior
     }}.battle
 
     val battle10Left = dungeonSeed match {
       case (0 | 1 | 2) => Battle(Set(troll))
       case (3 | 4) => Battle(Set(orc))
-      case _ => Battle(Set(orcPrince))
+      case _ => Battle(Set(orcFighter))
     }
 
     val battle10Right = {dungeonSeed2 match {
       case (0 | 1 | 2) => BattleBuilder() + troll
       case 3 => BattleBuilder() + oldOrc + oldOrc
       case 4 => BattleBuilder() + warrior + golem
-      case _ => BattleBuilder() + orcPrince
+      case _ => BattleBuilder() + orcFighter
     }}.battle
 
     val boss = {dungeonSeed3 match {
-      case (0 | 1 ) => BattleBuilder() + orcKing1
-      case (2 | 3) => BattleBuilder() + orcKing3
-      case 4 => BattleBuilder() + orcPrince + orcPrince
-      case _ => BattleBuilder() + orcKing2
+      case (0 | 1 ) => BattleBuilder() + orcWarriorS
+      case (2 | 3) => BattleBuilder() + orcWarriorD
+      case 4 => BattleBuilder() + orcFighter + orcFighter
+      case _ => BattleBuilder() + orcWarriorQ
     }}.battle
 
 
-    val battle9: Battle = Battle(battle10Left.enemies ++ boss.enemies ++ battle10Right.enemies)
+    val battle9 = (BattleBuilder() + golem + golem).battle
 
-    Dungeon(battle1, Seq(battle2, battle3, battle4, Battle(Set(campFire)),
-      battle5, battle6, Battle(Set(campFire)),
-      battle7, battle8, Battle(Set(campFire)),
-      battle9))
+    val battle8: Battle = Battle(battle10Left.enemies ++ boss.enemies ++ battle10Right.enemies)
+
+    val finalBattle = {dungeonSeed3 match {
+      case (0 | 1 ) => BattleBuilder() + orcWarriorD + orcWizard + orcWarriorQ
+      case (2 | 3) => BattleBuilder() + orcWarriorS + orcWizard + orcWarriorQ
+      case _ => BattleBuilder() + orcWarriorS + orcWizard + orcWarriorD
+    }}.battle
+
+    Dungeon(battle1, Seq(battle2, battle3, Battle(Set(campFire)),
+      battle4, battle5, Battle(Set(campFire)),
+      battle6, battle7, Battle(Set(campFire)),
+      battle8, battle9, Battle(Set(campFire)),
+      finalBattle
+    ))
   }
 }
