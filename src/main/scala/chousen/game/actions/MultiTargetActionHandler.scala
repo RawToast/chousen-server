@@ -47,13 +47,13 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
   def groundStrike(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
     val dmg = dc.calculatePlayerDamage(p, e, Multipliers.lowStrengthSkill)
-
+    val sePlayer = dc.sc.calculate(p)
     val gameMessages = msgs :+ GameMessage(s"${e.name} takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function
     val newE = EnemyOptics.EnemyStatsLens.composeLens(CharStatsOptics.HpLens).modify(hp => hp - dmg)
-      .andThen(EnemyOptics.EnemyPosition.modify(ep => ep - 10 - (p.stats.strength / 2)))
-      .andThen(EnemyOptics.EnemyStatusLens.modify(ss => ss :+ StatusBuilder.makeSlow(2, turns = 2)))
+      .andThen(EnemyOptics.EnemyPosition.modify(ep => ep - 10 - (sePlayer.stats.strength / 4)))
+      .andThen(EnemyOptics.EnemyStatusLens.modify(ss => ss :+ StatusBuilder.makeSlow(1, turns = 2)))
       .apply(e)
 
     (p, Option(newE), gameMessages)
