@@ -22,19 +22,19 @@ class SimpleDungeonBuilder() extends DungeonBuilder with EnemyBuilder {
                   dungeonSeed2:Int = new scala.util.Random().nextInt(6),
                   dungeonSeed3:Int = new scala.util.Random().nextInt(6)) = {
 
-    val battle1: Battle = Battle(Set(createSloth))
+    val battle1: Battle = Battle(Set(createSloth, createSlime))
 
     val battle2: Battle = {dungeonSeed match {
       case (0 | 1 | 2) => BattleBuilder() + createRat + createRat + createRat + createRat
-      case (3 | 4) => BattleBuilder() + createSlime + createSlime
-      case _ => BattleBuilder() + giantWorm
+      case (3 | 4) => BattleBuilder() + gnoll + createSlime
+      case _ => BattleBuilder() + giantWorm + createRat
     }}.battle
 
-    val battle3: Battle = (BattleBuilder() + createSlime + campFire).battle
+    val battle3: Battle = (BattleBuilder() + gnoll + campFire).battle
 
     val battle4: Battle = {dungeonSeed2 match {
       case (0 | 1 | 2) => BattleBuilder() + oldOrc + createRat + createSloth + createRat + createSlime
-      case (3 | 4) => BattleBuilder() + gnoll + gnoll
+      case (3 | 4) => BattleBuilder() + golem + gnoll
       case _ => BattleBuilder() + oldOrc + createRat + createRat
     }}.battle
 
