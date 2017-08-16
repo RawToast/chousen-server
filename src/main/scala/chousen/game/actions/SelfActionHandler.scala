@@ -7,13 +7,13 @@ import chousen.util.LensUtil
 import monocle.Lens
 
 
-class SelfActionHandler(sc: StatusCalculator) {
+class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
 
   def handle(action: SelfAction): (GameState) => GameState = {
     LensUtil.duoLens(PlayerLens, MessagesLens).modify{
       case (p:Player, msgs: Seq[GameMessage]) =>
         actions(action)(p, msgs)
-    }
+    }.andThen(handleDead)
   }
 
   private def actions(actionId: SelfAction): (Player, Seq[GameMessage]) => (Player, Seq[GameMessage]) =
@@ -50,13 +50,17 @@ class SelfActionHandler(sc: StatusCalculator) {
     (lens.apply(p), gameMessages)
   }
 
-  def elixirOfStrength(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = elixir(p, msgs, "Strength", PlayerStrengthLens)
+  def elixirOfStrength(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) =
+    elixir(p, msgs, "Strength", PlayerStrengthLens)
 
-  def elixirOfDexterity(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = elixir(p, msgs, "Dexterity", PlayerDexterityLens)
+  def elixirOfDexterity(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) =
+    elixir(p, msgs, "Dexterity", PlayerDexterityLens)
 
-  def elixirOfIntellect(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = elixir(p, msgs, "Intellect", PlayerIntellectLens)
+  def elixirOfIntellect(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) =
+    elixir(p, msgs, "Intellect", PlayerIntellectLens)
 
-  def elixirOfVitality(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) = elixir(p, msgs, "Vitality", PlayerVitalityLens)
+  def elixirOfVitality(p: Player, msgs: Seq[GameMessage]): (Player, Seq[GameMessage]) =
+    elixir(p, msgs, "Vitality", PlayerVitalityLens)
 
 
   private def elixir(p: Player, msgs: Seq[GameMessage], stat: String, lens: Lens[Player, Int], amt: Int = 2) = {

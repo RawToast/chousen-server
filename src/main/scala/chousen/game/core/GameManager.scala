@@ -91,7 +91,7 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
 }
 
 
-trait TurnTransition {
+trait  TurnTransition {
   import chousen.Optics._
 
   def transitionGame(game: GameState, statusCalc: PostTurnStatusCalc, usedCard: Boolean = false): GameState = {
