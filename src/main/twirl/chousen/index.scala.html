@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8"/>
-        <title>@{s"Chousen v0.4-SNAPSHOT"}</title>
+        <title>@{s"Chousen v0.4.0"}</title>
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -10,7 +10,7 @@
 
     <body>
         <div class="container">
-            <h1 class="lead">Chousen Dev Client <small>v0.4-SNAPSHOT</small></h1>
+            <h1 class="lead">Chousen Dev Client <small>v0.4.0</small></h1>
 
             <input id ="namebox" type="text" class="form-control" placeholder="Character Name">
 
@@ -25,108 +25,52 @@
 
             <div class="pre-scrollable">
                 <pre>
-                    v0.4-b12 (16 Aug 2017)
+                    v0.4.0 The Beginnings (16 Aug 2017)
 
-                    * Cards can be dropped at a camp fire
-                    * New Cards: Forge Weapon/Armour discard another card, and draw the next Weapon/Armour in the deck
-                    * New Card: Trade discard another card, and draw up to 3 cards (restricted by hand limit)
-
-
-                    v0.4-b11 (15 Aug 2017)
+                    Major enhancements to the game engine to support more action types and gameplay choices. At this
+                    point the engine will only require few additional features before deck building is added.
 
                     * Three class/deck choices: Fighter, Berserker, and Warrior
-                    * Each deck plays differently using different cards
-                    * Destruction now uses status effects when calculating Vit loss
-                    * Destruction attack cost decreased to 110 from 130
-                    * Stunning Strike charges reduced to 3 from 4
-                    * Status effects simplified in UI
-
-
-                    v0.4-b10 (15 Aug 2017)
-
-                    * New Potion Cards: Potion of Regeneration, Potion of Continuation
-                    * Potion of Rage duration increased to 8 from 6
-                    * Potion of Rage now also gives bonus Dexterity
-
-
-                    v0.4-b9 (14 Aug 2017)
-
+                       Each deck plays differently using different cards
+                    * Player can now equip Weapons & Armour
+                    * Support for temporary status effects
                     * Attack skill cards now have up to 4 charges and consume a charge on use
-                    * Restored cards will have 1 charge
-                    * If the player exhausts their deck, all charges are restored
-                    * Halved the number of attack skills in the default deck
-                    * StoneSkin and Rage instances reduced from 4 to 2
 
-
-                    v0.4-b8 (14 Aug 2017)
-
-                    * Support for equipment cards
-                    * 4 Equipment cards added to the Player's deck
+                    * The player now has the ability to block instead of attacking.
+                    * Player experience gain is now exponential
                     * Player base stats reduced from 8 to 6
                     * Player initial health reduced from 100 to 70
-                    * Increased the stats of various enemies
-                    * Enemy damage text is more descriptive
-
-
-                    v0.4-b7 (12 Aug 2017)
-
-                    * RarePepe Card now gives bonus experience, based on player level
-                    * Possible to gain more than one level per turn (will occur when using Rare Pepe at low levels)
-                    * Experience curve is now exponential
-
-
-                    v0.4.b6 (2 Aug 2017)
-
-                    * Steam Golem charges up less often
-                    * Increased base stats for many enemies
-
-
-                    v0.4.b5 (2 Aug 2007)
-
-                    * Enemy status effects displayed in UI
-                    * Ground Slam now applies a small slow
-                    * Fixed steam golem, would never speed up
-
-
-                    v0.4.b4 (1 Aug 2007)
-
-                    * Added new Status/Potion card: Rage. Increases Strength, Damage, and Speed,
-                      but disables the use of any other cards.
-                    * Status effects can now apply to enemies
-                    * Stunning Strike/Hamstring merged into a single skill.
-                    * Stunning Strike now reduces position and applies a stronger, but temporary slow.
-                    * Warrior, Steam Golem, and Orcs have interesting alternative actions in battle
-                    * Made later enemies hit harder (Old Orc was doing no damage)
-                    * It is no-longer possible to attack the Camp Fire
-
-
-                    v0.4.b3 (31 Jul 2007)
 
                     * New damage formula.
-                    * Dexterity is now half as effective as strength at increasing max damage
-                    * Dexterity increases minimum damage dealt at the same rate
-                    * Potions of Strength and Stoneskin have additional battle effects
-                    * The player now has the ability to block instead of attacking.
-
-
-                    v0.4.b2 (30 Jul 2007)
-
-                    * Reduced deck and card choices to only Strength based decks
-                    * Focus is on getting strength working and fun first, before exploring other stat builds
-
-
-                    v0.4.b2 (29 Jul 2007)
-
-                    * Support for temporary status effects for the Player
-                    * Added new status effecting potions: Potion of Haste, Might, Vitality, etc.
-
-
-                    v0.4.b1 (29 Jul 2007)
-
+                       Dexterity is now half as effective as strength at increasing max damage
+                       Dexterity increases minimum damage dealt at the same rate
                     * At campfires the player can now choose to:
-                        Rest - Heal all missing health
-                        Explore - Fill their hand, drawing a minimum of 2 cards
-                        Rest and Explore - Heal a small amount and draw a single card
+                       Rest - Heal all missing health
+                       Explore - Fill their hand, drawing a minimum of 2 cards
+                       Rest and Explore - Heal a small amount and draw a single card
+                       Drop - Discard a single card
+                    * New Status/Potion card: Rage. Increases Strength, Damage, and Speed,
+                       but disables the use of any other cards.
+                    * Skills now have charges
+                       Restored cards with charges will only have 1 charge
+                       If the player exhausts their deck, all charges are restored
+                       Halved the number of attack skills in the default deck
+                    * New Cards: Potion of Haste, Might, StoneSkin, Regeneration etc. Temporarily apply an effect
+                    * New Card: Forge Weapon/Armour discard another card, and draw the next Weapon/Armour in the deck
+                    * New Card: Trade discard another card, and draw up to 3 cards (restricted by hand limit)
+                    * New Card: Potion of Continuation -- extends any temporary effects
+                    * Stunning Strike/Hamstring merged into a single skill.
+                    * Stunning Strike now reduces position and applies a stronger, but temporary slow.
+                    * Ground Slam now applies a weak slow
+                    * RarePepe Card now gives bonus experience, based on player level
+                    * Reduced deck and card choices to only Strength based decks
+
+
+                    * Warrior, Steam Golem, and Orcs have interesting alternative actions in battle
+                    * It is no-longer possible to attack the Camp Fire
+                    * Increased various enemy stat values
+                    * Enemy damage text is more descriptive
+                    * Enemy status effects added to the UI
 
 
                     v0.3 Carlonean Online (26 Jul 2017)
