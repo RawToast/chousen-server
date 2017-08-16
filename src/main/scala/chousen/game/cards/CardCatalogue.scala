@@ -8,7 +8,8 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
   // Deck built around stun/counter ST
   def fighterDeck: Seq[Card] = // 15
-      Seq(healWounds, healWounds, healWounds, healWounds,
+      Seq(
+        healWounds, healWounds,
         rarePepe, rarePepe, rarePepe, rarePepe,
 
         might, might, might, might,
@@ -17,10 +18,13 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         continuation, continuation,
         regen, regen,
 
-        elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
-        elixirOfVitality, elixirOfVitality,
+        elixirOfStrength, elixirOfStrength, elixirOfVitality, elixirOfVitality,
 
-        broadsword, swordOfIntellect, chainmail, chainmail,
+        essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+        essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+        essenceOfDexterity, essenceOfDexterity, essenceOfVitality, essenceOfVitality,
+
+        broadsword, swordOfIntellect, chainmail,
 
         groundStrike, groundStrike, groundStrike,
 
@@ -42,8 +46,12 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     regen, regen, regen, regen,
     rarePepe, rarePepe, rarePepe, rarePepe,
 
-    elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
-    elixirOfDexterity, elixirOfDexterity, elixirOfVitality, elixirOfVitality,
+
+    elixirOfStrength, elixirOfStrength, elixirOfDexterity, elixirOfVitality,
+
+    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality,
 
 
     rage, rage, rage, rage,
@@ -53,7 +61,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     stoneSkin, stoneSkin,
 
     // GiantClub is better for this build -- no other access to % damage
-    giantClub, giantClub, chainmail, chainmail,
+    giantClub, chainmail,
 
     groundStrike, groundStrike,
 
@@ -66,12 +74,16 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
   // Deck built around high strength skills
   def warriorDeck: Seq[Card] = Seq(
 
-    healWounds, healWounds, healWounds, healWounds,
+    healWounds, healWounds,
     regen, regen, regen, regen,
     rarePepe, rarePepe, rarePepe, rarePepe,
 
-    elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfStrength,
-    elixirOfDexterity, elixirOfDexterity, elixirOfVitality, elixirOfVitality,
+
+    elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfVitality,
+
+    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+    essenceOfStrength, essenceOfStrength, essenceOfVitality, essenceOfVitality,
 
     might, might, might, might,
     haste, haste, haste, haste,
@@ -79,7 +91,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     stoneSkin, stoneSkin,
 
     // GiantClub is better for this build -- no other access to % damage
-    broadsword, broadsword, chainmail, chainmail,
+    broadsword, chainmail,
 
     destruction, destruction, destruction, destruction,
     crushingBlow, crushingBlow, crushingBlow, crushingBlow,
@@ -89,7 +101,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     forgeWeapon, forgeArmour, trade, trade,
 
     rummage, rummage, rummage, rummage,
-    miracle, miracle, miracle, miracle
+    miracle, miracle
   )
 
 
@@ -127,6 +139,11 @@ trait PermanentEffects extends CardBuilder {
 //  def elixirOfIntelligence: Card = mkCard("Elixir of Intelligence ", "Permanently increases Intelligence by 2", ElixirOfIntelligence)
   def elixirOfVitality: Card = mkCard("Elixir of Vitality ", "Permanently increases Vitality by 2", ElixirOfVitality)
   def rarePepe: Card = mkCard("Rare Pepe ", "Gives the player a chunk of experience", RarePepe)
+
+  def essenceOfStrength: Card = mkCard("Essence of Strength ", "Immediately increases Strength, only 1 essence may be played per turn", ElixirOfStrength)
+  def essenceOfDexterity: Card = mkCard("Essence of Dexterity ", "Immediately increases Dexterity, only 1 essence may be played per turn", ElixirOfDexterity)
+  //  def essenceOfIntelligence: Card = mkCard("Essence of Intelligence ", "Immediately increases Intelligence, only 1 essence may be played per turn", ElixirOfIntelligence)
+  def essenceOfVitality: Card = mkCard("Essence of Vitality ", "Immediately increases Dexterity, only 1 essence may be played per turn", ElixirOfVitality)
 }
 
 trait Magic extends CardBuilder{
