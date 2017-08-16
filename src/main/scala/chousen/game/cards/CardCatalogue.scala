@@ -27,7 +27,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         stunningStrike, stunningStrike,
         counter, counter,
 
-        forgeWeapon, forgeArmour,
+        forgeWeapon, forgeArmour, trade, trade,
 
         rummage, rummage, rummage, rummage,
         replace, replace,
@@ -57,7 +57,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
     groundStrike, groundStrike,
 
-    forgeWeapon, forgeArmour,
+    forgeWeapon, forgeArmour, trade, trade,
 
     rummage, rummage, rummage, rummage,
     restore, restore, miracle, miracle,
@@ -86,7 +86,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
     groundStrike, groundStrike,
 
-    forgeWeapon, forgeArmour,
+    forgeWeapon, forgeArmour, trade, trade,
 
     rummage, rummage, rummage, rummage,
     miracle, miracle, miracle, miracle
@@ -161,7 +161,9 @@ trait Utility extends CardBuilder {
   def miracle: Card = mkCard("Miracle", "Draw cards until your hand is full", Miracle)
 
   // Cost 70
-  def rummage: Card = mkCard("Rummage", "Quickly search the area and draw 2 cards", Rummage)
+  def rummage: Card = mkCard("Rummage", "Quickly search the area and always draw 2 cards (no hand limit)", Rummage)
+  def trade: Card = mkCard("Trade", "Discard one card and draw up to 3 cards, stop if the hand limit is reached)", Trade)
+
 
   // Cost 0
   def replace: Card = mkCard("Replace", "Instantly replaces the player's hand (will draw at least 3 cards)", Replace)

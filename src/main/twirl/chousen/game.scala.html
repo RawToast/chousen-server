@@ -161,7 +161,7 @@
                     <div id="card-group" class="btn-group" role="group">
                     @for(c <- gameState.cards.hand.filter(_.action.isInstanceOf[chousen.api.data.CardAction])) {
 
-                        @if(c.action == chousen.api.data.Drop) {
+                        @if(c.action.isInstanceOf[chousen.api.data.DiscardCardAction]) {
                             <div class="btn-group" role="group">
                                 <button type="button" class="btn btn-default btn-card2 dropdown-toggle" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false" title="@{c.description}">

@@ -25,6 +25,7 @@ object CardActionHandler extends ActionHandler {
       case Restore => restore
       case ForgeArmour => forgeArmour(cardId)
       case ForgeWeapon => forgeWeapon(cardId)
+      case Trade => trade(cardId)
     }
 
 
@@ -102,7 +103,7 @@ object CardActionHandler extends ActionHandler {
       val newCards = for {
         id <- cardId
         discardCard <- h.hand.find(_.id == id)
-        armourCard <- h.discard.find(_.action.isInstanceOf[EquipArmour])
+        armourCard <- h.deck.find(_.action.isInstanceOf[EquipArmour])
         m = GameMessage(s"${p.name} discards ${discardCard.name} and forges: ${armourCard.name}")
         nh = h.hand.filterNot(_.id == id) :+ armourCard
         nc = h.copy(hand = nh, discard = h.discard :+ discardCard)
@@ -117,12 +118,31 @@ object CardActionHandler extends ActionHandler {
       val newCards = for {
         id <- cardId
         discardCard <- h.hand.find(_.id == id)
-        weaponCard <- h.discard.find(_.action.isInstanceOf[EquipWeapon])
+        weaponCard <- h.deck.find(_.action.isInstanceOf[EquipWeapon])
         m = GameMessage(s"${p.name} discards ${discardCard.name} and forges: ${weaponCard.name}")
         nh = h.hand.filterNot(_.id == id) :+ weaponCard
         nc = h.copy(hand = nh, discard = h.discard :+ discardCard)
       } yield (nc, m)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+  def trade(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      val newCards = for {
+        id <- cardId
+        discardCard <- h.hand.find(_.id == id)
+
+        dc = h.copy(hand = h.hand.filterNot(_.id == id), discard = h.discard :+ discardCard)
+        cs1 = CardManager.drawCard(dc, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)
+        cs2 = CardManager.drawCard(cs1, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)
+        cards = CardManager.drawCard(cs2, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)
+
+        foundCards = cards.hand.filter(c => !h.hand.contains(c))
+        m = GameMessage(s"${p.name} trades ${discardCard.name} and receives: ${foundCards.map(_.name).mkString(", ")}")
+      } yield (cards, m)
+
+      newCards.fold((p, h, msgs))(ncm => (p.copy(position = p.position - 70), ncm._1, msgs :+ ncm._2))
   }
 }
