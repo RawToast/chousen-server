@@ -14,7 +14,7 @@ case class SingleTargetActionRequest(targetId: UUID, action: SingleTargetAction)
 
 case class MultiTargetActionRequest(targetId: Set[UUID], action: MultiAction) extends CommandRequest
 
-case class CardActionRequest(action: CardAction) extends CommandRequest
+case class CardActionRequest(action: CardAction, cardId: Option[UUID]) extends CommandRequest
 
 case class CampfireActionRequest(action: CampFireAction, cardId: Option[UUID]) extends CommandRequest
 
@@ -29,6 +29,9 @@ sealed trait SelfAction extends Action
 sealed trait CardAction extends Action
 sealed trait CampFireAction extends Action
 
+
+sealed trait StandardCardAction extends CardAction
+sealed trait DiscardCardAction extends CardAction
 
 sealed trait EquipAction extends Action
 
@@ -80,10 +83,13 @@ case object RarePepe extends SelfAction
 case object QuickStep extends SelfAction
 
 
-case object Rummage extends CardAction
-case object Miracle extends CardAction
-case object Replace extends CardAction
-case object Restore extends CardAction
+case object Rummage extends StandardCardAction
+case object Miracle extends StandardCardAction
+case object Replace extends StandardCardAction
+case object Restore extends StandardCardAction
+
+case object ForgeArmour extends DiscardCardAction
+case object ForgeWeapon extends DiscardCardAction
 
 
 case object Rest extends CampFireAction

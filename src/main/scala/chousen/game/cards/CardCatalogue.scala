@@ -27,6 +27,8 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         stunningStrike, stunningStrike,
         counter, counter,
 
+        forgeWeapon, forgeArmour,
+
         rummage, rummage, rummage, rummage,
         replace, replace,
         restore, restore,
@@ -55,6 +57,8 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
     groundStrike, groundStrike,
 
+    forgeWeapon, forgeArmour,
+
     rummage, rummage, rummage, rummage,
     restore, restore, miracle, miracle,
   )
@@ -81,6 +85,8 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     crushingBlow, crushingBlow, crushingBlow, crushingBlow,
 
     groundStrike, groundStrike,
+
+    forgeWeapon, forgeArmour,
 
     rummage, rummage, rummage, rummage,
     miracle, miracle, miracle, miracle
@@ -160,6 +166,9 @@ trait Utility extends CardBuilder {
   // Cost 0
   def replace: Card = mkCard("Replace", "Instantly replaces the player's hand (will draw at least 3 cards)", Replace)
   def restore: Card = mkCard("Restore", "Instantly places the top discarded card into your hand", Restore)
+
+  def forgeWeapon: Card = mkCard("Forge Weapon", "Discard one card and place the next weapon in your deck in your hand", ForgeWeapon)
+  def forgeArmour: Card = mkCard("Forge Armour", "Discard one card and place the next armour in your deck in your hand", ForgeArmour)
 }
 
 trait CampFire extends CardBuilder {

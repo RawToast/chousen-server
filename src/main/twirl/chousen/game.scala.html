@@ -160,11 +160,32 @@
 
                     <div id="card-group" class="btn-group" role="group">
                     @for(c <- gameState.cards.hand.filter(_.action.isInstanceOf[chousen.api.data.CardAction])) {
-                        <button type="button" class="btn btn-default btn-card" action="@{c.action}"
-                        title="@{c.description}"
-                        uri="@{s"game/" + gameState.uuid + "/card/" + c.id}">
-                        @{c.name + {c.charges.map(i => s"($i)").getOrElse("")}}
-                        </button>
+
+                        @if(c.action == chousen.api.data.Drop) {
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-default btn-card2 dropdown-toggle" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false" title="@{c.description}">
+                                    @{c.name}
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                @for(e <- gameState.cards.hand.filterNot(_.id == c.id).sortBy(_.name)) {
+                                    <li>
+                                        <a href="#" class="btn btn-dropcard" cid="@{e.id.toString}" action="@{c.action}"
+                                        uri="@{s"game/" + gameState.uuid + "/card/" + c.id}">
+                                        @{e.name}
+                                        </a>
+                                    </li>
+                                }
+                                </ul>
+                            </div>
+                        } else {
+                            <button type="button" class="btn btn-default btn-card" action="@{c.action}"
+                            title="@{c.description}"
+                            uri="@{s"game/" + gameState.uuid + "/card/" + c.id}">
+                            @{c.name + {c.charges.map(i => s"($i)").getOrElse("")}}
+                            </button>
+                        }
                     }
                     </div>
 

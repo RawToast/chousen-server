@@ -1,5 +1,7 @@
 package chousen.game.actions
 
+import java.util.UUID
+
 import chousen.Optics.{MessagesLens, PlayerLens}
 import chousen.api.data._
 import chousen.game.cards.CardManager
@@ -8,19 +10,21 @@ import monocle.macros.GenLens
 
 object CardActionHandler extends ActionHandler {
 
-  def handle(action: CardAction): (GameState) => GameState = {
+  def handle(action: CardAction, cardId: Option[UUID]): (GameState) => GameState = {
     LensUtil.triLens(PlayerLens, GenLens[GameState](_.cards), MessagesLens).modify {
       case (p, cs, msgs) =>
-        cardActions(action)(p, cs, msgs)
+        cardActions(action, cardId)(p, cs, msgs)
     }
   }
 
-  private def cardActions(actionId: CardAction): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) =
+  private def cardActions(actionId: CardAction, cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) =
     actionId match {
       case Rummage => rummage
       case Miracle => miracle
       case Replace => replace
       case Restore => restore
+      case ForgeArmour => forgeArmour(cardId)
+      case ForgeWeapon => forgeWeapon(cardId)
     }
 
 
@@ -89,5 +93,36 @@ object CardActionHandler extends ActionHandler {
     val gameMessages = msgs :+ targetMsg
 
     (p.copy(position = p.position - 70), cs2, gameMessages)
+  }
+
+
+  def forgeArmour(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      val newCards = for {
+        id <- cardId
+        discardCard <- h.hand.find(_.id == id)
+        armourCard <- h.discard.find(_.action.isInstanceOf[EquipArmour])
+        m = GameMessage(s"${p.name} discards ${discardCard.name} and forges: ${armourCard.name}")
+        nh = h.hand.filterNot(_.id == id) :+ armourCard
+        nc = h.copy(hand = nh, discard = h.discard :+ discardCard)
+      } yield (nc, m)
+
+      newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+  def forgeWeapon(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      val newCards = for {
+        id <- cardId
+        discardCard <- h.hand.find(_.id == id)
+        weaponCard <- h.discard.find(_.action.isInstanceOf[EquipWeapon])
+        m = GameMessage(s"${p.name} discards ${discardCard.name} and forges: ${weaponCard.name}")
+        nh = h.hand.filterNot(_.id == id) :+ weaponCard
+        nc = h.copy(hand = nh, discard = h.discard :+ discardCard)
+      } yield (nc, m)
+
+      newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
   }
 }
