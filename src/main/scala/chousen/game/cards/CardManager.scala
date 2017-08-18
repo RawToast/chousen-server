@@ -18,6 +18,7 @@ trait CardManager {
   lazy val MAX_HAND_SIZE = 7
   lazy val PRE_DISCARD_MAX_HAND_SIZE = 8
   lazy val ABSOLUTE_MAX = 15
+  lazy val essenceActions = Seq(EssenceOfStrength, EssenceOfDexterity, EssenceOfVitality, EssenceOfIntelligence)
 
   def playCard(card: data.Card)(f: data.Card => GameState): (GameState) => GameState = { game: GameState =>
     import chousen.Implicits._
@@ -53,19 +54,20 @@ trait CardManager {
 
     action
       .fold(game) { c =>
-        val ng = f(c)
-        if (ng == game) ng
+        val actionResult = f(c)
+        if (actionResult == game) actionResult
         else {
+          val nextGameState = if (!essenceActions.contains(c.action)) CardsLens.modify(_.copy(playedEssence = false))(actionResult) else actionResult
           // Move to discard
           c.action match {
-            case _: CampFireAction => ng
-            case eq: EquipAction => handleEquipAction(eq, c)(ng)
+            case _: CampFireAction => nextGameState
+            case eq: EquipAction => handleEquipAction(eq, c)(nextGameState)
             case _ =>
               c.charges match {
                 case Some(i) =>
-                  if (i > 1) HandLens.modify(_.map(x => if(x ~= c) c.copy(charges = c.charges.map(_ - 1)) else x))(ng)
-                  else discard(c, ng)
-                case None => discard(c, ng)
+                  if (i > 1) HandLens.modify(_.map(x => if(x ~= c) c.copy(charges = c.charges.map(_ - 1)) else x))(nextGameState)
+                  else discard(c, nextGameState)
+                case None => discard(c, nextGameState)
               }
           }
         }

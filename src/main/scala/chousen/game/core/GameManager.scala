@@ -23,8 +23,6 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
   val multiTargetActionHandler = new MultiTargetActionHandler(damageCalculator)
   val selfActionHandler = new SelfActionHandler(damageCalculator.sc)
 
-  lazy val essenceActions = Seq(EssenceOfStrength, EssenceOfDexterity, EssenceOfVitality, EssenceOfIntelligence)
-
   override def useCard(card: Card, commandRequest: CommandRequest, game: GameState): GameState = {
 
     if (game.player.status.map(_.effect).contains(Rage) && !card.action.isInstanceOf[CampFireAction]) {

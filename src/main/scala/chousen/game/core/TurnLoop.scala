@@ -18,7 +18,6 @@ abstract class TurnLoop(takeEnemyTurns: GameOperation, preTurnValidation: Forked
     val newState: Either[GameState, GameState] = for {
       checkedGame <- preTurnValidation(gameState)
       postInput <- playerInput
-        .andThen(GameStateOptics.CardsLens.modify(_.copy(playedEssence = false)))
         .andThen(postTurnValidation)(checkedGame)
       postEnemy = takeEnemyTurns(postInput)
       postCheck <- gameOverCheck(postEnemy)
