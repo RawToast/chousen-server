@@ -2,16 +2,15 @@ package chousen.game.actions
 
 import java.util.UUID
 
-import chousen.Optics.{MessagesLens, PlayerLens}
+import chousen.Optics.{MessagesLens, PlayerLens, CardsLens}
 import chousen.api.data._
 import chousen.game.cards.CardManager
 import chousen.util.LensUtil
-import monocle.macros.GenLens
 
 object CardActionHandler extends ActionHandler {
 
   def handle(action: CardAction, cardId: Option[UUID]): (GameState) => GameState = {
-    LensUtil.triLens(PlayerLens, GenLens[GameState](_.cards), MessagesLens).modify {
+    LensUtil.triLens(PlayerLens, CardsLens, MessagesLens).modify {
       case (p, cs, msgs) =>
         cardActions(action, cardId)(p, cs, msgs)
     }

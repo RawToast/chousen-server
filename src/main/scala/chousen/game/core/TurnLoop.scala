@@ -17,7 +17,9 @@ abstract class TurnLoop(takeEnemyTurns: GameOperation, preTurnValidation: Forked
     // long as the GameState is on the Left side of the Either.
     val newState: Either[GameState, GameState] = for {
       checkedGame <- preTurnValidation(gameState)
-      postInput <- playerInput.andThen(postTurnValidation)(checkedGame)
+      postInput <- playerInput
+        .andThen(GameStateOptics.CardsLens.modify(_.copy(playedEssence = false)))
+        .andThen(postTurnValidation)(checkedGame)
       postEnemy = takeEnemyTurns(postInput)
       postCheck <- gameOverCheck(postEnemy)
     } yield postCheck
@@ -42,7 +44,6 @@ abstract class GameOperations(gameops: GameOps) {
     if (isActive(gs)) Right(gs)
     else Left(gs)
   }
-
   val PostTurnValidation: ForkedGameOperation = gs => {
     val isActive = GameStateOptics.EncounterLens.get _ andThen gameops.isGameActive
     if (isActive(gs)) Right {

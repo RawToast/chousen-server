@@ -17,6 +17,7 @@ trait GameStateOptics {
 
   val PlayerLens: Lens[GameState, Player] = GenLens[GameState](_.player)
   val MessagesLens: Lens[GameState, Seq[GameMessage]] = GenLens[GameState](_.messages)
+  val CardsLens: Lens[GameState, Cards] = GenLens[GameState](_.cards)
 
   val HandLens: Lens[GameState, Seq[Card]] = GenLens[GameState](_.cards.hand)
   val DiscardLens: Lens[GameState, Seq[Card]] = GenLens[GameState](_.cards.discard)
