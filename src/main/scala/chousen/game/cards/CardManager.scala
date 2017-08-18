@@ -54,10 +54,10 @@ trait CardManager {
 
     action
       .fold(game) { c =>
-        val actionResult = f(c)
-        if (actionResult == game) actionResult
+        val nextGameState = f(c)
+        if (nextGameState == game) nextGameState
         else {
-          val nextGameState = if (!essenceActions.contains(c.action)) CardsLens.modify(_.copy(playedEssence = false))(actionResult) else actionResult
+//          val nextGameState = if (!essenceActions.contains(c.action)) CardsLens.modify(_.copy(playedEssence = false))(actionResult) else actionResult
           // Move to discard
           c.action match {
             case _: CampFireAction => nextGameState

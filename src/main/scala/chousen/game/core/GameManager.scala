@@ -67,8 +67,9 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
         val newState = GameTurnLoop.takeTurn(game, blockHandler.block())
         transition(newState)
       case SelfInflictingActionRequest(a) =>
+        val resetEssences = !essenceActions.contains(a)
         val ns = GameTurnLoop.takeTurn(game,
-          selfActionHandler.handle(a).apply)
+          selfActionHandler.handle(a).apply, resetEssence = resetEssences)
           transition(ns, usedCard = true)
       case SingleTargetActionRequest(targetId, action) =>
         val ns= GameTurnLoop.takeTurn(game,
@@ -95,7 +96,7 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
 }
 
 
-trait  TurnTransition {
+trait TurnTransition {
   import chousen.Optics._
 
   def transitionGame(game: GameState, statusCalc: PostTurnStatusCalc, usedCard: Boolean = false): GameState = {
