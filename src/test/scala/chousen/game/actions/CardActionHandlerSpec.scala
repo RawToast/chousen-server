@@ -111,7 +111,7 @@ class CardActionHandlerSpec extends WordSpec {
 
       val dungeonBuilder = new SimpleDungeonBuilder()
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
-      val startedGame: GameState = GenLens[GameState](_.cards.discard).modify(_ :+ Card(UUID.randomUUID(), "test", "test", SwordOfIntellect))(stateCreator.start(gameState))
+      val startedGame: GameState = GenLens[GameState](_.cards.deck).modify(_ :+ Card(UUID.randomUUID(), "test", "test", SwordOfIntellect))(stateCreator.start(gameState))
 
       val cardToDiscard = startedGame.cards.hand.head
 
@@ -140,7 +140,7 @@ class CardActionHandlerSpec extends WordSpec {
       val dungeonBuilder = new SimpleDungeonBuilder()
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
 
-      val startedGame: GameState = GenLens[GameState](_.cards.discard).modify(_ :+ Card(UUID.randomUUID(), "test", "test", Chainmail))(stateCreator.start(gameState))
+      val startedGame: GameState = GenLens[GameState](_.cards.deck).modify(_ :+ Card(UUID.randomUUID(), "test", "test", Chainmail))(stateCreator.start(gameState))
 
       val cardToDiscard = startedGame.cards.hand.head
 
