@@ -370,5 +370,112 @@ class SelfActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given an Essence of Vitality" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(EssenceOfVitality)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Not affect the player's position" in {
+        assert(result.player.position >= 100)
+        assert(startedGame.player.position == result.player.position)
+      }
+
+      "The Player's vitality increases" in {
+        assert(result.player.stats.vitality > startedGame.player.stats.vitality)
+      }
+
+      "Set the essence flag" in {
+        assert(result.cards.playedEssence)
+      }
+    }
+
+    "Given an Essence of Strength" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(EssenceOfStrength)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Not affect the player's position" in {
+        assert(result.player.position >= 100)
+        assert(startedGame.player.position == result.player.position)
+      }
+
+      "The Player's strength increases" in {
+        assert(result.player.stats.strength > startedGame.player.stats.strength)
+      }
+
+      "Set the essence flag" in {
+        assert(result.cards.playedEssence)
+      }
+    }
+
+    "Given an Essence of Dexterity" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(EssenceOfDexterity)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Not affect the player's position" in {
+        assert(result.player.position >= 100)
+        assert(startedGame.player.position == result.player.position)
+      }
+
+      "The Player's dexterity increases" in {
+        assert(result.player.stats.dexterity > startedGame.player.stats.dexterity)
+      }
+
+      "Set the essence flag" in {
+        assert(result.cards.playedEssence)
+      }
+    }
+
+    "Given an Essence of Intelligence" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(EssenceOfIntelligence)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Not affect the player's position" in {
+        assert(result.player.position >= 100)
+        assert(startedGame.player.position == result.player.position)
+      }
+
+      "The Player's intellect increases" in {
+        assert(result.player.stats.intellect > startedGame.player.stats.intellect)
+      }
+
+      "Set the essence flag" in {
+        assert(result.cards.playedEssence)
+      }
+    }
   }
 }

@@ -77,7 +77,16 @@ trait CardManager {
   }
 
   def startGame(cards:Seq[data.Card], passiveCards: Seq[data.Card]=Seq.empty): Cards = {
-    val shuffledCards = Random.shuffle(Random.shuffle(cards))
+
+    val (t, b) = cards.splitAt(cards.size / 2)
+    val (tt, tb) = t.splitAt(t.size / 2)
+    val (bt, bb) = b.splitAt(b.size / 2)
+
+    val shuffledCards1 = Random.shuffle(Random.shuffle(bt ++ tt ++ bb ++ tb))
+
+    val (top, bot) = shuffledCards1.splitAt(30)
+
+    val shuffledCards = Random.shuffle(bot ++ top)
 
     val (hand, deck) = shuffledCards.splitAt(MAX_HAND_SIZE)
 
