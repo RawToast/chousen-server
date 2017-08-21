@@ -22,11 +22,15 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
   val singleTargetActionHandler = new SingleTargetActionHandler(damageCalculator)
   val multiTargetActionHandler = new MultiTargetActionHandler(damageCalculator)
   val selfActionHandler = new SelfActionHandler(damageCalculator.sc)
+  lazy val essenceActions = Seq(EssenceOfStrength, EssenceOfDexterity, EssenceOfVitality, EssenceOfIntelligence)
 
   override def useCard(card: Card, commandRequest: CommandRequest, game: GameState): GameState = {
 
     if (game.player.status.map(_.effect).contains(Rage) && !card.action.isInstanceOf[CampFireAction]) {
       val msg = GameMessage(s"Cannot use ${card.name} whilst Berserk")
+      game.copy(messages = game.messages :+ msg)
+    } else if(essenceActions.contains(card.action) && game.cards.playedEssence) {
+      val msg = GameMessage(s"Cannot use ${card.name}, as an Essence has already been played")
       game.copy(messages = game.messages :+ msg)
     } else {
       CardManager.playCard(card) { (c: Card) =>
@@ -63,8 +67,9 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
         val newState = GameTurnLoop.takeTurn(game, blockHandler.block())
         transition(newState)
       case SelfInflictingActionRequest(a) =>
+        val resetEssences = !essenceActions.contains(a)
         val ns = GameTurnLoop.takeTurn(game,
-          selfActionHandler.handle(a).apply)
+          selfActionHandler.handle(a).apply, resetEssence = resetEssences)
           transition(ns, usedCard = true)
       case SingleTargetActionRequest(targetId, action) =>
         val ns= GameTurnLoop.takeTurn(game,
@@ -91,7 +96,7 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
 }
 
 
-trait  TurnTransition {
+trait TurnTransition {
   import chousen.Optics._
 
   def transitionGame(game: GameState, statusCalc: PostTurnStatusCalc, usedCard: Boolean = false): GameState = {

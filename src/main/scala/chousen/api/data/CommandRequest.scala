@@ -82,6 +82,11 @@ case object ElixirOfVitality extends SelfAction
 case object RarePepe extends SelfAction
 case object QuickStep extends SelfAction
 
+case object EssenceOfStrength extends SelfAction
+case object EssenceOfDexterity extends SelfAction
+case object EssenceOfIntelligence extends SelfAction
+case object EssenceOfVitality extends SelfAction
+
 
 case object Rummage extends StandardCardAction
 case object Miracle extends StandardCardAction

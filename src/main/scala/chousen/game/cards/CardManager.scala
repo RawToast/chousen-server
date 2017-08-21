@@ -18,6 +18,7 @@ trait CardManager {
   lazy val MAX_HAND_SIZE = 7
   lazy val PRE_DISCARD_MAX_HAND_SIZE = 8
   lazy val ABSOLUTE_MAX = 15
+  lazy val essenceActions = Seq(EssenceOfStrength, EssenceOfDexterity, EssenceOfVitality, EssenceOfIntelligence)
 
   def playCard(card: data.Card)(f: data.Card => GameState): (GameState) => GameState = { game: GameState =>
     import chousen.Implicits._
@@ -53,19 +54,20 @@ trait CardManager {
 
     action
       .fold(game) { c =>
-        val ng = f(c)
-        if (ng == game) ng
+        val nextGameState = f(c)
+        if (nextGameState == game) nextGameState
         else {
+//          val nextGameState = if (!essenceActions.contains(c.action)) CardsLens.modify(_.copy(playedEssence = false))(actionResult) else actionResult
           // Move to discard
           c.action match {
-            case _: CampFireAction => ng
-            case eq: EquipAction => handleEquipAction(eq, c)(ng)
+            case _: CampFireAction => nextGameState
+            case eq: EquipAction => handleEquipAction(eq, c)(nextGameState)
             case _ =>
               c.charges match {
                 case Some(i) =>
-                  if (i > 1) HandLens.modify(_.map(x => if(x ~= c) c.copy(charges = c.charges.map(_ - 1)) else x))(ng)
-                  else discard(c, ng)
-                case None => discard(c, ng)
+                  if (i > 1) HandLens.modify(_.map(x => if(x ~= c) c.copy(charges = c.charges.map(_ - 1)) else x))(nextGameState)
+                  else discard(c, nextGameState)
+                case None => discard(c, nextGameState)
               }
           }
         }
@@ -75,7 +77,16 @@ trait CardManager {
   }
 
   def startGame(cards:Seq[data.Card], passiveCards: Seq[data.Card]=Seq.empty): Cards = {
-    val shuffledCards = Random.shuffle(Random.shuffle(cards))
+
+    val (t, b) = cards.splitAt(cards.size / 2)
+    val (tt, tb) = t.splitAt(t.size / 2)
+    val (bt, bb) = b.splitAt(b.size / 2)
+
+    val shuffledCards1 = Random.shuffle(Random.shuffle(bt ++ tt ++ bb ++ tb))
+
+    val (top, bot) = shuffledCards1.splitAt(30)
+
+    val shuffledCards = Random.shuffle(bot ++ top)
 
     val (hand, deck) = shuffledCards.splitAt(MAX_HAND_SIZE)
 

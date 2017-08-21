@@ -145,6 +145,8 @@ final class EncounterOp(sc: StatusCalculator) extends EncounterOps {
   override def ensureActive(encounterData: EncounterData): EncounterData = {
     import chousen.Implicits._
 
+    // At THIS point, status effects duration should be reduced -- since it would be PER tick.
+
     val (p, es, msgs) = encounterData
     val sePlayer = sc.calculate(p)
 
@@ -218,6 +220,7 @@ final class EncounterOp(sc: StatusCalculator) extends EncounterOps {
 
     val newMessages = if (player.position > fastestEnemy.position) msgs :+ GameMessage(s"${player.name}'s turn.")
     else msgs
+
     (player, enemies, newMessages)
   }
 
