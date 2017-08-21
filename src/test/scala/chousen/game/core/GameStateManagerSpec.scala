@@ -63,6 +63,33 @@ class GameStateManagerSpec extends WordSpec {
         }
       }
 
+      "Is a block command" should {
+        val result = gameStateManager.takeCommand(BlockRequest(), startedGame)
+
+        "the player is set back to active" in {
+          assert(result.player.position > 100)
+          val active = encOps.getActive((result.player,
+            result.dungeon.currentEncounter.enemies, result.messages))
+          assert(active.isLeft)
+
+          import chousen.Implicits._
+          active.swap.foreach(_ ~= startedGame.player)
+        }
+
+        lazy val numberOfNewMessages = result.messages.size - startedGame.messages.size
+        lazy val latestMessages = result.messages.takeRight(numberOfNewMessages)
+
+        "game messages are created for the action" in {
+          assert(result.messages.size > startedGame.messages.size)
+        }
+
+        "the enemy takes their turn" in {
+          assert(result.player.stats.currentHp < startedGame.player.stats.currentHp)
+
+          assert(latestMessages.exists(_.text.contains("Slime grazes Test Player")))
+          assert(latestMessages.exists(_.text.contains(" damage.")))
+        }
+      }
 
       "Is a basic single target command" should {
         val target = GameStateGenerator.firstEnemy

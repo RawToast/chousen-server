@@ -86,7 +86,7 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
   }
 
   def essenceOfDexterity(p: Player, cs: Cards, msgs: Seq[GameMessage]): Update = {
-    essence(p, cs, msgs, "Dexterity", PlayerStrengthLens)
+    essence(p, cs, msgs, "Dexterity", PlayerDexterityLens)
   }
 
   def essenceOfIntellect(p: Player, cs: Cards, msgs: Seq[GameMessage]): Update = {
