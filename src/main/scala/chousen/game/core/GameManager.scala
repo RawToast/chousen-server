@@ -143,7 +143,8 @@ trait TurnTransition {
 
 
   private def startEncounterMessage(enemies: Set[Enemy], player: Player): GameMessage = {
-    if (enemies.size == 1) GameMessage(s"${player.name} is attacked by ${enemies.head.name}!")
+    if (enemies.size == 1 && enemies.head.stats.speed == 0) GameMessage(s"${player.name} discovers a ${enemies.head.name}.")
+    else if (enemies.size == 1) GameMessage(s"${player.name} is attacked by ${enemies.head.name}!")
     else GameMessage(s"${player.name} is attacked by: ${enemies.toList.map(_.name).mkString(", ")}!")
   }
 }
