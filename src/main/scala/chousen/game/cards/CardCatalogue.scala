@@ -15,13 +15,13 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         might, might, might, might,
         haste, haste, haste, haste,
         stoneSkin, stoneSkin,
-        regen, regen,
 
         elixirOfStrength, elixirOfStrength, elixirOfDexterity, elixirOfVitality,
 
         essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
         essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-        essenceOfDexterity, essenceOfDexterity, essenceOfVitality, essenceOfVitality,
+        essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
+        essenceOfVitality, essenceOfVitality,
 
         club, shortSword, broadsword, swordOfIntellect,
         ringmail, chainmail, heavyArmour,
@@ -50,6 +50,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+    essenceOfStrength,
     essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality,
 
 
@@ -63,8 +64,6 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     mace, giantClub, giantClub,
     leatherArmour, chainmail, heavyArmour,
 
-    groundStrike,
-
     forgeWeapon, forgeArmour, trade, trade,
 
     rummage, rummage,
@@ -75,14 +74,14 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
   def warriorDeck: Seq[Card] = Seq(
 
     healWounds, healWounds,
-    regen, regen,
     rarePepe, rarePepe, rarePepe, rarePepe,
 
     elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfVitality,
 
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfStrength, essenceOfStrength, essenceOfVitality, essenceOfVitality,
+    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+    essenceOfVitality, essenceOfVitality,
 
     might, might, might, might,
     haste, haste, haste, haste,
@@ -99,7 +98,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     forgeWeapon, forgeArmour, trade, trade,
 
     rummage, rummage, rummage, rummage,
-    miracle, miracle
+    miracle, replace
   )
 
 

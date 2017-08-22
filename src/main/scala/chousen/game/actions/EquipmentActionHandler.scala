@@ -37,7 +37,7 @@ class EquipmentActionHandler {
     weapon("Club", 3)(p, msgs, uuid)
 
   def shortSword(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
-    weapon("Giant Club", 6)(p, msgs, uuid)
+    weapon("Short Sword", 6)(p, msgs, uuid)
 
   def mace(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
     weapon("Mace", 6)(p, msgs, uuid)

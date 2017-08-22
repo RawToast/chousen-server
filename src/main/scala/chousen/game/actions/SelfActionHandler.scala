@@ -101,7 +101,7 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
     if (cs.playedEssence) (p, cs, msgs)
     else {
       val bonusStat = 1
-      val message = GameMessage(s"${p.name} uses Elixir of $stat and gains $bonusStat $stat!")
+      val message = GameMessage(s"${p.name} uses Essence of $stat and gains $bonusStat $stat!")
       val gameMessages = msgs :+ message
 
       val effect = lens.modify { x =>
