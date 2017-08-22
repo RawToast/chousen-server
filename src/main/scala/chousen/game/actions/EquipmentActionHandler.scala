@@ -46,10 +46,10 @@ class EquipmentActionHandler {
     weapon("Broadsword", 10)(p, msgs, uuid)
 
   def giantClub(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
-    weapon("Giant Club", 8, Seq(Crush))(p, msgs, uuid)
+    weapon("Giant Club", 16)(p, msgs, uuid)
 
   def trollCrusher(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
-    weapon("Troll Crusher", 16)(p, msgs, uuid)
+    weapon("Troll Crusher", 9, Seq(Crush))(p, msgs, uuid)
 
   def swordOfIntellect(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
     weapon("Sword of Intellect", 1, Seq(Magic))(p, msgs, uuid)
@@ -72,19 +72,19 @@ class EquipmentActionHandler {
   }
 
   def ringmail(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
-    armour("Ringmail", 4)(p, msgs, uuid)
+    armour("Ringmail", 5)(p, msgs, uuid)
   }
 
   def chainmail(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
-    armour("Chainmail", 7)(p, msgs, uuid)
+    armour("Chainmail", 10)(p, msgs, uuid)
   }
 
   def heavyArmour(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
-    armour("Heavy Armour", 10)(p, msgs, uuid)
+    armour("Heavy Armour", 16)(p, msgs, uuid)
   }
 
   def orcArmour(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
-    armour("Orcish Armour", 11)(p, msgs, uuid)
+    armour("Orcish Armour", 19)(p, msgs, uuid)
   }
 
   private def armour(name: String, ac: Int) = (p: Player, msgs: Seq[GameMessage], uuid: UUID) => {

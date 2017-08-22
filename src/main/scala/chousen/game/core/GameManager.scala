@@ -38,9 +38,9 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
       || p.stats.intellect < card.requirements.int.getOrElse(0)) {
       val msg = GameMessage(
         s"Cannot use ${card.name}, ${p.name} does not meet the requirements " +
-          s"(${card.requirements.str.map(i => s"Str ($i) ").getOrElse("")}" +
-          s"(${card.requirements.dex.map(i => s"Dex ($i) ").getOrElse("")}" +
-          s"${card.requirements.int.map(i => s"Int ($i)").getOrElse("")})")
+          s"${card.requirements.str.map(i => s"Str: $i ").getOrElse("")}" +
+          s"${card.requirements.dex.map(i => s"Dex: $i ").getOrElse("")}" +
+          s"${card.requirements.int.map(i => s"Int: $i").getOrElse("")}")
       game.copy(messages = game.messages :+ msg)
     } else {
       CardManager.playCard(card) { (c: Card) =>

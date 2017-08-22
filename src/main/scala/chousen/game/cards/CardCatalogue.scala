@@ -81,8 +81,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality,
+    essenceOfStrength, essenceOfVitality, essenceOfVitality, essenceOfVitality,
 
     might, might,
     haste, haste,
@@ -95,11 +94,14 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
     groundStrike, groundStrike,
 
-    forgeWeapon, forgeArmour, trade, trade,
+    forgeWeapon, forgeArmour,
+    trade, trade,
 
     rummage, rummage, rummage, rummage,
-    miracle, replace
-  )
+    miracle, miracle, miracle, miracle,
+    replace, replace
+
+  ) // 3
 
 
 //  def cheeseDeck: Seq[Card] = // 15
@@ -202,16 +204,16 @@ trait Equipment extends CardBuilder {
     Club)
   def shortSword: Card = mkEquip("Short Sword", "Generic sword, slight increase to damage",
     ShortSword, Requirements(str = Some(10), dex = Some(9)))
-  def mace: Card = mkEquip("Mace", "Generic mace, slight increase to damage",
+  def mace: Card = mkEquip("Mace", "Slight increase to damage",
     Mace, Requirements(str = Some(12)))
-  def broadsword: Card = mkEquip("Broadsword", "Broadsword, moderate increase to damage",
+  def broadsword: Card = mkEquip("Broadsword", "Moderate increase to damage",
     BroadSword, Requirements(str = Some(16), dex = Some(11)))
-  def giantClub: Card = mkEquip("Giant Club", "Giant Club, moderate damage and deals bonus damage based on the enemies current HP",
+  def giantClub: Card = mkEquip("Giant Club", "Heavy increase to damage",
     GiantClub, Requirements(str = Some(20)))
-  def trollCrusher: Card = mkEquip("Troll Crusher", "Troll Crusher, heavy increase to damage",
+  def trollCrusher: Card = mkEquip("Troll Crusher", "Moderate increase to damage. Bonus damage based on the enemies current HP",
     TrollCrusher, Requirements(str = Some(22)))
 
-  def swordOfIntellect: Card = mkEquip("Sword of Intellect", "Sword of Intellect, minimal increase to damage but applies Intellect to attack damage",
+  def swordOfIntellect: Card = mkEquip("Sword of Intellect", "Minimal increase to damage. Intellect affects attack damage",
     SwordOfIntellect, Requirements(str = Some(13), dex = Some(13)))
 
   def leatherArmour: Card = mkEquip("Leather Armour", "Generic armour, has a minimal effect on damage taken",
@@ -223,5 +225,5 @@ trait Equipment extends CardBuilder {
   def heavyArmour: Card = mkEquip("Heavy Armour", "Generic armour, heavily reduces damage taken",
     HeavyArmour, Requirements(str = Some(22)))
   def orcishArmour: Card = mkEquip("Orcish Armour", "Orc armour, heavily reduces damage taken",
-    HeavyArmour, Requirements(str = Some(24)))
+    OrcishArmour, Requirements(str = Some(24)))
 }
