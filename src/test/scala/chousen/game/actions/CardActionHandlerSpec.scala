@@ -224,5 +224,34 @@ class CardActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given Essence Boost" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val game: GameState = stateCreator.start(gameState)
+      val cardToDiscard = game.cards.hand.head
+
+      val startedGame: GameState = HandLens.set(Seq(cardToDiscard))(game)
+
+      val result = CardActionHandler.handle(EssenceBoost, Some(cardToDiscard.id))(startedGame)
+
+      "States the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Replace the discarded card" in {
+        assert(result.cards.hand.size >= startedGame.cards.hand.size)
+      }
+
+      "Place essences in the player's hand" in {
+        assert(result.cards.hand.count(_.name.contains("Essence")) > startedGame.cards.hand.count(_.name.contains("Essence")))
+      }
+
+      "Discard the selected card" in {
+        assert(result.cards.discard.size > startedGame.cards.discard.size)
+      }
+    }
+
   }
 }

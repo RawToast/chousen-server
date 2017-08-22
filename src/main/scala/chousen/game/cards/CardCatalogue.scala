@@ -23,7 +23,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
         essenceOfVitality, essenceOfVitality,
 
-        club, shortSword, broadsword, swordOfIntellect,
+        shortSword, broadsword, swordOfIntellect,
         ringmail, chainmail, heavyArmour,
 
         groundStrike, groundStrike, groundStrike,
@@ -35,7 +35,8 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
         rummage, rummage, rummage, rummage,
         replace, replace,
-        miracle, miracle
+        miracle, miracle,
+        essenceBoost
       )
 
   // Deck built around auto-attacks and rage
@@ -67,7 +68,8 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     forgeWeapon, forgeArmour,
 
     rummage, rummage,
-    restore, restore, miracle, miracle,
+    essenceBoost, essenceBoost,
+    miracle, miracle,
     manifestRage, manifestRage
   )
 
@@ -91,7 +93,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     chainmail, heavyArmour, orcishArmour,
 
     destruction, destruction, destruction, destruction,
-    crushingBlow, crushingBlow, crushingBlow, crushingBlow,
+    crushingBlow, crushingBlow, crushingBlow,
 
     groundStrike, groundStrike,
 
@@ -101,8 +103,8 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     rummage, rummage, rummage, rummage,
     miracle, miracle, miracle, miracle,
     manifestRage,
-    replace,
-
+    essenceBoost, essenceBoost,
+    replace
   )
 
 
@@ -190,9 +192,12 @@ trait Utility extends CardBuilder {
   def replace: Card = mkCard("Replace", "Instantly replaces the player's hand (will draw at least 3 cards)", Replace)
   def restore: Card = mkCard("Restore", "Instantly places the top discarded card into your hand", Restore)
 
+
+  // Require discard
   def forgeWeapon: Card = mkCard("Forge Weapon", "Discard one card and place the next weapon in your deck in your hand", ForgeWeapon)
   def forgeArmour: Card = mkCard("Forge Armour", "Discard one card and place the next armour in your deck in your hand", ForgeArmour)
-  def manifestRage: Card = mkCard("Manifest Rage", "Discard one card. Place an additional Potion of Rage to your hand and deck.", ManifestRage)
+  def manifestRage: Card = mkCard("Manifest Rage", "Discard one card. Place an additional Potion of Rage to your hand and deck", ManifestRage)
+  def essenceBoost: Card = mkCard("Manifest Rage", "Discard one card. Draw essences from your deck until your hand is full", EssenceBoost)
 }
 
 trait CampFire extends CardBuilder {

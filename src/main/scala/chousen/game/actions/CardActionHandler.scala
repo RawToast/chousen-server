@@ -28,6 +28,7 @@ object CardActionHandler extends ActionHandler {
       case ForgeWeapon => forgeWeapon(cardId)
       case Trade => trade(cardId)
       case ManifestRage => manifestRage(cardId)
+      case EssenceBoost => essenceBoost(cardId)
     }
 
 
@@ -169,6 +170,29 @@ object CardActionHandler extends ActionHandler {
 
         m = GameMessage(s"${p.name} uses Manifest Rage! ${p.name} finds a Potion of Rage. " +
           s"An additional Potion of Rage has been added to your deck.")
+      } yield (cards, m)
+
+      newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+  def essenceBoost(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      @scala.annotation.tailrec
+      def addEssences(c: Cards): Cards = {
+        val newCards = CardManager.moveCardToHand(c, _.name.contains("Essence of"))
+        if (newCards.hand.size < CardManager.MAX_HAND_SIZE) newCards
+        else addEssences(newCards)
+      }
+
+      val newCards = for {
+        id <- cardId
+        discardCard <- h.hand.find(_.id == id)
+        discardedHand = h.copy(hand = h.hand.filterNot(_.id == id), discard = h.discard :+ discardCard)
+        cards = addEssences(discardedHand)
+        foundCards = cards.hand.filter(c => !h.hand.contains(c))
+
+        m = GameMessage(s"${p.name} uses Essence Boost and receives: ${foundCards.map(_.name).mkString(", ")}")
       } yield (cards, m)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
