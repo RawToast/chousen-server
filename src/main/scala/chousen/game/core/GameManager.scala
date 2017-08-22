@@ -25,11 +25,17 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
   lazy val essenceActions = Seq(EssenceOfStrength, EssenceOfDexterity, EssenceOfVitality, EssenceOfIntelligence)
 
   override def useCard(card: Card, commandRequest: CommandRequest, game: GameState): GameState = {
+    val p = damageCalculator.sc.calculate(game.player)
 
-    if (game.player.status.map(_.effect).contains(Rage) && !card.action.isInstanceOf[CampFireAction]) {
+    if (p.status.map(_.effect).contains(Rage) && !card.action.isInstanceOf[CampFireAction]) {
       val msg = GameMessage(s"Cannot use ${card.name} whilst Berserk")
       game.copy(messages = game.messages :+ msg)
     } else if(essenceActions.contains(card.action) && game.cards.playedEssence) {
+      val msg = GameMessage(s"Cannot use ${card.name}, as an Essence has already been played")
+      game.copy(messages = game.messages :+ msg)
+    } else if (p.stats.strength < card.requirements.str.getOrElse(0)
+      || p.stats.dexterity < card.requirements.dex.getOrElse(0)
+      || p.stats.intellect < card.requirements.int.getOrElse(0)) {
       val msg = GameMessage(s"Cannot use ${card.name}, as an Essence has already been played")
       game.copy(messages = game.messages :+ msg)
     } else {

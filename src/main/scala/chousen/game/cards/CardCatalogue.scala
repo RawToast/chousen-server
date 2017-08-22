@@ -15,16 +15,16 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         might, might, might, might,
         haste, haste, haste, haste,
         stoneSkin, stoneSkin,
-        continuation, continuation,
         regen, regen,
 
-        elixirOfStrength, elixirOfStrength, elixirOfVitality, elixirOfVitality,
+        elixirOfStrength, elixirOfStrength, elixirOfDexterity, elixirOfVitality,
 
         essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
         essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
         essenceOfDexterity, essenceOfDexterity, essenceOfVitality, essenceOfVitality,
 
-        broadsword, swordOfIntellect, chainmail,
+        club, shortSword, broadsword, swordOfIntellect,
+        ringmail, chainmail, heavyArmour,
 
         groundStrike, groundStrike, groundStrike,
 
@@ -35,14 +35,13 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
         rummage, rummage, rummage, rummage,
         replace, replace,
-        restore, restore,
         miracle, miracle
       )
 
   // Deck built around auto-attacks and rage
   def berserkerDeck: Seq[Card] = Seq(
 
-    healWounds, healWounds,
+    healWounds,
     regen, regen, regen, regen,
     rarePepe, rarePepe, rarePepe, rarePepe,
 
@@ -61,13 +60,14 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     stoneSkin, stoneSkin,
 
     // GiantClub is better for this build -- no other access to % damage
-    giantClub, chainmail,
+    mace, giantClub, giantClub,
+    leatherArmour, chainmail, heavyArmour,
 
-    groundStrike, groundStrike,
+    groundStrike,
 
     forgeWeapon, forgeArmour, trade, trade,
 
-    rummage, rummage, rummage, rummage,
+    rummage, rummage,
     restore, restore, miracle, miracle,
   )
 
@@ -75,9 +75,8 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
   def warriorDeck: Seq[Card] = Seq(
 
     healWounds, healWounds,
-    regen, regen, regen, regen,
+    regen, regen,
     rarePepe, rarePepe, rarePepe, rarePepe,
-
 
     elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfVitality,
 
@@ -87,11 +86,10 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
     might, might, might, might,
     haste, haste, haste, haste,
-    continuation, continuation,
-    stoneSkin, stoneSkin,
+    stoneSkin, continuation,
 
-    // GiantClub is better for this build -- no other access to % damage
-    broadsword, chainmail,
+    mace, giantClub, trollCrusher,
+    chainmail, heavyArmour, orcishArmour,
 
     destruction, destruction, destruction, destruction,
     crushingBlow, crushingBlow, crushingBlow, crushingBlow,
@@ -117,12 +115,15 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 }
 
 sealed trait CardBuilder {
-  def mkCard(name: String, description: String, action: Action, charges:Int=0) =
-    Card(UUID.randomUUID(), name, description, action, if (charges == 0) None else Some(charges), if (charges == 0) None else Some(charges))
+  def mkCard(name: String, description: String, action: Action, charges:Int=0, requirements: Requirements=Requirements()) =
+    Card(UUID.randomUUID(), name, description, action, if (charges == 0) None else Some(charges), if (charges == 0) None else Some(charges), requirements)
+
+  def mkEquip(name: String, description: String, action: Action, requirements: Requirements=Requirements()) =
+    Card(UUID.randomUUID(), name, description, action, None, None, requirements)
 }
 
 trait Potions extends CardBuilder {
-  def healWounds: Card = mkCard("Heal Wounds", "Heals around 30HP", HealWounds)
+  def healWounds: Card = mkCard("Heal Wounds", "Heals around 30HP", HealWounds, charges = 2)
   def haste: Card = Card(UUID.randomUUID(), "Potion of Haste", "Temporarily increases player speed", Haste)
   def might: Card = Card(UUID.randomUUID(), "Potion of Might", "Temporarily increases player strength", PotionOfMight)
 //  def intelligence: Card = Card(UUID.randomUUID(), "Potion of Intelligence", "Temporarily increases player intelligence", PotionOfIntelligence)
@@ -198,9 +199,30 @@ trait CampFire extends CardBuilder {
 }
 
 trait Equipment extends CardBuilder {
-  def broadsword: Card = mkCard("Broadsword", "Generic Broadsword, significant increase to damage", BroadSword)
-  def giantClub: Card = mkCard("Giant Club", "Giant Club, increases damage and deals additional damage based on the enemies current HP", GiantClub)
-  def swordOfIntellect: Card = mkCard("Sword of Intellect", "Sword of Intellect, increases damage and applies Intellect to attack damage", SwordOfIntellect)
+  def club: Card = mkEquip("Club", "Generic Club, minimal increase to damage",
+    Club)
+  def shortSword: Card = mkEquip("Short Sword", "Generic sword, slight increase to damage",
+    ShortSword, Requirements(str = Some(10), dex = Some(9)))
+  def mace: Card = mkEquip("Mace", "Generic mace, slight increase to damage",
+    Mace, Requirements(str = Some(12)))
+  def broadsword: Card = mkEquip("Broadsword", "Broadsword, moderate increase to damage",
+    BroadSword, Requirements(str = Some(16), dex = Some(11)))
+  def giantClub: Card = mkEquip("Giant Club", "Giant Club, moderate damage and deals bonus damage based on the enemies current HP",
+    GiantClub, Requirements(str = Some(20)))
+  def trollCrusher: Card = mkEquip("Troll Crusher", "Troll Crusher, heavy increase to damage",
+    TrollCrusher, Requirements(str = Some(22)))
 
-  def chainmail: Card = mkCard("Chainmail", "Generic armour, reduces damage taken", Chainmail)
+  def swordOfIntellect: Card = mkEquip("Sword of Intellect", "Sword of Intellect, minimal increase to damage but applies Intellect to attack damage",
+    SwordOfIntellect, Requirements(str = Some(13), dex = Some(13)))
+
+  def leatherArmour: Card = mkEquip("Leather Armour", "Generic armour, has a minimal effect on damage taken",
+    LeatherArmour, Requirements())
+  def ringmail: Card = mkEquip("Ringmail", "Generic armour, slightly reduces damage taken",
+    Ringmail, Requirements(str = Some(10)))
+  def chainmail: Card = mkEquip("Chainmail", "Generic armour, moderately reduces damage taken",
+    Chainmail, Requirements(str = Some(16)))
+  def heavyArmour: Card = mkEquip("Heavy Armour", "Generic armour, heavily reduces damage taken",
+    HeavyArmour, Requirements(str = Some(22)))
+  def orcishArmour: Card = mkEquip("Orcish Armour", "Orc armour, heavily reduces damage taken",
+    HeavyArmour, Requirements(str = Some(24)))
 }

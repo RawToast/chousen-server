@@ -17,40 +17,49 @@ class EquipmentActionHandler {
 
   private def actions(action: EquipAction): (Player, Seq[GameMessage], UUID) => (Player, Seq[GameMessage]) = {
     action match {
-      case GiantClub => giantClub
+      case Club => club
+      case ShortSword => shortSword
+      case Mace => mace
       case BroadSword => boardSword
+      case GiantClub => giantClub
+      case TrollCrusher => trollCrusher
+
       case SwordOfIntellect => swordOfIntellect
+      case LeatherArmour => leatherArmour
+      case Ringmail => ringmail
       case Chainmail => chainmail
+      case HeavyArmour => heavyArmour
+      case OrcishArmour => orcArmour
     }
   }
 
-  def giantClub(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
+  def club(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Club", 3)(p, msgs, uuid)
 
-    val message = GameMessage(s"${p.name} equips a Giant Club.")
+  def shortSword(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Giant Club", 6)(p, msgs, uuid)
 
-    val lens = PlayerWeaponLens.set(Option(Weapon(uuid, "Giant Club", 5, Requirements(), Seq(Crush))))
-      .andThen(PlayerPositionLens.modify(p => p - 200))
+  def mace(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Mace", 6)(p, msgs, uuid)
 
-    lens.apply(p) -> (msgs :+ message)
-  }
+  def boardSword(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Broadsword", 10)(p, msgs, uuid)
 
+  def giantClub(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Giant Club", 8, Seq(Crush))(p, msgs, uuid)
 
-  def boardSword(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
+  def trollCrusher(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Troll Crusher", 16)(p, msgs, uuid)
 
-    val message = GameMessage(s"${p.name} equips a Broad Sword.")
+  def swordOfIntellect(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Sword of Intellect", 1, Seq(Magic))(p, msgs, uuid)
 
-    val lens = PlayerWeaponLens.set(Option(Weapon(uuid, "Broad Sword", 10, Requirements())))
-      .andThen(PlayerPositionLens.modify(p => p - 200))
+  def weapon(name: String, dmg: Int, effects: Seq[WeaponEffect]= Seq.empty) = (p: Player, msgs: Seq[GameMessage], uuid: UUID) => {
 
-    lens.apply(p) -> (msgs :+ message)
-  }
+    val message = GameMessage(s"${p.name} equips $name.")
 
-  def swordOfIntellect(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
-
-    val message = GameMessage(s"${p.name} equips the Sword of Intellect.")
-
-    val lens = PlayerWeaponLens.set(Option(Weapon(uuid, "Sword of Intellect", 2, Requirements(), Seq(Magic))))
-      .andThen(PlayerPositionLens.modify(p => p - 200))
+    val lens = PlayerWeaponLens.set(Option(Weapon(uuid, name, dmg, effects = effects)))
+      .andThen(PlayerPositionLens.modify(p => p - 100))
 
     lens.apply(p) -> (msgs :+ message)
   }
@@ -58,17 +67,33 @@ class EquipmentActionHandler {
 
 
   // Armour
+  def leatherArmour(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
+    armour("Leather Armour", 2)(p, msgs, uuid)
+  }
+
+  def ringmail(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
+    armour("Ringmail", 4)(p, msgs, uuid)
+  }
 
   def chainmail(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
+    armour("Chainmail", 7)(p, msgs, uuid)
+  }
 
-    val message = GameMessage(s"${p.name} puts on some chainmail.")
+  def heavyArmour(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
+    armour("Heavy Armour", 10)(p, msgs, uuid)
+  }
 
-    val lens = PlayerArmourLens.set(Option(Armour(uuid, "Chainmail", 8)))
+  def orcArmour(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
+    armour("Orcish Armour", 11)(p, msgs, uuid)
+  }
+
+  private def armour(name: String, ac: Int) = (p: Player, msgs: Seq[GameMessage], uuid: UUID) => {
+    val message = GameMessage(s"${p.name} puts on $name.")
+
+    val lens = PlayerArmourLens.set(Option(Armour(uuid, name, ac)))
       .andThen(PlayerPositionLens.modify(p => p - 200))
 
     lens.apply(p) -> (msgs :+ message)
   }
-
-
 
 }
