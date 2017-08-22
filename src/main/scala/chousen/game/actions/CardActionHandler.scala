@@ -79,7 +79,7 @@ object CardActionHandler extends ActionHandler {
     val gameMessages = msgs :+ targetMsg
 
 
-    (p.copy(position = p.position - 100), newCards, gameMessages)
+    (p, newCards, gameMessages)
   }
 
   def rummage(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
@@ -92,7 +92,7 @@ object CardActionHandler extends ActionHandler {
 
     val gameMessages = msgs :+ targetMsg
 
-    (p.copy(position = p.position - 70), cs2, gameMessages)
+    (p, cs2, gameMessages)
   }
 
 
@@ -142,6 +142,6 @@ object CardActionHandler extends ActionHandler {
         m = GameMessage(s"${p.name} trades ${discardCard.name} and receives: ${foundCards.map(_.name).mkString(", ")}")
       } yield (cards, m)
 
-      newCards.fold((p, h, msgs))(ncm => (p.copy(position = p.position - 70), ncm._1, msgs :+ ncm._2))
+      newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
   }
 }
