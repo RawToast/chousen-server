@@ -104,10 +104,6 @@ class MultiTargetActionHandlerSpec extends WordSpec {
       val (startedGame, result, targets) = completeAction(GroundStrike)
 
       standardAssertions(startedGame, result, targets)
-
-      "Slow the enemies" in {
-        assert(result.dungeon.currentEncounter.enemies.head.status.map(_.effect).contains(Slow))
-      }
     }
 
     def completeAction(action: MultiAction) = {

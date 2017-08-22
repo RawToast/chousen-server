@@ -104,8 +104,17 @@ case object RestAndExplore extends CampFireAction
 case object Drop extends CampFireAction
 
 
-case object GiantClub extends EquipWeapon
+case object Club extends EquipWeapon
+case object Mace extends EquipWeapon
+case object ShortSword extends EquipWeapon
 case object BroadSword extends EquipWeapon
 case object SwordOfIntellect extends EquipWeapon
+case object GiantClub extends EquipWeapon
+case object TrollCrusher extends EquipWeapon
 
+
+case object LeatherArmour extends EquipArmour
+case object Ringmail extends EquipArmour
 case object Chainmail extends EquipArmour
+case object HeavyArmour extends EquipArmour
+case object OrcishArmour extends EquipArmour

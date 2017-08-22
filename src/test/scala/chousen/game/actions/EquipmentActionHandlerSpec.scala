@@ -17,12 +17,13 @@ class EquipmentActionHandlerSpec extends WordSpec {
     val equipActionHandler = new EquipmentActionHandler()
     lazy val uuid = UUID.randomUUID()
 
-    "Given an equipment action" should {
-      val gameState = GameStateGenerator.gameStateWithFastPlayer
+    val gameState = GameStateGenerator.gameStateWithFastPlayer
 
-      val dungeonBuilder = new SimpleDungeonBuilder()
-      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
-      val startedGame: GameState = stateCreator.start(gameState)
+    val dungeonBuilder = new SimpleDungeonBuilder()
+    val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+    val startedGame: GameState = stateCreator.start(gameState)
+
+    "Given an equipment action" should {
 
       val result = equipActionHandler.handle(BroadSword, uuid)(startedGame)
 
@@ -31,7 +32,7 @@ class EquipmentActionHandlerSpec extends WordSpec {
 
       "State the action was used" in {
         assert(result.messages.size > startedGame.messages.size)
-        assert(result.messages.contains(GameMessage(s"${GameStateGenerator.playerName} equips a Broad Sword.")))
+        assert(result.messages.contains(GameMessage(s"${GameStateGenerator.playerName} equips Broadsword.")))
       }
 
       "Reduce the player's position" in {
@@ -55,12 +56,6 @@ class EquipmentActionHandlerSpec extends WordSpec {
     }
 
     "Given a weapon EquipAction when the player is already equipped" should {
-      val gameState = GameStateGenerator.gameStateWithFastPlayer
-
-      val dungeonBuilder = new SimpleDungeonBuilder()
-      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
-
-      val startedGame: GameState = stateCreator.start(gameState)
 
       import chousen.Optics._
       val gameWithWeapon = PlayerLens.composeLens(PlayerWeaponLens).set(Option(Weapon(UUID.randomUUID(), "Test", 10)))(startedGame)
@@ -83,12 +78,7 @@ class EquipmentActionHandlerSpec extends WordSpec {
     }
 
     "Given a EquipAction that is of the armour type" should {
-      val gameState = GameStateGenerator.gameStateWithFastPlayer
 
-      val dungeonBuilder = new SimpleDungeonBuilder()
-      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
-
-      val startedGame: GameState = stateCreator.start(gameState)
       val result = equipActionHandler.handle(Chainmail, uuid)(startedGame)
 
       "State the action was used" in {
@@ -107,12 +97,6 @@ class EquipmentActionHandlerSpec extends WordSpec {
     }
 
     "Given an armour type EquipAction when the player has a weapon equipped" should {
-      val gameState = GameStateGenerator.gameStateWithFastPlayer
-
-      val dungeonBuilder = new SimpleDungeonBuilder()
-      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
-
-      val startedGame: GameState = stateCreator.start(gameState)
 
       val weaponEquippedGame = equipActionHandler.handle(SwordOfIntellect, uuid)(startedGame)
       val result = equipActionHandler.handle(Chainmail, uuid)(weaponEquippedGame)
@@ -141,6 +125,95 @@ class EquipmentActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given ShortSword" should {
+      val result = equipActionHandler.handle(ShortSword, uuid)(startedGame)
+
+      equipWeaponAssertions(result, startedGame)
+    }
+
+    "Given Mace" should {
+      val result = equipActionHandler.handle(Mace, uuid)(startedGame)
+
+      equipWeaponAssertions(result, startedGame)
+    }
+
+    "Given TrollCrusher" should {
+      val result = equipActionHandler.handle(TrollCrusher, uuid)(startedGame)
+
+      equipWeaponAssertions(result, startedGame)
+    }
+
+    "Given LeatherArmour" should {
+      val result = equipActionHandler.handle(LeatherArmour, uuid)(startedGame)
+
+      equipArmourAssertions(result, startedGame)
+    }
+
+    "Given Ringmail" should {
+      val result = equipActionHandler.handle(Ringmail, uuid)(startedGame)
+
+      equipArmourAssertions(result, startedGame)
+    }
+
+    "Given HeavyArmour" should {
+      val result = equipActionHandler.handle(HeavyArmour, uuid)(startedGame)
+
+      equipArmourAssertions(result, startedGame)
+    }
+
+    "Given OrcishArmour" should {
+      val result = equipActionHandler.handle(OrcishArmour, uuid)(startedGame)
+
+      equipArmourAssertions(result, startedGame)
+    }
+
+    def equipWeaponAssertions (result: GameState, startedGame: GameState) = {
+      equipStandardAssertions(result, startedGame)
+
+      "State the weapon was equipped" in {
+        assert(result.messages.map(_.text).exists(_.contains(s"${GameStateGenerator.playerName} equips")))
+      }
+
+      "Equips the weapon" in {
+        assert(result.player.equipment.weapon.nonEmpty)
+      }
+    }
+
+    def equipArmourAssertions (result: GameState, startedGame: GameState) = {
+      equipStandardAssertions(result, startedGame)
+
+      "State the armour was equipped" in {
+        assert(result.messages.map(_.text).exists(_.contains(s"${GameStateGenerator.playerName} puts on")))
+      }
+
+      "Equips the armour" in {
+        assert(result.player.equipment.armour.nonEmpty)
+      }
+    }
+
+    def equipStandardAssertions(result: GameState, startedGame: GameState) = {
+      lazy val numberOfNewMessages = result.messages.size - startedGame.messages.size
+      lazy val latestMessages = result.messages.takeRight(numberOfNewMessages)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Reduce the player's position" in {
+        assert(result.player.position < 100)
+      }
+
+      "the enemy does not take a turn" in {
+        assert(result.player.stats.currentHp == startedGame.player.stats.currentHp)
+
+        assert(latestMessages.exists(!_.text.contains("Slime ")))
+      }
+
+      "Affects the players equipment" in {
+        assert(startedGame.player.equipment.weapon.isEmpty && startedGame.player.equipment.armour.isEmpty)
+        assert(startedGame.player.equipment != result.player.equipment)
+      }
+    }
 
   }
 

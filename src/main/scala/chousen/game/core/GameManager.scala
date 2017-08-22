@@ -25,12 +25,22 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
   lazy val essenceActions = Seq(EssenceOfStrength, EssenceOfDexterity, EssenceOfVitality, EssenceOfIntelligence)
 
   override def useCard(card: Card, commandRequest: CommandRequest, game: GameState): GameState = {
+    val p = damageCalculator.sc.calculate(game.player)
 
-    if (game.player.status.map(_.effect).contains(Rage) && !card.action.isInstanceOf[CampFireAction]) {
+    if (p.status.map(_.effect).contains(Rage) && !card.action.isInstanceOf[CampFireAction]) {
       val msg = GameMessage(s"Cannot use ${card.name} whilst Berserk")
       game.copy(messages = game.messages :+ msg)
     } else if(essenceActions.contains(card.action) && game.cards.playedEssence) {
       val msg = GameMessage(s"Cannot use ${card.name}, as an Essence has already been played")
+      game.copy(messages = game.messages :+ msg)
+    } else if (p.stats.strength < card.requirements.str.getOrElse(0)
+      || p.stats.dexterity < card.requirements.dex.getOrElse(0)
+      || p.stats.intellect < card.requirements.int.getOrElse(0)) {
+      val msg = GameMessage(
+        s"Cannot use ${card.name}, ${p.name} does not meet the requirements " +
+          s"(${card.requirements.str.map(i => s"Str ($i) ").getOrElse("")}" +
+          s"(${card.requirements.dex.map(i => s"Dex ($i) ").getOrElse("")}" +
+          s"${card.requirements.int.map(i => s"Int ($i)").getOrElse("")})")
       game.copy(messages = game.messages :+ msg)
     } else {
       CardManager.playCard(card) { (c: Card) =>
@@ -137,7 +147,8 @@ trait TurnTransition {
 
 
   private def startEncounterMessage(enemies: Set[Enemy], player: Player): GameMessage = {
-    if (enemies.size == 1) GameMessage(s"${player.name} is attacked by ${enemies.head.name}!")
+    if (enemies.size == 1 && enemies.head.stats.speed == 0) GameMessage(s"${player.name} discovers a ${enemies.head.name}.")
+    else if (enemies.size == 1) GameMessage(s"${player.name} is attacked by ${enemies.head.name}!")
     else GameMessage(s"${player.name} is attacked by: ${enemies.toList.map(_.name).mkString(", ")}!")
   }
 }

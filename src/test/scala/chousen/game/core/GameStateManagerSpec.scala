@@ -147,6 +147,33 @@ class GameStateManagerSpec extends WordSpec {
         }
       }
 
+      "The user does not meet the requirements for" should {
+
+        lazy val anotherCard = GameStateGenerator.crushingBlowCard
+          .copy(id = UUID.fromString("221c878f-5a6f-4276-a52e-862cfa90e114"), requirements = Requirements(str=Some(99)))
+
+        lazy val request = SingleTargetActionRequest(GameStateGenerator.firstEnemy.id, CrushingBlow)
+
+        lazy val result = gameStateManager.useCard(anotherCard, request, gameState)
+
+        "Return the game state with changes" in {
+          assert(gameState != result)
+        }
+
+        "Add a game message stating the player cannot use the card" in {
+          assert(result.messages.size > gameState.messages.size)
+          assert(result.messages.exists(_.text.contains("Cannot use")))
+        }
+
+        "Not affect the player" in {
+          assert(result.player == gameState.player)
+        }
+
+        "Not affect the current encounter" in {
+          assert(result.dungeon.currentEncounter == gameState.dungeon.currentEncounter)
+        }
+      }
+
       "Is different to the specified action" should {
 
         "Return the game state with no changes" in {
@@ -242,34 +269,32 @@ class GameStateManagerSpec extends WordSpec {
       }
     }
 
-    "Accepting equipment card" when {
 
       "The player is already equipped" should {
         import chousen.Optics._
 
-        val broardsword = CardCatalogue.broadsword
+        val shortsword = CardCatalogue.shortSword
 
-        val swordOfIntellect = CardCatalogue.swordOfIntellect
-        val swordId = swordOfIntellect.id
-        val request = EquipmentActionRequest(swordId, SwordOfIntellect)
+        val club = CardCatalogue.club
+        val swordId = club.id
+        val request = EquipmentActionRequest(swordId, Club)
 
 
-        val initialState = GameStateOptics.HandLens.modify(_ :+ swordOfIntellect)
-          .andThen(PlayerLens.composeLens(PlayerWeaponLens).set(Option(Weapon(broardsword.id, "Broadsword", 10))))
-            .andThen(EquipmentLens.set(EquippedCards(Option(broardsword))))(gameState)
+        val initialState = GameStateOptics.HandLens.modify(_ :+ club)
+          .andThen(PlayerLens.composeLens(PlayerWeaponLens).set(Option(Weapon(shortsword.id, "Broadsword", 10))))
+            .andThen(EquipmentLens.set(EquippedCards(Option(shortsword))))(gameState)
 
-        lazy val result = gameStateManager.useCard(swordOfIntellect, request, initialState)
+        lazy val result = gameStateManager.useCard(club, request, initialState)
 
         "Equip the new card" in {
           assert(result.cards.equippedCards.weapon != initialState.cards.equippedCards.weapon)
         }
 
         "Place the old item in the Player's hand" in {
-          assert(!initialState.cards.hand.contains(broardsword))
-          assert(result.cards.hand.contains(broardsword))
+          assert(!initialState.cards.hand.contains(shortsword))
+          assert(result.cards.hand.contains(shortsword))
         }
       }
-    }
 
   }
 
