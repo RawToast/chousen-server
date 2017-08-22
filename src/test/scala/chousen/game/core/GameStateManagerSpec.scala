@@ -277,7 +277,7 @@ class GameStateManagerSpec extends WordSpec {
 
         val club = CardCatalogue.club
         val swordId = club.id
-        val request = EquipmentActionRequest(swordId, SwordOfIntellect)
+        val request = EquipmentActionRequest(swordId, Club)
 
 
         val initialState = GameStateOptics.HandLens.modify(_ :+ club)
