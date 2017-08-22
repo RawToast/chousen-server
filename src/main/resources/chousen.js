@@ -1,18 +1,3 @@
-$(document).ready(function(){
-    registerAttackButtton();
-    registerBlockButtton();
-    registerMultiButtons();
-    registerCommandButton();
-    registerDropButton();
-    registerSelfButtons();
-    registerCardButtons();
-    registerCampfireButtons();
-    registerEquipmentButtons();
-    registerCardDropButton();
-
-    scrollText();
-});
-
 function registerAttackButtton() {
     $('.btn-atk').click(function(evt) {
         evt.preventDefault();
@@ -197,3 +182,19 @@ function scrollText() {
     var textarea = $('#gameMessagesText');
     textarea.scrollTop(textarea[0].scrollHeight);
 }
+
+
+$(document).ready(function(){
+    registerAttackButtton();
+    registerBlockButtton();
+    registerMultiButtons();
+    registerCommandButton();
+    registerDropButton();
+    registerSelfButtons();
+    registerCardButtons();
+    registerCampfireButtons();
+    registerEquipmentButtons();
+    registerCardDropButton();
+
+    scrollText();
+});
