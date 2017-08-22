@@ -81,11 +81,11 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfVitality, essenceOfVitality,
+    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality,
 
-    might, might, might, might,
-    haste, haste, haste, haste,
-    stoneSkin, continuation,
+    might, might,
+    haste, haste,
 
     mace, giantClub, trollCrusher,
     chainmail, heavyArmour, orcishArmour,
