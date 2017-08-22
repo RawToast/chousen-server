@@ -96,6 +96,7 @@ case object Restore extends StandardCardAction
 case object ForgeArmour extends DiscardCardAction
 case object ForgeWeapon extends DiscardCardAction
 case object Trade extends DiscardCardAction
+case object ManifestRage extends DiscardCardAction
 
 
 case object Rest extends CampFireAction

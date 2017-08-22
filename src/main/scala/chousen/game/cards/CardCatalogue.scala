@@ -64,10 +64,11 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     mace, giantClub, giantClub,
     leatherArmour, chainmail, heavyArmour,
 
-    forgeWeapon, forgeArmour, trade, trade,
+    forgeWeapon, forgeArmour,
 
     rummage, rummage,
     restore, restore, miracle, miracle,
+    manifestRage, manifestRage
   )
 
   // Deck built around high strength skills
@@ -99,9 +100,10 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
     rummage, rummage, rummage, rummage,
     miracle, miracle, miracle, miracle,
-    replace, replace
+    manifestRage,
+    replace,
 
-  ) // 3
+  )
 
 
 //  def cheeseDeck: Seq[Card] = // 15
@@ -176,20 +178,21 @@ trait Dexterity extends CardBuilder{
 }
 
 trait Utility extends CardBuilder {
-  // Cost 100
-  def miracle: Card = mkCard("Miracle", "Draw cards until your hand is full", Miracle)
 
-  // Cost 70
-  def rummage: Card = mkCard("Rummage", "Quickly search the area and always draw 2 cards (no hand limit)", Rummage)
+  // Hand size limited
+  def miracle: Card = mkCard("Miracle", "Draw cards until your hand is full", Miracle)
   def trade: Card = mkCard("Trade", "Discard one card and draw up to 3 cards, stop if the hand limit is reached)", Trade)
 
 
-  // Cost 0
+  // Not limited
+  def rummage: Card = mkCard("Rummage", "Quickly search the area and always draw 2 cards (no hand limit)", Rummage)
+
   def replace: Card = mkCard("Replace", "Instantly replaces the player's hand (will draw at least 3 cards)", Replace)
   def restore: Card = mkCard("Restore", "Instantly places the top discarded card into your hand", Restore)
 
   def forgeWeapon: Card = mkCard("Forge Weapon", "Discard one card and place the next weapon in your deck in your hand", ForgeWeapon)
   def forgeArmour: Card = mkCard("Forge Armour", "Discard one card and place the next armour in your deck in your hand", ForgeArmour)
+  def manifestRage: Card = mkCard("Manifest Rage", "Discard one card. Place an additional Potion of Rage to your hand and deck.", ManifestRage)
 }
 
 trait CampFire extends CardBuilder {

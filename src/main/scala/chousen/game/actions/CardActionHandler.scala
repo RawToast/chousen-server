@@ -2,10 +2,12 @@ package chousen.game.actions
 
 import java.util.UUID
 
-import chousen.Optics.{MessagesLens, PlayerLens, CardsLens}
+import chousen.Optics.{CardsLens, MessagesLens, PlayerLens}
 import chousen.api.data._
-import chousen.game.cards.CardManager
+import chousen.game.cards.{CardManager, Potions}
 import chousen.util.LensUtil
+
+import scala.util.Random
 
 object CardActionHandler extends ActionHandler {
 
@@ -25,6 +27,7 @@ object CardActionHandler extends ActionHandler {
       case ForgeArmour => forgeArmour(cardId)
       case ForgeWeapon => forgeWeapon(cardId)
       case Trade => trade(cardId)
+      case ManifestRage => manifestRage(cardId)
     }
 
 
@@ -105,7 +108,10 @@ object CardActionHandler extends ActionHandler {
         armourCard <- h.deck.find(_.action.isInstanceOf[EquipArmour])
         m = GameMessage(s"${p.name} discards ${discardCard.name} and forges: ${armourCard.name}")
         nh = h.hand.filterNot(_.id == id) :+ armourCard
-        nc = h.copy(hand = nh, discard = h.discard :+ discardCard)
+
+        nc = h.copy(hand = nh,
+          deck = h.deck.filterNot(_.id == armourCard.id),
+          discard = h.discard :+ discardCard)
       } yield (nc, m)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
@@ -120,7 +126,9 @@ object CardActionHandler extends ActionHandler {
         weaponCard <- h.deck.find(_.action.isInstanceOf[EquipWeapon])
         m = GameMessage(s"${p.name} discards ${discardCard.name} and forges: ${weaponCard.name}")
         nh = h.hand.filterNot(_.id == id) :+ weaponCard
-        nc = h.copy(hand = nh, discard = h.discard :+ discardCard)
+        nc = h.copy(hand = nh,
+          deck = h.deck.filterNot(_.id == weaponCard.id),
+          discard = h.discard :+ discardCard)
       } yield (nc, m)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
@@ -140,6 +148,27 @@ object CardActionHandler extends ActionHandler {
 
         foundCards = cards.hand.filter(c => !h.hand.contains(c))
         m = GameMessage(s"${p.name} trades ${discardCard.name} and receives: ${foundCards.map(_.name).mkString(", ")}")
+      } yield (cards, m)
+
+      newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+
+  def manifestRage(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      val potionBuilder = new Potions{}
+
+      val newCards = for {
+        id <- cardId
+        discardCard <- h.hand.find(_.id == id)
+
+        discardedHand = h.copy(hand = h.hand.filterNot(_.id == id), discard = h.discard :+ discardCard)
+        handWithPotion = discardedHand.copy(hand = discardedHand.hand :+ potionBuilder.rage)
+        cards = handWithPotion.copy(deck = Random.shuffle(h.deck :+ potionBuilder.rage))
+
+        m = GameMessage(s"${p.name} uses Manifest Rage! ${p.name} finds a Potion of Rage. " +
+          s"An additional Potion of Rage has been added to your deck.")
       } yield (cards, m)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))

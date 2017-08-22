@@ -194,5 +194,35 @@ class CardActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given Manifest Rage" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val game: GameState = stateCreator.start(gameState)
+      val cardToDiscard = game.cards.hand.head
+
+      val startedGame: GameState = HandLens.set(Seq(cardToDiscard))(game)
+
+      val result = CardActionHandler.handle(ManifestRage, Some(cardToDiscard.id))(startedGame)
+
+      "States the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Replace the discarded card" in {
+        assert(result.cards.hand.size == startedGame.cards.hand.size)
+      }
+
+      "Place a Potion of Rage into the Player's deck" in {
+        assert(result.cards.deck.size > startedGame.cards.deck.size)
+        assert(result.cards.deck.exists(_.action == PotionOfRage))
+      }
+
+      "Discard the selected card" in {
+        assert(result.cards.discard.size > startedGame.cards.discard.size)
+      }
+    }
+
   }
 }
