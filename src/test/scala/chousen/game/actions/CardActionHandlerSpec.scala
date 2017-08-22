@@ -111,9 +111,15 @@ class CardActionHandlerSpec extends WordSpec {
 
       val dungeonBuilder = new SimpleDungeonBuilder()
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
-      val startedGame: GameState = GenLens[GameState](_.cards.deck).modify(_ :+ Card(UUID.randomUUID(), "test", "test", SwordOfIntellect))(stateCreator.start(gameState))
 
-      val cardToDiscard = startedGame.cards.hand.head
+      val weapon = Card(UUID.randomUUID(), "test", "test", SwordOfIntellect)
+      val basicCard = Card(UUID.randomUUID(), "test", "test", HealWounds)
+
+      val startedGame: GameState =
+        GenLens[GameState](_.cards.deck).modify(_ :+ weapon)
+          .andThen(chousen.Optics.HandLens.modify(_ :+ basicCard))(stateCreator.start(gameState))
+
+      val cardToDiscard = startedGame.cards.hand.filterNot(_.action.isInstanceOf[EquipWeapon]).head
 
       val result = CardActionHandler.handle(ForgeWeapon, Some(cardToDiscard.id))(startedGame)
 
@@ -140,9 +146,13 @@ class CardActionHandlerSpec extends WordSpec {
       val dungeonBuilder = new SimpleDungeonBuilder()
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
 
-      val startedGame: GameState = GenLens[GameState](_.cards.deck).modify(_ :+ Card(UUID.randomUUID(), "test", "test", Chainmail))(stateCreator.start(gameState))
+      val armourCard = Card(UUID.randomUUID(), "test", "test", Chainmail)
+      val basicCard = Card(UUID.randomUUID(), "test", "test", HealWounds)
 
-      val cardToDiscard = startedGame.cards.hand.head
+      val startedGame: GameState = GenLens[GameState](_.cards.deck).modify(_ :+ armourCard)
+          .andThen(chousen.Optics.HandLens.modify(_ :+ basicCard))(stateCreator.start(gameState))
+
+      val cardToDiscard = startedGame.cards.hand.filterNot(_.action.isInstanceOf[EquipArmour]).head
 
       val result = CardActionHandler.handle(ForgeArmour, Some(cardToDiscard.id))(startedGame)
 

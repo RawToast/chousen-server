@@ -162,14 +162,14 @@ class GameStateManagerSpec extends WordSpec {
 
         "Add a game message stating the player cannot use the card" in {
           assert(result.messages.size > gameState.messages.size)
-          assert(result.messages.exists(_.text.contains("cannot use")))
+          assert(result.messages.exists(_.text.contains("Cannot use")))
         }
 
         "Not affect the player" in {
           assert(result.player == gameState.player)
         }
 
-        "Not affect the current encouner" in {
+        "Not affect the current encounter" in {
           assert(result.dungeon.currentEncounter == gameState.dungeon.currentEncounter)
         }
       }
@@ -273,26 +273,26 @@ class GameStateManagerSpec extends WordSpec {
       "The player is already equipped" should {
         import chousen.Optics._
 
-        val broardsword = CardCatalogue.broadsword
+        val shortsword = CardCatalogue.shortSword
 
-        val swordOfIntellect = CardCatalogue.swordOfIntellect
-        val swordId = swordOfIntellect.id
+        val club = CardCatalogue.club
+        val swordId = club.id
         val request = EquipmentActionRequest(swordId, SwordOfIntellect)
 
 
-        val initialState = GameStateOptics.HandLens.modify(_ :+ swordOfIntellect)
-          .andThen(PlayerLens.composeLens(PlayerWeaponLens).set(Option(Weapon(broardsword.id, "Broadsword", 10))))
-            .andThen(EquipmentLens.set(EquippedCards(Option(broardsword))))(gameState)
+        val initialState = GameStateOptics.HandLens.modify(_ :+ club)
+          .andThen(PlayerLens.composeLens(PlayerWeaponLens).set(Option(Weapon(shortsword.id, "Broadsword", 10))))
+            .andThen(EquipmentLens.set(EquippedCards(Option(shortsword))))(gameState)
 
-        lazy val result = gameStateManager.useCard(swordOfIntellect, request, initialState)
+        lazy val result = gameStateManager.useCard(club, request, initialState)
 
         "Equip the new card" in {
           assert(result.cards.equippedCards.weapon != initialState.cards.equippedCards.weapon)
         }
 
         "Place the old item in the Player's hand" in {
-          assert(!initialState.cards.hand.contains(broardsword))
-          assert(result.cards.hand.contains(broardsword))
+          assert(!initialState.cards.hand.contains(shortsword))
+          assert(result.cards.hand.contains(shortsword))
         }
       }
 
