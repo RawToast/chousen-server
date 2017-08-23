@@ -82,7 +82,7 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
           selfActionHandler.handle(a).apply, resetEssence = resetEssences)
           transition(ns, usedCard = true)
       case SingleTargetActionRequest(targetId, action) =>
-        val ns= GameTurnLoop.takeTurn(game,
+        val ns= GameTurnLoop.  takeTurn(game,
           singleTargetActionHandler.handle(targetId, action))
         transition(ns, usedCard = true)
       case MultiTargetActionRequest(targets, action) =>
@@ -90,7 +90,7 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
           multiTargetActionHandler.handle(targets, action))
         transition(ns, usedCard = true)
       case CardActionRequest(action, id) =>
-        val ns = GameTurnLoop.takeTurn(game, CardActionHandler.handle(action, id))
+        val ns = GameTurnLoop.takeTurn(game, CardActionHandler.handle(action, id), resetEssence = false)
         transition(ns, usedCard = true)
       case CampfireActionRequest(action, cardId) =>
         val ns = GameTurnLoop.takeTurn(game, CampFireActionHandler.handle(action, cardId))

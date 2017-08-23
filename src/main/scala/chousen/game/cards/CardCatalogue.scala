@@ -198,6 +198,10 @@ trait Utility extends CardBuilder {
   def forgeArmour: Card = mkCard("Forge Armour", "Discard one card and place the next armour in your deck in your hand", ForgeArmour)
   def manifestRage: Card = mkCard("Manifest Rage", "Discard one card. Place an additional Potion of Rage to your hand and deck", ManifestRage)
   def essenceBoost: Card = mkCard("Manifest Rage", "Discard one card. Draw essences from your deck until your hand is full", EssenceBoost)
+
+//  def nomad: Card = mkCard("Nomad", "Discard all non-Ability cards, draw 4 cards", ???)
+//  def armoury: Card = mkCard("Armoury", "Place the next 2 Equip cards to the top of the deck", ???)
+//  def duplicate: Card = mkCard("Duplicate", "Place the next 2 Equip cards to the top of the deck", ???)
 }
 
 trait CampFire extends CardBuilder {
