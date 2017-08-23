@@ -201,7 +201,11 @@ trait Utility extends CardBuilder {
   // def randomDiscovery: Card = mkCard("Random Discovery", "Choose a card and place on top of the deck", RandomDiscovery)
   def refresh: Card = mkCard("Refresh", "Discard all non-Ability cards, draw 4 cards", Refresh)
   def armoury: Card = mkCard("Armoury", "Move the first 2 Equip cards in your deck to the top of the deck", Armoury)
+
+  // Require target
   def reduceRequirements: Card = mkCard("Reduce Requirements", "Reduces all requirements for the chosen card by 5", ReduceRequirements)
+  def recharge: Card = mkCard("Recharge", "Recharges all charges for a given ability card", Recharge)
+  def increaseCharges: Card = mkCard("Increase Charges", "Increases the number of charges of an ability card by 2", IncreaseCharges)
 }
 
 trait CampFire extends CardBuilder {

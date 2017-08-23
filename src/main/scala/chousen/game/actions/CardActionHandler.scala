@@ -32,6 +32,8 @@ object CardActionHandler extends ActionHandler {
       case ReduceRequirements => reduceRequirements(cardId)
       case Refresh => refresh
       case Armoury => armoury
+      case Recharge => recharge(cardId)
+      case IncreaseCharges => chargeUp(cardId)
     }
 
 
@@ -265,5 +267,37 @@ object CardActionHandler extends ActionHandler {
       } yield (cs, m)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+  def recharge(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      val cardsAndMessages = for {
+        id <- cardId
+        affectedCard <- h.hand.find(_.id == id)
+        m = GameMessage(s"${p.name} uses Recharge on ${affectedCard.name}")
+
+        rechargedCard = affectedCard.copy(charges = affectedCard.maxCharges)
+        cs = h.copy(hand = h.hand.map(c => if (c.id == rechargedCard.id) rechargedCard else c))
+      } yield (cs, m)
+
+
+      cardsAndMessages.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+  def chargeUp(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      val cardsAndMessages = for {
+        id <- cardId
+        affectedCard <- h.hand.find(_.id == id).filter(_.charges.nonEmpty)
+        m = GameMessage(s"${p.name} uses Increase Charges on ${affectedCard.name}")
+
+        rechargedCard = affectedCard.copy(maxCharges = affectedCard.maxCharges.map(_ + 2))
+        cs = h.copy(hand = h.hand.map(c => if (c.id == rechargedCard.id) rechargedCard else c))
+      } yield (cs, m)
+
+
+      cardsAndMessages.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
   }
 }

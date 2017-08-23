@@ -101,6 +101,8 @@ case object Trade extends DiscardCardAction
 case object ManifestRage extends DiscardCardAction
 case object EssenceBoost extends DiscardCardAction
 case object ReduceRequirements extends DiscardCardAction
+case object Recharge extends DiscardCardAction
+case object IncreaseCharges extends DiscardCardAction
 
 
 case object Rest extends CampFireAction

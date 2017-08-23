@@ -302,5 +302,52 @@ class CardActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given Recharge" should {
+      val game: GameState = stateCreator.start(gameState)
+      val cardToAffect =  new Strength{}.destruction.copy(charges = Option(1))
+
+      val startedGame: GameState = HandLens.set(Seq(cardToAffect))(game)
+
+      val result = CardActionHandler.handle(Recharge, Some(cardToAffect.id))(startedGame)
+
+      "States the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "The affected card remains in the player's hand" in {
+        assert(result.cards.hand.exists(_.id == cardToAffect.id))
+      }
+
+      "Reset the number of charges" in {
+        val theCard = result.cards.hand.find(_.id == cardToAffect.id).getOrElse(cardToAffect)
+        assert(theCard.charges != cardToAffect.charges)
+        assert(theCard.maxCharges == cardToAffect.maxCharges)
+        assert(theCard.charges == theCard.maxCharges)
+      }
+    }
+
+    "Given Charge Up" should {
+      val game: GameState = stateCreator.start(gameState)
+      val cardToAffect =  new Strength{}.destruction.copy(charges = Option(1))
+
+      val startedGame: GameState = HandLens.set(Seq(cardToAffect))(game)
+
+      val result = CardActionHandler.handle(IncreaseCharges, Some(cardToAffect.id))(startedGame)
+
+      "States the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "The affected card remains in the player's hand" in {
+        assert(result.cards.hand.exists(_.id == cardToAffect.id))
+      }
+
+      "Increases the maximum number of charges" in {
+        val theCard = result.cards.hand.find(_.id == cardToAffect.id).getOrElse(cardToAffect)
+        assert(theCard.charges == cardToAffect.charges)
+        assert(theCard.maxCharges.getOrElse(0) > cardToAffect.maxCharges.getOrElse(0))
+      }
+    }
+
   }
 }
