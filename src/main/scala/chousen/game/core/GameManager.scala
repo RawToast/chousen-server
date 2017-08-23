@@ -33,9 +33,9 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
     } else if(essenceActions.contains(card.action) && game.cards.playedEssence) {
       val msg = GameMessage(s"Cannot use ${card.name}, as an Essence has already been played")
       game.copy(messages = game.messages :+ msg)
-    } else if (p.stats.strength < card.requirements.str.getOrElse(0)
-      || p.stats.dexterity < card.requirements.dex.getOrElse(0)
-      || p.stats.intellect < card.requirements.int.getOrElse(0)) {
+    } else if (game.player.stats.strength < card.requirements.str.getOrElse(0)
+      || game.player.stats.dexterity < card.requirements.dex.getOrElse(0)
+      || game.player.stats.intellect < card.requirements.int.getOrElse(0)) {
       val msg = GameMessage(
         s"Cannot use ${card.name}, ${p.name} does not meet the requirements " +
           s"${card.requirements.str.map(i => s"Str: $i ").getOrElse("")}" +
