@@ -180,8 +180,8 @@ object CardActionHandler extends ActionHandler {
 
       @scala.annotation.tailrec
       def addEssences(c: Cards): Cards = {
-        val newCards = CardManager.moveCardToHand(c, _.name.contains("Essence of"))
-        if (newCards.hand.size < CardManager.MAX_HAND_SIZE) newCards
+        lazy val newCards = CardManager.moveCardToHand(c, _.name.contains("Essence of"))
+        if (c.hand.size >= CardManager.MAX_HAND_SIZE) c
         else addEssences(newCards)
       }
 
