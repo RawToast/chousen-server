@@ -23,7 +23,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
         essenceOfVitality, essenceOfVitality,
 
-        club, shortSword, broadsword, swordOfIntellect,
+        shortSword, broadsword, swordOfIntellect,
         ringmail, chainmail, heavyArmour,
 
         groundStrike, groundStrike, groundStrike,
@@ -31,11 +31,13 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         stunningStrike, stunningStrike,
         counter, counter,
 
-        forgeWeapon, forgeArmour, trade, trade,
+        forgeWeapon, forgeArmour,
+        trade, trade,
 
         rummage, rummage, rummage, rummage,
-        replace, replace,
-        miracle, miracle
+        refresh, refresh,
+        miracle, miracle,
+        essenceBoost
       )
 
   // Deck built around auto-attacks and rage
@@ -64,10 +66,12 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     mace, giantClub, giantClub,
     leatherArmour, chainmail, heavyArmour,
 
-    forgeWeapon, forgeArmour, trade, trade,
+    forgeWeapon, forgeArmour,
 
     rummage, rummage,
-    restore, restore, miracle, miracle,
+    essenceBoost, reduceRequirements,
+    miracle, miracle,
+    manifestRage, manifestRage
   )
 
   // Deck built around high strength skills
@@ -81,8 +85,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality,
+    essenceOfStrength, essenceOfVitality, essenceOfVitality, essenceOfVitality,
 
     might, might,
     haste, haste,
@@ -90,15 +93,19 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     mace, giantClub, trollCrusher,
     chainmail, heavyArmour, orcishArmour,
 
-    destruction, destruction, destruction, destruction,
-    crushingBlow, crushingBlow, crushingBlow, crushingBlow,
+    destruction, destruction, destruction,
+    crushingBlow, crushingBlow, crushingBlow,
 
     groundStrike, groundStrike,
 
-    forgeWeapon, forgeArmour, trade, trade,
+    armoury, refresh, reduceRequirements,
+    trade, trade,
 
     rummage, rummage, rummage, rummage,
-    miracle, replace
+    miracle, miracle, miracle, miracle,
+    manifestRage,
+    essenceBoost, essenceBoost,
+    replace
   )
 
 
@@ -174,20 +181,31 @@ trait Dexterity extends CardBuilder{
 }
 
 trait Utility extends CardBuilder {
-  // Cost 100
+
+  // Hand size limited
   def miracle: Card = mkCard("Miracle", "Draw cards until your hand is full", Miracle)
 
-  // Cost 70
+  // Not limited
   def rummage: Card = mkCard("Rummage", "Quickly search the area and always draw 2 cards (no hand limit)", Rummage)
-  def trade: Card = mkCard("Trade", "Discard one card and draw up to 3 cards, stop if the hand limit is reached)", Trade)
-
-
-  // Cost 0
   def replace: Card = mkCard("Replace", "Instantly replaces the player's hand (will draw at least 3 cards)", Replace)
   def restore: Card = mkCard("Restore", "Instantly places the top discarded card into your hand", Restore)
 
+  def trade: Card = mkCard("Trade", "Discard one card and draw 3 cards", Trade)
+
+  // Require discard
   def forgeWeapon: Card = mkCard("Forge Weapon", "Discard one card and place the next weapon in your deck in your hand", ForgeWeapon)
   def forgeArmour: Card = mkCard("Forge Armour", "Discard one card and place the next armour in your deck in your hand", ForgeArmour)
+  def manifestRage: Card = mkCard("Manifest Rage", "Discard one card. Place an additional Potion of Rage to your hand and deck", ManifestRage)
+  def essenceBoost: Card = mkCard("Essence Boost", "Discard one card. Draw essences from your deck until your hand is full", EssenceBoost)
+
+  // def randomDiscovery: Card = mkCard("Random Discovery", "Choose a card and place on top of the deck", RandomDiscovery)
+  def refresh: Card = mkCard("Refresh", "Discard all non-Ability cards, draw 4 cards", Refresh)
+  def armoury: Card = mkCard("Armoury", "Move the first 2 Equip cards in your deck to the top of the deck", Armoury)
+
+  // Require target
+  def reduceRequirements: Card = mkCard("Reduce Requirements", "Reduces all requirements for the chosen card by 5", ReduceRequirements)
+  def recharge: Card = mkCard("Recharge", "Recharges all charges for a given ability card", Recharge)
+  def increaseCharges: Card = mkCard("Increase Charges", "Increases the number of charges of an ability card by 2", IncreaseCharges)
 }
 
 trait CampFire extends CardBuilder {
@@ -202,16 +220,16 @@ trait Equipment extends CardBuilder {
     Club)
   def shortSword: Card = mkEquip("Short Sword", "Generic sword, slight increase to damage",
     ShortSword, Requirements(str = Some(10), dex = Some(9)))
-  def mace: Card = mkEquip("Mace", "Generic mace, slight increase to damage",
+  def mace: Card = mkEquip("Mace", "Slight increase to damage",
     Mace, Requirements(str = Some(12)))
-  def broadsword: Card = mkEquip("Broadsword", "Broadsword, moderate increase to damage",
+  def broadsword: Card = mkEquip("Broadsword", "Moderate increase to damage",
     BroadSword, Requirements(str = Some(16), dex = Some(11)))
-  def giantClub: Card = mkEquip("Giant Club", "Giant Club, moderate damage and deals bonus damage based on the enemies current HP",
+  def giantClub: Card = mkEquip("Giant Club", "Heavy increase to damage",
     GiantClub, Requirements(str = Some(20)))
-  def trollCrusher: Card = mkEquip("Troll Crusher", "Troll Crusher, heavy increase to damage",
+  def trollCrusher: Card = mkEquip("Troll Crusher", "Moderate increase to damage. Bonus damage based on the enemies current HP",
     TrollCrusher, Requirements(str = Some(22)))
 
-  def swordOfIntellect: Card = mkEquip("Sword of Intellect", "Sword of Intellect, minimal increase to damage but applies Intellect to attack damage",
+  def swordOfIntellect: Card = mkEquip("Sword of Intellect", "Minimal increase to damage. Intellect affects attack damage",
     SwordOfIntellect, Requirements(str = Some(13), dex = Some(13)))
 
   def leatherArmour: Card = mkEquip("Leather Armour", "Generic armour, has a minimal effect on damage taken",
@@ -223,5 +241,5 @@ trait Equipment extends CardBuilder {
   def heavyArmour: Card = mkEquip("Heavy Armour", "Generic armour, heavily reduces damage taken",
     HeavyArmour, Requirements(str = Some(22)))
   def orcishArmour: Card = mkEquip("Orcish Armour", "Orc armour, heavily reduces damage taken",
-    HeavyArmour, Requirements(str = Some(24)))
+    OrcishArmour, Requirements(str = Some(24)))
 }

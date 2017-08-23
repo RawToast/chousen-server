@@ -2,10 +2,12 @@ package chousen.game.actions
 
 import java.util.UUID
 
-import chousen.Optics.{MessagesLens, PlayerLens, CardsLens}
+import chousen.Optics.{CardsLens, MessagesLens, PlayerLens}
 import chousen.api.data._
-import chousen.game.cards.CardManager
+import chousen.game.cards.{CardManager, Potions}
 import chousen.util.LensUtil
+
+import scala.util.Random
 
 object CardActionHandler extends ActionHandler {
 
@@ -25,6 +27,13 @@ object CardActionHandler extends ActionHandler {
       case ForgeArmour => forgeArmour(cardId)
       case ForgeWeapon => forgeWeapon(cardId)
       case Trade => trade(cardId)
+      case ManifestRage => manifestRage(cardId)
+      case EssenceBoost => essenceBoost(cardId)
+      case ReduceRequirements => reduceRequirements(cardId)
+      case Refresh => refresh
+      case Armoury => armoury
+      case Recharge => recharge(cardId)
+      case IncreaseCharges => chargeUp(cardId)
     }
 
 
@@ -79,7 +88,7 @@ object CardActionHandler extends ActionHandler {
     val gameMessages = msgs :+ targetMsg
 
 
-    (p.copy(position = p.position - 100), newCards, gameMessages)
+    (p, newCards, gameMessages)
   }
 
   def rummage(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
@@ -92,7 +101,7 @@ object CardActionHandler extends ActionHandler {
 
     val gameMessages = msgs :+ targetMsg
 
-    (p.copy(position = p.position - 70), cs2, gameMessages)
+    (p, cs2, gameMessages)
   }
 
 
@@ -105,7 +114,10 @@ object CardActionHandler extends ActionHandler {
         armourCard <- h.deck.find(_.action.isInstanceOf[EquipArmour])
         m = GameMessage(s"${p.name} discards ${discardCard.name} and forges: ${armourCard.name}")
         nh = h.hand.filterNot(_.id == id) :+ armourCard
-        nc = h.copy(hand = nh, discard = h.discard :+ discardCard)
+
+        nc = h.copy(hand = nh,
+          deck = h.deck.filterNot(_.id == armourCard.id),
+          discard = h.discard :+ discardCard)
       } yield (nc, m)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
@@ -120,7 +132,9 @@ object CardActionHandler extends ActionHandler {
         weaponCard <- h.deck.find(_.action.isInstanceOf[EquipWeapon])
         m = GameMessage(s"${p.name} discards ${discardCard.name} and forges: ${weaponCard.name}")
         nh = h.hand.filterNot(_.id == id) :+ weaponCard
-        nc = h.copy(hand = nh, discard = h.discard :+ discardCard)
+        nc = h.copy(hand = nh,
+          deck = h.deck.filterNot(_.id == weaponCard.id),
+          discard = h.discard :+ discardCard)
       } yield (nc, m)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
@@ -134,14 +148,156 @@ object CardActionHandler extends ActionHandler {
         discardCard <- h.hand.find(_.id == id)
 
         dc = h.copy(hand = h.hand.filterNot(_.id == id), discard = h.discard :+ discardCard)
-        cs1 = CardManager.drawCard(dc, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)
-        cs2 = CardManager.drawCard(cs1, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)
-        cards = CardManager.drawCard(cs2, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)
+        cs1 = CardManager.drawCard(dc, limit = CardManager.ABSOLUTE_MAX)
+        cs2 = CardManager.drawCard(cs1, limit = CardManager.ABSOLUTE_MAX)
+        cards = CardManager.drawCard(cs2, limit = CardManager.ABSOLUTE_MAX)
 
         foundCards = cards.hand.filter(c => !h.hand.contains(c))
         m = GameMessage(s"${p.name} trades ${discardCard.name} and receives: ${foundCards.map(_.name).mkString(", ")}")
       } yield (cards, m)
 
-      newCards.fold((p, h, msgs))(ncm => (p.copy(position = p.position - 70), ncm._1, msgs :+ ncm._2))
+      newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+
+  def manifestRage(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      val potionBuilder = new Potions{}
+
+      val newCards = for {
+        id <- cardId
+        discardCard <- h.hand.find(_.id == id)
+
+        discardedHand = h.copy(hand = h.hand.filterNot(_.id == id), discard = h.discard :+ discardCard)
+        handWithPotion = discardedHand.copy(hand = discardedHand.hand :+ potionBuilder.rage)
+        cards = handWithPotion.copy(deck = Random.shuffle(h.deck :+ potionBuilder.rage))
+
+        m = GameMessage(s"${p.name} uses Manifest Rage! ${p.name} finds a Potion of Rage. " +
+          s"An additional Potion of Rage has been added to your deck.")
+      } yield (cards, m)
+
+      newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+  def essenceBoost(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      @scala.annotation.tailrec
+      def addEssences(c: Cards): Cards = {
+        lazy val newCards = CardManager.moveCardToHand(c, _.name.contains("Essence of"))
+        if (c.hand.size >= CardManager.MAX_HAND_SIZE) c
+        else addEssences(newCards)
+      }
+
+      val newCards = for {
+        id <- cardId
+        discardCard <- h.hand.find(_.id == id)
+        discardedHand = h.copy(hand = h.hand.filterNot(_.id == id), discard = h.discard :+ discardCard)
+        cards = addEssences(discardedHand)
+        foundCards = cards.hand.filter(c => !h.hand.contains(c))
+
+        m = GameMessage(s"${p.name} uses Essence Boost and receives: ${foundCards.map(_.name).mkString(", ")}")
+      } yield (cards, m)
+
+      newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+  def armoury(p: Player, cards: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
+
+    @scala.annotation.tailrec
+    def placeEquippablesOnTop(c: Cards, ecs: Seq[Card]=Seq.empty): Cards = {
+      val equippableCards = c.deck.filter(_.action.isInstanceOf[EquipAction])
+      if (equippableCards.isEmpty || ecs.size >= 2) c.copy(deck = ecs ++ c.deck)
+      else {
+        val ec = equippableCards.head
+        val nc = c.copy(deck = c.deck.filterNot(_.id == ec.id))
+        placeEquippablesOnTop(nc, ecs :+ ec)
+      }
+    }
+
+    val newCards = placeEquippablesOnTop(cards)
+    val foundCards = newCards.deck.takeWhile(_.id != cards.deck.head.id)
+
+    val foundMsg = GameMessage(s"${p.name} uses Armoury and places: ${foundCards.map(_.name).mkString(", ")} to the top" +
+      s" of the deck")
+
+    (p, newCards, msgs :+ foundMsg)
+  }
+
+  def refresh(p: Player, cards: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
+    val emptiedHand = cards.hand.filter(c =>
+      c.action.isInstanceOf[SingleTargetAction] || c.action.isInstanceOf[MultiAction])
+
+    val toDiscard = cards.hand.filterNot(c =>
+      c.action.isInstanceOf[SingleTargetAction] || c.action.isInstanceOf[MultiAction])
+
+    val nc = cards.copy(hand = emptiedHand, discard = cards.discard ++ toDiscard)
+
+    val d1 = CardManager.drawCard(nc, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)
+    val d2= CardManager.drawCard(d1, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)
+    val d3 = CardManager.drawCard(d2, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)
+    val d4 = CardManager.drawCard(d3, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)
+
+    val foundCards = d4.hand.filter(c => !emptiedHand.contains(c))
+
+    val foundMsg = GameMessage(s"${p.name} uses Refresh and finds: ${foundCards.map(_.name).mkString(", ")}")
+
+    (p, d4, msgs :+ foundMsg)
+  }
+
+
+  def reduceRequirements(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      def reduceRequirements(r: Requirements) = {
+        val sr = r.str.map(i => Math.max(1, i - 5))
+        val dr = r.dex.map(i => Math.max(1, i - 5))
+        val ir = r.int.map(i => Math.max(1, i - 5))
+
+        Requirements(sr, dr, ir)
+      }
+
+      val newCards: Option[(Cards, GameMessage)] = for {
+        id <- cardId
+        affectedCard <- h.hand.find(_.id == id)
+        updatedCard = affectedCard.copy(requirements = reduceRequirements(affectedCard.requirements))
+        m = GameMessage(s"${p.name} uses Reduce Requirements on ${affectedCard.name}")
+        cs = h.copy(hand = h.hand.map(c => if (c.id == affectedCard.id) updatedCard else c))
+      } yield (cs, m)
+
+      newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+  def recharge(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      val cardsAndMessages = for {
+        id <- cardId
+        affectedCard <- h.hand.find(_.id == id)
+        m = GameMessage(s"${p.name} uses Recharge on ${affectedCard.name}")
+
+        rechargedCard = affectedCard.copy(charges = affectedCard.maxCharges)
+        cs = h.copy(hand = h.hand.map(c => if (c.id == rechargedCard.id) rechargedCard else c))
+      } yield (cs, m)
+
+
+      cardsAndMessages.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+  def chargeUp(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      val cardsAndMessages = for {
+        id <- cardId
+        affectedCard <- h.hand.find(_.id == id).filter(_.charges.nonEmpty)
+        m = GameMessage(s"${p.name} uses Increase Charges on ${affectedCard.name}")
+
+        rechargedCard = affectedCard.copy(maxCharges = affectedCard.maxCharges.map(_ + 2))
+        cs = h.copy(hand = h.hand.map(c => if (c.id == rechargedCard.id) rechargedCard else c))
+      } yield (cs, m)
+
+
+      cardsAndMessages.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
   }
 }

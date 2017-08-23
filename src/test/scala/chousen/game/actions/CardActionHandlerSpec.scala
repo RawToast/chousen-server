@@ -7,17 +7,19 @@ import chousen.game.core.RandomGameStateCreator
 import chousen.game.dungeon.SimpleDungeonBuilder
 import org.scalatest.WordSpec
 import chousen.Optics._
+import chousen.game.cards.Strength
 import monocle.macros.GenLens
 
 class CardActionHandlerSpec extends WordSpec {
 
   "Card Action Handler" when {
 
-    "Given a card action" should {
-      val gameState = GameStateGenerator.gameStateWithFastPlayer
+    val gameState = GameStateGenerator.gameStateWithFastPlayer
 
-      val dungeonBuilder = new SimpleDungeonBuilder()
-      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+    val dungeonBuilder = new SimpleDungeonBuilder()
+    val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+
+    "Given a card action" should {
       val startedGame: GameState = stateCreator.start(gameState)
 
       val result = CardActionHandler.handle(Rummage, None)(startedGame)
@@ -29,10 +31,6 @@ class CardActionHandlerSpec extends WordSpec {
     }
 
     "Given Rummage" should {
-      val gameState = GameStateGenerator.gameStateWithFastPlayer
-
-      val dungeonBuilder = new SimpleDungeonBuilder()
-      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val startedGame: GameState = stateCreator.start(gameState)
 
       val result = CardActionHandler.handle(Rummage, None)(startedGame)
@@ -43,10 +41,7 @@ class CardActionHandlerSpec extends WordSpec {
     }
 
     "Given Miracle" should {
-      val gameState = GameStateGenerator.gameStateWithFastPlayer
 
-      val dungeonBuilder = new SimpleDungeonBuilder()
-      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val game: GameState = stateCreator.start(gameState)
 
       val startedGame: GameState = HandLens.set(Seq.empty[Card])(game)
@@ -62,10 +57,7 @@ class CardActionHandlerSpec extends WordSpec {
     }
 
     "Given Replace" should {
-      val gameState = GameStateGenerator.gameStateWithFastPlayer
 
-      val dungeonBuilder = new SimpleDungeonBuilder()
-      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val game: GameState = stateCreator.start(gameState)
 
       val startedGame: GameState = HandLens.set(Seq.empty[Card])(game)
@@ -87,10 +79,6 @@ class CardActionHandlerSpec extends WordSpec {
     }
 
     "Given Restore" should {
-      val gameState = GameStateGenerator.gameStateWithFastPlayer
-
-      val dungeonBuilder = new SimpleDungeonBuilder()
-      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val game: GameState = stateCreator.start(gameState)
 
       val startedGame: GameState = DiscardLens.set(Seq(Card(UUID.randomUUID(), "Test", "Test", CrushingBlow)))(game)
@@ -107,11 +95,6 @@ class CardActionHandlerSpec extends WordSpec {
     }
 
     "Given Forge Weapon" should {
-      val gameState = GameStateGenerator.gameStateWithFastPlayer
-
-      val dungeonBuilder = new SimpleDungeonBuilder()
-      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
-
       val weapon = Card(UUID.randomUUID(), "test", "test", SwordOfIntellect)
       val basicCard = Card(UUID.randomUUID(), "test", "test", HealWounds)
 
@@ -141,11 +124,6 @@ class CardActionHandlerSpec extends WordSpec {
     }
 
     "Given Forge Armour" should {
-      val gameState = GameStateGenerator.gameStateWithFastPlayer
-
-      val dungeonBuilder = new SimpleDungeonBuilder()
-      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
-
       val armourCard = Card(UUID.randomUUID(), "test", "test", Chainmail)
       val basicCard = Card(UUID.randomUUID(), "test", "test", HealWounds)
 
@@ -174,10 +152,6 @@ class CardActionHandlerSpec extends WordSpec {
     }
 
     "Given Trade" should {
-      val gameState = GameStateGenerator.gameStateWithFastPlayer
-
-      val dungeonBuilder = new SimpleDungeonBuilder()
-      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
       val game: GameState = stateCreator.start(gameState)
       val cardToDiscard = game.cards.hand.head
 
@@ -191,6 +165,187 @@ class CardActionHandlerSpec extends WordSpec {
 
       "Place new cards into the Player's hand" in {
         assert(result.cards.hand.size > startedGame.cards.hand.size)
+      }
+    }
+
+    "Given Manifest Rage" should {
+      val game: GameState = stateCreator.start(gameState)
+      val cardToDiscard = game.cards.hand.head
+
+      val startedGame: GameState = HandLens.set(Seq(cardToDiscard))(game)
+
+      val result = CardActionHandler.handle(ManifestRage, Some(cardToDiscard.id))(startedGame)
+
+      "States the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Replace the discarded card" in {
+        assert(result.cards.hand.size == startedGame.cards.hand.size)
+      }
+
+      "Place a Potion of Rage into the Player's deck" in {
+        assert(result.cards.deck.size > startedGame.cards.deck.size)
+        assert(result.cards.deck.exists(_.action == PotionOfRage))
+      }
+
+      "Discard the selected card" in {
+        assert(result.cards.discard.size > startedGame.cards.discard.size)
+      }
+    }
+
+    "Given Essence Boost" should {
+      val game: GameState = stateCreator.start(gameState)
+      val cardToDiscard = game.cards.hand.head
+
+      val startedGame: GameState = HandLens.set(Seq(cardToDiscard))(game)
+
+      val result = CardActionHandler.handle(EssenceBoost, Some(cardToDiscard.id))(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Replace the discarded card" in {
+        assert(result.cards.hand.size >= startedGame.cards.hand.size)
+      }
+
+      "Place essences in the player's hand" in {
+        assert(result.cards.hand.count(_.name.contains("Essence")) > startedGame.cards.hand.count(_.name.contains("Essence")))
+      }
+
+      "Discard the selected card" in {
+        assert(result.cards.discard.size > startedGame.cards.discard.size)
+      }
+    }
+
+
+    "Given Armoury" should {
+      val game: GameState = stateCreator.start(gameState)
+      val cardToDiscard = game.cards.hand.head
+      val builder = new chousen.game.cards.Equipment{}
+
+      val startedGame: GameState = HandLens.set(Seq(cardToDiscard))
+        .andThen(DeckLens.modify(_ :+ builder.club))
+        .andThen(DeckLens.modify(_ :+ builder.orcishArmour))(game)
+
+      val result = CardActionHandler.handle(Armoury, None)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Not affect the Player's hand" in {
+        assert(result.cards.hand.size == startedGame.cards.hand.size)
+      }
+
+      "Move equipment cards to the top of the deck" in {
+        assert(result.cards.deck.head.action.isInstanceOf[EquipAction])
+        assert(result.cards.deck.tail.head.action.isInstanceOf[EquipAction])
+      }
+    }
+
+    "Given Refresh" should {
+      val game: GameState = stateCreator.start(gameState)
+      val builder = new Strength {}
+      val actionCard = builder.groundStrike
+
+      val startedGame: GameState = HandLens.modify(_ :+ actionCard)(game)
+
+      val result = CardActionHandler.handle(Refresh, None)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Affect the Player's hand" in {
+        assert(result.cards.hand != startedGame.cards.hand)
+      }
+
+      "Discard some cards" in {
+        assert(result.cards.discard.size > startedGame.cards.discard.size)
+      }
+
+      "Retain any ability cards" in {
+        assert(result.cards.hand.exists(_.id == actionCard.id))
+      }
+
+    }
+
+    "Given Reduce Requirements" should {
+      val game: GameState = stateCreator.start(gameState)
+      val cardToAffect =  new chousen.game.cards.Equipment{}.orcishArmour
+
+      val startedGame: GameState = HandLens.set(Seq(cardToAffect))(game)
+
+      val result = CardActionHandler.handle(ReduceRequirements, Some(cardToAffect.id))(startedGame)
+
+      "States the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "The affected card remains in the player's hand" in {
+        assert(result.cards.hand.exists(_.id == cardToAffect.id))
+      }
+
+      "Affect the requirements of the selected card" in {
+        assert(result.cards.hand.find(_.id == cardToAffect.id).exists(c => c.requirements != cardToAffect.requirements))
+      }
+
+
+      "Lower the strength requirements of the selected card" in {
+        val newCard = result.cards.hand.find(_.id == cardToAffect.id).getOrElse(cardToAffect)
+
+        assert(newCard.requirements.str.getOrElse(99) < cardToAffect.requirements.str.getOrElse(99))
+        // Item has no dex requirement
+        assert(newCard.requirements.dex.getOrElse(99) == cardToAffect.requirements.dex.getOrElse(99))
+      }
+    }
+
+    "Given Recharge" should {
+      val game: GameState = stateCreator.start(gameState)
+      val cardToAffect =  new Strength{}.destruction.copy(charges = Option(1))
+
+      val startedGame: GameState = HandLens.set(Seq(cardToAffect))(game)
+
+      val result = CardActionHandler.handle(Recharge, Some(cardToAffect.id))(startedGame)
+
+      "States the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "The affected card remains in the player's hand" in {
+        assert(result.cards.hand.exists(_.id == cardToAffect.id))
+      }
+
+      "Reset the number of charges" in {
+        val theCard = result.cards.hand.find(_.id == cardToAffect.id).getOrElse(cardToAffect)
+        assert(theCard.charges != cardToAffect.charges)
+        assert(theCard.maxCharges == cardToAffect.maxCharges)
+        assert(theCard.charges == theCard.maxCharges)
+      }
+    }
+
+    "Given Charge Up" should {
+      val game: GameState = stateCreator.start(gameState)
+      val cardToAffect =  new Strength{}.destruction.copy(charges = Option(1))
+
+      val startedGame: GameState = HandLens.set(Seq(cardToAffect))(game)
+
+      val result = CardActionHandler.handle(IncreaseCharges, Some(cardToAffect.id))(startedGame)
+
+      "States the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "The affected card remains in the player's hand" in {
+        assert(result.cards.hand.exists(_.id == cardToAffect.id))
+      }
+
+      "Increases the maximum number of charges" in {
+        val theCard = result.cards.hand.find(_.id == cardToAffect.id).getOrElse(cardToAffect)
+        assert(theCard.charges == cardToAffect.charges)
+        assert(theCard.maxCharges.getOrElse(0) > cardToAffect.maxCharges.getOrElse(0))
       }
     }
 
