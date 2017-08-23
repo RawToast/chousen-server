@@ -98,6 +98,9 @@ case object ForgeWeapon extends DiscardCardAction
 case object Trade extends DiscardCardAction
 case object ManifestRage extends DiscardCardAction
 case object EssenceBoost extends DiscardCardAction
+case object Refresh extends DiscardCardAction
+case object Armoury extends DiscardCardAction
+case object ReduceRequirements extends DiscardCardAction
 
 
 case object Rest extends CampFireAction
