@@ -344,7 +344,7 @@ class CardActionHandlerSpec extends WordSpec {
 
       "Increases the maximum number of charges" in {
         val theCard = result.cards.hand.find(_.id == cardToAffect.id).getOrElse(cardToAffect)
-        assert(theCard.charges == cardToAffect.charges)
+        assert(theCard.charges.getOrElse(0) > cardToAffect.charges.getOrElse(0))
         assert(theCard.maxCharges.getOrElse(0) > cardToAffect.maxCharges.getOrElse(0))
       }
     }

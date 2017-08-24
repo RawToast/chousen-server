@@ -21,7 +21,7 @@ class EquipmentActionHandler {
       case ShortSword => shortSword
       case Mace => mace
       case BroadSword => boardSword
-//      case Kodachi => kodachi
+      case Kodachi => kodachi
       case GiantClub => giantClub
 
       case TrollCrusher => trollCrusher
@@ -49,8 +49,8 @@ class EquipmentActionHandler {
   def boardSword(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
     weapon("Broadsword", 10)(p, msgs, uuid)
 
-//  def kodachi(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
-//    weapon("Kodachi", 15)(p, msgs, uuid)
+  def kodachi(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Kodachi", 15)(p, msgs, uuid)
 
   def giantClub(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
     weapon("Giant Club", 16)(p, msgs, uuid)
@@ -78,7 +78,7 @@ class EquipmentActionHandler {
 
   // Armour
   def cape(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
-    armour("Cape", 2)(p, msgs, uuid)
+    armour("Cape", 2, pen = 0)(p, msgs, uuid)
   }
 
   def leatherArmour(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
@@ -101,11 +101,11 @@ class EquipmentActionHandler {
     armour("Orcish Armour", 19)(p, msgs, uuid)
   }
 
-  private def armour(name: String, ac: Int) = (p: Player, msgs: Seq[GameMessage], uuid: UUID) => {
+  private def armour(name: String, ac: Int, pen:Int = 200) = (p: Player, msgs: Seq[GameMessage], uuid: UUID) => {
     val message = GameMessage(s"${p.name} puts on $name.")
 
     val lens = PlayerArmourLens.set(Option(Armour(uuid, name, ac)))
-      .andThen(PlayerPositionLens.modify(p => p - 200))
+      .andThen(PlayerPositionLens.modify(p => p - pen))
 
     lens.apply(p) -> (msgs :+ message)
   }

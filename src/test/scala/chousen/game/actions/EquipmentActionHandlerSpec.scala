@@ -137,10 +137,28 @@ class EquipmentActionHandlerSpec extends WordSpec {
       equipWeaponAssertions(result, startedGame)
     }
 
+    "Given Dagger of David" should {
+      val result = equipActionHandler.handle(DaggerOfDavid, uuid)(startedGame)
+
+      equipWeaponAssertions(result, startedGame)
+    }
+
+    "Given Kodachi" should {
+      val result = equipActionHandler.handle(Kodachi, uuid)(startedGame)
+
+      equipWeaponAssertions(result, startedGame)
+    }
+
     "Given TrollCrusher" should {
       val result = equipActionHandler.handle(TrollCrusher, uuid)(startedGame)
 
       equipWeaponAssertions(result, startedGame)
+    }
+
+    "Given Cape" should {
+      val result = equipActionHandler.handle(LeatherArmour, uuid)(startedGame)
+
+      equipArmourAssertions(result, startedGame)
     }
 
     "Given LeatherArmour" should {

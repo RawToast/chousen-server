@@ -10,28 +10,29 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
   def fighterDeck: Seq[Card] = // 15
       Seq(
         healWounds, healWounds,
-        rarePepe, rarePepe, rarePepe, rarePepe,
+        rarePepe, rarePepe, rarePepe, rarePepe,                         // 6
 
-        might, might, might, might,
+        might, might, might, might,                                      // 10 potions
         haste, haste, haste, haste,
         stoneSkin, stoneSkin,
 
-        elixirOfStrength, elixirOfStrength, elixirOfDexterity, elixirOfVitality,
+        elixirOfStrength, elixirOfDexterity, elixirOfVitality,   // 3 elixirs
 
-        essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+        essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,  // 14 essences
         essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
         essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
+        essenceOfDexterity,
         essenceOfVitality, essenceOfVitality,
 
-        shortSword, broadsword,
-        leatherArmour, chainmail, heavyArmour,
+        shortSword, broadsword, kodachi,    // 5 equips
+        leatherArmour, chainmail,
 
-        groundStrike, groundStrike, groundStrike,
-
+        windStrike, windStrike,       // 8 skills
         stunningStrike, stunningStrike,
         counter, counter,
+        quickAttack, assassinate,
 
-        forgeWeapon, forgeArmour,
+        armoury, armoury,                         // 14 cards
         trade, trade,
 
         rummage, rummage, rummage, rummage,
@@ -147,10 +148,10 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
   def tricksterDeck = Seq(
     essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
-    essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
+    essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
-    essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
-    essenceOfVitality, essenceOfVitality, // 18 Essences
+    essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
+    essenceOfVitality, essenceOfVitality, // 16 Essences
 
 
     elixirOfVitality, elixirOfVitality,  // 2 Elixirs
@@ -163,15 +164,16 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     pain, pain, pain,
     assassinate, assassinate, assassinate,
     quickStep, quickStep, quickStep, quickStep,
-    groundStrike,                         // 11 Abilities
+    windStrike, windStrike,                        // 12 Abilities
 
     daggerOfDavid, cape,                  // 2 Equipment
 
-    miracle, miracle, miracle, miracle,   // 15 Card Actions
+    miracle, miracle, miracle, miracle,   // 16 Card Actions
     rummage, rummage, rummage, rummage,
     increaseCharges, increaseCharges, increaseCharges, increaseCharges,
     recharge, recharge,
     trade,
+    refresh
   )
 
 
@@ -292,8 +294,8 @@ trait Equipment extends CardBuilder {
     BroadSword, Requirements(str = Some(16), dex = Some(11)))
   def giantClub: Card = mkEquip("Giant Club", "Heavy increase to damage",
     GiantClub, Requirements(str = Some(20)))
-//  def kodachi: Card = mkEquip("Kodachi", "Heavy increase to damage",
-//    Kodachi, Requirements(dex = Some(18)))
+  def kodachi: Card = mkEquip("Kodachi", "Heavy increase to damage",
+    Kodachi, Requirements(dex = Some(18)))
 
 
   def trollCrusher: Card = mkEquip("Troll Crusher", "Moderate increase to damage. Bonus damage based on the enemies current HP",
@@ -303,7 +305,7 @@ trait Equipment extends CardBuilder {
   def daggerOfDavid: Card = mkEquip("Dagger of David", "No increase to damage. Deal bonus damage based on the enemies max HP.",
     DaggerOfDavid)
 
-  def cape: Card = mkEquip("Cape", "Shiny red cape, has a minimal effect on damage taken",
+  def cape: Card = mkEquip("Cape", "Shiny red cape, quick to equip, has a minimal effect on damage taken",
     Cape, Requirements())
   def leatherArmour: Card = mkEquip("Leather Armour", "Generic armour, slightly reduces damage taken",
     LeatherArmour, Requirements(str = Some(8)))

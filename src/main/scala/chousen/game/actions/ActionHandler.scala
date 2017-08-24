@@ -13,7 +13,7 @@ trait ActionHandler {
       val aliveEnemies = es.filter(_.stats.currentHp > 0)
       val deadEnemies = es.filter(_.stats.currentHp < 0).toSeq
 
-      val battleExp = deadEnemies.size
+      val battleExp = deadEnemies.map(_.stats.maxHp / 10).sum
 
       val (pl, lvlupMsgs) = levelUp(PlayerCurrentExperienceLens.modify(xp => xp + battleExp)(p))
 

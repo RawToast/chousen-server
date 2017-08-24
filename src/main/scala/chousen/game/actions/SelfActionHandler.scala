@@ -45,7 +45,7 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
   def healWounds(p: Player, cs: Cards, msgs: Seq[GameMessage]): Update = {
     val sePlayer = sc.calculate(p)
 
-    val healAmount = 15 + (2 + sePlayer.stats.intellect) + (p.stats.maxHp / 10)
+    val healAmount = 15 + (2 + sePlayer.stats.intellect) + (p.stats.maxHp / 10) + sePlayer.experience.level
     val message = GameMessage(s"${p.name} uses Heal Wounds and recovers ${healAmount}HP!")
     val gameMessages = msgs :+ message
 
