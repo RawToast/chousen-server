@@ -94,7 +94,7 @@ class DamageCalculator(val sc: StatusCalculator) {
 
     val atkInt = m.int(attacker.stats.intellect)
 
-    val smartDamage = if (atkStatusEffects.contains(Smart)) 1 + (atkInt / 4) else 0
+    val smartDamage = if (atkStatusEffects.contains(Smart)) 4 + (atkInt / 4) else 0
     val stoneSkin = if (defStatusEffects.contains(StoneSkin)) 4 else 0
     val blockEffect = if (defStatusEffects.contains(Block)) 0.5 else 1
 
@@ -148,6 +148,9 @@ object Multipliers {
   val medMulti = (i: Int) => i * 2
   val highMulti = (i: Int) => {
     i * 2.5
+  }.toInt
+  val maxMulti = (i: Int) => {
+    i * 3
   }.toInt
 
   val lowStrengthSkill = Multipliers(str = lowMulti)

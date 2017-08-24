@@ -207,7 +207,7 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
   def continuation(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} drinks a Potion of Continuation!")
 
-    (PlayerStatusLens.modify(_.map(s => s.copy(turns = s.turns + 5)))
+    (PlayerStatusLens.modify(_.map(s => s.copy(turns = s.turns + 6)))
       .andThen(PlayerPositionLens.modify(i => i - 50))(p), cs, msgs :+ message)
   }
 

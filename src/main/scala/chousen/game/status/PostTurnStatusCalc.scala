@@ -37,7 +37,7 @@ trait PostTurnStatusCalc {
             case _ => pm
           }
       }
-    }.andThen(PlayerLens.composeLens(PlayerStatusLens).modify(reduceStatusLength))(game)
+    }.andThen(gs => if(gs.player.position >= 150) gs else PlayerLens.composeLens(PlayerStatusLens).modify(reduceStatusLength)(gs))(game)
   }
 
 

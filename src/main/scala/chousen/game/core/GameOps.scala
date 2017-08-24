@@ -4,6 +4,8 @@ import chousen.api.data._
 import chousen.game.actions.DamageCalculator
 import chousen.game.status.{StatusBuilder, StatusCalculator}
 import chousen.Optics._
+import chousen.game.dungeon.EnemyBuilder
+
 import scala.annotation.tailrec
 import scala.util.{Left, Random, Right}
 
@@ -78,7 +80,28 @@ object EnemyTurnOps {
 
     def diceRoll = Random.nextInt(6) + 1
 
-    if (activeEnemy.name == "Warrior" && diceRoll == 6) {
+    def doDamage(p: Player, es: Set[Enemy], messages: Seq[GameMessage], activeEnemy: Enemy) = {
+      val attackMessage = if (dmg < 5) GameMessage(s"${activeEnemy.name} grazes ${player.name} for $dmg damage.")
+      else if (dmg < 10) GameMessage(s"${activeEnemy.name} hits ${player.name} for $dmg damage.")
+      else if (dmg < 20) GameMessage(s"${activeEnemy.name} attacks ${player.name} for $dmg damage!")
+      else if (dmg < 30) GameMessage(s"${activeEnemy.name} smashes ${player.name} for $dmg damage!!")
+      else if (dmg < 40) GameMessage(s"${activeEnemy.name} crushes ${player.name} for $dmg damage!!!")
+      else if (dmg < 50) GameMessage(s"${activeEnemy.name} bops ${player.name} for $dmg damage!!!")
+      else GameMessage(s"${activeEnemy.name} crits ${player.name} for $dmg damage!!!!!")
+
+      // Then reset
+      val es = finish(enemies, activeEnemy)
+      val isTripleOrc = es.map(_.name).contains("TripleOrc") & es.size < 5
+      val finalEs = if (isTripleOrc) es + EnemyBuilder.smallOrc else es
+
+      val msg2 = if (isTripleOrc) Option(GameMessage(s"A Tiny Orc comes to the aid of TripleOrc")) else None
+
+
+      (hpLens.apply(player), finalEs, (messages :+ attackMessage) ++ msg2)
+    }
+
+
+    val afterDmgGame = if (activeEnemy.name == "Warrior" && diceRoll == 6) {
       val message = GameMessage(s"${activeEnemy.name} blocks.")
       val es = finish(enemies, activeEnemy, Some(StatusBuilder.makeBlock()))
       (player, es, messages :+ message)
@@ -89,7 +112,7 @@ object EnemyTurnOps {
     } else if (activeEnemy.name.contains("Steam Golem") && activeEnemy.stats.speed < 16 && diceRoll >= 5) {
       val message = GameMessage(s"Steam spouts from the ${activeEnemy.name} as it speeds up!")
       val es = finish(enemies, activeEnemy)
-      val ez = es.map(e => if(e.id == activeEnemy.id) EnemyStatsLens.composeLens(SpeedLens).modify(i => i + 2)(activeEnemy) else e)
+      val ez = es.map(e => if(e.id == activeEnemy.id) EnemyStatsLens.composeLens(SpeedLens).modify(i => i + 2).andThen(EnemyPosition.modify(_ - 100))(e) else e)
       (player, ez, messages :+ message)
     } else if (activeEnemy.name.contains("Orc Fighter") && !activeEnemy.status.map(_.effect).contains(Might) && diceRoll == 3) {
       val message = GameMessage(s"The Orc Fighter drinks a Potion of Might!")
@@ -121,20 +144,39 @@ object EnemyTurnOps {
       val es = enemies.map(e => e.copy(status = e.status :+ StatusBuilder.makeMight(4, turns = 3)))
           .map(e => if (e.id == activeEnemy.id) e.copy(position = e.position - 100) else e)
       (player, es, (messages :+ message) ++ eMsgs)
-    }else {
-      // Message
-      val attackMessage = if (dmg < 5) GameMessage(s"${activeEnemy.name} grazes ${player.name} for $dmg damage.")
-      else if (dmg < 10) GameMessage(s"${activeEnemy.name} hits ${player.name} for $dmg damage.")
-      else if (dmg < 20) GameMessage(s"${activeEnemy.name} attacks ${player.name} for $dmg damage!")
-      else if (dmg < 30) GameMessage(s"${activeEnemy.name} smashes ${player.name} for $dmg damage!!")
-      else if (dmg < 40) GameMessage(s"${activeEnemy.name} crushes ${player.name} for $dmg damage!!!")
-      else if (dmg < 50) GameMessage(s"${activeEnemy.name} bops ${player.name} for $dmg damage!!!")
-      else GameMessage(s"${activeEnemy.name} crits ${player.name} for $dmg damage!!!!!")
+    }else if (activeEnemy.name.contains("Shaman") && diceRoll <= 2 && !player.status.map(_.effect).contains(Slow)) {
+      val message = GameMessage(s"${activeEnemy.name} casts Quagmire!")
+      val eMsgs = GameMessage(s"${player.name} is stuck in the Quagmire!")
 
-      // Then reset
-      val es = finish(enemies, activeEnemy)
-      (hpLens.apply(player), es, messages :+ attackMessage)
+
+      (PlayerStatusLens.modify(_ :+ StatusBuilder.makeSlow(2, turns = 3))(player), enemies, (messages :+ message) :+ eMsgs)
+    } else if (activeEnemy.name.contains("Totem")) {
+      val message = GameMessage(s"${activeEnemy.name} casts Barrier!")
+
+      val ez = enemies.filterNot(_.id == activeEnemy.id)
+        .map(e => EnemyStatusLens.modify(_ :+ StatusBuilder.makeBlock(turns = 1))(e))
+      val eMsgs = ez.map(e => GameMessage(s"${e.name} is protected by a Barrier"))
+
+      (player,
+        ez + activeEnemy.copy(position = activeEnemy.position - 100),
+        (messages :+ message) ++ eMsgs)
+    } else if (activeEnemy.name.contains("Ancient")) {
+      val message = GameMessage(s"${activeEnemy.name} grows stronger!")
+
+      val newActive = EnemyStatsLens.composeLens(StrengthLens).modify(_ + 2).andThen(
+        EnemyStatsLens.composeLens(DexterityLens).modify(_ + 2)
+      )(activeEnemy)
+
+      doDamage(player, enemies.map(e => if (e.id == newActive.id) newActive else e), messages :+ message, newActive)
+    } else if (activeEnemy.name.contains("Kraken")) {
+      val message = GameMessage(s"${activeEnemy.name} whips ${player.name} for $dmg!")
+
+      (player, enemies.map(e=> if (e.id == activeEnemy.id) e.copy(position = e.position - 50) else e), messages :+ message)
+    }else {
+      doDamage(player, enemies, messages, activeEnemy)
     }
+
+    afterDmgGame
   }
 }
 

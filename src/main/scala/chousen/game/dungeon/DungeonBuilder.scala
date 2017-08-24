@@ -37,12 +37,12 @@ class SimpleDungeonBuilder() extends DungeonBuilder with EnemyBuilder {
     }}.battle
 
     val battle4: Battle = (BattleBuilder() + orc + troll).battle
-    val battle5: Battle = (BattleBuilder() + giantRat + goblin + giantRat).battle
+    val battle5: Battle = (BattleBuilder() + giantRat + goblin + giantRat + orcPriest).battle
 
     val battle6: Battle = {(dungeonSeed + dungeonSeed2) match {
-      case 0 => BattleBuilder() + giantWorm + warrior + giantWorm
-      case (1 | 2 | 3 | 4 | 5) => BattleBuilder() + gnoll + golem + gnoll
-      case (6 | 7 | 8 | 9 | 10) => BattleBuilder() + giantRat + giantRat + giantRat
+      case 0 => BattleBuilder() + giantWorm + warrior + orcPriest
+      case (1 | 2 | 3 | 4 | 5) => BattleBuilder() + gnoll + golem + knollShaman
+      case (6 | 7 | 8 | 9 | 10) => BattleBuilder() + giantRat + ratKing + giantRat
     }}.battle
 
     val battle7: Battle = {(dungeonSeed + dungeonSeed2) match {
@@ -76,20 +76,34 @@ class SimpleDungeonBuilder() extends DungeonBuilder with EnemyBuilder {
 
     val battle8: Battle = Battle(battle10Left.enemies ++ boss.enemies ++ battle10Right.enemies)
 
-    val finalBattle = {dungeonSeed3 match {
+    val orcBattle = {dungeonSeed3 match {
       case (0 | 1 ) => BattleBuilder() + orcWarriorD + orcWizard + orcWarriorQ
       case (2 | 3) => BattleBuilder() + orcWarriorS + orcWizard + orcWarriorQ
       case _ => BattleBuilder() + orcWarriorS + orcWizard + orcWarriorD
     }}.battle
 
+
+     val b11 = (BattleBuilder() + kobold + knollShaman + kobold + totem).battle
+     val b12 = (BattleBuilder() + orcWizard + hugeGolem + orcWizard).battle
+
+
+    val b13 = (BattleBuilder() + gKnollShaman + draconian + orcPriest).battle
+    val b14 = (BattleBuilder() + smallOrc + tripleOrc + smallOrc).battle
+
     def campfire = Battle(Set(campFire))
+
 
     Dungeon(battle1, Seq(campfire,
       battle2, battle3, campfire,
       battle4, battle5, campfire,
       battle6, battle7, campfire,
       battle8, battle9, campfire,
-      finalBattle
+      orcBattle, campfire,
+      b11, b12, campfire,
+      b13, b14, campfire,
+      Battle(Set(kraken, totem)), campfire,
+      Battle(Set(fireOrcKing, totem)), campfire,
+      Battle(Set(orcKing))
     ))
   }
 }

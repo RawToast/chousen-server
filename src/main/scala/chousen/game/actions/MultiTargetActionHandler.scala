@@ -65,7 +65,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
     val dmg = dc.calculatePlayerDamage(p, e,
       Multipliers.builder
-        .dexMulti(Multipliers.lowMulti)
+        .dexMulti(Multipliers.medMulti)
         .intMulti(Multipliers.lowMulti)
         .maxMulti(Multipliers.multiTarget).m) + (dc.sc.calculate(p).stats.intellect / 4)
 
@@ -81,7 +81,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
   def fireball(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
 
     val magicDmg = dc.calculatePlayerMagicDamage(p, e,
-      Multipliers.builder.intMulti(Multipliers.highMulti).maxMulti(Multipliers.multiTarget).m)
+      Multipliers.builder.intMulti(Multipliers.maxMulti).maxMulti(Multipliers.multiTarget).m)
 
     val dmg = Math.max(1, magicDmg + (p.experience.level * 2))
     val gameMessages = msgs :+ GameMessage(s"${e.name} is engulfed by flames and takes $dmg damage.")
