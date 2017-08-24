@@ -25,13 +25,17 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
     val player = choice match {
       case 1 => SetPlayerStats.apply(1, 1, 0, 1).compose(PlayerClassLens.set("Fighter"))(p)
       case 2 => SetPlayerStats.apply(2, 1, 0, 0).compose(PlayerClassLens.set("Berserker"))(p)
-      case _ => SetPlayerStats.apply(2, 0, 0, 1).compose(PlayerClassLens.set("Warrior"))(p)
+      case 3 => SetPlayerStats.apply(2, 0, 0, 1).compose(PlayerClassLens.set("Warrior"))(p)
+      case 4 => SetPlayerStats.apply(1, 1, 0, 1).compose(PlayerClassLens.set("Rogue"))(p)
+      case _ => SetPlayerStats.apply(0, 1, 1, 1).compose(PlayerClassLens.set("Trickster"))(p)
     }
 
     val deck = choice match {
       case 1 => CardCatalogue.fighterDeck
       case 2 => CardCatalogue.berserkerDeck
-      case _ => CardCatalogue.warriorDeck
+      case 3 => CardCatalogue.warriorDeck
+      case 4 => CardCatalogue.rogueDeck
+      case _ => CardCatalogue.tricksterDeck
     }
 
     val cards: Cards = CardManager.startGame(deck, CardCatalogue.passiveCards)

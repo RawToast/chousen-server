@@ -129,7 +129,7 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
     val sePlayer = sc.calculate(p)
     val message = GameMessage(s"${p.name} uses Quick Step!")
 
-    (PlayerPositionLens.modify(_ + 100 + sePlayer.stats.dexterity)(p), cs, msgs :+ message)
+    (PlayerPositionLens.modify(_ + 50 + (sePlayer.stats.dexterity * 2))(p), cs, msgs :+ message)
   }
 
   def haste(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {

@@ -30,8 +30,8 @@ trait CardManager {
         .find(_ ~= card)
     }
 
-    def discard(card: Card, ng: GameState) = HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= card))
-      .andThen(DiscardLens.modify((ds: Seq[data.Card]) => card +: ds)).apply(ng)
+    def discard(card: Card, ng: GameState) = if HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= card))
+      .andThen(DiscardLens.modify((ds: Seq[data.Card]) => if (card.name.contains("Essence of")) ds else card +: ds)).apply(ng)
 
     def handleEquipAction(ea: EquipAction, c: Card): (GameState) => GameState = {
       def equip(optCard: Option[Card], lens: Lens[EquippedCards, Option[Card]]): (GameState) => GameState = {

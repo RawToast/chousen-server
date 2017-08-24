@@ -106,6 +106,12 @@ class MultiTargetActionHandlerSpec extends WordSpec {
       standardAssertions(startedGame, result, targets)
     }
 
+    "Given WindStrike" should {
+      val (startedGame, result, targets) = completeAction(WindStrike)
+
+      standardAssertions(startedGame, result, targets)
+    }
+
     def completeAction(action: MultiAction) = {
       val gameState = GameStateGenerator.gameStateWithFastPlayer
       val startedGame: GameState = stateCreator.start(gameState)

@@ -61,4 +61,5 @@ sealed trait WeaponEffect
 
 case object Magic extends WeaponEffect
 case object Crush extends WeaponEffect
+case object Deadly extends WeaponEffect
 case object Toxic extends WeaponEffect

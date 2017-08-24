@@ -41,6 +41,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
   private def actions(action: MultiAction): (Player, Enemy, Seq[GameMessage]) => (Player, Option[Enemy], Seq[GameMessage]) = {
     action match {
       case GroundStrike => groundStrike
+      case WindStrike => windStrike
     }
   }
 
@@ -55,6 +56,23 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
     val newE = EnemyOptics.EnemyStatsLens.composeLens(CharStatsOptics.HpLens).modify(hp => hp - dmg)
       .andThen(EnemyOptics.EnemyPosition.modify(ep => ep - 10 - (sePlayer.stats.strength / 2)))
       .apply(e)
+
+    (p, Option(newE), gameMessages)
+  }
+
+  def windStrike(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+
+    val dmg = dc.calculatePlayerDamage(p, e,
+      Multipliers.builder
+        .dexMulti(Multipliers.lowMulti)
+        .intMulti(Multipliers.lowMulti)
+        .maxMulti(Multipliers.multiTarget).m)
+
+    val gameMessages = msgs :+ GameMessage(s"${e.name} takes $dmg damage.")
+
+    // This should be replaced by a generic attack/damage function
+    val newE = EnemyOptics.EnemyStatsLens.composeLens(CharStatsOptics.HpLens)
+      .modify(hp => hp - dmg)(e)
 
     (p, Option(newE), gameMessages)
   }

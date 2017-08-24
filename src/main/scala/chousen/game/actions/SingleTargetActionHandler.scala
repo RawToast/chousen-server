@@ -25,6 +25,11 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
       case StunningStrike => stunningStrike
       case Counter => counter
       case Destruction => destruction
+
+      case QuickAttack => quickAttack
+      case Assassinate => assassinate
+
+      case Pain => pain
     }
 
 
@@ -94,5 +99,59 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     } else msgs :+ GameMessage(s"${p.name} lands a destructive blow on ${e.name} and deals $dmg damage!")
 
     (p.copy(position = p.position - 110 + (p.stats.strength / 4)), Option(newEnemy), gameMessages)
+  }
+
+
+  // Dex
+  def quickAttack(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+    val dmg = damageCalculator.calculatePlayerDamage(p, e, Multipliers.dexteritySkill)
+
+    val targetMsg = GameMessage(s"${p.name} uses Quick Attack!")
+    val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
+
+    val newEnemy = EnemyStatsLens.composeLens(HpLens)
+      .modify(hp => hp - dmg)(e)
+    val gameMessages = msgs :+ targetMsg :+ dmgMsg
+
+    (p.copy(position = p.position - 80 + (p.stats.dexterity / 2)), Option(newEnemy), gameMessages)
+  }
+
+  def assassinate(p: Player, e: Enemy, msgs: Seq[GameMessage]): (Player, Option[Enemy], Seq[GameMessage]) = {
+
+    val sePlayer = damageCalculator.sc.calculate(p)
+    val seEnemy = damageCalculator.sc.calculate(e)
+
+    val hpDiff = e.stats.maxHp - e.stats.currentHp
+    val reduce = Math.min(1d, sePlayer.stats.dexterity.toDouble / seEnemy.stats.vitality.toDouble)
+
+    val dmg = Math.max(sePlayer.stats.dexterity / 4d, hpDiff * reduce).toInt
+
+    val targetMsg = GameMessage(s"${p.name} uses Assassinate!")
+    val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
+
+    val newEnemy = EnemyStatsLens.composeLens(HpLens)
+      .modify(hp => hp - dmg)(e)
+    val gameMessages = msgs :+ targetMsg :+ dmgMsg
+
+    (p.copy(position = p.position - 100), Option(newEnemy), gameMessages)
+  }
+
+
+  // Int
+  def pain(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+
+    val sePlayer = damageCalculator.sc.calculate(p)
+    val seEnemy = damageCalculator.sc.calculate(e)
+
+    val dmg = Math.max(p.stats.intellect / 2d, e.stats.currentHp * Math.min(0.5, sePlayer.stats.intellect.toDouble / seEnemy.stats.vitality.toDouble)).toInt
+
+    val targetMsg = GameMessage(s"${p.name} uses Pain!")
+    val dmgMsg = GameMessage(s"${e.name} convulses in pain and takes $dmg damage!")
+
+    val newEnemy = EnemyStatsLens.composeLens(HpLens)
+      .modify(hp => hp - dmg)(e)
+    val gameMessages = msgs :+ targetMsg :+ dmgMsg
+
+    (p.copy(position = p.position - 100), Option(newEnemy), gameMessages)
   }
 }

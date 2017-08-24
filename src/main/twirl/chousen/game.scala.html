@@ -121,7 +121,7 @@
                         <div class="btn-group" role="group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false" title="@{c.description}">
-                                @{c.name + {c.charges.map(i => s"($i)").getOrElse("")}}
+                                @{c.name + {c.charges.map(i => s" ($i").getOrElse("")} + {c.maxCharges.map(i => s"/$i)").getOrElse("")}}
                             <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
@@ -144,7 +144,7 @@
                             title="@{c.description}"
                             eids="@{gameState.dungeon.currentEncounter.enemies.map(_.id).mkString(",")}"
                             uri="@{s"game/" + gameState.uuid + "/multi/" + c.id}">
-                            @{c.name + {c.charges.map(i => s"($i)").getOrElse("")}}
+                            @{c.name + {c.charges.map(i => s" ($i").getOrElse("")} + {c.maxCharges.map(i => s"/$i)").getOrElse("")}}
                         </button>
                     }
                     </div>
@@ -154,7 +154,7 @@
                     <button type="button" class="btn btn-default btn-self" action="@{c.action}"
                     title="@{c.description}"
                     uri="@{s"game/" + gameState.uuid + "/self/" + c.id}">
-                    @{c.name + {c.charges.map(i => s"($i)").getOrElse("")}}
+                    @{c.name + {c.charges.map(i => s" ($i").getOrElse("")} + {c.maxCharges.map(i => s"/$i)").getOrElse("")}}
                     </button>
                 }
                 </div>
@@ -164,7 +164,7 @@
                         <button type="button" class="btn btn-default btn-equip" action="@{c.action}" cid="@{c.id}"
                         title="@{c.description}"
                         uri="@{s"game/" + gameState.uuid + "/equip/" + c.id}">
-                        @{c.name + {c.charges.map(i => s"($i)").getOrElse("")}}
+                        @{c.name + {c.charges.map(i => s" ($i").getOrElse("")} + {c.maxCharges.map(i => s"/$i)").getOrElse("")}}
                         </button>
                 }
                 </div>
@@ -195,7 +195,7 @@
                         <button type="button" class="btn btn-default btn-card" action="@{c.action}"
                         title="@{c.description}"
                         uri="@{s"game/" + gameState.uuid + "/card/" + c.id}">
-                        @{c.name + {c.charges.map(i => s"($i)").getOrElse("")}}
+                        @{c.name + {c.charges.map(i => s" ($i").getOrElse("")} + {c.maxCharges.map(i => s"/$i)").getOrElse("")}}
                         </button>
                     }
                 }

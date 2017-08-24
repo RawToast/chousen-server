@@ -45,12 +45,12 @@ case object StunningStrike extends SingleTargetAction
 case object Counter extends SingleTargetAction
 case object Destruction extends SingleTargetAction
 
-//case object QuickAttack extends SingleTargetAction
-//case object Assassinate extends SingleTargetAction
+case object QuickAttack extends SingleTargetAction
+case object Assassinate extends SingleTargetAction
 //case object TripleStrike extends SingleTargetAction
 
 
-//case object Pain extends SingleTargetAction
+case object Pain extends SingleTargetAction
 //case object MagicMissile extends SingleTargetAction
 //case object Drain extends SingleTargetAction
 
@@ -62,7 +62,7 @@ case object Destruction extends SingleTargetAction
 
 case object GroundStrike extends MultiAction
 
-//case object WindStrike extends MultiAction
+case object WindStrike extends MultiAction
 
 case object HealWounds extends SelfAction
 case object Haste extends SelfAction
@@ -115,11 +115,14 @@ case object Club extends EquipWeapon
 case object Mace extends EquipWeapon
 case object ShortSword extends EquipWeapon
 case object BroadSword extends EquipWeapon
-case object SwordOfIntellect extends EquipWeapon
+//case object Kodachi extends EquipWeapon
 case object GiantClub extends EquipWeapon
 case object TrollCrusher extends EquipWeapon
+case object SwordOfIntellect extends EquipWeapon
+case object DaggerOfDavid extends EquipWeapon
 
 
+case object Cape extends EquipArmour
 case object LeatherArmour extends EquipArmour
 case object Ringmail extends EquipArmour
 case object Chainmail extends EquipArmour

@@ -293,7 +293,7 @@ object CardActionHandler extends ActionHandler {
         affectedCard <- h.hand.find(_.id == id).filter(_.charges.nonEmpty)
         m = GameMessage(s"${p.name} uses Increase Charges on ${affectedCard.name}")
 
-        rechargedCard = affectedCard.copy(maxCharges = affectedCard.maxCharges.map(_ + 2))
+        rechargedCard = affectedCard.copy(charges = affectedCard.charges.map(_ + 2), maxCharges = affectedCard.maxCharges.map(_ + 2))
         cs = h.copy(hand = h.hand.map(c => if (c.id == rechargedCard.id) rechargedCard else c))
       } yield (cs, m)
 
