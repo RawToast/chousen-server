@@ -14,16 +14,16 @@ trait GameAccess[T[_], R] {
   def storeGame(g: GameState): T[GameState]
 }
 
-class MongoGameAccess(mongoDatastore: MongoDatastore) extends GameAccess[Task, Response] {
-  override def withGame(id: UUID)(f: GameState => Task[Response]): Task[Response] = for {
-    gameState <- mongoDatastore.get(id)
-    response <- f(gameState)
-  } yield response
-
-
-  override def storeGame(g: GameState): Task[GameState] =
-    mongoDatastore.put(g)
-}
+//class MongoGameAccess(mongoDatastore: MongoDatastore) extends GameAccess[Task, Response] {
+//  override def withGame(id: UUID)(f: GameState => Task[Response]): Task[Response] = for {
+//    gameState <- mongoDatastore.get(id)
+//    response <- f(gameState)
+//  } yield response
+//
+//
+//  override def storeGame(g: GameState): Task[GameState] =
+//    mongoDatastore.put(g)
+//}
 
 class Http4sMappedGameAccess(private var store: Map[UUID, GameState] = Map.empty) extends GameAccess[Task, Response] {
   import io.circe.generic.auto._
