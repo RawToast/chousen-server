@@ -36,18 +36,24 @@ class GameStateCreationSpec extends WordSpec {
         val game1 = creator.create("Bob", 1)
         val game2 = creator.create("Bob", 2)
         val game3 = creator.create("Bob", 3)
+        val game4 = creator.create("Bob", 4)
+        val game5 = creator.create("Bob", 5)
 
 
         assert(game1 != game2)
         assert(game1.uuid != game2.uuid)
+        val gc1 = game1.player.className
+        val gc2 = game2.player.className
+        val gc3 = game3.player.className
+        val gc4 = game4.player.className
+        val gc5 = game5.player.className
 
-        assert(game1.player.className != game2.player.className)
-        assert(game2.player.className != game3.player.className)
-        assert(game1.player.className != game3.player.className)
+        assert((gc1 != gc2) && (gc3 != gc4))
+        assert((gc1 != gc3) && (gc2 != gc4))
+        assert((gc1 != gc4) && (gc2 != gc3))
+        assert((gc1 != gc5) && (gc2 != gc5))
+        assert((gc3 != gc5) && (gc4 != gc5))
         }
-
-
-
     }
 
     "Starting a game" when {

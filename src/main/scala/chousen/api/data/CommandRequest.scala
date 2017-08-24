@@ -51,11 +51,13 @@ case object Assassinate extends SingleTargetAction
 
 
 case object Pain extends SingleTargetAction
-//case object MagicMissile extends SingleTargetAction
+case object MagicMissile extends SingleTargetAction
+case object Barrier extends SelfAction
+
 //case object Drain extends SingleTargetAction
 
 
-//case object Fireball extends MultiAction
+case object Fireball extends MultiAction
 //case object StaticField extends MultiAction
 //case object MassDrain extends MultiAction
 //case object Shatter extends MultiAction

@@ -110,6 +110,12 @@ class SingleTargetActionHandlerSpec extends WordSpec {
       standardAssertions(startedGame, result, target)
     }
 
+    "Given Magic Missile" should {
+      val (startedGame, result, target) = completeAction(MagicMissile)
+      standardAssertions(startedGame, result, target)
+    }
+
+
 
     "Given Quick Attack" should {
       val (startedGame, result, target) = completeAction(QuickAttack)

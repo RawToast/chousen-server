@@ -30,6 +30,7 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
       case Assassinate => assassinate
 
       case Pain => pain
+      case MagicMissile => magicMissile
     }
 
 
@@ -94,6 +95,7 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
 
     val gameMessages = if (vitLoss > 0) {
       val targetMsg = GameMessage(s"${p.name} lands a destructive blow on ${e.name}!")
+
       val dmgMsg = GameMessage(s"${e.name}'s loses $vitLoss Vitality and takes $dmg damage.")
       msgs :+ targetMsg :+ dmgMsg
     } else msgs :+ GameMessage(s"${p.name} lands a destructive blow on ${e.name} and deals $dmg damage!")
@@ -148,6 +150,22 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     val targetMsg = GameMessage(s"${p.name} uses Pain!")
     val dmgMsg = GameMessage(s"${e.name} convulses in pain and takes $dmg damage!")
 
+    val newEnemy = EnemyStatsLens.composeLens(HpLens)
+      .modify(hp => hp - dmg)(e)
+    val gameMessages = msgs :+ targetMsg :+ dmgMsg
+
+    (p.copy(position = p.position - 100), Option(newEnemy), gameMessages)
+  }
+
+  def magicMissile(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+    val magicDmg = damageCalculator.calculatePlayerMagicDamage(p, e, Multipliers.intellectSkill)
+
+    val dmg = Math.max(1, 2 + magicDmg)
+
+    val targetMsg = GameMessage(s"${p.name} uses Magic Missile!")
+    val dmgMsg = GameMessage(s"The missile strikes ${e.name} for $dmg damage!")
+
+    // This should be replaced by a generic attack/damage function
     val newEnemy = EnemyStatsLens.composeLens(HpLens)
       .modify(hp => hp - dmg)(e)
     val gameMessages = msgs :+ targetMsg :+ dmgMsg

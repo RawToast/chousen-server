@@ -9,35 +9,35 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
   // Deck built around stun/counter ST
   def fighterDeck: Seq[Card] = // 15
       Seq(
-        healWounds, healWounds,
-        rarePepe, rarePepe, rarePepe, rarePepe,                         // 6
+        healWounds, regen,
+        rarePepe, rarePepe,                             // 4
 
         might, might, might, might,                                      // 10 potions
         haste, haste, haste, haste,
-        stoneSkin, stoneSkin,
 
-        elixirOfStrength, elixirOfDexterity, elixirOfVitality,   // 3 elixirs
 
-        essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,  // 14 essences
+        elixirOfStrength, elixirOfDexterity,   // 2 elixirs
+
+        essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,  // 16 essences
         essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+        essenceOfStrength, essenceOfStrength,
         essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
-        essenceOfDexterity,
-        essenceOfVitality, essenceOfVitality,
+        essenceOfDexterity, essenceOfDexterity,
 
         shortSword, broadsword, kodachi,    // 5 equips
-        leatherArmour, chainmail,
+        chainmail, orcishArmour,
 
-        windStrike, windStrike,       // 8 skills
+        groundStrike, groundStrike,       // 8 skills
         stunningStrike, stunningStrike,
         counter, counter,
-        quickAttack, assassinate,
+        crushingBlow, crushingBlow,
 
         armoury, armoury,                         // 14 cards
         trade, trade,
 
         rummage, rummage, rummage, rummage,
         refresh, refresh,
-        miracle, miracle,
+        miracle, miracle, manifestRage,
         essenceBoost,
         reduceRequirements,
       )
@@ -47,68 +47,36 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
     healWounds,
     regen, regen, regen, regen,
-    rarePepe, rarePepe, rarePepe, rarePepe,
+    rarePepe, rarePepe,                     // 7
 
 
-    elixirOfStrength, elixirOfStrength, elixirOfDexterity, elixirOfVitality,
+    elixirOfStrength, elixirOfVitality,     // 2 el
 
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfStrength,
-    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality,
+    essenceOfStrength, essenceOfStrength,
+    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality, // 14 elix
 
 
     rage, rage, rage, rage,
     might, might, might, might,
     haste, haste, haste, haste,
-    continuation, continuation, continuation, continuation,
-    stoneSkin, stoneSkin,
+    continuation, continuation, continuation, continuation,       // 16 pots
 
-    // GiantClub is better for this build -- no other access to % damage
-    mace, giantClub,
+    mace, giantClub, trollCrusher,                // 5 equip
     ringmail, heavyArmour,
 
-    forgeWeapon, forgeArmour,
+    forgeWeapon, forgeArmour,                   // 16 card
+    armoury,
 
-    rummage, rummage,
-    essenceBoost, reduceRequirements,
-    miracle, miracle, miracle,
+    rummage, rummage, rummage, rummage,
+    trade, trade,
+    essenceBoost,
+    reduceRequirements, reduceRequirements,
+    miracle, miracle, miracle, miracle,
     manifestRage, manifestRage
   )
 
-  // Deck built around high strength skills
-  def warriorDeck: Seq[Card] = Seq(
-
-    healWounds, healWounds,
-    rarePepe, rarePepe, rarePepe, rarePepe,
-
-    elixirOfStrength, elixirOfStrength, elixirOfStrength, elixirOfVitality,
-
-    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfStrength, essenceOfVitality, essenceOfVitality, essenceOfVitality,
-
-    might, might,
-    haste, haste,
-
-    mace, giantClub, trollCrusher,
-    chainmail, heavyArmour, orcishArmour,
-
-    destruction, destruction, destruction,
-    crushingBlow, crushingBlow, crushingBlow,
-
-    groundStrike, groundStrike,
-
-    armoury, refresh, reduceRequirements,
-    trade, trade,
-
-    rummage, rummage, rummage, rummage,
-    miracle, miracle, miracle, miracle,
-    manifestRage,
-    essenceBoost, essenceBoost,
-    replace
-  )
 
   def rogueDeck: Seq[Card] = Seq(
 
@@ -176,6 +144,36 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     refresh
   )
 
+  def mageDeck = Seq(
+    essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
+    essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
+    essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
+    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality, // 16 Essences
+
+
+    elixirOfIntelligence, elixirOfVitality,  // 2 Elixirs
+
+    haste, haste, haste, haste,              // 8 Potions
+    stoneSkin, stoneSkin, regen, regen,
+
+    healWounds, healWounds, rarePepe, rarePepe,  // 4 Pepes
+
+    magicMissile, magicMissile, magicMissile,    // 12 Abilities
+    pain, pain,
+    fireball, fireball,
+    quickStep, quickStep,
+
+    barrier, barrier,
+
+    daggerOfDavid, leatherArmour,                  // 2 Equipment
+
+    miracle, miracle, miracle, miracle,   // 16 Card Actions
+    rummage, rummage, rummage, rummage,
+    increaseCharges, increaseCharges, increaseCharges, increaseCharges,
+    recharge, recharge,
+    refresh, refresh, refresh
+  )
+
 
 //  def cheeseDeck: Seq[Card] = // 15
 //    usefulCards ++
@@ -222,11 +220,12 @@ trait PermanentEffects extends CardBuilder {
 }
 
 trait Magic extends CardBuilder{
-//  def fireball: Card = mkCard("Fireball", "Deals fire damage to all enemies", Fireball)
+  def fireball: Card = mkCard("Fireball", "Deals fire damage to all enemies", Fireball, 1)
 //  def staticField: Card = mkCard("Static Field", "Reduces all enemies hp by 33%", StaticField)
-  def pain: Card = mkCard("Pain", "Reduces the hp of a single target by 50%", Pain, 3)
+  def pain: Card = mkCard("Pain", "Reduces the hp of a single target by around 50%", Pain, 3)
 //  def shatter: Card = mkCard("Shatter", "Reduce player to 1hp and deal the same damage to all enemies", Shatter)
-//  def magicMissile: Card = mkCard("Magic Missile", "Deals magic damage to a single enemy", MagicMissile)
+  def magicMissile: Card = mkCard("Magic Missile", "Deals magic damage to a single enemy", MagicMissile, 4)
+  def barrier: Card = mkCard("Barrier", "Creates a magic barrier to protect the user", Barrier, 2)
 //  def drain: Card = mkCard("Drain", "Drains health from an enemy and heals the player", Drain)
 //  def massDrain: Card = mkCard("Mass Drain", "Drains health from multiple enemies and heals the player", MassDrain)
 }
@@ -236,8 +235,8 @@ trait Strength extends CardBuilder{
   def stunningStrike: Card = mkCard("Stunning Strike", "Attack that stuns and reduces the speed of a single enemy", StunningStrike, 3)
   def groundStrike: Card = mkCard("Ground Strike", "Slam the ground with your weapon, hitting all enemies and reducing their position", GroundStrike, 2)
 
-  def counter: Card = mkCard("Counter", "Attack that deals more damage the stronger the enemy", Counter, 2)
-  def destruction: Card = mkCard("Destruction", "Destructive attack that lowers an enemies defenses", Destruction, 4)
+  def counter: Card = mkCard("Counter", "Attack that deals more damage the more strength an enemy has", Counter, 2)
+  def destruction: Card = mkCard("Destruction", "Destructive attack that lowers an enemies vitality", Destruction, 4)
 }
 
 trait Dexterity extends CardBuilder{
@@ -295,7 +294,7 @@ trait Equipment extends CardBuilder {
   def giantClub: Card = mkEquip("Giant Club", "Heavy increase to damage",
     GiantClub, Requirements(str = Some(20)))
   def kodachi: Card = mkEquip("Kodachi", "Heavy increase to damage",
-    Kodachi, Requirements(dex = Some(18)))
+    Kodachi, Requirements(str = Some(17), dex = Some(13)))
 
 
   def trollCrusher: Card = mkEquip("Troll Crusher", "Moderate increase to damage. Bonus damage based on the enemies current HP",

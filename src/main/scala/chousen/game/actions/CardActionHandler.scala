@@ -226,11 +226,9 @@ object CardActionHandler extends ActionHandler {
   }
 
   def refresh(p: Player, cards: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
-    val emptiedHand = cards.hand.filter(c =>
-      c.action.isInstanceOf[SingleTargetAction] || c.action.isInstanceOf[MultiAction])
+    val emptiedHand = cards.hand.filter(_.charges.nonEmpty)
 
-    val toDiscard = cards.hand.filterNot(c =>
-      c.action.isInstanceOf[SingleTargetAction] || c.action.isInstanceOf[MultiAction])
+    val toDiscard = cards.hand.filterNot(_.charges.nonEmpty)
 
     val nc = cards.copy(hand = emptiedHand, discard = cards.discard ++ toDiscard)
 

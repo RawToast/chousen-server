@@ -39,7 +39,7 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         }
 
       case req@POST -> Root / "game" / uuid / "single" / cardUuid =>
-        implicit val enumDecoder = deriveEnumerationDecoder[SingleTargetAction]
+        implicit val enumDecoder: Decoder[SingleTargetAction] = deriveEnumerationDecoder[SingleTargetAction]
 
         val (id, cardId) = getIds(uuid, cardUuid)
 
@@ -48,7 +48,7 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         }
 
       case req@POST -> Root / "game" / uuid / "self" / cardUuid =>
-        implicit val enumDecoder = deriveEnumerationDecoder[SelfAction]
+        implicit val enumDecoder: Decoder[SelfAction] = deriveEnumerationDecoder[SelfAction]
 
         val (id, cardId) = getIds(uuid, cardUuid)
 
@@ -57,7 +57,7 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         }
 
       case req@POST -> Root / "game" / uuid / "card" / cardUuid =>
-        implicit val enumDecoder = deriveEnumerationDecoder[CardAction]
+        implicit val enumDecoder: Decoder[CardAction] = deriveEnumerationDecoder[CardAction]
 
         val (id, cardId) = getIds(uuid, cardUuid)
 
@@ -66,7 +66,7 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         }
 
       case req@POST -> Root / "game" / uuid / "multi" / cardUuid =>
-        implicit val enumDecoder = deriveEnumerationDecoder[MultiAction]
+        implicit val enumDecoder: Decoder[MultiAction] = deriveEnumerationDecoder[MultiAction]
 
         val (id, cardId) = getIds(uuid, cardUuid)
 
@@ -75,7 +75,7 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         }
 
       case req@POST -> Root / "game" / uuid / "camp" / cardUuid =>
-        implicit val enumDecoder = deriveEnumerationDecoder[CampFireAction]
+        implicit val enumDecoder: Decoder[CampFireAction] = deriveEnumerationDecoder[CampFireAction]
 
         val (id, cardId) = getIds(uuid, cardUuid)
 
@@ -84,7 +84,7 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         }
 
       case req@POST -> Root / "game" / uuid / "equip" / cardUuid =>
-        implicit val enumDecoder = deriveEnumerationDecoder[EquipAction]
+        implicit val enumDecoder: Decoder[EquipAction] = deriveEnumerationDecoder[EquipAction]
 
         val (id, cardId) = getIds(uuid, cardUuid)
 

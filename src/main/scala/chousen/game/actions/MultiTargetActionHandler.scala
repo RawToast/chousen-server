@@ -42,6 +42,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
     action match {
       case GroundStrike => groundStrike
       case WindStrike => windStrike
+      case Fireball => fireball
     }
   }
 
@@ -66,9 +67,24 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
       Multipliers.builder
         .dexMulti(Multipliers.lowMulti)
         .intMulti(Multipliers.lowMulti)
-        .maxMulti(Multipliers.multiTarget).m)
+        .maxMulti(Multipliers.multiTarget).m) + (dc.sc.calculate(p).stats.intellect / 4)
 
     val gameMessages = msgs :+ GameMessage(s"${e.name} takes $dmg damage.")
+
+    // This should be replaced by a generic attack/damage function
+    val newE = EnemyOptics.EnemyStatsLens.composeLens(CharStatsOptics.HpLens)
+      .modify(hp => hp - dmg)(e)
+
+    (p, Option(newE), gameMessages)
+  }
+
+  def fireball(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+
+    val magicDmg = dc.calculatePlayerMagicDamage(p, e,
+      Multipliers.builder.intMulti(Multipliers.highMulti).maxMulti(Multipliers.multiTarget).m)
+
+    val dmg = Math.max(1, magicDmg + (p.experience.level * 2))
+    val gameMessages = msgs :+ GameMessage(s"${e.name} is engulfed by flames and takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function
     val newE = EnemyOptics.EnemyStatsLens.composeLens(CharStatsOptics.HpLens)
