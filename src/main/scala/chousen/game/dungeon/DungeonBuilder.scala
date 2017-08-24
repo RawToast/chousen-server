@@ -82,10 +82,13 @@ class SimpleDungeonBuilder() extends DungeonBuilder with EnemyBuilder {
       case _ => BattleBuilder() + orcWarriorS + orcWizard + orcWarriorD
     }}.battle
 
-    Dungeon(battle1, Seq(battle2, battle3, Battle(Set(campFire)),
-      battle4, battle5, Battle(Set(campFire)),
-      battle6, battle7, Battle(Set(campFire)),
-      battle8, battle9, Battle(Set(campFire)),
+    def campfire = Battle(Set(campFire))
+
+    Dungeon(battle1, Seq(campfire,
+      battle2, battle3, campfire,
+      battle4, battle5, campfire,
+      battle6, battle7, campfire,
+      battle8, battle9, campfire,
       finalBattle
     ))
   }

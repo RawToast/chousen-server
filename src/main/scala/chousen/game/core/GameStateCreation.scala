@@ -23,15 +23,21 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
     val dungeon = dungeonBuilder.makeDungeon(dungeonSeed, dungeonSeed2, dungeonSeed3)
 
     val player = choice match {
-      case 1 => SetPlayerStats.apply(1, 1, 0, 1).compose(PlayerClassLens.set("Fighter"))(p)
-      case 2 => SetPlayerStats.apply(2, 1, 0, 0).compose(PlayerClassLens.set("Berserker"))(p)
-      case _ => SetPlayerStats.apply(2, 0, 0, 1).compose(PlayerClassLens.set("Warrior"))(p)
+      case 1 => SetPlayerStats.apply(2, 1, -1, 1).compose(PlayerClassLens.set("Fighter"))(p)
+      case 2 => SetPlayerStats.apply(1, 1, -1, 2).compose(PlayerClassLens.set("Berserker"))(p)
+      case 3 => SetPlayerStats.apply(1, 1, 0, 1).compose(PlayerClassLens.set("Rogue"))(p)
+      case 4 => SetPlayerStats.apply(0, 1, 1, 1).compose(PlayerClassLens.set("Trickster"))(p)
+      case 5 => SetPlayerStats.apply(0, 0, 2, 1).compose(PlayerClassLens.set("Mage"))(p)
+      case _ => SetPlayerStats.apply(0, 0, 0, 0).compose(PlayerClassLens.set("Druid"))(p)
     }
 
     val deck = choice match {
       case 1 => CardCatalogue.fighterDeck
       case 2 => CardCatalogue.berserkerDeck
-      case _ => CardCatalogue.warriorDeck
+      case 3 => CardCatalogue.rogueDeck
+      case 4 => CardCatalogue.tricksterDeck
+      case 5 => CardCatalogue.mageDeck
+      case _ => CardCatalogue.mageDeck
     }
 
     val cards: Cards = CardManager.startGame(deck, CardCatalogue.passiveCards)

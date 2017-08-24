@@ -13,7 +13,7 @@ class EquipmentActionHandlerSpec extends WordSpec {
 
   "Equipment Action Handler" when {
 
-   // val sc = new StatusCalculator
+    // val sc = new StatusCalculator
     val equipActionHandler = new EquipmentActionHandler()
     lazy val uuid = UUID.randomUUID()
 
@@ -50,9 +50,9 @@ class EquipmentActionHandlerSpec extends WordSpec {
         assert(latestMessages.exists(!_.text.contains("Slime ")))
       }
 
-//      "the equivalent card is placed into the passive deck" in {
-//        assert(result.cards.passive.size > startedGame.cards.passive.size)
-//      }
+      //      "the equivalent card is placed into the passive deck" in {
+      //        assert(result.cards.passive.size > startedGame.cards.passive.size)
+      //      }
     }
 
     "Given a weapon EquipAction when the player is already equipped" should {
@@ -137,10 +137,47 @@ class EquipmentActionHandlerSpec extends WordSpec {
       equipWeaponAssertions(result, startedGame)
     }
 
+    "Given Dagger of David" should {
+      val result = equipActionHandler.handle(DaggerOfDavid, uuid)(startedGame)
+
+      equipWeaponAssertions(result, startedGame)
+    }
+
+    "Given Kodachi" should {
+      val result = equipActionHandler.handle(Kodachi, uuid)(startedGame)
+
+      equipWeaponAssertions(result, startedGame)
+    }
+
     "Given TrollCrusher" should {
       val result = equipActionHandler.handle(TrollCrusher, uuid)(startedGame)
 
       equipWeaponAssertions(result, startedGame)
+    }
+
+    "Given Cape" should {
+      val result = equipActionHandler.handle(Cape, uuid)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "State the armour was equipped" in {
+        assert(result.messages.map(_.text).exists(_.contains(s"${GameStateGenerator.playerName} puts on")))
+      }
+
+      "Equips the armour" in {
+        assert(result.player.equipment.armour.nonEmpty)
+      }
+
+      "Not reduce the player's position" in {
+        assert(result.player.position >= startedGame.player.position)
+      }
+
+      "Affects the players equipment" in {
+        assert(startedGame.player.equipment.weapon.isEmpty && startedGame.player.equipment.armour.isEmpty)
+        assert(startedGame.player.equipment != result.player.equipment)
+      }
     }
 
     "Given LeatherArmour" should {
@@ -167,7 +204,7 @@ class EquipmentActionHandlerSpec extends WordSpec {
       equipArmourAssertions(result, startedGame)
     }
 
-    def equipWeaponAssertions (result: GameState, startedGame: GameState) = {
+    def equipWeaponAssertions(result: GameState, startedGame: GameState) = {
       equipStandardAssertions(result, startedGame)
 
       "State the weapon was equipped" in {
@@ -179,7 +216,7 @@ class EquipmentActionHandlerSpec extends WordSpec {
       }
     }
 
-    def equipArmourAssertions (result: GameState, startedGame: GameState) = {
+    def equipArmourAssertions(result: GameState, startedGame: GameState) = {
       equipStandardAssertions(result, startedGame)
 
       "State the armour was equipped" in {

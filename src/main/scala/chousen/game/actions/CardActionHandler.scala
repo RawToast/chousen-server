@@ -226,11 +226,9 @@ object CardActionHandler extends ActionHandler {
   }
 
   def refresh(p: Player, cards: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
-    val emptiedHand = cards.hand.filter(c =>
-      c.action.isInstanceOf[SingleTargetAction] || c.action.isInstanceOf[MultiAction])
+    val emptiedHand = cards.hand.filter(_.charges.nonEmpty)
 
-    val toDiscard = cards.hand.filterNot(c =>
-      c.action.isInstanceOf[SingleTargetAction] || c.action.isInstanceOf[MultiAction])
+    val toDiscard = cards.hand.filterNot(_.charges.nonEmpty)
 
     val nc = cards.copy(hand = emptiedHand, discard = cards.discard ++ toDiscard)
 
@@ -293,7 +291,7 @@ object CardActionHandler extends ActionHandler {
         affectedCard <- h.hand.find(_.id == id).filter(_.charges.nonEmpty)
         m = GameMessage(s"${p.name} uses Increase Charges on ${affectedCard.name}")
 
-        rechargedCard = affectedCard.copy(maxCharges = affectedCard.maxCharges.map(_ + 2))
+        rechargedCard = affectedCard.copy(charges = affectedCard.charges.map(_ + 2), maxCharges = affectedCard.maxCharges.map(_ + 2))
         cs = h.copy(hand = h.hand.map(c => if (c.id == rechargedCard.id) rechargedCard else c))
       } yield (cs, m)
 

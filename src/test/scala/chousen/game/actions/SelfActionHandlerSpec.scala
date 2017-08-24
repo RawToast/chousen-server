@@ -28,7 +28,7 @@ class SelfActionHandlerSpec extends WordSpec {
 
       "State the action was used" in {
         assert(result.messages.size > startedGame.messages.size)
-        assert(result.messages.contains(GameMessage(s"${GameStateGenerator.playerName} uses Heal Wounds and recovers 35HP!")))
+        assert(result.messages.map(_.text).exists(_.contains(s"${GameStateGenerator.playerName} uses Heal Wounds and recovers")))
       }
 
       "Reduce the player's position" in {

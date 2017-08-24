@@ -3,7 +3,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8"/>
-        <title>Chousen v0.4.4</title>
+        <title>Chousen v0.4.5</title>
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <script src="assets/chousen.js"></script>
@@ -13,7 +13,7 @@
 
     <body>
         <div class="container">
-            <h1 class="lead">Chousen Dev Client <small>v0.4.4</small></h1>
+            <h1 class="lead">Chousen Dev Client <small>v0.4.5</small></h1>
 
             <!-- Player Stats -->
             <div id="characterSheet" class="row">
@@ -121,7 +121,7 @@
                         <div class="btn-group" role="group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false" title="@{c.description}">
-                                @{c.name + {c.charges.map(i => s"($i)").getOrElse("")}}
+                                @{c.name + {c.charges.map(i => s" ($i").getOrElse("")} + {c.maxCharges.map(i => s"/$i)").getOrElse("")}}
                             <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
@@ -144,7 +144,7 @@
                             title="@{c.description}"
                             eids="@{gameState.dungeon.currentEncounter.enemies.map(_.id).mkString(",")}"
                             uri="@{s"game/" + gameState.uuid + "/multi/" + c.id}">
-                            @{c.name + {c.charges.map(i => s"($i)").getOrElse("")}}
+                            @{c.name + {c.charges.map(i => s" ($i").getOrElse("")} + {c.maxCharges.map(i => s"/$i)").getOrElse("")}}
                         </button>
                     }
                     </div>
@@ -154,7 +154,7 @@
                     <button type="button" class="btn btn-default btn-self" action="@{c.action}"
                     title="@{c.description}"
                     uri="@{s"game/" + gameState.uuid + "/self/" + c.id}">
-                    @{c.name + {c.charges.map(i => s"($i)").getOrElse("")}}
+                    @{c.name + {c.charges.map(i => s" ($i").getOrElse("")} + {c.maxCharges.map(i => s"/$i)").getOrElse("")}}
                     </button>
                 }
                 </div>
@@ -164,7 +164,7 @@
                         <button type="button" class="btn btn-default btn-equip" action="@{c.action}" cid="@{c.id}"
                         title="@{c.description}"
                         uri="@{s"game/" + gameState.uuid + "/equip/" + c.id}">
-                        @{c.name + {c.charges.map(i => s"($i)").getOrElse("")}}
+                        @{c.name + {c.charges.map(i => s" ($i").getOrElse("")} + {c.maxCharges.map(i => s"/$i)").getOrElse("")}}
                         </button>
                 }
                 </div>
@@ -195,7 +195,7 @@
                         <button type="button" class="btn btn-default btn-card" action="@{c.action}"
                         title="@{c.description}"
                         uri="@{s"game/" + gameState.uuid + "/card/" + c.id}">
-                        @{c.name + {c.charges.map(i => s"($i)").getOrElse("")}}
+                        @{c.name + {c.charges.map(i => s" ($i").getOrElse("")} + {c.maxCharges.map(i => s"/$i)").getOrElse("")}}
                         </button>
                     }
                 }

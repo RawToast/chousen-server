@@ -19,6 +19,8 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
   private def actions(actionId: SelfAction): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) =
     actionId match {
       case HealWounds => healWounds
+      case Barrier => barrier
+
       case ElixirOfStrength => elixirOfStrength
       case ElixirOfDexterity => elixirOfDexterity
       case ElixirOfIntelligence => elixirOfIntellect
@@ -45,13 +47,28 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
   def healWounds(p: Player, cs: Cards, msgs: Seq[GameMessage]): Update = {
     val sePlayer = sc.calculate(p)
 
-    val healAmount = 15 + (2 + sePlayer.stats.intellect) + (p.stats.maxHp / 10)
+    val healAmount = 15 + (2 + sePlayer.stats.intellect) + (p.stats.maxHp / 10) + sePlayer.experience.level
     val message = GameMessage(s"${p.name} uses Heal Wounds and recovers ${healAmount}HP!")
     val gameMessages = msgs :+ message
 
     val lens = LensUtil.duoLens(PlayerHealthLens, PlayerPositionLens)
       .modify { case (hp: Int, position: Int) =>
         Math.min(p.stats.maxHp, hp + healAmount) -> (position - 100)
+      }
+    (lens.apply(p), cs, gameMessages)
+  }
+
+  def barrier(p: Player, cs: Cards, msgs: Seq[GameMessage]): Update = {
+    val sePlayer = sc.calculate(p)
+
+    val message = GameMessage(s"${p.name} uses Barrier!")
+    val gameMessages = msgs :+ message
+
+    val blockStatus = StatusBuilder.makeBlock(turns = sePlayer.stats.intellect / 5)
+
+    val lens = LensUtil.duoLens(PlayerStatusLens, PlayerPositionLens)
+      .modify { case (st: Seq[Status], position: Int) =>
+        (st :+ blockStatus) -> (position - 100)
       }
     (lens.apply(p), cs, gameMessages)
   }
@@ -129,7 +146,7 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
     val sePlayer = sc.calculate(p)
     val message = GameMessage(s"${p.name} uses Quick Step!")
 
-    (PlayerPositionLens.modify(_ + 100 + sePlayer.stats.dexterity)(p), cs, msgs :+ message)
+    (PlayerPositionLens.modify(_ + 50 + (sePlayer.stats.dexterity * 2))(p), cs, msgs :+ message)
   }
 
   def haste(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {

@@ -103,6 +103,29 @@ class SingleTargetActionHandlerSpec extends WordSpec {
         assert(target.stats.vitality > targetEnemy.map(_.stats.vitality).getOrElse(999))
       }
     }
+
+
+    "Given Pain" should {
+      val (startedGame, result, target) = completeAction(Pain)
+      standardAssertions(startedGame, result, target)
+    }
+
+    "Given Magic Missile" should {
+      val (startedGame, result, target) = completeAction(MagicMissile)
+      standardAssertions(startedGame, result, target)
+    }
+
+
+
+    "Given Quick Attack" should {
+      val (startedGame, result, target) = completeAction(QuickAttack)
+      standardAssertions(startedGame, result, target)
+    }
+
+    "Given Assassinate Attack" should {
+      val (startedGame, result, target) = completeAction(Assassinate)
+      standardAssertions(startedGame, result, target)
+    }
   }
 
   private def completeAction(action: SingleTargetAction): (GameState, GameState, Enemy) = {

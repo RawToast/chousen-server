@@ -29,18 +29,18 @@ trait EnemyBuilder {
 
 
   // T4
-  def warrior: Enemy = mkEnemy("Warrior", CharStats(70, 70, strength = 22, dexterity = 10, vitality = 25))
-  def orc: Enemy = mkEnemy("Orc", CharStats(90, 90, strength = 30, dexterity = 6, vitality = 15, speed = 7))
-  def troll: Enemy = mkEnemy("Troll", CharStats(160, 160, strength = 46, dexterity = 4, intellect = 5, vitality = 14, speed = 3))
+  def warrior: Enemy = mkEnemy("Warrior", CharStats(70, 70, strength = 25, dexterity = 14, vitality = 25))
+  def orc: Enemy = mkEnemy("Orc", CharStats(90, 90, strength = 32, dexterity = 7, vitality = 15, speed = 7))
+  def troll: Enemy = mkEnemy("Troll", CharStats(160, 160, strength = 50, dexterity = 4, intellect = 5, vitality = 14, speed = 3))
 
   // T5
-  def orcFighter: Enemy = mkEnemy("Orc Fighter", CharStats(100, 100, strength = 27, dexterity = 25, vitality = 16, speed = 7))
+  def orcFighter: Enemy = mkEnemy("Orc Fighter", CharStats(100, 100, strength = 35, dexterity = 25, vitality = 16, speed = 7))
 
 
-  def orcWarriorS: Enemy = mkEnemy("Orc Warrior", CharStats(130, 130, strength = 37, vitality = 20))
-  def orcWarriorQ: Enemy = mkEnemy("Orc Warrior", CharStats(125, 125, strength = 32, dexterity = 12, vitality = 15, speed = 9))
-  def orcWarriorD: Enemy = mkEnemy("Orc Warrior", CharStats(135, 135, strength = 35, vitality = 30, speed = 7))
+  def orcWarriorS: Enemy = mkEnemy("Orc Warrior", CharStats(130, 130, strength = 42, dexterity = 10, vitality = 20))
+  def orcWarriorQ: Enemy = mkEnemy("Orc Warrior", CharStats(125, 125, strength = 38, dexterity = 14, vitality = 15, speed = 9))
+  def orcWarriorD: Enemy = mkEnemy("Orc Warrior", CharStats(135, 135, strength = 40, dexterity = 10, vitality = 30, speed = 7))
 
 
-  def orcWizard: Enemy = mkEnemy("Orkish Wizard", CharStats(90, 90, strength = 20, vitality = 14, intellect = 15))
+  def orcWizard: Enemy = mkEnemy("Orkish Wizard", CharStats(90, 90, strength = 31, dexterity = 14, vitality = 14, intellect = 15)).copy(position = 50)
 }
