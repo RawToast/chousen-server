@@ -31,7 +31,7 @@ enablePlugins(JavaAppPackaging, SbtTwirl)
 
 val SCALA_VERSION = "2.12.3"
 val FINCH_VERSION = "0.14.0"
-val HTTP4S_VERSION = "0.17.0-M2"
+val HTTP4S_VERSION = "0.17.0-M3"
 val CIRCE_VERSION = "0.8.0"
 
 scalaVersion := SCALA_VERSION

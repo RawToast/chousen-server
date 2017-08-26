@@ -52,7 +52,9 @@ class StatusCalculator {
         val f = fast(_: CharStats, s)
 
         (p: CharStats, _: Status) => m.andThen(f).andThen(d).apply(p)
-      case _ => nop
+      case Block => nop
+      case Poison => nop
+      case Regen => nop
     }
     func(p, s)
   }

@@ -4,7 +4,6 @@ import java.util.UUID
 
 import chousen.api.data._
 import chousen.game.core.GameStateOptics._
-import chousen.game.status.StatusBuilder
 
 class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
@@ -81,7 +80,6 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
   def fireball(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
 
-    val sePlayer = dc.sc.calculate(p)
     val magicDmg = dc.calculatePlayerMagicDamage(p, e,
       Multipliers.builder.intMulti(Multipliers.maxMulti).maxMulti(Multipliers.multiTarget).m)
 
@@ -89,8 +87,8 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
     val gameMessages = msgs :+ GameMessage(s"${e.name} is engulfed by flames and takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function
-    val newE = EnemyOptics.EnemyStatsLens.composeLens(CharStatsOptics.HpLens).modify(hp => hp - dmg)
-      .andThen(EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(sePlayer.stats.intellect / 6)))(e)
+    val newE = EnemyOptics.EnemyStatsLens.composeLens(CharStatsOptics.HpLens)
+      .modify(hp => hp - dmg)(e)
 
     (p, Option(newE), gameMessages)
   }

@@ -37,7 +37,6 @@ sealed trait EquipAction extends Action
 
 sealed trait EquipWeapon extends EquipAction
 sealed trait EquipArmour extends EquipAction
-sealed trait EquipJewelery extends EquipAction
 
 
 

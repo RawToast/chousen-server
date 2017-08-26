@@ -11,7 +11,7 @@ object PostTurnOps {
   def handleDead(pem: (Player, Set[Enemy], Seq[GameMessage])) = {
     val (p, es, msgs) = pem
       val aliveEnemies = es.filter(_.stats.currentHp > 0)
-      val deadEnemies = es.filter(_.stats.currentHp < 0).toSeq
+      val deadEnemies = es.filter(_.stats.currentHp <= 0).toSeq
 
       val battleExp = deadEnemies.map(_.stats.maxHp / 10).sum
 
