@@ -1,13 +1,13 @@
-package chousen.game.actions
+package chousen.game.core.turn
 
 import chousen.api.data.{CharStats, Equipment, Experience, Player}
 import org.scalatest.WordSpec
 
-class ActionHandlerSpec extends WordSpec {
+class PostTurnOpsSpec extends WordSpec {
 
-  "ActionHandler" when {
+  "PostTurnOps" when {
 
-    val actionHandler = new ActionHandler {}
+    val actionHandler = PostTurnOps
 
     "The Player has 0 experience" should {
 

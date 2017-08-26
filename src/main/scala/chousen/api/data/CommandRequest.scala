@@ -37,6 +37,7 @@ sealed trait EquipAction extends Action
 
 sealed trait EquipWeapon extends EquipAction
 sealed trait EquipArmour extends EquipAction
+sealed trait EquipJewelery extends EquipAction
 
 
 
@@ -111,6 +112,7 @@ case object Rest extends CampFireAction
 case object Explore extends CampFireAction
 case object RestAndExplore extends CampFireAction
 case object Drop extends CampFireAction
+case object Destroy extends CampFireAction
 
 
 case object Club extends EquipWeapon

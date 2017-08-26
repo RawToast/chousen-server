@@ -183,7 +183,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 //      restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
 
-  def passiveCards: Seq[Card] = Seq(rest, explore, restAndExplore, drop)
+  def passiveCards: Seq[Card] = Seq(rest, explore, restAndExplore, drop, destroy)
 }
 
 sealed trait CardBuilder {
@@ -279,7 +279,8 @@ trait CampFire extends CardBuilder {
   def rest: Card = mkCard("Rest", "Rest until you are fully recovered", Rest)
   def explore: Card = mkCard("Explore", "Draw until your hand is full (always draw at least two cards)", Explore)
   def restAndExplore: Card = mkCard("Rest and Explore", "Recover some health and draw two cards (or one if full)", RestAndExplore)
-  def drop: Card = mkCard("Drop", "Drop an item by the Camp Fire", Drop)
+  def drop: Card = mkCard("Drop", "Discard an item by the Camp Fire", Drop)
+  def destroy: Card = mkCard("Destroy", "Destroy an item in the fire", Destroy)
 }
 
 trait Equipment extends CardBuilder {
@@ -316,4 +317,5 @@ trait Equipment extends CardBuilder {
     HeavyArmour, Requirements(str = Some(22)))
   def orcishArmour: Card = mkEquip("Orcish Armour", "Orc armour, heavily reduces damage taken",
     OrcishArmour, Requirements(str = Some(24)))
+
 }
