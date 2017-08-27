@@ -96,6 +96,8 @@ case object Replace extends StandardCardAction
 case object Restore extends StandardCardAction
 case object Refresh extends StandardCardAction
 case object Armoury extends StandardCardAction
+case object Recharge extends StandardCardAction
+
 
 case object ForgeArmour extends DiscardCardAction
 case object ForgeWeapon extends DiscardCardAction
@@ -103,7 +105,6 @@ case object Trade extends DiscardCardAction
 case object ManifestRage extends DiscardCardAction
 case object EssenceBoost extends DiscardCardAction
 case object ReduceRequirements extends DiscardCardAction
-case object Recharge extends DiscardCardAction
 case object IncreaseCharges extends DiscardCardAction
 
 

@@ -32,7 +32,7 @@ object CardActionHandler extends ActionHandler {
       case ReduceRequirements => reduceRequirements(cardId)
       case Refresh => refresh
       case Armoury => armoury
-      case Recharge => recharge(cardId)
+      case Recharge => recharge
       case IncreaseCharges => chargeUp(cardId)
     }
 
@@ -267,20 +267,11 @@ object CardActionHandler extends ActionHandler {
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
   }
 
-  def recharge(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
-    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+  def recharge(p: Player, h: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
+      val newHand = h.hand.map(c => c.copy(charges = c.maxCharges))
+      val msg = GameMessage(s"${p.name} uses Recharge")
 
-      val cardsAndMessages = for {
-        id <- cardId
-        affectedCard <- h.hand.find(_.id == id)
-        m = GameMessage(s"${p.name} uses Recharge on ${affectedCard.name}")
-
-        rechargedCard = affectedCard.copy(charges = affectedCard.maxCharges)
-        cs = h.copy(hand = h.hand.map(c => if (c.id == rechargedCard.id) rechargedCard else c))
-      } yield (cs, m)
-
-
-      cardsAndMessages.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+      (p, h.copy(hand = newHand), msgs :+ msg)
   }
 
   def chargeUp(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
