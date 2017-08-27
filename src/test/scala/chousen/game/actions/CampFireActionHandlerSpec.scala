@@ -49,8 +49,8 @@ import chousen.Optics._
         lazy val result = CampFireActionHandler.handle(RestAndExplore, None).apply(startedGame)
 
         "Does not consume the passive action card" in {
-          assert(startedGame.cards.passive.size == 4)
-          assert(result.cards.passive.size == 4)
+          assert(startedGame.cards.passive.size == 5)
+          assert(result.cards.passive.size == 5)
         }
 
         "Have an affect on messages" in {
