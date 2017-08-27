@@ -58,7 +58,7 @@ class DamageCalculator(val sc: StatusCalculator) {
         .getOrElse(Seq.empty)
         .foldLeft(0)((i, we) => i + {
           we match {
-            case Magic => atkInt
+            case Magic => atkInt / 2
             case Crush => defender.stats.currentHp / 8
             case Deadly => 1 + defender.stats.maxHp / 12
             case Toxic => 0

@@ -7,12 +7,10 @@ class PostTurnOpsSpec extends WordSpec {
 
   "PostTurnOps" when {
 
-    val actionHandler = PostTurnOps
-
     "The Player has 0 experience" should {
 
       lazy val inexperiencedPlayer = Player("Test", "Test", CharStats(5, 5), Experience(), Equipment(), 0)
-      lazy val (newPlayer, messages) = actionHandler.levelUp(inexperiencedPlayer)
+      lazy val (newPlayer, messages) = PostTurnOps.levelUp(inexperiencedPlayer)
 
       "Make no changes to the player" in {
         assert(newPlayer == inexperiencedPlayer)
@@ -27,7 +25,7 @@ class PostTurnOpsSpec extends WordSpec {
     "The Player has enough experience to level up" should {
 
       lazy val experiencedPlayer = Player("Test", "Test", CharStats(5, 5), Experience(current = 3), Equipment(), 0)
-      lazy val (newPlayer, messages) = actionHandler.levelUp(experiencedPlayer)
+      lazy val (newPlayer, messages) = PostTurnOps.levelUp(experiencedPlayer)
 
       "Return an amended player" in {
         assert(newPlayer != experiencedPlayer)
@@ -44,8 +42,8 @@ class PostTurnOpsSpec extends WordSpec {
 
     "The Player has enough experience to level up multiple times" should {
 
-      lazy val experiencedPlayer = Player("Test", "Test", CharStats(5, 5), Experience(current = 10), Equipment(), 0)
-      lazy val (newPlayer, messages) = actionHandler.levelUp(experiencedPlayer)
+      val experiencedPlayer = Player("Test", "Test", CharStats(5, 5), Experience(current = 10), Equipment(), 0)
+      val (newPlayer, messages) = PostTurnOps.levelUp(experiencedPlayer)
 
       "Return an amended player" in {
         assert(newPlayer != experiencedPlayer)

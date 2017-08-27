@@ -220,7 +220,7 @@ trait PermanentEffects extends CardBuilder {
 }
 
 trait Magic extends CardBuilder{
-  def fireball: Card = mkCard("Fireball", "Deals fire damage to all enemies", Fireball, 1)
+  def fireball: Card = mkCard("Fireball", "Deals fire damage to all enemies", Fireball, 2)
 //  def staticField: Card = mkCard("Static Field", "Reduces all enemies hp by 33%", StaticField)
   def pain: Card = mkCard("Pain", "Reduces the hp of a single target by around 50%", Pain, 3)
 //  def shatter: Card = mkCard("Shatter", "Reduce player to 1hp and deal the same damage to all enemies", Shatter)
@@ -243,7 +243,7 @@ trait Dexterity extends CardBuilder{
   def quickAttack: Card = mkCard("Quick Attack", "Attack with reduced movement penalty", QuickAttack, 4)
   def assassinate: Card = mkCard("Assassinate", "Attack that deals more damage the more hp the enemy is missing", Assassinate, 3)
   def quickStep: Card = mkCard("Quick Step", "Increases the Player's position (affected by Dexterity)", QuickStep, 2)
-  def windStrike: Card = mkCard("Wind Strike", "Attacks all enemies", WindStrike, 2)
+  def windStrike: Card = mkCard("Wind Strike", "Attacks all enemies", WindStrike, 3)
 //  def tripleStrike: Card = mkCard("Triple Strike", "Attacks an enemy three times", TripleStrike)
 }
 
@@ -300,7 +300,7 @@ trait Equipment extends CardBuilder {
 
   def trollCrusher: Card = mkEquip("Troll Crusher", "Moderate increase to damage. Bonus damage based on the enemies current HP",
     TrollCrusher, Requirements(str = Some(22)))
-  def swordOfIntellect: Card = mkEquip("Sword of Intellect", "Minimal increase to damage. Intellect affects attack damage",
+  def swordOfIntellect: Card = mkEquip("Sword of Intellect", "Slight increase to damage. Intellect affects attack damage",
     SwordOfIntellect, Requirements(str = Some(13), dex = Some(13)))
   def daggerOfDavid: Card = mkEquip("Dagger of David", "No increase to damage. Deal bonus damage based on the enemies max HP.",
     DaggerOfDavid)

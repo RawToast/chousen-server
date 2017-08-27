@@ -59,7 +59,7 @@ class EquipmentActionHandler {
     weapon("Troll Crusher", 9, Seq(Crush))(p, msgs, uuid)
 
   def swordOfIntellect(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
-    weapon("Sword of Intellect", 1, Seq(Magic))(p, msgs, uuid)
+    weapon("Sword of Intellect", 6, Seq(Magic))(p, msgs, uuid)
 
   def daggerOfDavid(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
     weapon("Dagger of David", 0, Seq(Deadly))(p, msgs, uuid)
