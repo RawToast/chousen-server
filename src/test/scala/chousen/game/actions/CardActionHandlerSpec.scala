@@ -308,7 +308,7 @@ class CardActionHandlerSpec extends WordSpec {
 
       val startedGame: GameState = HandLens.set(Seq(cardToAffect))(game)
 
-      val result = CardActionHandler.handle(Recharge, Some(cardToAffect.id))(startedGame)
+      val result = CardActionHandler.handle(Recharge, None)(startedGame)
 
       "States the action was used" in {
         assert(result.messages.size > startedGame.messages.size)

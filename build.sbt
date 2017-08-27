@@ -44,7 +44,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.1"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.3" % "test"
 // libraryDependencies ++= finch
 libraryDependencies ++= http4s
 libraryDependencies ++= circe

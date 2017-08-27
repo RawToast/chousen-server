@@ -68,7 +68,7 @@
                 @if(gameState.dungeon.currentEncounter.enemies.forall(_.name == "Camp Fire")) {
                     @for(c <- gameState.cards.passive.filter(_.action.isInstanceOf[CampFireAction])) {
 
-                        @if(c.action == chousen.api.data.Drop) {
+                        @if(c.action == chousen.api.data.Drop || c.action == chousen.api.data.Destroy) {
                             <div class="btn-group" role="group">
                                 <button type="button" class="btn btn-default btn-camp2 dropdown-toggle" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false" title="@{c.description}">

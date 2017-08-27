@@ -183,7 +183,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 //      restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
 
 
-  def passiveCards: Seq[Card] = Seq(rest, explore, restAndExplore, drop)
+  def passiveCards: Seq[Card] = Seq(rest, explore, restAndExplore, drop, destroy)
 }
 
 sealed trait CardBuilder {
@@ -220,7 +220,7 @@ trait PermanentEffects extends CardBuilder {
 }
 
 trait Magic extends CardBuilder{
-  def fireball: Card = mkCard("Fireball", "Deals fire damage to all enemies", Fireball, 1)
+  def fireball: Card = mkCard("Fireball", "Deals fire damage to all enemies", Fireball, 2)
 //  def staticField: Card = mkCard("Static Field", "Reduces all enemies hp by 33%", StaticField)
   def pain: Card = mkCard("Pain", "Reduces the hp of a single target by around 50%", Pain, 3)
 //  def shatter: Card = mkCard("Shatter", "Reduce player to 1hp and deal the same damage to all enemies", Shatter)
@@ -243,7 +243,7 @@ trait Dexterity extends CardBuilder{
   def quickAttack: Card = mkCard("Quick Attack", "Attack with reduced movement penalty", QuickAttack, 4)
   def assassinate: Card = mkCard("Assassinate", "Attack that deals more damage the more hp the enemy is missing", Assassinate, 3)
   def quickStep: Card = mkCard("Quick Step", "Increases the Player's position (affected by Dexterity)", QuickStep, 2)
-  def windStrike: Card = mkCard("Wind Strike", "Attacks all enemies", WindStrike, 2)
+  def windStrike: Card = mkCard("Wind Strike", "Attacks all enemies", WindStrike, 3)
 //  def tripleStrike: Card = mkCard("Triple Strike", "Attacks an enemy three times", TripleStrike)
 }
 
@@ -264,6 +264,8 @@ trait Utility extends CardBuilder {
   def forgeArmour: Card = mkCard("Forge Armour", "Discard one card and place the next armour in your deck in your hand", ForgeArmour)
   def manifestRage: Card = mkCard("Manifest Rage", "Discard one card. Place an additional Potion of Rage to your hand and deck", ManifestRage)
   def essenceBoost: Card = mkCard("Essence Boost", "Discard one card. Draw essences from your deck until your hand is full", EssenceBoost)
+  def recharge: Card = mkCard("Recharge", "Recharges all charges of all ability cards in your hand", Recharge)
+
 
   // def randomDiscovery: Card = mkCard("Random Discovery", "Choose a card and place on top of the deck", RandomDiscovery)
   def refresh: Card = mkCard("Refresh", "Discard all non-Ability cards, draw 4 cards", Refresh)
@@ -271,7 +273,6 @@ trait Utility extends CardBuilder {
 
   // Require target
   def reduceRequirements: Card = mkCard("Reduce Requirements", "Reduces all requirements for the chosen card by 5", ReduceRequirements)
-  def recharge: Card = mkCard("Recharge", "Recharges all charges for a given ability card", Recharge)
   def increaseCharges: Card = mkCard("Increase Charges", "Increases the number of charges of an ability card by 2", IncreaseCharges)
 }
 
@@ -279,7 +280,8 @@ trait CampFire extends CardBuilder {
   def rest: Card = mkCard("Rest", "Rest until you are fully recovered", Rest)
   def explore: Card = mkCard("Explore", "Draw until your hand is full (always draw at least two cards)", Explore)
   def restAndExplore: Card = mkCard("Rest and Explore", "Recover some health and draw two cards (or one if full)", RestAndExplore)
-  def drop: Card = mkCard("Drop", "Drop an item by the Camp Fire", Drop)
+  def drop: Card = mkCard("Drop", "Discard an item by the Camp Fire", Drop)
+  def destroy: Card = mkCard("Destroy", "Destroy an item in the fire", Destroy)
 }
 
 trait Equipment extends CardBuilder {
@@ -299,7 +301,7 @@ trait Equipment extends CardBuilder {
 
   def trollCrusher: Card = mkEquip("Troll Crusher", "Moderate increase to damage. Bonus damage based on the enemies current HP",
     TrollCrusher, Requirements(str = Some(22)))
-  def swordOfIntellect: Card = mkEquip("Sword of Intellect", "Minimal increase to damage. Intellect affects attack damage",
+  def swordOfIntellect: Card = mkEquip("Sword of Intellect", "Slight increase to damage. Intellect affects attack damage",
     SwordOfIntellect, Requirements(str = Some(13), dex = Some(13)))
   def daggerOfDavid: Card = mkEquip("Dagger of David", "No increase to damage. Deal bonus damage based on the enemies max HP.",
     DaggerOfDavid)
@@ -316,4 +318,5 @@ trait Equipment extends CardBuilder {
     HeavyArmour, Requirements(str = Some(22)))
   def orcishArmour: Card = mkEquip("Orcish Armour", "Orc armour, heavily reduces damage taken",
     OrcishArmour, Requirements(str = Some(24)))
+
 }

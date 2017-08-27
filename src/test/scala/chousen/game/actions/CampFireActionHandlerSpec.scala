@@ -12,34 +12,31 @@ import chousen.Optics._
       val dungeonBuilder = new SimpleDungeonBuilder()
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
 
+      val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
+      val game: GameState = stateCreator.start(initialState)
+
       "Given a CampFireAction when there are enemies" should {
 
-        val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
-        val startedGame: GameState = stateCreator.start(initialState)
-
-        lazy val result = CampFireActionHandler.handle(Explore, None).apply(startedGame)
+        lazy val result = CampFireActionHandler.handle(Explore, None).apply(game)
 
         "Have no affect on the player" in {
-          assert(result.player == startedGame.player)
+          assert(result.player == game.player)
         }
 
         "Have no affect on the enemies" in {
-          assert(result.dungeon == startedGame.dungeon)
+          assert(result.dungeon == game.dungeon)
         }
 
         "Have no affect on the deck" in {
-          assert(result.cards == startedGame.cards)
+          assert(result.cards == game.cards)
         }
 
         "Have no affect on messages" in {
-          assert(result.messages == startedGame.messages)
+          assert(result.messages == game.messages)
         }
       }
 
       "Given a CampFireAction when there is only a CampFire" should {
-
-        val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
-        val game: GameState = stateCreator.start(initialState)
 
         val startedGame =
           DungeonLens
@@ -49,8 +46,8 @@ import chousen.Optics._
         lazy val result = CampFireActionHandler.handle(RestAndExplore, None).apply(startedGame)
 
         "Does not consume the passive action card" in {
-          assert(startedGame.cards.passive.size == 4)
-          assert(result.cards.passive.size == 4)
+          assert(startedGame.cards.passive.size == 5)
+          assert(result.cards.passive.size == 5)
         }
 
         "Have an affect on messages" in {
@@ -65,8 +62,6 @@ import chousen.Optics._
 
 
       "Rest is used" should {
-        val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
-        val game: GameState = stateCreator.start(initialState)
 
         val startedGame =
           DungeonLens
@@ -120,8 +115,6 @@ import chousen.Optics._
       }
 
       "Explore is used" should {
-        val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
-        val game: GameState = stateCreator.start(initialState)
 
         val startedGame =
           DungeonLens
@@ -172,6 +165,43 @@ import chousen.Optics._
 
         "Card placed in discard pile" in {
           assert(result.cards.discard.exists(_.id == cardToDiscard.id))
+        }
+      }
+
+      "Destroy is used" should {
+
+        val startedGame =
+          DungeonLens
+            .set(game.dungeon.copy(currentEncounter = Battle(Set(dungeonBuilder.campFire))))
+            .compose(PlayerLens.composeLens(PlayerHealthLens).modify(hp => hp / 2))(game)
+
+        lazy val cardToDiscard = startedGame.cards.hand.head
+
+        lazy val result = CampFireActionHandler.handle(Destroy, Some(cardToDiscard.id)).apply(startedGame)
+
+        "Have an affect on messages" in {
+          assert(result.messages != startedGame.messages)
+        }
+
+        "The card remains available" in {
+          assert(result.cards.passive.size == startedGame.cards.passive.size)
+          assert(result.cards.passive.exists(_.action == Explore))
+        }
+
+        "Hand size is reduced" in {
+          assert(startedGame.cards.hand.size > result.cards.hand.size)
+        }
+
+        "Card is removed from the hand" in {
+          assert(!result.cards.hand.exists(_.id == cardToDiscard.id))
+        }
+
+        "Card is not placed in discard pile" in {
+          assert(!result.cards.discard.exists(_.id == cardToDiscard.id))
+        }
+
+        "Card is not placed in the deck" in {
+          assert(!result.cards.deck.exists(_.id == cardToDiscard.id))
         }
       }
 

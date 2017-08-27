@@ -115,7 +115,7 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
       .modify(hp => hp - dmg)(e)
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
-    (p.copy(position = p.position - 80 + (p.stats.dexterity / 2)), Option(newEnemy), gameMessages)
+    (p.copy(position = p.position - 70 + (p.stats.dexterity / 2)), Option(newEnemy), gameMessages)
   }
 
   def assassinate(p: Player, e: Enemy, msgs: Seq[GameMessage]): (Player, Option[Enemy], Seq[GameMessage]) = {

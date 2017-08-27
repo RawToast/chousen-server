@@ -33,6 +33,8 @@ trait GameStateOptics {
   val DungeonTriLens: Lens[GameState, (Player, Dungeon, Seq[GameMessage])] =
     LensUtil.triLens(PlayerLens, DungeonLens, MessagesLens)
 
+  val CurrentEnemiesLens: Lens[GameState, Set[Enemy]] = GenLens[GameState](_.dungeon.currentEncounter.enemies)
+
 
   def targettedLens(uuid: UUID): Lens[GameState, (Player, Option[Enemy], Seq[GameMessage])] = {
 
