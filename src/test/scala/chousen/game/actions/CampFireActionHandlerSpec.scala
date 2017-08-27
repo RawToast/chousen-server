@@ -12,34 +12,31 @@ import chousen.Optics._
       val dungeonBuilder = new SimpleDungeonBuilder()
       val stateCreator = new RandomGameStateCreator(dungeonBuilder)
 
+      val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
+      val game: GameState = stateCreator.start(initialState)
+
       "Given a CampFireAction when there are enemies" should {
 
-        val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
-        val startedGame: GameState = stateCreator.start(initialState)
-
-        lazy val result = CampFireActionHandler.handle(Explore, None).apply(startedGame)
+        lazy val result = CampFireActionHandler.handle(Explore, None).apply(game)
 
         "Have no affect on the player" in {
-          assert(result.player == startedGame.player)
+          assert(result.player == game.player)
         }
 
         "Have no affect on the enemies" in {
-          assert(result.dungeon == startedGame.dungeon)
+          assert(result.dungeon == game.dungeon)
         }
 
         "Have no affect on the deck" in {
-          assert(result.cards == startedGame.cards)
+          assert(result.cards == game.cards)
         }
 
         "Have no affect on messages" in {
-          assert(result.messages == startedGame.messages)
+          assert(result.messages == game.messages)
         }
       }
 
       "Given a CampFireAction when there is only a CampFire" should {
-
-        val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
-        val game: GameState = stateCreator.start(initialState)
 
         val startedGame =
           DungeonLens
@@ -65,8 +62,6 @@ import chousen.Optics._
 
 
       "Rest is used" should {
-        val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
-        val game: GameState = stateCreator.start(initialState)
 
         val startedGame =
           DungeonLens
@@ -120,8 +115,6 @@ import chousen.Optics._
       }
 
       "Explore is used" should {
-        val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
-        val game: GameState = stateCreator.start(initialState)
 
         val startedGame =
           DungeonLens
@@ -176,15 +169,13 @@ import chousen.Optics._
       }
 
       "Destroy is used" should {
-        val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
-        val game: GameState = stateCreator.start(initialState)
 
         val startedGame =
           DungeonLens
             .set(game.dungeon.copy(currentEncounter = Battle(Set(dungeonBuilder.campFire))))
             .compose(PlayerLens.composeLens(PlayerHealthLens).modify(hp => hp / 2))(game)
 
-        val cardToDiscard = startedGame.cards.hand.head
+        lazy val cardToDiscard = startedGame.cards.hand.head
 
         lazy val result = CampFireActionHandler.handle(Destroy, Some(cardToDiscard.id)).apply(startedGame)
 
