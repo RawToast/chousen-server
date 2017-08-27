@@ -14,7 +14,7 @@ object CampFireActionHandler extends ActionHandler {
     if (gs.dungeon.currentEncounter.enemies.forall(_.name != "Camp Fire")) { gs }
     else {
       val hp = action match {
-        case Drop => 1
+        case (Drop | Destroy) => 1
         case _ => 0
       }
       LensUtil.triLens(PlayerLens, GenLens[GameState](_.cards), MessagesLens).modify {
@@ -31,6 +31,7 @@ object CampFireActionHandler extends ActionHandler {
       case Explore => explore
       case RestAndExplore => restAndExplore
       case Drop => drop(cardId)
+      case Destroy => destroy(cardId)
     }
 
 
@@ -44,6 +45,20 @@ object CampFireActionHandler extends ActionHandler {
         nh = h.hand.filterNot(_.id == id)
         nc = h.copy(hand = nh, discard = h.discard :+ discardCard)
       } yield (nc, m)
+
+      newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+  def destroy(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      val newCards = for {
+        id <- cardId
+        destroyedCard <- h.hand.find(_.id == id)
+        msg = GameMessage(s"${p.name} destroys ${destroyedCard.name} in the fire")
+        newHand = h.hand.filterNot(_.id == id)
+        newCards = h.copy(hand = newHand)
+      } yield (newCards, msg)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
   }

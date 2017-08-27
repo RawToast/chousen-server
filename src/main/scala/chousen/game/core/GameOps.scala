@@ -4,6 +4,7 @@ import chousen.api.data._
 import chousen.game.actions.DamageCalculator
 import chousen.game.status.{StatusBuilder, StatusCalculator}
 import chousen.Optics._
+import chousen.game.core.turn.PostTurnOps
 import chousen.game.dungeon.EnemyBuilder
 
 import scala.annotation.tailrec
@@ -176,8 +177,50 @@ object EnemyTurnOps {
       doDamage(player, enemies, messages, activeEnemy)
     }
 
-    afterDmgGame
+    val statusHandler: ((Player, Set[Enemy], Seq[GameMessage])) => (Player, Set[Enemy], Seq[GameMessage]) =
+      handlePerTurnStatuses
+    statusHandler.andThen(PostTurnOps.handleDead)(afterDmgGame)
   }
+
+
+  def handlePerTurnStatuses(pem: (Player, Set[Enemy], Seq[GameMessage])) = {
+    val (p, es, ms) = pem
+    var msgs = Seq.empty[GameMessage]
+    import cats.instances.all._
+    import cats.syntax.semigroup._
+
+    def regenEffects(e: Enemy) = e.status.filter(s => s.effect == Regen || s.effect == Burn)
+      .reduceLeftOption[Status] { case (a, b) => a.copy(amount = a.amount |+| b.amount) }
+
+    def effectsForComputation(e: Enemy): Seq[Status] =
+      p.status.filterNot(_.effect == Regen) ++ regenEffects(e)
+
+    def foldStatus(e: Enemy, s: Status) = {
+      s.effect match {
+        case Poison => e
+        case Burn => {
+          val dmg = s.amount.getOrElse(0) + p.experience.level
+          def doDmg(i:Int) = Math.max(0, i - dmg)
+          msgs = msgs :+ GameMessage(s"${e.name} burns for $dmg damage")
+
+          EnemyHpLens.modify(doDmg)(e)
+        }
+        case _ => e
+      }
+    }
+    def handleStatus(e: Enemy) = effectsForComputation(e).foldLeft(e)(foldStatus)
+
+    def reducePerTurnStatus(e: Enemy) = e.copy(status = e.status.map(sf => sf.effect match {
+      case Burn => sf.copy(turns = sf.turns - 1)
+      case _ => sf
+    }))
+
+    def removeDeadStatuses(e: Enemy) = e.copy(status = e.status.filter(_.turns > 0))
+
+    val updateEnemy: (Enemy) => Enemy = (handleStatus _).andThen(reducePerTurnStatus).andThen(removeDeadStatuses)
+
+    (p, es.map(updateEnemy), ms ++ msgs)
+   }
 }
 
 
