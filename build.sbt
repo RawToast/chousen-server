@@ -3,7 +3,7 @@ import sbt.Keys.libraryDependencies
 
 name := "chousen-server"
 
-version := "0.4.6"
+version := "0.5.0-SNAPSHOT"
 
 //lazy val root = (project in file(".")).
 //  enablePlugins(BuildInfoPlugin).

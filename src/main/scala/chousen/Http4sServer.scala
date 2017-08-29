@@ -6,7 +6,7 @@ import chousen.game.actions.DamageCalculator
 import chousen.game.core.{GameManager, GameStateManager, RandomGameStateCreator}
 import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
 import chousen.game.status.{PostTurnStatusCalculator, StatusCalculator}
-import chousen.http4s.{AssetService, CrudService, FrontendService, InputService}
+import chousen.http4s._
 import fs2.Task
 import org.http4s.Response
 import org.http4s.util.StreamApp
@@ -38,11 +38,18 @@ object Http4sServer extends StreamApp {
 
     val gameStateManager: GameManager[GameState] = new GameStateManager(damageCalculator, postTurnStatusCalc)
 
-
     val crudService = new CrudService(gameAccess, gameCreator, statusCalculator)
     val frontendService = new FrontendService(gameAccess, statusCalculator)
     val inputService = new InputService(gameAccess, gameStateManager, statusCalculator)
     val assetService = new AssetService()
+
+
+//    val googleAuth = new GoogleAuthentication(
+//      new GoogleIdTokenVerifier.Builder(GoogleNetHttpTransport.newTrustedTransport, JacksonFactory.getDefaultInstance)
+//        .setAudience(Collections.singletonList("abc"))
+//        .build())
+//
+//    val authService = new AuthService(googleAuth)
 
 
     // Unconfigured, will bind to 8080
