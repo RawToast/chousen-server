@@ -44,6 +44,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.1"
+libraryDependencies += "com.google.api-client" % "google-api-client" % "1.22.0"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.3" % "test"
 // libraryDependencies ++= finch
 libraryDependencies ++= http4s
@@ -101,11 +102,11 @@ val compilerOptions = Seq(
   "-language:_",
   "-unchecked",
   "-Xlint:_",
-   "-Xfatal-warnings",
+   //"-Xfatal-warnings",
   "-Xfuture",
   "-Yno-adapted-args",
   "-Ywarn-numeric-widen",
-  "-Ywarn-unused-import",
+  //"-Ywarn-unused-import",
   "-Ywarn-value-discard"
 )
 val additionalOptions = Seq(
