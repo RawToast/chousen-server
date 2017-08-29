@@ -37,10 +37,12 @@ sealed trait EquipAction extends Action
 
 sealed trait EquipWeapon extends EquipAction
 sealed trait EquipArmour extends EquipAction
+sealed trait EquipJewelery extends EquipAction
 
 
 
 case object CrushingBlow extends SingleTargetAction
+case object BurningHammer extends SingleTargetAction
 case object StunningStrike extends SingleTargetAction
 case object Counter extends SingleTargetAction
 case object Destruction extends SingleTargetAction
@@ -58,12 +60,14 @@ case object Barrier extends SelfAction
 
 
 case object Fireball extends MultiAction
+case object Extinguish extends MultiAction
+case object PotionOfFlames extends MultiAction
+
 //case object StaticField extends MultiAction
 //case object MassDrain extends MultiAction
 //case object Shatter extends MultiAction
 
 case object GroundStrike extends MultiAction
-
 case object WindStrike extends MultiAction
 
 case object HealWounds extends SelfAction
@@ -74,8 +78,11 @@ case object PotionOfDexterity extends SelfAction
 case object PotionOfIntelligence extends SelfAction
 case object PotionOfStoneSkin extends SelfAction
 case object PotionOfRage extends SelfAction
+case object PotionOfTrogg extends SelfAction
 case object PotionOfContinuation extends SelfAction
 case object PotionOfRegeneration extends SelfAction
+case object PotionOfLignification extends SelfAction
+
 
 case object ElixirOfStrength extends SelfAction
 case object ElixirOfDexterity extends SelfAction

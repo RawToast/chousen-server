@@ -24,7 +24,6 @@ trait PlayerOptics {
   val PlayerWeaponLens: Lens[Player, Option[Weapon]] = GenLens[Player](_.equipment.weapon)
   val PlayerArmourLens: Lens[Player, Option[Armour]] = GenLens[Player](_.equipment.armour)
 
-
   val SetPlayerStats: (Int, Int, Int, Int) => (Player) => Player =
     (s: Int, d: Int, i: Int, v: Int) => PlayerStrengthLens.modify(_ + s).andThen(PlayerDexterityLens.modify(_ + d))
     .andThen(PlayerVitalityLens.modify(_ + v).andThen(PlayerIntellectLens.modify(_ + i)))

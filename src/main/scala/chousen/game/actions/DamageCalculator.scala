@@ -42,9 +42,11 @@ class DamageCalculator(val sc: StatusCalculator) {
     val defStatusEffects = defender.status.map(_.effect)
 
     val mightDamage = if (atkStatusEffects.contains(Might)) defender.stats.maxHp / 10 else 0
-    val berserkDamage = if (atkStatusEffects.contains(Rage)) attacker.stats.strength / 2 else 0
+    val berserkDamage = attacker.status.find(_.effect == Rage)
+      .fold(0)(s => s.amount.getOrElse(0) + (attacker.stats.strength / 2) - 2)
     val stoneSkin = if (defStatusEffects.contains(StoneSkin)) 4 else 0
     val blockEffect = if (defStatusEffects.contains(Block)) 0.5 else 1
+    val treeDef = if (defStatusEffects.contains(Tree)) 10 else 0
 
     val atkStr = m.str(attacker.stats.strength)
     val atkDex = m.dex(attacker.stats.dexterity)
@@ -68,7 +70,7 @@ class DamageCalculator(val sc: StatusCalculator) {
       weaponDmg + weaponBonus
     }
 
-    val armour = defender.equipment.armour.map(_.defense).getOrElse(stoneSkin)
+    val armour = defender.equipment.armour.map(_.defense).getOrElse(stoneSkin) + treeDef
 
     implicit class BlockEffect(i: Int) {
       def block: Int = {

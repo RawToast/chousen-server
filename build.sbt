@@ -3,7 +3,7 @@ import sbt.Keys.libraryDependencies
 
 name := "chousen-server"
 
-version := "0.3"
+version := "0.4.6"
 
 //lazy val root = (project in file(".")).
 //  enablePlugins(BuildInfoPlugin).
@@ -31,7 +31,7 @@ enablePlugins(JavaAppPackaging, SbtTwirl)
 
 val SCALA_VERSION = "2.12.3"
 val FINCH_VERSION = "0.14.0"
-val HTTP4S_VERSION = "0.17.0-M3"
+val HTTP4S_VERSION = "0.17.0-M2"
 val CIRCE_VERSION = "0.8.0"
 
 scalaVersion := SCALA_VERSION

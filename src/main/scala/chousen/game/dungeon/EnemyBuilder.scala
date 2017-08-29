@@ -54,7 +54,7 @@ trait EnemyBuilder {
   def smallOrc: Enemy = mkEnemy("Tiny Orc", CharStats(33, 33, strength = 25, dexterity = 7, vitality = 13, speed = 11))
   def tripleOrc: Enemy = mkEnemy("TripleOrc", CharStats(333, 333, strength = 60, dexterity = 24, vitality = 33, intellect = 22, speed = 7))
   def fireOrcKing: Enemy = mkEnemy("Ancient Fire Orc", CharStats(600, 600, strength = 80, dexterity = 50, vitality = 50, intellect = 50)).copy(position = -50)
-  def orcKing: Enemy = mkEnemy("Orc King", CharStats(1000, 1000, strength = 150, dexterity = 150, vitality = 50, intellect = 50, speed = 7)).copy(position = -1000)
+  def orcKing: Enemy = mkEnemy("Orc King", CharStats(1000, 1000, strength = 150, dexterity = 150, vitality = 50, intellect = 50, speed = 7)).copy(position = -200)
   def kraken: Enemy = mkEnemy("Kraken", CharStats(480, 480, strength = 35, dexterity = 35, vitality = 35, intellect = 12, speed = 17))
 
   def totem: Enemy = mkEnemy("Totem", CharStats(100, 100, strength = 1, dexterity = 1, vitality = 10, intellect = 1, speed = 10)).copy(position = 25)

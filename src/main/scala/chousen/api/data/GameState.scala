@@ -19,7 +19,7 @@ case class Experience(current: Int=0, next: Int=3, level: Int=1)
 
 case class Cards(hand: Seq[Card], deck: Seq[Card], discard: Seq[Card], passive: Seq[Card], equippedCards: EquippedCards, playedEssence:Boolean=false)
 
-case class EquippedCards(weapon: Option[Card]=None, armour: Option[Card]=None)
+case class EquippedCards(weapon: Option[Card]=None, armour: Option[Card]=None, jewelery: Option[Card]=None)
 
 case class Equipment(weapon: Option[Weapon]=None, armour: Option[Armour]=None)
 
@@ -55,7 +55,9 @@ case object Dexterity extends StatusEffect
 case object Smart extends StatusEffect
 case object Rage extends StatusEffect
 case object Poison extends StatusEffect
+case object Burn extends StatusEffect
 case object Regen extends StatusEffect
+case object Tree extends StatusEffect
 
 sealed trait WeaponEffect
 

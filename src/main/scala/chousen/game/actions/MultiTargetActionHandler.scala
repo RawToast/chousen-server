@@ -3,7 +3,9 @@ package chousen.game.actions
 import java.util.UUID
 
 import chousen.api.data._
+import chousen.game.core.turn.PositionCalculator.calculatePosition
 import chousen.game.core.GameStateOptics._
+import chousen.game.status.StatusBuilder
 
 class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
@@ -31,8 +33,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
       val finalState = newState
 
-      PlayerLens.composeLens(PlayerOptics.PlayerPositionLens)
-      .modify(p => p - 100)
+      PlayerLens.modify(p => calculatePosition(p))
       .andThen(handleDead)
       .apply(finalState)
     }
@@ -43,6 +44,8 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
       case GroundStrike => groundStrike
       case WindStrike => windStrike
       case Fireball => fireball
+      case PotionOfFlames => flames
+      case Extinguish => extinguish
     }
   }
 
@@ -80,15 +83,47 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
   def fireball(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
 
+    val sePlayer = dc.sc.calculate(p)
     val magicDmg = dc.calculatePlayerMagicDamage(p, e,
       Multipliers.builder.intMulti(Multipliers.maxMulti).maxMulti(Multipliers.multiTarget).m)
 
     val dmg = Math.max(1, magicDmg + (p.experience.level * 2))
     val gameMessages = msgs :+ GameMessage(s"${e.name} is engulfed by flames and takes $dmg damage.")
 
-    // This should be replaced by a generic attack/damage function
-    val newE = EnemyOptics.EnemyStatsLens.composeLens(CharStatsOptics.HpLens)
-      .modify(hp => hp - dmg)(e)
+    val newE = EnemyOptics.EnemyStatsLens.composeLens(CharStatsOptics.HpLens).modify(hp => hp - dmg)
+      .andThen(EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(sePlayer.stats.intellect / 6)))(e)
+
+    (p, Option(newE), gameMessages)
+  }
+
+  def extinguish(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+
+    if (e.status.exists(_.effect == Burn)) {
+      val magicDmg = dc.calculatePlayerMagicDamage(p, e,
+        Multipliers.builder.intMulti(Multipliers.lowMulti).maxMulti(Multipliers.multiTarget).m)
+
+      val missingHp = e.stats.maxHp - e.stats.currentHp
+
+      val dmg = Math.max(1, magicDmg + (missingHp / 3)) +
+        e.status.filter(_.effect == Burn)
+          .map(e => e.amount.map(_ * e.turns).getOrElse(0))
+          .sum
+
+      val gameMessages = msgs :+ GameMessage(s"${e.name} is magically extinguished and takes $dmg damage.")
+
+      val newE = EnemyOptics.EnemyStatsLens.composeLens(CharStatsOptics.HpLens).modify(hp => hp - dmg)
+        .andThen(EnemyOptics.EnemyStatusLens.modify(_.filterNot(_.effect == Burn)))(e)
+
+      (p, Option(newE), gameMessages)
+    }
+    else (p, Option(e), msgs)
+  }
+
+  def flames(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+
+    val gameMessages = msgs :+ GameMessage(s"${e.name} is burnt by the flames.")
+
+    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(8, turns = 8))(e)
 
     (p, Option(newE), gameMessages)
   }

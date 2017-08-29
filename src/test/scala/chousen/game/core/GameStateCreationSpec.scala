@@ -38,6 +38,7 @@ class GameStateCreationSpec extends WordSpec {
         val game3 = creator.create("Bob", 3)
         val game4 = creator.create("Bob", 4)
         val game5 = creator.create("Bob", 5)
+        val game6 = creator.create("Bob", 6)
 
 
         assert(game1 != game2)
@@ -47,12 +48,9 @@ class GameStateCreationSpec extends WordSpec {
         val gc3 = game3.player.className
         val gc4 = game4.player.className
         val gc5 = game5.player.className
+        val gc6 = game6.player.className
 
-        assert((gc1 != gc2) && (gc3 != gc4))
-        assert((gc1 != gc3) && (gc2 != gc4))
-        assert((gc1 != gc4) && (gc2 != gc3))
-        assert((gc1 != gc5) && (gc2 != gc5))
-        assert((gc3 != gc5) && (gc4 != gc5))
+        assert(Set(gc1, gc2, gc3, gc4, gc5, gc6).size == 6)
         }
     }
 
