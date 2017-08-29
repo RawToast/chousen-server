@@ -5,6 +5,7 @@ import chousen.Optics._
 import chousen.game.status.{StatusBuilder, StatusCalculator}
 import chousen.util.LensUtil
 import monocle.Lens
+import chousen.game.core.turn.PositionCalculator.{FAST, calculatePosition}
 
 
 class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
@@ -26,15 +27,20 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
       case ElixirOfIntelligence => elixirOfIntellect
       case ElixirOfVitality => elixirOfVitality
       case RarePepe => rarePepe
+
       case QuickStep => quickStep
       case Haste => haste
+
       case PotionOfMight => might
       case PotionOfDexterity => dexterity
       case PotionOfIntelligence => intelligence
       case PotionOfStoneSkin => stoneskin
       case PotionOfRage => rage
+      case PotionOfTrogg => trogg
       case PotionOfContinuation => continuation
       case PotionOfRegeneration => regeneration
+      case PotionOfLignification => lignification
+
       case EssenceOfStrength => essenceOfStrength
       case EssenceOfDexterity => essenceOfDexterity
       case EssenceOfVitality => essenceOfVitality
@@ -66,11 +72,11 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
 
     val blockStatus = StatusBuilder.makeBlock(turns = sePlayer.stats.intellect / 5)
 
-    val lens = LensUtil.duoLens(PlayerStatusLens, PlayerPositionLens)
-      .modify { case (st: Seq[Status], position: Int) =>
-        (st :+ blockStatus) -> (position - 100)
-      }
-    (lens.apply(p), cs, gameMessages)
+
+    val pWithPos = calculatePosition(p)
+
+    val lens = PlayerStatusLens.modify(_ :+ blockStatus)
+      (lens.apply(pWithPos), cs, gameMessages)
   }
 
   def elixirOfStrength(p: Player, cs: Cards, msgs: Seq[GameMessage]): Update =
@@ -91,10 +97,8 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
     val message = GameMessage(s"${p.name} uses Elixir of $stat and gains $bonusStat $stat!")
     val gameMessages = msgs :+ message
 
-    val effect = LensUtil.duoLens(lens, PlayerPositionLens)
-      .modify { case (hp: Int, position: Int) =>
-        hp + bonusStat -> (position - 100)
-      }
+    val effect = lens.modify(x => x + bonusStat).andThen(calculatePosition(_ :Player))
+
     (effect.apply(p), cs, gameMessages)
   }
 
@@ -135,7 +139,7 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
     val expMsg = GameMessage(s"${p.name} gains $bonusExp experience.")
 
     val lens = PlayerCurrentExperienceLens.modify(_ + 5)
-      .andThen(PlayerPositionLens.modify(_ - 50))
+      .andThen(calculatePosition(_ :Player, cost = FAST))
 
     val gameMessages = msgs :+ cardMsg :+ expMsg
 
@@ -156,7 +160,7 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
 
     (PlayerStatusLens.modify(_ :+ hasteStatus)
       //      .andThen(PlayerSpeedLens.modify(_ + 4))
-      .andThen(PlayerPositionLens.modify(i => i - 50))(p), cs, msgs :+ message)
+      .andThen(calculatePosition(_ :Player, cost = FAST))(p), cs, msgs :+ message)
   }
 
   def might(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
@@ -165,7 +169,7 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
     val hasteStatus: Status = StatusBuilder.makeMight(8)
 
     (PlayerStatusLens.modify(_ :+ hasteStatus)
-      .andThen(PlayerPositionLens.modify(i => i - 50))(p), cs, msgs :+ message)
+      .andThen(potionPositionCalc)(p), cs, msgs :+ message)
   }
 
   def dexterity(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
@@ -174,7 +178,7 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
     val status: Status = StatusBuilder.makeDexterity(8)
 
     (PlayerStatusLens.modify(_ :+ status)
-      .andThen(PlayerPositionLens.modify(i => i - 50))(p), cs, msgs :+ message)
+      .andThen(potionPositionCalc)(p), cs, msgs :+ message)
   }
 
   def stoneskin(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
@@ -183,7 +187,16 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
     val status: Status = StatusBuilder.makeStoneSkin(8)
 
     (PlayerStatusLens.modify(_ :+ status)
-      .andThen(PlayerPositionLens.modify(i => i - 50))(p), cs, msgs :+ message)
+      .andThen(potionPositionCalc)(p), cs, msgs :+ message)
+  }
+
+  def lignification(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
+    val message = GameMessage(s"${p.name} drinks a Potion of Lignification!")
+
+    val status: Status = StatusBuilder.makeTree(4)
+
+    (PlayerStatusLens.modify(_ :+ status)
+      .andThen(potionPositionCalc)(p), cs, msgs :+ message)
   }
 
   def intelligence(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
@@ -192,7 +205,7 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
     val status: Status = StatusBuilder.makeSmart(8)
 
     (PlayerStatusLens.modify(_ :+ status)
-      .andThen(PlayerPositionLens.modify(i => i - 50))(p), cs, msgs :+ message)
+      .andThen(potionPositionCalc)(p), cs, msgs :+ message)
   }
 
   def rage(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
@@ -201,14 +214,28 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
     val status: Status = StatusBuilder.makeBerserk(4, turns = 8)
 
     (PlayerStatusLens.modify(_ :+ status)
-      .andThen(PlayerPositionLens.modify(i => i - 50))(p), cs, msgs :+ message)
+      .andThen(potionPositionCalc)(p), cs, msgs :+ message)
+  }
+
+  def trogg(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
+    val message = GameMessage(s"${p.name} drinks a Potion of Trogg!")
+    val ragePots = cs.hand.count(_.action == PotionOfRage)
+
+    val newHand = cs.hand.filterNot(_.action == PotionOfRage)
+    val toDiscard = cs.hand.filter(_.action == PotionOfRage)
+
+    val cards = cs.copy(hand = newHand, discard = cs.discard ++ toDiscard)
+    val status: Status = StatusBuilder.makeBerserk(6 + (ragePots * 2), turns = 8)
+
+    (PlayerStatusLens.modify(_ :+ status)
+      .andThen(potionPositionCalc)(p), cards, msgs :+ message)
   }
 
   def continuation(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
     val message = GameMessage(s"${p.name} drinks a Potion of Continuation!")
 
     (PlayerStatusLens.modify(_.map(s => s.copy(turns = s.turns + 6)))
-      .andThen(PlayerPositionLens.modify(i => i - 50))(p), cs, msgs :+ message)
+      .andThen(potionPositionCalc)(p), cs, msgs :+ message)
   }
 
   def regeneration(p: Player, cs: Cards, msgs: Seq[GameMessage]) = {
@@ -226,6 +253,8 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
     val status: Status = StatusBuilder.makeRegen(regenAmount, turns = 8)
 
     (PlayerStatusLens.modify(_ :+ status)
-      .andThen(PlayerPositionLens.modify(i => i - 50))(p), cs, msgs :+ message)
+      .andThen(potionPositionCalc)(p), cs, msgs :+ message)
   }
+
+  private val potionPositionCalc =  calculatePosition(_ :Player, cost = FAST)
 }

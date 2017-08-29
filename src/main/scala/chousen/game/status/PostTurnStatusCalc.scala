@@ -16,7 +16,9 @@ trait PostTurnStatusCalc {
       import cats.instances.all._
       import cats.syntax.semigroup._
 
-      val regenEffects = p.status.filter(_.effect == Regen)
+      val regenEffects = p.status
+        .map(s => if (s.effect == Tree) s.copy(effect = Regen) else s)
+        .filter(_.effect == Regen)
         .reduceLeftOption[Status] { case (a, b) => a.copy(amount = a.amount |+| b.amount) }
 
 

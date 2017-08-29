@@ -24,7 +24,7 @@ class SingleTargetActionHandlerSpec extends WordSpec {
       val startedGame: GameState = stateCreator.start(initialState)
 
       val altUUID = UUID.fromString("0709daa1-5975-4f28-b0be-a676f87b70f0")
-      lazy val result = singleTargetActionHandler.handle(altUUID, CrushingBlow).apply(startedGame)
+      val result = singleTargetActionHandler.handle(altUUID, CrushingBlow).apply(startedGame)
 
       "Have no affect on the player" in {
         assert(result.player == startedGame.player)
@@ -40,7 +40,7 @@ class SingleTargetActionHandlerSpec extends WordSpec {
       val startedGame: GameState = stateCreator.start(gameState)
 
       val target = GameStateGenerator.firstEnemy
-      lazy val result = singleTargetActionHandler.handle(target.id, CrushingBlow).apply(startedGame)
+      val result = singleTargetActionHandler.handle(target.id, CrushingBlow).apply(startedGame)
 
       "Lower the targeted enemies health" in {
         assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == target.id))
@@ -101,6 +101,17 @@ class SingleTargetActionHandlerSpec extends WordSpec {
         lazy val targetEnemy = result.dungeon.currentEncounter.enemies.find(p => p.id == target.id)
 
         assert(target.stats.vitality > targetEnemy.map(_.stats.vitality).getOrElse(999))
+      }
+    }
+
+    "Given Burning Hammer" should {
+      val (startedGame, result, target) = completeAction(BurningHammer)
+      standardAssertions(startedGame, result, target)
+
+      "Apply the Burn status" in {
+        lazy val targetEnemy = result.dungeon.currentEncounter.enemies.find(p => p.id == target.id)
+
+        assert(targetEnemy.map(_.status).getOrElse(Seq()).exists(_.effect == Burn))
       }
     }
 

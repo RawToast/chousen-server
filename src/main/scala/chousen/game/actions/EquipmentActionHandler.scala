@@ -4,6 +4,7 @@ import java.util.UUID
 
 import chousen.Optics._
 import chousen.api.data._
+import chousen.game.core.turn.PositionCalculator
 import chousen.util.LensUtil
 
 class EquipmentActionHandler {
@@ -69,7 +70,7 @@ class EquipmentActionHandler {
     val message = GameMessage(s"${p.name} equips $name.")
 
     val lens = PlayerWeaponLens.set(Option(Weapon(uuid, name, dmg, effects = effects)))
-      .andThen(PlayerPositionLens.modify(p => p - 100))
+      .andThen(PositionCalculator.calculatePosition(_: Player))
 
     lens.apply(p) -> (msgs :+ message)
   }
@@ -101,11 +102,11 @@ class EquipmentActionHandler {
     armour("Orcish Armour", 19)(p, msgs, uuid)
   }
 
-  private def armour(name: String, ac: Int, pen:Int = 200) = (p: Player, msgs: Seq[GameMessage], uuid: UUID) => {
+  private def armour(name: String, ac: Int, pen:Int = 100) = (p: Player, msgs: Seq[GameMessage], uuid: UUID) => {
     val message = GameMessage(s"${p.name} puts on $name.")
 
     val lens = PlayerArmourLens.set(Option(Armour(uuid, name, ac)))
-      .andThen(PlayerPositionLens.modify(p => p - pen))
+      .andThen(PositionCalculator.calculatePosition(_: Player, bonus = pen))
 
     lens.apply(p) -> (msgs :+ message)
   }

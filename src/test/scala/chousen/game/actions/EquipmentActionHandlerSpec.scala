@@ -170,10 +170,6 @@ class EquipmentActionHandlerSpec extends WordSpec {
         assert(result.player.equipment.armour.nonEmpty)
       }
 
-      "Not reduce the player's position" in {
-        assert(result.player.position >= startedGame.player.position)
-      }
-
       "Affects the players equipment" in {
         assert(startedGame.player.equipment.weapon.isEmpty && startedGame.player.equipment.armour.isEmpty)
         assert(startedGame.player.equipment != result.player.equipment)
