@@ -1,5 +1,7 @@
 package chousen
 
+import java.util.Collections
+
 import chousen.api.core.{GameAccess, Http4sMappedGameAccess}
 import chousen.api.data.GameState
 import chousen.game.actions.DamageCalculator
@@ -7,6 +9,9 @@ import chousen.game.core.{GameManager, GameStateManager, RandomGameStateCreator}
 import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
 import chousen.game.status.{PostTurnStatusCalculator, StatusCalculator}
 import chousen.http4s._
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.json.jackson2.JacksonFactory
 import fs2.Task
 import org.http4s.Response
 import org.http4s.util.StreamApp
@@ -44,17 +49,21 @@ object Http4sServer extends StreamApp {
     val assetService = new AssetService()
 
 
-//    val googleAuth = new GoogleAuthentication(
-//      new GoogleIdTokenVerifier.Builder(GoogleNetHttpTransport.newTrustedTransport, JacksonFactory.getDefaultInstance)
-//        .setAudience(Collections.singletonList("abc"))
-//        .build())
-//
-//    val authService = new AuthService(googleAuth)
+    val newFrontendService = new NewFrontendService("")
+
+
+    val googleAuth = new GoogleAuthentication(
+      new GoogleIdTokenVerifier.Builder(GoogleNetHttpTransport.newTrustedTransport, JacksonFactory.getDefaultInstance)
+        .setAudience(Collections.singletonList("494987922076-btdj0hccs6u15i90modc5lih6dbiltu6.apps.googleusercontent.com"))
+        .build())
+
+    val authService = new AuthService(googleAuth)
 
 
     // Unconfigured, will bind to 8080
     BlazeBuilder.bindHttp(port, host)
       .withServiceExecutor(Executors.newCachedThreadPool())
+      .mountService(newFrontendService.routes |+| authService.routes, "/new/")
       .mountService(crudService.routes |+| frontendService.routes |+|
         inputService.routes |+| assetService.routes, "/")
   }

@@ -14,20 +14,20 @@ import org.http4s.dsl._
 
 class AuthService(googleAuthentication: GoogleAuthentication) {
 
-  val tokenService = HttpService {
+  val routes = HttpService {
     case request@POST -> Root / "tokensignin" =>
 
       val reqform: Task[UrlForm] = request.as[UrlForm]
 
-      val result: OptionT[Task, Json] = for {
+      val result: OptionT[Task, Response] = for {
         tokenString: String <- OptionT(reqform.map(form => form.getFirst("idtoken")))
         authResponse: AuthResponse <- OptionT(googleAuthentication.authenticateAsync(tokenString))
 
         jsonResp: Json = authResponse.asJson
-      } yield jsonResp
+        response: Response <- OptionT.liftF(Ok(jsonResp).addCookie("chousen", authResponse.userId.getOrElse(tokenString)))
+      } yield response
 
-      result.semiflatMap(r => Ok(r))
-        .getOrElseF(BadRequest("Unable to complete Google Auth"))
+      result.getOrElseF(BadRequest("Unable to complete Google Auth"))
   }
 }
 
@@ -53,5 +53,5 @@ class GoogleAuthentication(verifier: GoogleIdTokenVerifier) {
 case class AuthResponse(userId: Option[String], name: Option[String])
 
 object AuthResponse{
-  def create(userId: String, name: String) = AuthResponse(Option(name), Option(userId))
+  def create(userId: String, name: String) = AuthResponse(Option(userId), Option(name))
 }
