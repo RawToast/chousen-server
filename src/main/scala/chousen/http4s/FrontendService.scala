@@ -15,13 +15,8 @@ class FrontendService(apiKey: String, pbga: GameAccess[Task, Response], sc: Stat
   val routes: HttpService = HttpService {
 
     case GET -> Root =>
-      val authPage: Html = chousen.ui.html.auth(apiKey)
+      val authPage: Html = chousen.ui.html.index(apiKey)
       Ok(authPage)
-
-    case req@GET -> Root / "chousen" =>
-
-      val index: Html = chousen.ui.html.index()
-      Ok(index)
 
     case req@GET -> Root / id =>
 

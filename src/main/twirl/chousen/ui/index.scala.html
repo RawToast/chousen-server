@@ -1,4 +1,4 @@
-@()
+@(apiKey: String)
 <html lang="en">
     <head>
         <meta charset="UTF-8"/>
@@ -6,11 +6,16 @@
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
+        <meta name="google-signin-client_id" content="494987922076-btdj0hccs6u15i90modc5lih6dbiltu6.apps.googleusercontent.com">
     </head>
 
     <body>
         <div class="container">
             <h1 class="lead">Chousen Dev Client <small>v0.5.0-SNAPSHOT</small></h1>
+
+            <div class="g-signin2" data-onsuccess="onSignIn"></div>
 
             <input id ="namebox" type="text" class="form-control" placeholder="Character Name">
 
@@ -181,7 +186,7 @@
 
                     //Do Stuff, submit, etc..
                     var n = jQuery("#namebox").val();
-                    var uri = "/new/game/" + n + "/start/" + selValue;
+                    var uri = "/game/" + n + "/start/" + selValue;
                     $(this).attr("disabled", "");
 
                     jQuery.post(uri, function(result) {
@@ -189,6 +194,18 @@
                     });
                 }
             });
+
+            function onSignIn(googleUser) {
+                var profile = googleUser.getBasicProfile();
+                var id_token = googleUser.getAuthResponse().id_token;
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'http://localhost:8080/tokensignin');
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.send('idtoken=' + id_token);
+                xhr.onload = function(){
+                    console.log('Signed in as: ' + xhr.responseText);
+                }
+            };
         </script>
     </body>
 </html>
