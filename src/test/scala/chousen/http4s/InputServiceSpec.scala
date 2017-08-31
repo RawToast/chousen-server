@@ -64,6 +64,28 @@ class InputServiceSpec extends WordSpec {
       }
     }
 
+    "Handling a Block request" should {
+
+      val attack = BlockRequest()
+      implicit val enc: EntityEncoder[BlockRequest] = jsonEncoderOf[BlockRequest]
+
+      val ent: Entity = enc.toEntity(attack).unsafeRun()
+      val callService: (Request) => Task[MaybeResponse] = service.routes.apply(_: Request)
+      val req: Request = Request(method = Method.POST, uri = Uri.unsafeFromString(s"/game/${bobby.uuid}/block"),
+        body = ent.body)
+      val task: Task[MaybeResponse] = callService(req)
+
+      lazy val result: Response = task.unsafeRun().orNotFound
+
+      "Return successfully" in {
+        assert(result.status.responseClass.isSuccess)
+      }
+
+      "Return with a status of Ok" in {
+        assert(result.status.code == 200)
+      }
+    }
+
     "Handling an Equipment request" when {
       implicit val enumDecoder = deriveEnumerationEncoder[EquipAction]
       implicit val enc: EntityEncoder[EquipmentActionRequest] = jsonEncoderOf[EquipmentActionRequest]
