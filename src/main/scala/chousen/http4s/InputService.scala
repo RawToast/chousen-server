@@ -11,7 +11,7 @@ import io.circe.Decoder
 import io.circe.generic.auto._
 import io.circe.syntax._
 import org.http4s.circe._
-import org.http4s.dsl._
+import org.http4s.dsl.{->, /, NotFound, NotFoundSyntax, Ok, OkSyntax, POST, Root}
 import org.http4s.{HttpService, Request, Response}
 
 class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], sc: StatusCalculator) {

@@ -7,9 +7,11 @@ import fs2.interop.cats._
 import io.circe.Json
 import io.circe.generic.auto._
 import io.circe.syntax._
-import org.http4s._
-import org.http4s.circe._
-import org.http4s.dsl._
+import org.http4s.{Response, HttpService, UrlForm}
+import org.http4s.circe.jsonEncoder
+import org.http4s.dsl.{->, /, BadRequest, BadRequestSyntax, Ok, OkSyntax, POST, Root, _}
+
+
 
 
 class AuthService(googleAuthentication: GoogleAuthentication) {

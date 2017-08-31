@@ -188,8 +188,10 @@ object EnemyTurnOps {
   def handlePerTurnStatuses(pem: (Player, Set[Enemy], Seq[GameMessage])) = {
     val (p, es, ms) = pem
     var msgs = Seq.empty[GameMessage]
-    import cats.instances.all._
-    import cats.syntax.semigroup._
+
+    import cats.instances.option.catsKernelStdMonoidForOption
+    import cats.instances.int.catsKernelStdGroupForInt
+    import cats.implicits.catsSyntaxSemigroup
 
     def regenEffects(e: Enemy) = e.status.filter(s => s.effect == Regen || s.effect == Burn)
       .reduceLeftOption[Status] { case (a, b) => a.copy(amount = a.amount |+| b.amount) }

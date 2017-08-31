@@ -2,13 +2,14 @@ package chousen
 
 import java.util.Collections
 
-import chousen.api.core.{GameAccess, Http4sMappedGameAccess}
+import chousen.api.core.{GameAccess, Http4sMappedGameAccess, PlayerBasedGameAccess}
 import chousen.api.data.GameState
 import chousen.game.actions.DamageCalculator
 import chousen.game.core.{GameManager, GameStateManager, RandomGameStateCreator}
 import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
 import chousen.game.status.{PostTurnStatusCalculator, StatusCalculator}
 import chousen.http4s._
+import chousen.http4s.auth.{AuthCrudService, AuthFrontendService, AuthInputService}
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
@@ -19,11 +20,11 @@ import org.http4s.util.StreamApp
 object Http4sServer extends StreamApp {
 
   import java.util.concurrent.Executors
-
   import org.http4s.server.blaze.BlazeBuilder
 
   def buildServer: BlazeBuilder = {
-    import cats.implicits._
+    import cats.implicits.catsSyntaxSemigroup
+
     val port = Option(System.getProperty("http.port")).getOrElse("8080").toInt
     val host = Option(System.getProperty("http.host")).getOrElse("0.0.0.0")
 
@@ -49,21 +50,27 @@ object Http4sServer extends StreamApp {
     val assetService = new AssetService()
 
 
-    val newFrontendService = new NewFrontendService("")
-
-
+    val apiKey = "494987922076-btdj0hccs6u15i90modc5lih6dbiltu6.apps.googleusercontent.com"
     val googleAuth = new GoogleAuthentication(
       new GoogleIdTokenVerifier.Builder(GoogleNetHttpTransport.newTrustedTransport, JacksonFactory.getDefaultInstance)
-        .setAudience(Collections.singletonList("494987922076-btdj0hccs6u15i90modc5lih6dbiltu6.apps.googleusercontent.com"))
+        .setAudience(Collections.singletonList(apiKey))
         .build())
 
+    val playerBasedGameAccess: GameAccess[Task, Response] = new PlayerBasedGameAccess()
+
+    val authFrontendService = new AuthFrontendService(apiKey, playerBasedGameAccess, statusCalculator)
+    val authCrudService = new AuthCrudService(playerBasedGameAccess, gameCreator, statusCalculator)
     val authService = new AuthService(googleAuth)
+    val authInputService = new AuthInputService(playerBasedGameAccess, gameStateManager, statusCalculator)
 
 
     // Unconfigured, will bind to 8080
     BlazeBuilder.bindHttp(port, host)
       .withServiceExecutor(Executors.newCachedThreadPool())
-      .mountService(newFrontendService.routes |+| authService.routes, "/new/")
+
+      .mountService(authFrontendService.routes |+| authService.routes |+|
+        authCrudService.routes |+| authInputService.routes |+| assetService.routes, "/new/")
+
       .mountService(crudService.routes |+| frontendService.routes |+|
         inputService.routes |+| assetService.routes, "/")
   }

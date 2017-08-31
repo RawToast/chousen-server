@@ -9,7 +9,7 @@ import fs2.Task
 import io.circe.generic.auto._
 import io.circe.syntax._
 import org.http4s.circe._
-import org.http4s.dsl._
+import org.http4s.dsl.{->, /, Created, CreatedSyntax, GET, IntVar, Ok, OkSyntax, POST, QueryParamDecoderMatcher, Root}
 import org.http4s.{HttpService, Response}
 
 class CrudService(ga: GameAccess[Task, Response], creator: GameStateCreation, sc: StatusCalculator) {

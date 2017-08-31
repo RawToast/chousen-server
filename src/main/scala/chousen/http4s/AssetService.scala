@@ -1,8 +1,9 @@
 package chousen.http4s
 
 import fs2.Task
-import org.http4s._
-import org.http4s.dsl._
+import org.http4s.{Request, HttpService, StaticFile}
+import org.http4s.dsl.{->, /, GET, NotFound, NotFoundSyntax, Root}
+
 
 class AssetService {
   private def static(file: String, request: Request) =
