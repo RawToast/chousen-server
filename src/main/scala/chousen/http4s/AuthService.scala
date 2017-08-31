@@ -11,9 +11,6 @@ import org.http4s.{Response, HttpService, UrlForm}
 import org.http4s.circe.jsonEncoder
 import org.http4s.dsl.{->, /, BadRequest, BadRequestSyntax, Ok, OkSyntax, POST, Root, _}
 
-
-
-
 class AuthService(googleAuthentication: GoogleAuthentication) {
 
   val routes = HttpService {

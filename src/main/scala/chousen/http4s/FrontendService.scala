@@ -7,27 +7,38 @@ import chousen.game.status.StatusCalculator
 import chousen.html
 import fs2.Task
 import org.http4s.dsl.{->, /, GET, Ok, OkSyntax, Root}
-import org.http4s.twirl._
 import org.http4s.{HttpService, Response}
 import play.twirl.api.Html
 
-class FrontendService(ga: GameAccess[Task, Response], sc: StatusCalculator) extends HtmlService {
+
+class FrontendService(apiKey: String, pbga: GameAccess[Task, Response], sc: StatusCalculator) extends HtmlService with ChousenCookie {
 
   val routes: HttpService = HttpService {
-    // init
+
     case GET -> Root =>
-      val index: Html = html.index()
+      val authPage: Html = chousen.ui.html.auth(apiKey)
+      Ok(authPage)
+
+    case req@GET -> Root / "chousen" =>
+
+      val optToken = req.requestToken
+
+      println(s"Received token: $optToken")
+
+      val index: Html = chousen.ui.html.index()
       Ok(index)
 
-    case GET -> Root / id =>
+    case req@GET -> Root / id =>
+
+      val optToken = req.requestToken
+
+      println(s"Received token: $optToken")
 
       val uuid = UUID.fromString(id)
 
-      ga.withGame(uuid) { game =>
+      pbga.withGame(uuid, optToken) { game =>
         Ok(html.game.apply(game.copy(player = sc.calculate(game.player))))
       }
   }
-
 }
 
-trait HtmlService extends TwirlInstances

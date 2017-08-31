@@ -2,14 +2,13 @@ package chousen
 
 import java.util.Collections
 
-import chousen.api.core.{GameAccess, Http4sMappedGameAccess, PlayerBasedGameAccess}
+import chousen.api.core.{GameAccess, PlayerBasedGameAccess}
 import chousen.api.data.GameState
 import chousen.game.actions.DamageCalculator
 import chousen.game.core.{GameManager, GameStateManager, RandomGameStateCreator}
 import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
 import chousen.game.status.{PostTurnStatusCalculator, StatusCalculator}
 import chousen.http4s._
-import chousen.http4s.auth.{AuthCrudService, AuthFrontendService, AuthInputService}
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
@@ -33,8 +32,6 @@ object Http4sServer extends StreamApp {
     //      "heroku_rm14s281",
     //      "chousen")
 
-    val gameAccess: GameAccess[Task, Response] = new Http4sMappedGameAccess()
-
     val dungeonBuilder: DungeonBuilder = new SimpleDungeonBuilder()
 
     val gameCreator = new RandomGameStateCreator(dungeonBuilder)
@@ -43,11 +40,6 @@ object Http4sServer extends StreamApp {
     val postTurnStatusCalc = new PostTurnStatusCalculator
 
     val gameStateManager: GameManager[GameState] = new GameStateManager(damageCalculator, postTurnStatusCalc)
-
-    val crudService = new CrudService(gameAccess, gameCreator, statusCalculator)
-    val frontendService = new FrontendService(gameAccess, statusCalculator)
-    val inputService = new InputService(gameAccess, gameStateManager, statusCalculator)
-    val assetService = new AssetService()
 
 
     val apiKey = "494987922076-btdj0hccs6u15i90modc5lih6dbiltu6.apps.googleusercontent.com"
@@ -58,21 +50,19 @@ object Http4sServer extends StreamApp {
 
     val playerBasedGameAccess: GameAccess[Task, Response] = new PlayerBasedGameAccess()
 
-    val authFrontendService = new AuthFrontendService(apiKey, playerBasedGameAccess, statusCalculator)
-    val authCrudService = new AuthCrudService(playerBasedGameAccess, gameCreator, statusCalculator)
+    val frontendService: FrontendService = new FrontendService(apiKey, playerBasedGameAccess, statusCalculator)
+    val crudService: CrudService = new CrudService(playerBasedGameAccess, gameCreator, statusCalculator)
     val authService = new AuthService(googleAuth)
-    val authInputService = new AuthInputService(playerBasedGameAccess, gameStateManager, statusCalculator)
+    val inputService = new InputService(playerBasedGameAccess, gameStateManager, statusCalculator)
+    val assetService = new AssetService()
 
 
     // Unconfigured, will bind to 8080
     BlazeBuilder.bindHttp(port, host)
       .withServiceExecutor(Executors.newCachedThreadPool())
 
-      .mountService(authFrontendService.routes |+| authService.routes |+|
-        authCrudService.routes |+| authInputService.routes |+| assetService.routes, "/new/")
-
       .mountService(crudService.routes |+| frontendService.routes |+|
-        inputService.routes |+| assetService.routes, "/")
+        inputService.routes |+| assetService.routes |+| authService.routes, "/")
   }
   override def stream(args: List[String]) = {
     buildServer.serve

@@ -5,7 +5,7 @@ import chousen.game.core.RandomGameStateCreator
 import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
 import chousen.game.status.StatusCalculator
 import fs2.Task
-import org.http4s._
+import org.http4s.{MaybeResponse, Request, Response, Method, Uri}
 import org.scalatest.WordSpec
 
 class CrudServiceSpec extends WordSpec {

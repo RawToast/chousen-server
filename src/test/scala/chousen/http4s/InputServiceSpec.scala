@@ -12,7 +12,7 @@ import chousen.game.status.{PostTurnStatusCalculator, StatusCalculator}
 import fs2.Task
 import io.circe.generic.auto._
 import io.circe.generic.extras.semiauto.deriveEnumerationEncoder
-import org.http4s._
+import org.http4s.{MaybeResponse, Request, Response, Method, Uri, Entity, EntityEncoder}
 import org.http4s.circe._
 import org.scalatest.WordSpec
 
