@@ -11,7 +11,7 @@ class GameSpec extends WordSpec {
 
     val gameState = GameStateGenerator.staticGameState
 
-    val gamePage: Html = chousen.html.game(gameState)
+    val gamePage: Html = chousen.ui.html.game(gameState)
 
     "State this is a dev client" in {
       assert(gamePage.body contains "Chousen Dev Client")

@@ -23,8 +23,6 @@ class CrudService(pbga: GameAccess[Task, Response], creator: GameStateCreation, 
 
       val optToken = req.requestToken
 
-      println(s"Received token: $optToken")
-
       val uuid = UUID.fromString(id)
 
       pbga.withGame(uuid, optToken) { game =>
@@ -38,8 +36,6 @@ class CrudService(pbga: GameAccess[Task, Response], creator: GameStateCreation, 
 
       val optToken = req.requestToken
 
-      println(s"Received token: $optToken")
-
       for {
         game <- pbga.storeGame(startedGame, optToken)
         asJson: Json = game.asJson
@@ -50,8 +46,6 @@ class CrudService(pbga: GameAccess[Task, Response], creator: GameStateCreation, 
     case req@POST -> Root / "game" / playerName / "start" / IntVar(choice) => // used
       val startedGame = creator.createAndStart(playerName, choice)
       val optToken = req.requestToken
-
-      println(s"Received token: $optToken")
 
       for {
         game <- pbga.storeGame(startedGame, optToken)

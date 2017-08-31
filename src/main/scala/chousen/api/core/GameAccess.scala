@@ -66,8 +66,6 @@ class PlayerBasedGameAccess(private var store: Map[String, Map[UUID, GameState]]
 
     val pid = playerId.getOrElse("test")
 
-    println(s"Request to find game id:$id for pid: $pid")
-
     store.get(pid)
       .flatMap(_.get(id))
       .fold(NotFound(Error(s"Game with ID=$id does not exist").asJson))(f(_))
@@ -81,14 +79,11 @@ class PlayerBasedGameAccess(private var store: Map[String, Map[UUID, GameState]]
 
     val pid = playerId.getOrElse("test")
 
-    println(s"Request to store game id:${g.uuid} for pid: $pid")
     val gs: Map[UUID, GameState] = store.get(pid)
       .fold(Map[UUID, GameState](g.uuid -> g))(st => st + (g.uuid -> g))
 
-    println(s"Storing game id:${g.uuid} for pid: $pid")
     store = store + (pid -> gs)
 
-    println(s"Store size is ${store.keys.size}")
     Task(g)
   }
 

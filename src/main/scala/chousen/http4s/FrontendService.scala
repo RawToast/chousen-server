@@ -4,7 +4,6 @@ import java.util.UUID
 
 import chousen.api.core.GameAccess
 import chousen.game.status.StatusCalculator
-import chousen.html
 import fs2.Task
 import org.http4s.dsl.{->, /, GET, Ok, OkSyntax, Root}
 import org.http4s.{HttpService, Response}
@@ -21,10 +20,6 @@ class FrontendService(apiKey: String, pbga: GameAccess[Task, Response], sc: Stat
 
     case req@GET -> Root / "chousen" =>
 
-      val optToken = req.requestToken
-
-      println(s"Received token: $optToken")
-
       val index: Html = chousen.ui.html.index()
       Ok(index)
 
@@ -32,12 +27,10 @@ class FrontendService(apiKey: String, pbga: GameAccess[Task, Response], sc: Stat
 
       val optToken = req.requestToken
 
-      println(s"Received token: $optToken")
-
       val uuid = UUID.fromString(id)
 
       pbga.withGame(uuid, optToken) { game =>
-        Ok(html.game.apply(game.copy(player = sc.calculate(game.player))))
+        Ok(chousen.ui.html.game.apply(game.copy(player = sc.calculate(game.player))))
       }
   }
 }
