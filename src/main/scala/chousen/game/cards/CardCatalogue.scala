@@ -184,17 +184,16 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
     essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality, // 16 Essences
 
-
     elixirOfIntelligence, elixirOfVitality,  // 2 Elixirs
 
     haste, haste, haste, haste,              // 8 Potions
-    stoneSkin, stoneSkin, regen, regen,
+    stoneSkin, stoneSkin, flames, flames,
     intelligence, intelligence,
 
     healWounds, healWounds, rarePepe, rarePepe,  // 4 Pepes
 
     magicMissile, magicMissile, magicMissile,    // 12 Abilities
-    pain, pain,
+    extinguish, extinguish,
     fireball, fireball,
     barrier, barrier,
 

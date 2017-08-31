@@ -34,8 +34,9 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
 
       case req@POST -> Root / "game" / uuid / "block" =>
         val id = UUID.fromString(uuid)
+        val optToken = req.requestToken
 
-        ga.withGame(id) { g =>
+        ga.withGame(id, optToken) { g =>
           basicRequest[BlockRequest](req, g)(gsm.takeCommand)
         }
 
