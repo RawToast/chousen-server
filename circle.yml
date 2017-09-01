@@ -12,7 +12,7 @@ dependencies:
     - "~/.ivy2"
   pre:
     - wget --output-document=$HOME/bin/sbt-launch.jar
-      https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/"$SBT_VERSION"/sbt-launch.jar
+      http://central.maven.org/maven2/org/scala-sbt/sbt-launch/"$SBT_VERSION"/sbt-launch-"$SBT_VERSION".jar
     - echo "java $SBT_OPTS -jar \`dirname \$0\`/sbt-launch.jar \"\$@\""
       > $HOME/bin/sbt
     - chmod u+x $HOME/bin/sbt
