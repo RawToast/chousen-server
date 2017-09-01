@@ -14,7 +14,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
         might, might, might, might,                                      // 10 potions
         haste, haste, haste, haste,
-
+        flames, stoneSkin,
 
         elixirOfStrength, elixirOfDexterity,   // 2 elixirs
 
@@ -31,13 +31,16 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         stunningStrike, stunningStrike,
         counter,
         crushingBlow,
+        quickAttack,
 
         armoury, forgeArmour,                         // 14 cards
         trade, trade,
 
         rummage, rummage, rummage, rummage,
         refresh, refresh,
-        miracle, miracle, manifestRage,
+        miracle, miracle,
+        manifestRage,
+        increaseCharges,
         essenceBoost,
         reduceRequirements,
       )
@@ -45,7 +48,6 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
   // Deck built around auto-attacks and rage
   def berserkerDeck: Seq[Card] = Seq(
 
-    healWounds,
     regen, regen, regen,
     rarePepe, rarePepe,                     // 7
 
@@ -160,6 +162,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
     haste, haste, haste, haste,           // 8 Potions
     stoneSkin, stoneSkin, regen, regen,
+    flames,
 
     rarePepe, rarePepe,  // 2 Pepes
 
@@ -184,11 +187,10 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
     essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality, // 16 Essences
 
-
     elixirOfIntelligence, elixirOfVitality,  // 2 Elixirs
 
     haste, haste, haste, haste,              // 8 Potions
-    stoneSkin, stoneSkin, regen, regen,
+    stoneSkin, stoneSkin, flames, flames,
     intelligence, intelligence,
 
     healWounds, healWounds, rarePepe, rarePepe,  // 4 Pepes
@@ -197,6 +199,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     pain, pain,
     fireball, fireball,
     barrier, barrier,
+
 
     daggerOfDavid, leatherArmour,                  // 2 Equipment
 

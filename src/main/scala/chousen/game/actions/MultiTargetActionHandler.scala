@@ -91,7 +91,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
     val gameMessages = msgs :+ GameMessage(s"${e.name} is engulfed by flames and takes $dmg damage.")
 
     val newE = EnemyOptics.EnemyStatsLens.composeLens(CharStatsOptics.HpLens).modify(hp => hp - dmg)
-      .andThen(EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(sePlayer.stats.intellect / 6)))(e)
+      .andThen(EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(sePlayer.stats.intellect / 8)))(e)
 
     (p, Option(newE), gameMessages)
   }
@@ -123,7 +123,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
     val gameMessages = msgs :+ GameMessage(s"${e.name} is burnt by the flames.")
 
-    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(8, turns = 8))(e)
+    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(4, turns = 10))(e)
 
     (p, Option(newE), gameMessages)
   }

@@ -13,8 +13,10 @@ trait PostTurnStatusCalc {
 
     // Apply any Player effecting status effects:
     LensUtil.duoLens(PlayerLens, MessagesLens).modify { case (p: Player, msgs: Seq[GameMessage]) =>
-      import cats.instances.all._
-      import cats.syntax.semigroup._
+      import cats.instances.option.catsKernelStdMonoidForOption
+      import cats.instances.int.catsKernelStdGroupForInt
+      import cats.implicits.catsSyntaxSemigroup
+
 
       val regenEffects = p.status
         .map(s => if (s.effect == Tree) s.copy(effect = Regen) else s)

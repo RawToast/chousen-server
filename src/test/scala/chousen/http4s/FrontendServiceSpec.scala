@@ -5,7 +5,7 @@ import chousen.game.core.RandomGameStateCreator
 import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
 import chousen.game.status.StatusCalculator
 import fs2.Task
-import org.http4s._
+import org.http4s.{MaybeResponse, Request, Response, Method, Uri}
 import org.scalatest.WordSpec
 
 class FrontendServiceSpec extends WordSpec {
@@ -20,7 +20,7 @@ class FrontendServiceSpec extends WordSpec {
     val gameAccess: GameAccess[Task, Response] = new Http4sMappedGameAccess(gameMap)
 
     val sc = new StatusCalculator
-    val service = new FrontendService(gameAccess, sc)
+    val service = new FrontendService("test", gameAccess, sc)
 
 
     "Fetching root" should {

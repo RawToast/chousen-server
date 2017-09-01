@@ -3,7 +3,7 @@ import sbt.Keys.libraryDependencies
 
 name := "chousen-server"
 
-version := "0.4.6"
+version := "0.5.0-SNAPSHOT"
 
 //lazy val root = (project in file(".")).
 //  enablePlugins(BuildInfoPlugin).
@@ -44,7 +44,10 @@ resolvers ++= Seq(
 )
 
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.1"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.3" % "test"
+libraryDependencies += "com.google.api-client" % "google-api-client" % "1.22.0"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.3" % Test
+libraryDependencies += "org.mockito" % "mockito-core" % "2.9.0" % Test
+//"org.mockito" % "mockito-all" % "1.10.19"
 // libraryDependencies ++= finch
 libraryDependencies ++= http4s
 libraryDependencies ++= circe
@@ -101,11 +104,11 @@ val compilerOptions = Seq(
   "-language:_",
   "-unchecked",
   "-Xlint:_",
-   "-Xfatal-warnings",
+   //"-Xfatal-warnings",
   "-Xfuture",
   "-Yno-adapted-args",
   "-Ywarn-numeric-widen",
-  "-Ywarn-unused-import",
+  //"-Ywarn-unused-import",
   "-Ywarn-value-discard"
 )
 val additionalOptions = Seq(

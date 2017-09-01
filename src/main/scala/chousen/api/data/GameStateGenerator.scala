@@ -29,7 +29,7 @@ object GameStateGenerator {
   lazy val crushingBlowCard = Card(UUID.fromString("614e566c-03a5-43b0-ae55-e131f4428fc3"), "Crushing Blow", "Deals heavy damage to a single target", CrushingBlow)
 
   private def gameStateWithPlayer(player:Player) = {
-    import cats.implicits._
+    import cats.implicits.catsSyntaxSemigroup
     import chousen.Implicits._
 
     val cards = CardManager.startGame(CardCatalogue.fighterDeck, CardCatalogue.passiveCards)

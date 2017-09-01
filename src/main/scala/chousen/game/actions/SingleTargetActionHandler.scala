@@ -129,11 +129,12 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
 
     val sePlayer = damageCalculator.sc.calculate(p)
     val seEnemy = damageCalculator.sc.calculate(e)
+    val basicDamage = damageCalculator.calculatePlayerDamage(p, e)
 
     val hpDiff = e.stats.maxHp - e.stats.currentHp
     val reduce = Math.min(1d, sePlayer.stats.dexterity.toDouble / (2 * seEnemy.stats.vitality.toDouble))
 
-    val dmg = Math.max(sePlayer.stats.dexterity / 4d, hpDiff * reduce).toInt
+    val dmg = Math.max(sePlayer.stats.dexterity / 4d, hpDiff * reduce).toInt + (basicDamage / 4)
 
     val targetMsg = GameMessage(s"${p.name} uses Assassinate!")
     val dmgMsg = GameMessage(s"${e.name} takes $dmg damage.")
@@ -152,7 +153,8 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     val sePlayer = damageCalculator.sc.calculate(p)
     val seEnemy = damageCalculator.sc.calculate(e)
 
-    val dmg = Math.max(p.stats.intellect / 2d, e.stats.currentHp * Math.min(0.5, sePlayer.stats.intellect.toDouble / (2 * seEnemy.stats.vitality.toDouble))).toInt
+    val dmg = Math.max(p.stats.intellect / 2d,
+      e.stats.currentHp * Math.min(0.5, sePlayer.stats.intellect.toDouble / (2 * seEnemy.stats.vitality.toDouble))).toInt
 
     val targetMsg = GameMessage(s"${p.name} uses Pain!")
     val dmgMsg = GameMessage(s"${e.name} convulses in pain and takes $dmg damage!")

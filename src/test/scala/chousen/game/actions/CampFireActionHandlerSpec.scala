@@ -166,6 +166,11 @@ import chousen.Optics._
         "Card placed in discard pile" in {
           assert(result.cards.discard.exists(_.id == cardToDiscard.id))
         }
+
+        "Add a  if the card is not in the users hand" in {
+          val r = CampFireActionHandler.handle(Drop, None).apply(startedGame)
+          assert(r == startedGame)
+        }
       }
 
       "Destroy is used" should {
@@ -203,6 +208,17 @@ import chousen.Optics._
         "Card is not placed in the deck" in {
           assert(!result.cards.deck.exists(_.id == cardToDiscard.id))
         }
+
+
+        "Have no effect, if the card is not in the users hand" in {
+          val r = CampFireActionHandler.handle(Destroy, None).apply(startedGame)
+          assert(r.messages == startedGame.messages)
+          assert(r.player == startedGame.player)
+          assert(r.uuid == startedGame.uuid)
+          assert(r.cards == startedGame.cards)
+          assert(r.dungeon.currentEncounter == startedGame.dungeon.currentEncounter)
+        }
+
       }
 
 

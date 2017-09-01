@@ -11,10 +11,10 @@ import io.circe.Decoder
 import io.circe.generic.auto._
 import io.circe.syntax._
 import org.http4s.circe._
-import org.http4s.dsl._
+import org.http4s.dsl.{->, /, NotFound, NotFoundSyntax, Ok, OkSyntax, POST, Root}
 import org.http4s.{HttpService, Request, Response}
 
-class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], sc: StatusCalculator) {
+class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], sc: StatusCalculator) extends ChousenCookie {
 
   private def getIds(uuid: String, cardUuid: String) =
     (UUID.fromString(uuid), UUID.fromString(cardUuid))
@@ -26,15 +26,17 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
       // Attack
       case req@POST -> Root / "game" / uuid / "attack" =>
         val id = UUID.fromString(uuid)
+        val optToken = req.requestToken
 
-        ga.withGame(id) { g =>
+        ga.withGame(id, optToken) { g =>
           basicRequest[AttackRequest](req, g)(gsm.takeCommand)
         }
 
       case req@POST -> Root / "game" / uuid / "block" =>
         val id = UUID.fromString(uuid)
+        val optToken = req.requestToken
 
-        ga.withGame(id) { g =>
+        ga.withGame(id, optToken) { g =>
           basicRequest[BlockRequest](req, g)(gsm.takeCommand)
         }
 
@@ -42,8 +44,9 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         implicit val enumDecoder: Decoder[SingleTargetAction] = deriveEnumerationDecoder[SingleTargetAction]
 
         val (id, cardId) = getIds(uuid, cardUuid)
+        val optToken = req.requestToken
 
-        ga.withGame(id) { g =>
+        ga.withGame(id, optToken) { g =>
           cardRequest[SingleTargetActionRequest](req, g, cardId)(gsm.useCard)
         }
 
@@ -52,7 +55,9 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
 
         val (id, cardId) = getIds(uuid, cardUuid)
 
-        ga.withGame(id) { g =>
+        val optToken = req.requestToken
+
+        ga.withGame(id, optToken) { g =>
           cardRequest[SelfInflictingActionRequest](req, g, cardId)(gsm.useCard)
         }
 
@@ -61,7 +66,9 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
 
         val (id, cardId) = getIds(uuid, cardUuid)
 
-        ga.withGame(id) { g =>
+        val optToken = req.requestToken
+
+        ga.withGame(id, optToken){ g =>
           cardRequest[CardActionRequest](req, g, cardId)(gsm.useCard)
         }
 
@@ -70,7 +77,9 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
 
         val (id, cardId) = getIds(uuid, cardUuid)
 
-        ga.withGame(id) { g =>
+        val optToken = req.requestToken
+
+        ga.withGame(id, optToken){ g =>
           cardRequest[MultiTargetActionRequest](req, g, cardId)(gsm.useCard)
         }
 
@@ -79,7 +88,9 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
 
         val (id, cardId) = getIds(uuid, cardUuid)
 
-        ga.withGame(id) { g =>
+        val optToken = req.requestToken
+
+        ga.withGame(id, optToken) { g =>
           passiveRequest[CampfireActionRequest](req, g, cardId)(gsm.useCard)
         }
 
@@ -88,20 +99,22 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
 
         val (id, cardId) = getIds(uuid, cardUuid)
 
-        ga.withGame(id) { g =>
+        val optToken = req.requestToken
+
+        ga.withGame(id, optToken) { g =>
           cardRequest[EquipmentActionRequest](req, g, cardId)(gsm.useCard)
         }
     }
   }
 
   private def cardRequest[T <: CommandRequest](req: Request, g: GameState, cardId: UUID)
-                                               (f: (Card, CommandRequest, GameState) => GameState)
-                                               (implicit decoder: Decoder[T]): Task[Response] = {
+                                              (f: (Card, CommandRequest, GameState) => GameState)
+                                              (implicit decoder: Decoder[T]): Task[Response] = {
     g.cards.hand.find(_.id == cardId) match {
       case Some(card) => for {
         ar <- req.as(jsonOf[T])
         ng = f(card, ar, g)
-        _ <- ga.storeGame(ng)
+        _ <- ga.storeGame(ng, req.requestToken)
         game = ng.copy(player = sc.calculate(ng.player))
         res <- Ok.apply(game.asJson)
       } yield res
@@ -110,13 +123,13 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
   }
 
   private def passiveRequest[T <: CommandRequest](req: Request, g: GameState, cardId: UUID)
-                                              (f: (Card, CommandRequest, GameState) => GameState)
-                                              (implicit decoder: Decoder[T]): Task[Response] = {
+                                                 (f: (Card, CommandRequest, GameState) => GameState)
+                                                 (implicit decoder: Decoder[T]): Task[Response] = {
     g.cards.passive.find(_.id == cardId) match {
       case Some(card) => for {
         ar <- req.as(jsonOf[T])
         ng = f(card, ar, g)
-        _ <- ga.storeGame(ng)
+        _ <- ga.storeGame(ng, req.requestToken)
         game = ng.copy(player = sc.calculate(ng.player))
         res <- Ok.apply(game.asJson)
       } yield res
@@ -125,15 +138,15 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
   }
 
   private def basicRequest[T <: CommandRequest](req: Request, g: GameState)
-                                              (f: (CommandRequest, GameState) => GameState)
-                                              (implicit decoder: Decoder[T]): Task[Response] = {
-      for {
-        ar <- req.as(jsonOf[T])
-        ng = f(ar, g)
-        _ <- ga.storeGame(ng)
-        game = ng.copy(player = sc.calculate(ng.player))
-        res <- Ok.apply(game.asJson)
-      } yield res
+                                               (f: (CommandRequest, GameState) => GameState)
+                                               (implicit decoder: Decoder[T]): Task[Response] = {
+    for {
+      ar <- req.as(jsonOf[T])
+      ng = f(ar, g)
+      _ <- ga.storeGame(ng, req.requestToken)
+      game = ng.copy(player = sc.calculate(ng.player))
+      res <- Ok.apply(game.asJson)
+    } yield res
   }
 
 }

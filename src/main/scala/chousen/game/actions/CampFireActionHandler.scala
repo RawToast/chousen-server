@@ -14,7 +14,7 @@ object CampFireActionHandler extends ActionHandler {
     if (gs.dungeon.currentEncounter.enemies.forall(_.name != "Camp Fire")) { gs }
     else {
       val hp = action match {
-        case (Drop | Destroy) => 1
+        case (Drop | Destroy) => 3
         case _ => 0
       }
       LensUtil.triLens(PlayerLens, GenLens[GameState](_.cards), MessagesLens).modify {
