@@ -3,7 +3,8 @@ machine:
     version: oraclejdk8
   environment:
     SBT_VERSION: 1.0.1
-    SBT_OPTS: "-Xms512M -Xmx1536M -Xss8M -XX:+CMSClassUnloadingEnabled"
+    SBT_OPTS: "-Xms1G -Xmx1536M -Xss8M -XX:+CMSClassUnloadingEnabled
+-XX:ReservedCodeCacheSize=250M -XX:+TieredCompilation -XX:-UseGCOverheadLimit -XX:+UseConcMarkSweepGC"
 dependencies:
   override:
     - sbt update

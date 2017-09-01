@@ -116,7 +116,8 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         ng = f(card, ar, g)
         _ <- ga.storeGame(ng, req.requestToken)
         game = ng.copy(player = sc.calculate(ng.player))
-        res <- Ok.apply(game.asJson)
+        resp = game.asResponse
+        res <- Ok.apply(resp.asJson)
       } yield res
       case None => NotFound(g.asJson)
     }
@@ -129,13 +130,15 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
       case Some(card) => for {
         ar <- req.as(jsonOf[T])
         ng = f(card, ar, g)
-        _ <- ga.storeGame(ng, req.requestToken)
+          _ <- ga.storeGame(ng, req.requestToken)
         game = ng.copy(player = sc.calculate(ng.player))
-        res <- Ok.apply(game.asJson)
+        resp = game.asResponse
+        res <- Ok.apply(resp.asJson)
       } yield res
       case None => NotFound(g.asJson)
     }
   }
+
 
   private def basicRequest[T <: CommandRequest](req: Request, g: GameState)
                                                (f: (CommandRequest, GameState) => GameState)
@@ -145,7 +148,8 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
       ng = f(ar, g)
       _ <- ga.storeGame(ng, req.requestToken)
       game = ng.copy(player = sc.calculate(ng.player))
-      res <- Ok.apply(game.asJson)
+      resp = game.asResponse
+      res <- Ok.apply(resp.asJson)
     } yield res
   }
 

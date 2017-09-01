@@ -27,7 +27,8 @@ class CrudService(pbga: GameAccess[Task, Response], creator: GameStateCreation, 
 
       pbga.withGame(uuid, optToken) { game =>
         val ng = game.copy(player = sc.calculate(game.player))
-        Ok(ng.asJson)
+        val resp = ng.asResponse
+        Ok(resp.asJson)
       }
 
     //  create
@@ -38,7 +39,8 @@ class CrudService(pbga: GameAccess[Task, Response], creator: GameStateCreation, 
 
       for {
         game <- pbga.storeGame(startedGame, optToken)
-        asJson: Json = game.asJson
+        resp = game.asResponse
+        asJson: Json = resp.asJson
         result <- Created(asJson)
       } yield result
 
@@ -49,7 +51,8 @@ class CrudService(pbga: GameAccess[Task, Response], creator: GameStateCreation, 
 
       for {
         game <- pbga.storeGame(startedGame, optToken)
-        asJson: Json = game.asJson
+        resp = game.asResponse
+        asJson: Json = resp.asJson
         result <- Created(asJson)
       } yield result
   }
