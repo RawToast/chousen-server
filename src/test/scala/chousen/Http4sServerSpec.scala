@@ -10,19 +10,15 @@ class Http4sServerSpec extends WordSpec {
     val serverBuilder = Http4sServer
     val httpClient = PooledHttp1Client()
 
-    "When root is requested" should {
-      lazy val result = httpClient.expect[String]("http://localhost:8080/").unsafeRun()
+    "When Assets are requested" should {
+      lazy val result = httpClient.expect[String]("http://localhost:8080/assets/chousen.js").unsafeRun()
 
-      "Return the index page" in {
+      "Returns the index page" in {
         val s = serverBuilder.buildServer.run
-        assert(result.contains("<html"))
-        assert(result.contains("<body>"))
-        assert(result.contains("Chousen Dev Client"))
+        assert(result.contains("function registerAttackButtton("))
         val _ = s.shutdownNow()
       }
 
     }
-
   }
-
 }
