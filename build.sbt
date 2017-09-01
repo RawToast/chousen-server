@@ -26,7 +26,7 @@ version := "0.5.0-SNAPSHOT"
 
 mainClass in(Compile, run) := Some("chousen.Http4sServer")
 
-enablePlugins(JavaAppPackaging, SbtTwirl)
+enablePlugins(JavaAppPackaging)
 
 
 val SCALA_VERSION = "2.12.3"
@@ -69,9 +69,7 @@ def http4s = Seq(
   "org.http4s" %% "http4s-dsl" % HTTP4S_VERSION,
   "org.http4s" %% "http4s-blaze-server" % HTTP4S_VERSION,
   "org.http4s" %% "http4s-blaze-client" % HTTP4S_VERSION,
-  "org.http4s" %% "http4s-circe" % HTTP4S_VERSION,
-  "org.http4s" %% "http4s-twirl" % HTTP4S_VERSION
-)
+  "org.http4s" %% "http4s-circe" % HTTP4S_VERSION)
 
 
 def circe = Seq(
@@ -94,8 +92,6 @@ addCommandAlias("validate", ";coverage;test;coverageReport")
 coverageMinimum := 70
 coverageFailOnMinimum := true
 
-TwirlKeys.templateImports := Seq()
-
 // Compiler options
 val compilerOptions = Seq(
   "-deprecation",
@@ -104,11 +100,11 @@ val compilerOptions = Seq(
   "-language:_",
   "-unchecked",
   "-Xlint:_",
-   //"-Xfatal-warnings",
+   "-Xfatal-warnings",
   "-Xfuture",
   "-Yno-adapted-args",
   "-Ywarn-numeric-widen",
-  //"-Ywarn-unused-import",
+  "-Ywarn-unused-import",
   "-Ywarn-value-discard"
 )
 val additionalOptions = Seq(
