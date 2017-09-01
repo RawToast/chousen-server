@@ -2,10 +2,12 @@ machine:
   java:
     version: oraclejdk8
   environment:
-    SBT_VERSION: 0.13.12
-    SBT_OPTS: "-Xms512M -Xmx1024M -Xss4M -XX:+CMSClassUnloadingEnabled
+    SBT_VERSION: 0.13.15
+    SBT_OPTS: "-Xms512M -Xmx1024M -Xss6M -XX:+CMSClassUnloadingEnabled
 -XX:MaxPermSize=256M"
 dependencies:
+  override:
+    - sbt update
   cache_directories:
     - "~/.sbt"
   pre:
