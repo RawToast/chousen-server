@@ -14,11 +14,10 @@ class CardCatalogueSpec extends WordSpec {
       val card1 = catalogue.replace
       val card2 = catalogue.forgeArmour
       val card3 = catalogue.forgeWeapon
+      val card4 = catalogue.restore
 
       assert(card1.name == "Replace")
-      assert(card1.action != card2.action)
-      assert(card1.action != card3.action)
-      assert(card2.action != card3.action)
+      assert(Set(card1.action, card2.action, card3.action, card4.action).size == 4)
     }
 
     "Contain pre-made decks" that {

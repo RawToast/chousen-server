@@ -7,7 +7,7 @@ import org.scalatest.WordSpec
 
 class PlayedBasedGameAccessSpec extends WordSpec {
 
-  "Http4sMappedGameAccess" should {
+  "PlayedBasedGameAccess" should {
 
     import io.circe.generic.auto._
     import io.circe.syntax._

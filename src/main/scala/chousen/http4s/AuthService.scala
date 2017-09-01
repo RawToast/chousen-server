@@ -1,13 +1,13 @@
 package chousen.http4s
 
 import cats.data.OptionT
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
+import com.google.api.client.googleapis.auth.oauth2.{GoogleIdToken, GoogleIdTokenVerifier}
 import fs2.Task
 import fs2.interop.cats._
 import io.circe.Json
 import io.circe.generic.auto._
 import io.circe.syntax._
-import org.http4s.{Response, HttpService, UrlForm}
+import org.http4s.{HttpService, Response, UrlForm}
 import org.http4s.circe.jsonEncoder
 import org.http4s.dsl.{->, /, BadRequest, BadRequestSyntax, Ok, OkSyntax, POST, Root, _}
 
@@ -38,11 +38,11 @@ class GoogleAuthentication(verifier: GoogleIdTokenVerifier) {
    // val optToken: Option[GoogleIdToken] = Option(verifier.verify(idToken)) // can return null
 
     for {
-      token <- Option(verifier.verify(idToken))
-      payload = token.getPayload
-      name = payload.get("name").asInstanceOf[String]
+      token: GoogleIdToken <- Option(verifier.verify(idToken))
+      payload: GoogleIdToken.Payload <- Option(token.getPayload)
+      gg = payload.getEmailVerified
       userId = payload.getSubject
-    } yield AuthResponse.create(userId, name)
+    } yield AuthResponse.create(userId, null)
   }
 
   def authenticateAsync(idToken: String): Task[Option[AuthResponse]] =
