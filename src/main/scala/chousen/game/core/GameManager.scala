@@ -1,5 +1,7 @@
 package chousen.game.core
 
+import java.util.UUID
+
 import chousen.api.data._
 import chousen.game.actions.{MultiTargetActionHandler, SelfActionHandler, SingleTargetActionHandler, _}
 import chousen.game.cards.CardManager
@@ -86,7 +88,7 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
         val ns= GameTurnLoop.  takeTurn(game,
           singleTargetActionHandler.handle(targetId, action))
         transition(ns, usedCard = true)
-      case MultiTargetActionRequest(targets, action) =>
+      case MultiTargetActionRequest(targets: Set[UUID], action) =>
         val ns = GameTurnLoop.takeTurn(game,
           multiTargetActionHandler.handle(targets, action))
         transition(ns, usedCard = true)

@@ -7,7 +7,7 @@ import fs2.interop.cats._
 import io.circe.Json
 import io.circe.generic.auto._
 import io.circe.syntax._
-import org.http4s.{HttpService, Response, UrlForm}
+import org.http4s.{Header, HttpService, Response, UrlForm}
 import org.http4s.circe.jsonEncoder
 import org.http4s.dsl.{->, /, BadRequest, BadRequestSyntax, Ok, OkSyntax, POST, Root, _}
 
@@ -24,9 +24,10 @@ class AuthService(googleAuthentication: GoogleAuthentication) {
 
         jsonResp: Json = authResponse.asJson
         response: Response <- OptionT.liftF(Ok(jsonResp).addCookie("chousen", authResponse.userId.getOrElse(tokenString)))
-      } yield response
+      } yield response.putHeaders(Header("Access-Control-Allow-Origin", "*"))
 
       result.getOrElseF(BadRequest("Unable to complete Google Auth"))
+        .putHeaders(Header("Access-Control-Allow-Origin", "*"))
   }
 }
 

@@ -12,7 +12,7 @@ case class SelfInflictingActionRequest(action: SelfAction) extends CommandReques
 
 case class SingleTargetActionRequest(targetId: UUID, action: SingleTargetAction) extends CommandRequest
 
-case class MultiTargetActionRequest(targetId: Set[UUID], action: MultiAction) extends CommandRequest
+case class MultiTargetActionRequest(targetIds: Set[UUID], action: MultiAction) extends CommandRequest
 
 case class CardActionRequest(action: CardAction, cardId: Option[UUID]) extends CommandRequest
 
@@ -114,12 +114,12 @@ case object EssenceBoost extends DiscardCardAction
 case object ReduceRequirements extends DiscardCardAction
 case object IncreaseCharges extends DiscardCardAction
 
-
+sealed trait DiscardingCampFireAction extends CampFireAction
 case object Rest extends CampFireAction
 case object Explore extends CampFireAction
 case object RestAndExplore extends CampFireAction
-case object Drop extends CampFireAction
-case object Destroy extends CampFireAction
+case object Drop extends DiscardingCampFireAction
+case object Destroy extends DiscardingCampFireAction
 
 
 case object Club extends EquipWeapon

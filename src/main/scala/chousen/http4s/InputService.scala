@@ -7,17 +7,22 @@ import chousen.api.data._
 import chousen.game.core.GameManager
 import chousen.game.status.StatusCalculator
 import fs2.Task
-import io.circe.Decoder
+import io.circe.{Decoder, Encoder, Json, Printer}
 import io.circe.generic.auto._
+import io.circe.generic.extras.semiauto.deriveEnumerationEncoder
 import io.circe.syntax._
-import org.http4s.circe._
-import org.http4s.dsl.{->, /, NotFound, NotFoundSyntax, Ok, OkSyntax, POST, Root}
-import org.http4s.{HttpService, Request, Response}
+import org.http4s.circe.{jsonEncoderWithPrinter, jsonOf}
+import org.http4s.dsl.{->, /, NotFound, NotFoundSyntax, Ok, OkSyntax, POST, Root, _}
+import org.http4s.{EntityEncoder, Header, HttpService, Request, Response}
 
 class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], sc: StatusCalculator) extends ChousenCookie {
 
   private def getIds(uuid: String, cardUuid: String) =
     (UUID.fromString(uuid), UUID.fromString(cardUuid))
+
+  implicit def jsonEnc: EntityEncoder[Json] = jsonEncoderWithPrinter(Printer.noSpaces.copy(dropNullKeys = true))
+  implicit def enc2: Encoder[StatusEffect] = deriveEnumerationEncoder[StatusEffect]
+
 
   val routes: HttpService = {
     import io.circe.generic.extras.semiauto._
@@ -90,9 +95,11 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
 
         val optToken = req.requestToken
 
-        ga.withGame(id, optToken) { g =>
+        val resp = ga.withGame(id, optToken) { g =>
           passiveRequest[CampfireActionRequest](req, g, cardId)(gsm.useCard)
         }
+
+        resp.map(_.putHeaders(Header("Access-Control-Allow-Origin", "*")))
 
       case req@POST -> Root / "game" / uuid / "equip" / cardUuid =>
         implicit val enumDecoder: Decoder[EquipAction] = deriveEnumerationDecoder[EquipAction]
@@ -110,6 +117,7 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
   private def cardRequest[T <: CommandRequest](req: Request, g: GameState, cardId: UUID)
                                               (f: (Card, CommandRequest, GameState) => GameState)
                                               (implicit decoder: Decoder[T]): Task[Response] = {
+
     g.cards.hand.find(_.id == cardId) match {
       case Some(card) => for {
         ar <- req.as(jsonOf[T])
@@ -118,8 +126,8 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         game = ng.copy(player = sc.calculate(ng.player))
         resp = game.asResponse
         res <- Ok.apply(resp.asJson)
-      } yield res
-      case None => NotFound(g.asJson)
+      } yield res.putHeaders(Header("Access-Control-Allow-Origin", "*"))
+      case None => NotFound(g.asJson).map(_.putHeaders(Header("Access-Control-Allow-Origin", "*")))
     }
   }
 
@@ -149,8 +157,8 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
       _ <- ga.storeGame(ng, req.requestToken)
       game = ng.copy(player = sc.calculate(ng.player))
       resp = game.asResponse
-      res <- Ok.apply(resp.asJson)
-    } yield res
+      res <- Ok.apply(resp.asJson).map(_.putHeaders(Header("Access-Control-Allow-Origin", "*")))
+    } yield res.putHeaders(Header("Access-Control-Allow-Origin", "*"))
   }
 
 }

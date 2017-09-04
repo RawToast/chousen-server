@@ -19,6 +19,7 @@ import org.http4s.util.StreamApp
 object Http4sServer extends StreamApp {
 
   import java.util.concurrent.Executors
+
   import org.http4s.server.blaze.BlazeBuilder
 
   def buildServer: BlazeBuilder = {
