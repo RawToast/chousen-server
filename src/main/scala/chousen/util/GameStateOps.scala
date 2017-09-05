@@ -20,20 +20,20 @@ trait GameStateOps {
     } else true
 
     def toCardResponse(c: Card):CardResponse = c.action match {
-      case _: SingleTargetAction => CardResponse(c.name, c.description, mkChargesStr(c), canPlayCard(c),
+      case _: SingleTargetAction => CardResponse(c.name, c.description, c.id, mkChargesStr(c), canPlayCard(c),
         ActionRequest(c.name, c.description, s"game/${gs.uuid}/single/${c.id}",
           gs.dungeon.currentEncounter.enemies.toSeq.map(e =>
             ActionRequestBody(e.name, Some(c.action), targetId = Option(e.id)))))
 
-      case _: MultiAction => CardResponse(c.name, c.description, mkChargesStr(c), canPlayCard(c),
+      case _: MultiAction => CardResponse(c.name, c.description, c.id, mkChargesStr(c), canPlayCard(c),
         ActionRequest(c.name, c.description, s"game/${gs.uuid}/multi/${c.id}",
           Seq(ActionRequestBody(c.name, Some(c.action), targetIds = Option(gs.dungeon.currentEncounter.enemies.map(_.id))))))
 
-      case _: SelfAction => CardResponse(c.name, c.description, mkChargesStr(c), canPlayCard(c),
+      case _: SelfAction => CardResponse(c.name, c.description,  c.id, mkChargesStr(c), canPlayCard(c),
         ActionRequest(c.name, c.description, s"game/${gs.uuid}/self/${c.id}",
           Seq(ActionRequestBody(c.name, Some(c.action)))))
 
-      case _: CardAction => CardResponse(c.name, c.description, mkChargesStr(c), canPlayCard(c),
+      case _: CardAction => CardResponse(c.name, c.description,  c.id, mkChargesStr(c), canPlayCard(c),
         ActionRequest(c.name, c.description, s"game/${gs.uuid}/card/${c.id}",
           c.action match {
             case action: DiscardCardAction =>
@@ -48,10 +48,10 @@ trait GameStateOps {
             case _ => Seq(ActionRequestBody(c.name, Some(c.action)))
           }))
 
-      case _: CampFireAction => CardResponse(c.name, c.description, mkChargesStr(c), canPlayCard(c),
+      case _: CampFireAction => CardResponse(c.name, c.description,  c.id, mkChargesStr(c), canPlayCard(c),
         ActionRequest(c.name, c.description, s"game/${gs.uuid}/camp/${c.id}", Seq.empty))
 
-      case _: EquipAction => CardResponse(c.name, c.description, mkChargesStr(c), canPlayCard(c),
+      case _: EquipAction => CardResponse(c.name, c.description,  c.id, mkChargesStr(c), canPlayCard(c),
         ActionRequest(c.name, c.description, s"game/${gs.uuid}/equip/${c.id}",
           Seq(ActionRequestBody(c.name, action= Option(c.action), id = Option(c.id)))))
     }
@@ -109,7 +109,7 @@ case class CardsResponse(hand: Seq[CardResponse], equippedCards: EquippedCardsRe
 
 case class EquippedCardsResponse(weapon: Option[CardResponse]=None, armour: Option[CardResponse]=None, jewelery: Option[CardResponse]=None)
 
-case class CardResponse(name: String, description: String, charges: Option[String], playable:Boolean, action: ActionRequest)
+case class CardResponse(name: String, description: String, id: UUID, charges: Option[String], playable:Boolean, action: ActionRequest)
 
 case class ActionRequest(name: String, description: String, uri: String, request: Seq[ActionRequestBody])
 
