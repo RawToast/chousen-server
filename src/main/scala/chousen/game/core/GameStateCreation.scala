@@ -23,8 +23,8 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
     val dungeon = dungeonBuilder.makeDungeon(dungeonSeed, dungeonSeed2, dungeonSeed3)
 
     val player = choice match {
-      case 1 => SetPlayerStats.apply(8, 1, -1, 1).compose(PlayerClassLens.set("Fighter"))(p)
-      case 2 => SetPlayerStats.apply(1, 1, -1, 2).compose(PlayerClassLens.set("Berserker"))(p)
+      case 1 => SetPlayerStats.apply(2, 1, -1, 1).compose(PlayerClassLens.set("Fighter"))(p)
+      case 2 => SetPlayerStats.apply(2, 0, -1, 2).compose(PlayerClassLens.set("Berserker"))(p)
       case 3 => SetPlayerStats.apply(1, 1, 0, 1).compose(PlayerClassLens.set("Rogue"))(p)
       case 4 => SetPlayerStats.apply(0, 1, 1, 1).compose(PlayerClassLens.set("Trickster"))(p)
       case 5 => SetPlayerStats.apply(0, 0, 2, 1).compose(PlayerClassLens.set("Mage"))(p)
