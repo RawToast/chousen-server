@@ -126,6 +126,17 @@ class SingleTargetActionHandlerSpec extends WordSpec {
       standardAssertions(startedGame, result, target)
     }
 
+    "Given Ember" should {
+      val (startedGame, result, target) = completeAction(Ember)
+      standardAssertions(startedGame, result, target)
+
+      "Apply the Burn status" in {
+        lazy val targetEnemy = result.dungeon.currentEncounter.enemies.find(p => p.id == target.id)
+
+        assert(targetEnemy.map(_.status).getOrElse(Seq()).exists(_.effect == Burn))
+      }
+    }
+
 
 
     "Given Quick Attack" should {

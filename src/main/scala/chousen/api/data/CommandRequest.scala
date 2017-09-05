@@ -54,9 +54,9 @@ case object Assassinate extends SingleTargetAction
 
 case object Pain extends SingleTargetAction
 case object MagicMissile extends SingleTargetAction
+case object Ember extends SingleTargetAction
 case object Barrier extends SelfAction
-
-//case object Drain extends SingleTargetAction
+case object LifeSwap extends SingleTargetAction
 
 
 case object Fireball extends MultiAction
@@ -64,8 +64,8 @@ case object Extinguish extends MultiAction
 case object PotionOfFlames extends MultiAction
 
 //case object StaticField extends MultiAction
-//case object MassDrain extends MultiAction
-//case object Shatter extends MultiAction
+case object MassDrain extends MultiAction
+case object Shatter extends MultiAction
 
 case object GroundStrike extends MultiAction
 case object WindStrike extends MultiAction

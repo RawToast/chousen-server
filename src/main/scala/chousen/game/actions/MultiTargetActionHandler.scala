@@ -2,6 +2,7 @@ package chousen.game.actions
 
 import java.util.UUID
 
+import chousen.Optics.HpLens
 import chousen.api.data._
 import chousen.game.core.turn.PositionCalculator.calculatePosition
 import chousen.game.core.GameStateOptics._
@@ -31,7 +32,11 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
     if (gsWithMessage == newState) gs
     else {
 
-      val finalState = newState
+      val finalState = if(action == Shatter)  {
+        PlayerLens.composeLens(PlayerOptics.PlayerHealthLens).set(1)
+          .andThen(MessagesLens.modify(msgs =>
+            msgs :+ GameMessage(s"${newState.player.name} is caught in the chaos and is left with 1 health!")))
+            .apply(newState)} else newState
 
       PlayerLens.modify(p => calculatePosition(p))
       .andThen(handleDead)
@@ -46,6 +51,8 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
       case Fireball => fireball
       case PotionOfFlames => flames
       case Extinguish => extinguish
+      case Shatter => shatter
+      case MassDrain => massDrain
     }
   }
 
@@ -96,6 +103,37 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
     (p, Option(newE), gameMessages)
   }
 
+  def shatter(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+    val sePlayer = dc.sc.calculate(p)
+
+    val dmg = Math.max(sePlayer.stats.intellect, p.stats.intellect + p.stats.currentHp - e.stats.vitality)
+
+    val gameMessages = msgs :+ GameMessage(s"The world shakes around ${e.name} dealing $dmg damage!")
+
+    // This should be replaced by a generic attack/damage function
+    val newE = EnemyOptics.EnemyStatsLens.composeLens(CharStatsOptics.HpLens)
+      .modify(hp => hp - dmg)(e)
+
+    (p, Option(newE), gameMessages)
+  }
+
+  def massDrain(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+    val dmg = dc.calculatePlayerMagicDamage(p, e,
+      Multipliers.builder.intMulti(Multipliers.lowMulti)
+        .maxMulti(Multipliers.multiTarget).m) + (e.stats.maxHp / 12)
+
+    val dmgMsg = GameMessage(s"${p.name} drains $dmg health from ${e.name}!")
+
+    // This should be replaced by a generic attack/damage function
+    val newEnemy = EnemyOptics.EnemyStatsLens.composeLens(HpLens)
+      .modify(hp => hp - dmg)(e)
+
+    val newPlayer = PlayerOptics.PlayerHealthLens.modify(hp => Math.min(hp + dmg, p.stats.maxHp))(p)
+    val gameMessages = msgs :+ dmgMsg
+
+    (newPlayer, Option(newEnemy), gameMessages)
+  }
+
   def extinguish(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
 
     if (e.status.exists(_.effect == Burn)) {
@@ -123,7 +161,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
     val gameMessages = msgs :+ GameMessage(s"${e.name} is burnt by the flames.")
 
-    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(4, turns = 10))(e)
+    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(8, turns = 6))(e)
 
     (p, Option(newE), gameMessages)
   }

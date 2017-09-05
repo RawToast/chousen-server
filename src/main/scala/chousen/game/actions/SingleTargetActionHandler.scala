@@ -34,6 +34,8 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
 
       case Pain => pain
       case MagicMissile => magicMissile
+      case Ember => ember
+      case LifeSwap => lifeswap
     }
 
   def attackAbility(calc: (Player, Enemy, Multipliers) => Int ) = {
@@ -166,25 +168,34 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     (calculatePosition(p), Option(newEnemy), gameMessages)
   }
 
-  def magicMissile2(p: Player, e: Enemy, msgs: Seq[GameMessage]) = ability(p, e, msgs)(
+  def magicMissile(p: Player, e: Enemy, msgs: Seq[GameMessage]) = ability(p, e, msgs)(
     useMsg = (p, _) => s"$p uses Magic Missile!",
     damageMsg = (e, d) => s"The missile strikes $e for $d damage!",
+    bonusDamage = 2,
     multi = Multipliers.intellectSkill,
     damageCalc = damageCalculator.calculatePlayerMagicDamage)
 
-  def magicMissile(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val magicDmg = damageCalculator.calculatePlayerMagicDamage(p, e, Multipliers.intellectSkill)
 
-    val dmg = Math.max(1, 2 + magicDmg)
+  def ember(p: Player, e: Enemy, msgs: Seq[GameMessage]) = ability(p, e, msgs)(
+    useMsg = (p, _) => s"$p uses Ember!",
+    damageMsg = (e, d) => s"$e is burnt by the flames for $d damage!",
+    multi = Multipliers.lowIntellectSkill,
+    enemyEffect = EnemyStatusLens.modify(ss => ss :+ StatusBuilder.makeBurn(ss.count(_.effect == Burn) + (p.stats.intellect / 2))),
+    bonusDamage = if (e.status.exists(_.effect == Burn)) {Math.max(3, (e.stats.maxHp - e.stats.currentHp) / 8)} else 0,
+    damageCalc = damageCalculator.calculatePlayerMagicDamage
+  )
 
-    val targetMsg = GameMessage(s"${p.name} uses Magic Missile!")
-    val dmgMsg = GameMessage(s"The missile strikes ${e.name} for $dmg damage!")
+  // Int
+  def lifeswap(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
 
-    // This should be replaced by a generic attack/damage function
+    val targetMsg = GameMessage(s"${p.name} uses Life Swap!")
+    val dmgMsg = GameMessage(s"${e.name}'s health is swapped with ${p.name}!")
+
     val newEnemy = EnemyStatsLens.composeLens(HpLens)
-      .modify(hp => hp - dmg)(e)
+      .set(Math.min(p.stats.currentHp, e.stats.maxHp))(e)
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
-    (calculatePosition(p), Option(newEnemy), gameMessages)
+    (calculatePosition(PlayerHealthLens.set(Math.min(e.stats.currentHp, p.stats.maxHp))(p)),
+      Option(newEnemy), gameMessages)
   }
 }

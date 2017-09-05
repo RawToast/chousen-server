@@ -180,12 +180,12 @@ object EnemyTurnOps {
     }
 
     val statusHandler: ((Player, Set[Enemy], Seq[GameMessage])) => (Player, Set[Enemy], Seq[GameMessage]) =
-      handlePerTurnStatuses
+      handlePerTurnStatuses(activeEnemy)
     statusHandler.andThen(PostTurnOps.handleDead)(afterDmgGame)
   }
 
 
-  def handlePerTurnStatuses(pem: (Player, Set[Enemy], Seq[GameMessage])) = {
+  def handlePerTurnStatuses(ae: Enemy)(pem: (Player, Set[Enemy], Seq[GameMessage])) = {
     val (p, es, ms) = pem
     var msgs = Seq.empty[GameMessage]
 
@@ -221,7 +221,7 @@ object EnemyTurnOps {
 
     def removeDeadStatuses(e: Enemy) = e.copy(status = e.status.filter(_.turns > 0))
 
-    val updateEnemy: (Enemy) => Enemy = (handleStatus _).andThen(reducePerTurnStatus).andThen(removeDeadStatuses)
+    val updateEnemy: (Enemy) => Enemy = e => if(e.id == ae.id) (handleStatus _).andThen(reducePerTurnStatus).andThen(removeDeadStatuses)(e) else e
 
     (p, es.map(updateEnemy), ms ++ msgs)
    }

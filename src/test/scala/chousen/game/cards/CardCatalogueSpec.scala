@@ -23,15 +23,17 @@ class CardCatalogueSpec extends WordSpec {
     "Contain pre-made decks" that {
       val deck1 = catalogue.fighterDeck
       val deck2 = catalogue.berserkerDeck
-      val deck3 = catalogue.mageDeck
+      val deck3 = catalogue.mage
       val deck4 = catalogue.rogueDeck
       val deck5 = catalogue.tricksterDeck
+      val deck6 = catalogue.wizard
 
       standardAssertions("Fighter", deck1)
       standardAssertions("Berserker", deck2)
       standardAssertions("Mage", deck3)
       standardAssertions("Rogue", deck4)
       standardAssertions("Trickster", deck5)
+      standardAssertions("Wizard", deck6)
     }
 
 

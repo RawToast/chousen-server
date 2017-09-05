@@ -93,8 +93,13 @@ trait GameStateOps {
           .toSeq :+ blockReq
     }
 
+    def hasTurn(gm: GameMessage) = gm.text.contains(" turn.")
 
-    GameResponse(gs.uuid, gs.player, cards, gs.dungeon.currentEncounter, actions, gs.messages)
+    val msgs = if (gs.messages.count(hasTurn) <= 1) gs.messages.filterNot(hasTurn)
+    else {
+      gs.messages.reverse.tail.takeWhile(gm => !hasTurn(gm)).reverse
+    }
+    GameResponse(gs.uuid, gs.player, cards, gs.dungeon.currentEncounter, actions, msgs)
   }
 
 

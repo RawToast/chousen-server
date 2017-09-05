@@ -31,7 +31,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         stunningStrike, stunningStrike,
         counter,
         crushingBlow,
-        quickAttack,
+        burningHammer,
 
         armoury, forgeArmour,                         // 14 cards
         trade, trade,
@@ -65,11 +65,12 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     haste, haste, haste, haste,
     continuation, continuation, continuation, continuation,       // 16 pots
     trog, trog,
+    lignification,
 
     mace, trollCrusher,               // 5 equip
     ringmail, orcishArmour,
 
-    forgeWeapon,                      // 16 card
+    // 16 card
     armoury,
 
     rummage, rummage, rummage, rummage,
@@ -81,38 +82,37 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
   )
 
   // Deck built around high defense and burn damage
-  def druidDeck: Seq[Card] = Seq(
-
-    rarePepe, rarePepe,                     // 2
-
-    elixirOfStrength, elixirOfVitality,     // 2 el
-
-    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    elixirOfIntelligence, elixirOfIntelligence,
-    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality, // 14 elix
-
-    // 14
-    stoneSkin, stoneSkin, stoneSkin, stoneSkin,                       // 12 pots
-    lignification, lignification, lignification, lignification,
-    continuation, continuation,
-    flames, flames, flames, flames,
-
-    burningHammer, burningHammer, burningHammer,
-    extinguish, extinguish,
-    barrier, barrier,         // 8 abilities...
-
-    mace, giantClub,                            // 4 equip
-    ringmail, heavyArmour,
-
-    armoury,                      // 13 card
-    rummage, rummage, rummage, rummage,
-    miracle, miracle, miracle, miracle,
-    trade, trade,
-    essenceBoost,
-    reduceRequirements
-  )
-
+//  def druidDeck: Seq[Card] = Seq(
+//
+//    rarePepe, rarePepe,                     // 2
+//
+//    elixirOfStrength, elixirOfVitality,     // 2 el
+//
+//    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+//    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+//    elixirOfIntelligence, elixirOfIntelligence,
+//    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality, // 14 elix
+//
+//    // 14
+//    stoneSkin, stoneSkin, stoneSkin, stoneSkin,                       // 12 pots
+//    lignification, lignification, lignification, lignification,
+//    continuation, continuation,
+//    flames, flames, flames, flames,
+//
+//    burningHammer, burningHammer, burningHammer,
+//    extinguish, extinguish,
+//    barrier, barrier,         // 8 abilities...
+//
+//    mace, giantClub,                            // 4 equip
+//    ringmail, heavyArmour,
+//
+//    armoury,                      // 13 card
+//    rummage, rummage, rummage, rummage,
+//    miracle, miracle, miracle, miracle,
+//    trade, trade,
+//    essenceBoost,
+//    reduceRequirements
+//  )
 
   def rogueDeck: Seq[Card] = Seq(
 
@@ -161,7 +161,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     elixirOfVitality, elixirOfVitality,  // 2 Elixirs
 
     haste, haste, haste, haste,           // 8 Potions
-    stoneSkin, stoneSkin, regen, regen,
+    stoneSkin, regen,
     flames,
 
     rarePepe, rarePepe,  // 2 Pepes
@@ -169,7 +169,8 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     pain, pain, pain,
     assassinate, assassinate, assassinate,
     quickStep, quickStep, quickStep, quickStep,
-    windStrike, windStrike,                        // 12 Abilities
+    windStrike, windStrike,
+    lifeswap, lifeswap,// 12 Abilities
 
     daggerOfDavid, cape,                  // 2 Equipment
 
@@ -181,27 +182,29 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     refresh
   )
 
-  def mageDeck = Seq(
+  def mage = Seq(
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
-    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality, // 16 Essences
+    essenceOfVitality, essenceOfVitality, essenceOfVitality, // 15 Essences
 
     elixirOfIntelligence, elixirOfVitality,  // 2 Elixirs
 
     haste, haste, haste, haste,              // 8 Potions
     stoneSkin, stoneSkin, flames, flames,
     intelligence, intelligence,
+    lignification,
 
-    healWounds, healWounds, rarePepe, rarePepe,  // 4 Pepes
+    healWounds, rarePepe, rarePepe,  // 4 Pepes
 
-    magicMissile, magicMissile, magicMissile,    // 12 Abilities
-    pain, pain,
-    fireball, fireball,
+
+    ember, ember, ember, ember,
+    fireball, fireball, fireball,
+    extinguish, extinguish,
     barrier, barrier,
 
 
-    daggerOfDavid, leatherArmour,                  // 2 Equipment
+    leatherArmour,                  // 2 Equipment
 
     miracle, miracle, miracle, miracle,   // 16 Card Actions
     rummage, rummage, rummage, rummage,
@@ -211,7 +214,39 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
   )
 
 
-//  def cheeseDeck: Seq[Card] = // 15
+  def wizard: Seq[Card] = Seq(
+    essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
+    essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
+    essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
+    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality, // 16 Essences
+
+    elixirOfIntelligence, elixirOfVitality,  // 2 Elixirs
+
+    haste, haste, haste, haste,              // 8 Potions
+    stoneSkin, flames, flames,
+    intelligence, intelligence,
+
+    rarePepe, rarePepe,  // 4 Pepes
+
+    magicMissile, magicMissile, magicMissile,    // 12 Abilities
+    pain, pain,
+    shatter, shatter,
+    massDrain, massDrain, massDrain, massDrain,
+    barrier, barrier,
+
+
+    leatherArmour,                  // 2 Equipment
+
+    miracle, miracle, miracle, miracle,   // 16 Card Actions
+    rummage, rummage, rummage, rummage,
+    increaseCharges, increaseCharges, increaseCharges, increaseCharges,
+    recharge, recharge, recharge,
+    refresh, refresh
+  )
+
+
+
+  //  def cheeseDeck: Seq[Card] = // 15
 //    usefulCards ++
 //      (4 of assassinate) ++ (4 of windStrike) ++ (4 of quickStep) ++
 //      (4 of pain) ++ (4 of staticField) ++ (4 of fireball) ++
@@ -265,11 +300,12 @@ trait Magic extends CardBuilder{
   def extinguish: Card = mkCard("Extinguish", "Extinguish burning enemies for huge damage", Extinguish, 3)
 //  def staticField: Card = mkCard("Static Field", "Reduces all enemies hp by 33%", StaticField)
   def pain: Card = mkCard("Pain", "Reduces the hp of a single target by around 50%", Pain, 3)
-//  def shatter: Card = mkCard("Shatter", "Reduce player to 1hp and deal the same damage to all enemies", Shatter)
-  def magicMissile: Card = mkCard("Magic Missile", "Deals magic damage to a single enemy", MagicMissile, 4)
+  def shatter: Card = mkCard("Shatter", "Reduce player to 1hp and deal the same damage to all enemies", Shatter, 1)
+  def magicMissile: Card = mkCard("Magic Missile", "Deals high magic damage to a single enemy", MagicMissile, 4)
+  def ember: Card = mkCard("Ember", "Burn a single target with fire magic", Ember, 2)
   def barrier: Card = mkCard("Barrier", "Creates a magic barrier to protect the user", Barrier, 3)
-//  def drain: Card = mkCard("Drain", "Drains health from an enemy and heals the player", Drain)
-//  def massDrain: Card = mkCard("Mass Drain", "Drains health from multiple enemies and heals the player", MassDrain)
+  def lifeswap: Card = mkCard("Life Swap", "Swap's the health of the player with an enemy", LifeSwap, 1)
+  def massDrain: Card = mkCard("Mass Drain", "Drains health from multiple enemies and heals the player", MassDrain, 3)
 }
 
 trait Strength extends CardBuilder{
