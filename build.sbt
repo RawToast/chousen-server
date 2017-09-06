@@ -25,6 +25,7 @@ version := "0.5.0-SNAPSHOT"
 
 
 mainClass in(Compile, run) := Some("chousen.Http4sServer")
+parallelExecution in Test:= false
 
 enablePlugins(JavaAppPackaging)
 

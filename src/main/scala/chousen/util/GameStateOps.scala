@@ -56,11 +56,13 @@ trait GameStateOps {
           Seq(ActionRequestBody(c.name, action= Option(c.action), id = Option(c.id)))))
     }
 
+    def toShortCardResponse(c: Card) = ShortCardResponse(c.name, c.id, c.action)
+
     val newHand = gs.cards.hand.map(toCardResponse)
-    val newDeck = gs.cards.deck.map(toCardResponse)
-      .foldLeft(Seq.empty[CardResponse])((cs, cr) => if (!cs.exists(_.name == cr.name)) cs :+ cr else cs)
-    val newDiscard = gs.cards.discard.map(toCardResponse)
-      .foldLeft(Seq.empty[CardResponse])((cs, cr) => if (!cs.exists(_.name == cr.name)) cs :+ cr else cs)
+    val newDeck = gs.cards.deck.map(toShortCardResponse)
+      .foldLeft(Seq.empty[ShortCardResponse])((cs, cr) => if (!cs.exists(_.name == cr.name)) cs :+ cr else cs)
+    val newDiscard = gs.cards.discard.map(toShortCardResponse)
+      .foldLeft(Seq.empty[ShortCardResponse])((cs, cr) => if (!cs.exists(_.name == cr.name)) cs :+ cr else cs)
 //    val newDiscard = gs.cards.discard.map(toCardResponse)
 //    val newPassives = gs.cards.passive.map(toCardResponse)
 
@@ -113,7 +115,8 @@ trait GameStateOps {
 
 case class GameResponse(uuid: UUID, player: Player, cards: CardsResponse, currentEncounter: Battle, actions: Seq[ActionRequest], messages: Seq[GameMessage])
 
-case class CardsResponse(hand: Seq[CardResponse], equippedCards: EquippedCardsResponse, inDeck: Seq[CardResponse], inDiscard: Seq[CardResponse])
+case class CardsResponse(hand: Seq[CardResponse], equippedCards: EquippedCardsResponse, inDeck: Seq[ShortCardResponse], inDiscard: Seq[ShortCardResponse])
+case class ShortCardResponse(name: String, id: UUID, action: Action)
 
 case class EquippedCardsResponse(weapon: Option[CardResponse]=None, armour: Option[CardResponse]=None, jewelery: Option[CardResponse]=None)
 
