@@ -55,8 +55,9 @@ case object Assassinate extends SingleTargetAction
 case object Pain extends SingleTargetAction
 case object MagicMissile extends SingleTargetAction
 case object Ember extends SingleTargetAction
-case object Barrier extends SelfAction
 case object LifeSwap extends SingleTargetAction
+case object Barrier extends SelfAction
+
 
 
 case object Fireball extends MultiAction
