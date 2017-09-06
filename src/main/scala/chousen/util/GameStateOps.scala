@@ -100,10 +100,14 @@ trait GameStateOps {
 
     def hasTurn(gm: GameMessage) = gm.text.contains(" turn.")
 
-    val msgs = if (gs.messages.count(hasTurn) <= 1) gs.messages.filterNot(hasTurn)
+    val msgs2 = if (gs.messages.count(hasTurn) <= 1) gs.messages.filterNot(hasTurn)
+    else if (gs.messages.exists(_.text.contains(s"${gs.player.name} dies."))) gs.messages.takeRight(5)
     else {
       gs.messages.reverse.tail.takeWhile(gm => !hasTurn(gm)).reverse
     }
+
+    val msgs = if (msgs2.isEmpty) gs.messages.takeRight(1) else msgs2
+
     GameResponse(gs.uuid, gs.player, cards, gs.dungeon.currentEncounter, actions, msgs)
   }
 

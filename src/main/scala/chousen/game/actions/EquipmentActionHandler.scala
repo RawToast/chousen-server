@@ -22,7 +22,7 @@ class EquipmentActionHandler {
       case ShortSword => shortSword
       case Mace => mace
       case BroadSword => boardSword
-      case Kodachi => kodachi
+      case LongSword => kodachi
       case GiantClub => giantClub
 
       case TrollCrusher => trollCrusher
@@ -51,7 +51,7 @@ class EquipmentActionHandler {
     weapon("Broadsword", 10)(p, msgs, uuid)
 
   def kodachi(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
-    weapon("Kodachi", 15)(p, msgs, uuid)
+    weapon("Long Sword", 15)(p, msgs, uuid)
 
   def giantClub(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
     weapon("Giant Club", 16)(p, msgs, uuid)

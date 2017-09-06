@@ -24,7 +24,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
         essenceOfDexterity, essenceOfDexterity,
 
-        shortSword, broadsword, kodachi,    // 5 equips
+        shortSword, broadsword, longSword,    // 5 equips
         chainmail, heavyArmour,
 
         groundStrike, groundStrike,       // 8 skills
@@ -81,38 +81,6 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     manifestRage, manifestRage
   )
 
-  // Deck built around high defense and burn damage
-//  def druidDeck: Seq[Card] = Seq(
-//
-//    rarePepe, rarePepe,                     // 2
-//
-//    elixirOfStrength, elixirOfVitality,     // 2 el
-//
-//    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-//    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-//    elixirOfIntelligence, elixirOfIntelligence,
-//    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality, // 14 elix
-//
-//    // 14
-//    stoneSkin, stoneSkin, stoneSkin, stoneSkin,                       // 12 pots
-//    lignification, lignification, lignification, lignification,
-//    continuation, continuation,
-//    flames, flames, flames, flames,
-//
-//    burningHammer, burningHammer, burningHammer,
-//    extinguish, extinguish,
-//    barrier, barrier,         // 8 abilities...
-//
-//    mace, giantClub,                            // 4 equip
-//    ringmail, heavyArmour,
-//
-//    armoury,                      // 13 card
-//    rummage, rummage, rummage, rummage,
-//    miracle, miracle, miracle, miracle,
-//    trade, trade,
-//    essenceBoost,
-//    reduceRequirements
-//  )
 
   def rogueDeck: Seq[Card] = Seq(
 
@@ -276,7 +244,7 @@ trait Potions extends CardBuilder {
   def continuation: Card = Card(UUID.randomUUID(), "Potion of Continuation", "Prolongs any temporary status effects", PotionOfContinuation)
   def regen: Card = Card(UUID.randomUUID(), "Potion of Regeneration", "Temporary increases life regeneration", PotionOfRegeneration)
 
-  def flames: Card = mkCard("Potion of Flames", "Sets all enemies alight", PotionOfFlames)
+  def flames: Card = mkCard("Potion of Flames", "Applies a long lasting Burn to all enemies", PotionOfFlames)
   def lignification: Card = mkCard("Potion of Lignification", "Turns the user into a slow Tree, increasing armour, strength, and regen.", PotionOfLignification)
 }
 
@@ -296,13 +264,13 @@ trait PermanentEffects extends CardBuilder {
 trait Magic extends CardBuilder{
   def healWounds: Card = mkCard("Heal Wounds", "Heals 30-60HP depending on level", HealWounds, charges = 2)
 
-  def fireball: Card = mkCard("Fireball", "Deals fire damage to all enemies", Fireball, 2)
+  def fireball: Card = mkCard("Fireball", "Deals fire damage and burns to all enemies", Fireball, 2)
   def extinguish: Card = mkCard("Extinguish", "Extinguish burning enemies for huge damage", Extinguish, 3)
 //  def staticField: Card = mkCard("Static Field", "Reduces all enemies hp by 33%", StaticField)
   def pain: Card = mkCard("Pain", "Reduces the hp of a single target by around 50%", Pain, 3)
   def shatter: Card = mkCard("Shatter", "Reduce player to 1hp and deal the same damage to all enemies", Shatter, 1)
   def magicMissile: Card = mkCard("Magic Missile", "Deals high magic damage to a single enemy", MagicMissile, 4)
-  def ember: Card = mkCard("Ember", "Burn a single target with fire magic", Ember, 2)
+  def ember: Card = mkCard("Ember", "Burn a single target with fire magic", Ember, 4)
   def barrier: Card = mkCard("Barrier", "Creates a magic barrier to protect the user", Barrier, 3)
   def lifeswap: Card = mkCard("Life Swap", "Swap's the health of the player with an enemy", LifeSwap, 1)
   def massDrain: Card = mkCard("Mass Drain", "Drains health from multiple enemies and heals the player", MassDrain, 3)
@@ -375,8 +343,8 @@ trait Equipment extends CardBuilder {
     BroadSword, Requirements(str = Some(16), dex = Some(11)))
   def giantClub: Card = mkEquip("Giant Club", "Heavy increase to damage",
     GiantClub, Requirements(str = Some(19)))
-  def kodachi: Card = mkEquip("Kodachi", "Heavy increase to damage",
-    Kodachi, Requirements(str = Some(17), dex = Some(13)))
+  def longSword: Card = mkEquip("Long Sword", "Heavy increase to damage",
+    LongSword, Requirements(str = Some(17), dex = Some(13)))
 
 
   def trollCrusher: Card = mkEquip("Troll Crusher", "Moderate increase to damage. Bonus damage based on the enemies current HP",

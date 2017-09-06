@@ -118,7 +118,7 @@ case object Club extends EquipWeapon
 case object Mace extends EquipWeapon
 case object ShortSword extends EquipWeapon
 case object BroadSword extends EquipWeapon
-case object Kodachi extends EquipWeapon
+case object LongSword extends EquipWeapon
 case object GiantClub extends EquipWeapon
 case object TrollCrusher extends EquipWeapon
 case object SwordOfIntellect extends EquipWeapon

@@ -118,6 +118,18 @@ class MultiTargetActionHandlerSpec extends WordSpec {
       standardAssertions(startedGame, result, targets)
     }
 
+    "Given Mass Drain" should {
+      val (startedGame, result, targets) = completeAction(MassDrain)
+
+      standardAssertions(startedGame, result, targets)
+    }
+
+    "Given Shatter" should {
+      val (startedGame, result, targets) = completeAction(Shatter)
+
+      standardAssertions(startedGame, result, targets)
+    }
+
     "Given Potion of Flames" should {
       val (startedGame, result, targets) = completeAction(PotionOfFlames)
 
