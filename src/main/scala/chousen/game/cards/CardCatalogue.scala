@@ -33,13 +33,14 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
         crushingBlow,
         burningHammer,
 
-        armoury, forgeArmour,                         // 14 cards
+        armoury,                         // 14 cards
         trade, trade,
 
         rummage, rummage, rummage, rummage,
         refresh, refresh,
         miracle, miracle,
         manifestRage,
+        recharge,
         increaseCharges,
         essenceBoost,
         reduceRequirements,
@@ -50,7 +51,6 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
     regen, regen, regen,
     rarePepe, rarePepe,                     // 7
-
 
     elixirOfStrength, elixirOfVitality,     // 2 el
 
@@ -79,6 +79,40 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     reduceRequirements, reduceRequirements,
     miracle, miracle, miracle, miracle,
     manifestRage, manifestRage
+  )
+
+  def chieftainDeck = Seq(
+    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+    essenceOfStrength, essenceOfStrength, essenceOfIntelligence, essenceOfIntelligence,
+    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality,
+
+    essenceOfVitality, essenceOfStrength,
+    rarePepe, rarePepe,
+
+    burningHammer, burningHammer, burningHammer,
+    extinguish, extinguish,
+    barrier, barrier,
+
+
+    lignification, lignification, lignification, lignification,
+    stoneSkin, stoneSkin,
+    flames, flames, flames, flames,
+    scrollOfFear, scrollOfFear, scrollOfFear,
+    continuation,
+
+    daggerOfDavid, trollCrusher,
+    ringmail, orcishArmour,
+
+
+    rummage, rummage, rummage, rummage,
+    miracle, miracle, miracle, miracle,
+    increaseCharges, increaseCharges,
+    recharge, recharge,
+    restore, restore,
+
+    armoury,
+
   )
 
 
@@ -130,14 +164,13 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
     haste, haste, haste, haste,           // 8 Potions
     stoneSkin, regen,
-    flames,
+    flames, flames, flames,
 
     rarePepe, rarePepe,  // 2 Pepes
 
     pain, pain, pain,
     assassinate, assassinate, assassinate,
     quickStep, quickStep, quickStep, quickStep,
-    windStrike, windStrike,
     lifeswap, lifeswap,// 12 Abilities
 
     daggerOfDavid, cape,                  // 2 Equipment
@@ -246,6 +279,8 @@ trait Potions extends CardBuilder {
 
   def flames: Card = mkCard("Potion of Flames", "Applies a long lasting Burn to all enemies", PotionOfFlames)
   def lignification: Card = mkCard("Potion of Lignification", "Turns the user into a slow Tree, increasing armour, strength, and regen.", PotionOfLignification)
+
+  def scrollOfFear: Card = mkCard("Scroll of Fear", "Causes any enemies on with health to turn and flee", ScrollOfFear)
 }
 
 trait PermanentEffects extends CardBuilder {

@@ -56,6 +56,7 @@ case object LifeSwap extends SingleTargetAction
 case object Fireball extends MultiAction
 case object Extinguish extends MultiAction
 case object PotionOfFlames extends MultiAction
+case object ScrollOfFear extends MultiAction
 case object MassDrain extends MultiAction
 case object Shatter extends MultiAction
 case object GroundStrike extends MultiAction

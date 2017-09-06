@@ -126,7 +126,7 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         ng = f(card, ar, g)
         _ <- ga.storeGame(ng, req.requestToken)
         game = ng.copy(player = sc.calculate(ng.player))
-        resp = game.asResponse
+        resp = game.asResponse(g.messages)
         res <- Ok.apply(resp.asJson)
       } yield res.putHeaders(Header("Access-Control-Allow-Origin", "*"))
       case None => NotFound(g.asJson).map(_.putHeaders(Header("Access-Control-Allow-Origin", "*")))
@@ -142,7 +142,7 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         ng = f(card, ar, g)
           _ <- ga.storeGame(ng, req.requestToken)
         game = ng.copy(player = sc.calculate(ng.player))
-        resp = game.asResponse
+        resp = game.asResponse(g.messages)
         res <- Ok.apply(resp.asJson)
       } yield res
       case None => NotFound(g.asJson)
@@ -158,7 +158,7 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
       ng = f(ar, g)
       _ <- ga.storeGame(ng, req.requestToken)
       game = ng.copy(player = sc.calculate(ng.player))
-      resp = game.asResponse
+      resp = game.asResponse(g.messages)
       res <- Ok.apply(resp.asJson).map(_.putHeaders(Header("Access-Control-Allow-Origin", "*")))
     } yield res.putHeaders(Header("Access-Control-Allow-Origin", "*"))
   }

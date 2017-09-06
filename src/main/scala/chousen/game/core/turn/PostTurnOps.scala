@@ -19,7 +19,9 @@ object PostTurnOps {
 
       val newMessages = deadEnemies
         .map(e =>
-          if (e.stats.currentHp > -10) GameMessage(s"${e.name} dies")
+          if (e.stats.currentHp == -666) GameMessage(s"${e.name} runs away in fear!")
+          else if (e.stats.currentHp > -15) GameMessage(s"${e.name} dies")
+          else if (e.stats.currentHp > -30) GameMessage(s"${e.name} is destroyed!")
           else GameMessage(s"${e.name} is annihilated!")) ++ lvlupMsgs
 
       val deNames = deadEnemies.map(_.name)

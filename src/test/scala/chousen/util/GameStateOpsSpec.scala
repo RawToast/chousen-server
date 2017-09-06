@@ -13,7 +13,7 @@ class GameStateOpsSpec extends WordSpec {
 
     "Turning a GameState into a GameResponse" should {
 
-      val result = gameStateOps.toGameResponse(gameState)
+      val result = gameStateOps.toGameResponse(gameState, Seq.empty)
 
       "Retain the game ID" in {
         assert(result.uuid == gameState.uuid)
@@ -42,7 +42,7 @@ class GameStateOpsSpec extends WordSpec {
 
       val essencePlayedState = Optics.CardsLens.modify(c => c.copy(playedEssence = true))(gameState)
 
-      val result = gameStateOps.toGameResponse(essencePlayedState)
+      val result = gameStateOps.toGameResponse(essencePlayedState, Seq.empty)
 
       "Disable only the Player's Essence cards" in {
         assert(result.cards.hand.filter(_.name.contains("Essence")).forall(_.playable == false))

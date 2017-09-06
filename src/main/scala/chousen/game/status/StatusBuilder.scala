@@ -13,5 +13,6 @@ object StatusBuilder {
   def makeBlock(amount: Int=0, turns:Int=0) = Status(Block, "Reduces damage", turns, Option(amount))
   def makeRegen(amount: Int=0, turns:Int=0) = Status(Regen, "Regenerate health", turns, Option(amount))
   def makeBurn(amount: Int, turns:Int=3) = Status(Burn, "Take damage on each turn from Burns", turns, Option(amount))
-  def makeTree(amount: Int, turns:Int=6) = Status(Tree, "Reduces speed, but increases strength, armour, and regen.", turns, Option(amount))
+  def makeTree(amount: Int, turns:Int=7) = Status(Tree, "Reduces speed, but increases strength, armour, and regen.", turns, Option(amount))
+  def makeFear(amount: Int=0, turns:Int=6) = Status(Fear, "May run away on low health", turns, Option(amount))
 }

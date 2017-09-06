@@ -7,7 +7,7 @@ import chousen.api.data._
 
 trait GameStateOps {
 
-  def toGameResponse(gs: GameState): GameResponse = {
+  def toGameResponse(gs: GameState, diff: Seq[GameMessage]): GameResponse = {
 
 
     def mkChargesStr(c: Card) = for {
@@ -99,25 +99,30 @@ trait GameStateOps {
     }
 
     def hasTurn(gm: GameMessage) = gm.text.contains(" turn.")
+//
+//    val msgs2 = if (gs.messages.count(hasTurn) <= 1) gs.messages.filterNot(hasTurn)
+//    else if (gs.messages.exists(_.text.contains(s"${gs.player.name} dies."))) gs.messages.takeRight(5)
+//    else {
+//      gs.messages.reverse.tail.takeWhile(gm => !hasTurn(gm)).reverse
+//    }
+//    import io.circe.generic.auto._
+//    import io.circe.syntax._
+//    println(gs.asJson)
+//    val msgs = if (msgs2.isEmpty) gs.messages.takeRight(1) else msgs2
 
-    val msgs2 = if (gs.messages.count(hasTurn) <= 1) gs.messages.filterNot(hasTurn)
-    else if (gs.messages.exists(_.text.contains(s"${gs.player.name} dies."))) gs.messages.takeRight(5)
-    else {
-      gs.messages.reverse.tail.takeWhile(gm => !hasTurn(gm)).reverse
-    }
-
-    val msgs = if (msgs2.isEmpty) gs.messages.takeRight(1) else msgs2
+    val msgs: Seq[String] = gs.messages.withFilter(m => !hasTurn(m)).withFilter(m => !diff.contains(m)).map(_.text)
 
     GameResponse(gs.uuid, gs.player, cards, gs.dungeon.currentEncounter, actions, msgs)
   }
 
 
   implicit class ToCardResponse(gs: GameState){
-    def asResponse: GameResponse = toGameResponse(gs)
+    def asResponse: GameResponse = toGameResponse(gs, Seq.empty)
+    def asResponse(diff: Seq[GameMessage]): GameResponse = toGameResponse(gs, diff)
   }
 }
 
-case class GameResponse(uuid: UUID, player: Player, cards: CardsResponse, currentEncounter: Battle, actions: Seq[ActionRequest], messages: Seq[GameMessage])
+case class GameResponse(uuid: UUID, player: Player, cards: CardsResponse, currentEncounter: Battle, actions: Seq[ActionRequest], messages: Seq[String])
 
 case class CardsResponse(hand: Seq[CardResponse], equippedCards: EquippedCardsResponse, inDeck: Seq[ShortCardResponse], inDiscard: Seq[ShortCardResponse])
 case class ShortCardResponse(name: String, id: UUID, action: Action)
