@@ -21,16 +21,17 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
     (UUID.fromString(uuid), UUID.fromString(cardUuid))
 
   implicit def jsonEnc: EntityEncoder[Json] = jsonEncoderWithPrinter(Printer.noSpaces.copy(dropNullKeys = true))
-  implicit def enc2: Encoder[StatusEffect] = deriveEnumerationEncoder[StatusEffect]
+  implicit def statusEncoder: Encoder[StatusEffect] = deriveEnumerationEncoder[StatusEffect]
 
 
   val routes: HttpService = {
     import io.circe.generic.extras.semiauto._
 
     HttpService {
-      // Attack
+      // Attacks
       case req@POST -> Root / "game" / uuid / "attack" =>
         val id = UUID.fromString(uuid)
+
         val optToken = req.requestToken
 
         ga.withGame(id, optToken) { g =>

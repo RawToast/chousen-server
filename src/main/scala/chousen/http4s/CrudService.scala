@@ -3,12 +3,12 @@ package chousen.http4s
 import java.util.UUID
 
 import chousen.api.core.GameAccess
+import chousen.api.data._
 import chousen.game.core.GameStateCreation
 import chousen.game.status.StatusCalculator
 import fs2.Task
-import io.circe.generic.auto._
 import io.circe.syntax._
-import io.circe.{Json, Printer}
+import io.circe.{Encoder, Json, Printer}
 import org.http4s.{EntityEncoder, Header}
 //import org.http4s.dsl.{->, /, Created, CreatedSyntax, GET, IntVar, Ok, OkSyntax, POST, QueryParamDecoderMatcher, Root}
 import org.http4s.circe.jsonEncoderWithPrinter
@@ -20,8 +20,11 @@ class CrudService(pbga: GameAccess[Task, Response], creator: GameStateCreation, 
   object NameMatcher extends QueryParamDecoderMatcher[String]("name")
 
   val routes: HttpService = {
+    import io.circe.generic.extras.semiauto.deriveEnumerationEncoder
 
     implicit def jsonEnc: EntityEncoder[Json] = jsonEncoderWithPrinter(Printer.noSpaces.copy(dropNullKeys = true))
+    implicit def enc3: Encoder[Action] = deriveEnumerationEncoder[Action]
+    import io.circe.generic.auto._
 
     HttpService {
 

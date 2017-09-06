@@ -4,21 +4,21 @@ import java.util.UUID
 
 sealed trait CommandRequest
 
-case class AttackRequest(targetId: UUID) extends CommandRequest
+final case class AttackRequest(targetId: UUID) extends CommandRequest
 
-case class BlockRequest() extends CommandRequest
+final case class BlockRequest() extends CommandRequest
 
-case class SelfInflictingActionRequest(action: SelfAction) extends CommandRequest
+final case class SelfInflictingActionRequest(action: SelfAction) extends CommandRequest
 
-case class SingleTargetActionRequest(targetId: UUID, action: SingleTargetAction) extends CommandRequest
+final case class SingleTargetActionRequest(targetId: UUID, action: SingleTargetAction) extends CommandRequest
 
-case class MultiTargetActionRequest(targetIds: Set[UUID], action: MultiAction) extends CommandRequest
+final case class MultiTargetActionRequest(targetIds: Set[UUID], action: MultiAction) extends CommandRequest
 
-case class CardActionRequest(action: CardAction, cardId: Option[UUID]) extends CommandRequest
+final case class CardActionRequest(action: CardAction, cardId: Option[UUID]) extends CommandRequest
 
-case class CampfireActionRequest(action: CampFireAction, cardId: Option[UUID]) extends CommandRequest
+final case class CampfireActionRequest(action: CampFireAction, cardId: Option[UUID]) extends CommandRequest
 
-case class EquipmentActionRequest(id: UUID, action: EquipAction) extends CommandRequest
+final case class EquipmentActionRequest(id: UUID, action: EquipAction) extends CommandRequest
 
 
 sealed trait Action

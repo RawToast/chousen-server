@@ -57,7 +57,10 @@ trait GameStateOps {
     }
 
     val newHand = gs.cards.hand.map(toCardResponse)
-//    val newDeck = gs.cards.deck.map(toCardResponse)
+    val newDeck = gs.cards.deck.map(toCardResponse)
+      .foldLeft(Seq.empty[CardResponse])((cs, cr) => if (!cs.exists(_.name == cr.name)) cs :+ cr else cs)
+    val newDiscard = gs.cards.discard.map(toCardResponse)
+      .foldLeft(Seq.empty[CardResponse])((cs, cr) => if (!cs.exists(_.name == cr.name)) cs :+ cr else cs)
 //    val newDiscard = gs.cards.discard.map(toCardResponse)
 //    val newPassives = gs.cards.passive.map(toCardResponse)
 
@@ -65,7 +68,7 @@ trait GameStateOps {
     val armourResp = gs.cards.equippedCards.armour.map(toCardResponse)
     val equipResp = EquippedCardsResponse(weaponResp, armourResp)
 
-    val cards = CardsResponse(newHand, equipResp)
+    val cards = CardsResponse(newHand, equipResp, newDeck, newDiscard)
 
     val blockReq = ActionRequest("Block", "Block for one turn, greatly increasing defense", s"game/${gs.uuid}/block", Seq(ActionRequestBody("Block")))
     val actions: Seq[ActionRequest] = if (gs.dungeon.currentEncounter.enemies.forall(_.name == "Camp Fire")) {
@@ -110,7 +113,7 @@ trait GameStateOps {
 
 case class GameResponse(uuid: UUID, player: Player, cards: CardsResponse, currentEncounter: Battle, actions: Seq[ActionRequest], messages: Seq[GameMessage])
 
-case class CardsResponse(hand: Seq[CardResponse], equippedCards: EquippedCardsResponse)
+case class CardsResponse(hand: Seq[CardResponse], equippedCards: EquippedCardsResponse, inDeck: Seq[CardResponse], inDiscard: Seq[CardResponse])
 
 case class EquippedCardsResponse(weapon: Option[CardResponse]=None, armour: Option[CardResponse]=None, jewelery: Option[CardResponse]=None)
 
