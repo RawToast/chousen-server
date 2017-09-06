@@ -40,37 +40,28 @@ sealed trait EquipArmour extends EquipAction
 sealed trait EquipJewelery extends EquipAction
 
 
-
 case object CrushingBlow extends SingleTargetAction
 case object BurningHammer extends SingleTargetAction
 case object StunningStrike extends SingleTargetAction
 case object Counter extends SingleTargetAction
 case object Destruction extends SingleTargetAction
-
 case object QuickAttack extends SingleTargetAction
 case object Assassinate extends SingleTargetAction
-//case object TripleStrike extends SingleTargetAction
-
-
 case object Pain extends SingleTargetAction
 case object MagicMissile extends SingleTargetAction
 case object Ember extends SingleTargetAction
 case object LifeSwap extends SingleTargetAction
-case object Barrier extends SelfAction
-
 
 
 case object Fireball extends MultiAction
 case object Extinguish extends MultiAction
 case object PotionOfFlames extends MultiAction
-
-//case object StaticField extends MultiAction
 case object MassDrain extends MultiAction
 case object Shatter extends MultiAction
-
 case object GroundStrike extends MultiAction
 case object WindStrike extends MultiAction
 
+case object Barrier extends SelfAction
 case object HealWounds extends SelfAction
 case object Haste extends SelfAction
 
