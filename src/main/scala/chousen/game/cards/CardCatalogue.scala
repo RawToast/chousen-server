@@ -78,7 +78,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     essenceBoost,
     reduceRequirements, reduceRequirements,
     miracle, miracle, miracle, miracle,
-    manifestRage, manifestRage
+    manifestRage, scrollOfFear
   )
 
   def chieftainDeck = Seq(
@@ -163,7 +163,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     elixirOfVitality, elixirOfVitality,  // 2 Elixirs
 
     haste, haste, haste, haste,           // 8 Potions
-    stoneSkin, regen,
+    scrollOfFear, scrollOfFear,
     flames, flames, flames,
 
     rarePepe, rarePepe,  // 2 Pepes
@@ -191,7 +191,7 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
 
     elixirOfIntelligence, elixirOfVitality,  // 2 Elixirs
 
-    haste, haste, haste, haste,              // 8 Potions
+    haste, haste, haste, scrollOfFear,              // 8 Potions
     stoneSkin, stoneSkin, flames, flames,
     intelligence, intelligence,
     lignification,

@@ -99,18 +99,8 @@ trait GameStateOps {
     }
 
     def hasTurn(gm: GameMessage) = gm.text.contains(" turn.")
-//
-//    val msgs2 = if (gs.messages.count(hasTurn) <= 1) gs.messages.filterNot(hasTurn)
-//    else if (gs.messages.exists(_.text.contains(s"${gs.player.name} dies."))) gs.messages.takeRight(5)
-//    else {
-//      gs.messages.reverse.tail.takeWhile(gm => !hasTurn(gm)).reverse
-//    }
-//    import io.circe.generic.auto._
-//    import io.circe.syntax._
-//    println(gs.asJson)
-//    val msgs = if (msgs2.isEmpty) gs.messages.takeRight(1) else msgs2
 
-    val msgs: Seq[String] = gs.messages.withFilter(m => !hasTurn(m)).withFilter(m => !diff.contains(m)).map(_.text)
+    val msgs: Seq[String] = gs.messages.drop(diff.size).filterNot(hasTurn).map(_.text)
 
     GameResponse(gs.uuid, gs.player, cards, gs.dungeon.currentEncounter, actions, msgs)
   }

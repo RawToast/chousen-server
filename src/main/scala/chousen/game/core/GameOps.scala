@@ -197,7 +197,7 @@ object EnemyTurnOps {
       .reduceLeftOption[Status] { case (a, b) => a.copy(amount = a.amount |+| b.amount) }
 
     def effectsForComputation(e: Enemy): Seq[Status] =
-      p.status.filterNot(_.effect == Regen) ++ regenEffects(e)
+      e.status.filterNot(_.effect == Regen) ++ regenEffects(e)
 
     def foldStatus(e: Enemy, s: Status) = {
       s.effect match {
@@ -209,22 +209,27 @@ object EnemyTurnOps {
 
           EnemyHpLens.modify(doDmg)(e)
         }
-        case Fear =>
+        case Fear => {
           if (e.stats.currentHp < 25 || (e.stats.currentHp.toDouble / e.stats.maxHp.toDouble) <= 0.25) {
             EnemyHpLens.set(-666)(e)
+          } else {
             e
-          } else e
+          }
+        }
         case _ => e
       }
     }
-    def handleStatus(e: Enemy) = effectsForComputation(e).foldLeft(e)(foldStatus)
+    def handleStatus(e: Enemy) = {
+      effectsForComputation(e).foldLeft(e)(foldStatus)
+    }
 
     def reducePerTurnStatus(e: Enemy) = e.copy(status = e.status.map(sf => sf.effect match {
       case Burn => sf.copy(turns = sf.turns - 1)
       case _ => sf
     }))
 
-    def removeDeadStatuses(e: Enemy) = e.copy(status = e.status.filter(_.turns > 0))
+    def  removeDeadStatuses(e: Enemy) = e.copy(status = e.status.filter(_.turns > 0))
+
 
     val updateEnemy: (Enemy) => Enemy = e => if(e.id == ae.id) (handleStatus _).andThen(reducePerTurnStatus).andThen(removeDeadStatuses)(e) else e
 

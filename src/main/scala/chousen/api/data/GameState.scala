@@ -55,10 +55,10 @@ case object Dexterity extends StatusEffect
 case object Smart extends StatusEffect
 case object Rage extends StatusEffect
 case object Poison extends StatusEffect
+case object Fear extends StatusEffect
 case object Burn extends StatusEffect
 case object Regen extends StatusEffect
 case object Tree extends StatusEffect
-case object Fear extends StatusEffect
 
 sealed trait WeaponEffect
 
