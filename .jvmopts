@@ -1,3 +1,8 @@
--Xms512M
--Xmx1024M
+-Xms1G
+-Xmx1536M
 -Xss8M
+-XX:ReservedCodeCacheSize=256M
+-XX:+TieredCompilation
+-XX:-UseGCOverheadLimit
+-XX:+CMSClassUnloadingEnabled
+-XX:+UseConcMarkSweepGC

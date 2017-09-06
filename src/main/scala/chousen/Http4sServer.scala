@@ -19,6 +19,7 @@ import org.http4s.util.StreamApp
 object Http4sServer extends StreamApp {
 
   import java.util.concurrent.Executors
+
   import org.http4s.server.blaze.BlazeBuilder
 
   def buildServer: BlazeBuilder = {
@@ -50,19 +51,17 @@ object Http4sServer extends StreamApp {
 
     val playerBasedGameAccess: GameAccess[Task, Response] = new PlayerBasedGameAccess()
 
-    val frontendService: FrontendService = new FrontendService(apiKey, playerBasedGameAccess, statusCalculator)
     val crudService: CrudService = new CrudService(playerBasedGameAccess, gameCreator, statusCalculator)
     val authService = new AuthService(googleAuth)
     val inputService = new InputService(playerBasedGameAccess, gameStateManager, statusCalculator)
     val assetService = new AssetService()
 
 
-    // Unconfigured, will bind to 8080
     BlazeBuilder.bindHttp(port, host)
       .withServiceExecutor(Executors.newCachedThreadPool())
 
-      .mountService(crudService.routes |+| frontendService.routes |+|
-        inputService.routes |+| assetService.routes |+| authService.routes, "/")
+      .mountService(crudService.routes |+| inputService.routes |+|
+         assetService.routes |+| authService.routes, "/")
   }
   override def stream(args: List[String]) = {
     buildServer.serve

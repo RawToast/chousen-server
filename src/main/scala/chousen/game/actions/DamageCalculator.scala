@@ -162,7 +162,7 @@ object Multipliers {
   val lowDexteritySkill = Multipliers(str = lowMulti)
   val dexteritySkill = Multipliers(dex = medMulti)
 
-//  val lowIntellectSkill = Multipliers(int = lowMulti)
+  val lowIntellectSkill = Multipliers(int = lowMulti)
   val intellectSkill = Multipliers(int = medMulti)
 //  val highIntellectSkill = Multipliers(int = highMulti)
 

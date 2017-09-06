@@ -4,21 +4,21 @@ import java.util.UUID
 
 sealed trait CommandRequest
 
-case class AttackRequest(targetId: UUID) extends CommandRequest
+final case class AttackRequest(targetId: UUID) extends CommandRequest
 
-case class BlockRequest() extends CommandRequest
+final case class BlockRequest() extends CommandRequest
 
-case class SelfInflictingActionRequest(action: SelfAction) extends CommandRequest
+final case class SelfInflictingActionRequest(action: SelfAction) extends CommandRequest
 
-case class SingleTargetActionRequest(targetId: UUID, action: SingleTargetAction) extends CommandRequest
+final case class SingleTargetActionRequest(targetId: UUID, action: SingleTargetAction) extends CommandRequest
 
-case class MultiTargetActionRequest(targetId: Set[UUID], action: MultiAction) extends CommandRequest
+final case class MultiTargetActionRequest(targetIds: Set[UUID], action: MultiAction) extends CommandRequest
 
-case class CardActionRequest(action: CardAction, cardId: Option[UUID]) extends CommandRequest
+final case class CardActionRequest(action: CardAction, cardId: Option[UUID]) extends CommandRequest
 
-case class CampfireActionRequest(action: CampFireAction, cardId: Option[UUID]) extends CommandRequest
+final case class CampfireActionRequest(action: CampFireAction, cardId: Option[UUID]) extends CommandRequest
 
-case class EquipmentActionRequest(id: UUID, action: EquipAction) extends CommandRequest
+final case class EquipmentActionRequest(id: UUID, action: EquipAction) extends CommandRequest
 
 
 sealed trait Action
@@ -40,36 +40,29 @@ sealed trait EquipArmour extends EquipAction
 sealed trait EquipJewelery extends EquipAction
 
 
-
 case object CrushingBlow extends SingleTargetAction
 case object BurningHammer extends SingleTargetAction
 case object StunningStrike extends SingleTargetAction
 case object Counter extends SingleTargetAction
 case object Destruction extends SingleTargetAction
-
 case object QuickAttack extends SingleTargetAction
 case object Assassinate extends SingleTargetAction
-//case object TripleStrike extends SingleTargetAction
-
-
 case object Pain extends SingleTargetAction
 case object MagicMissile extends SingleTargetAction
-case object Barrier extends SelfAction
-
-//case object Drain extends SingleTargetAction
+case object Ember extends SingleTargetAction
+case object LifeSwap extends SingleTargetAction
 
 
 case object Fireball extends MultiAction
 case object Extinguish extends MultiAction
 case object PotionOfFlames extends MultiAction
-
-//case object StaticField extends MultiAction
-//case object MassDrain extends MultiAction
-//case object Shatter extends MultiAction
-
+case object ScrollOfFear extends MultiAction
+case object MassDrain extends MultiAction
+case object Shatter extends MultiAction
 case object GroundStrike extends MultiAction
 case object WindStrike extends MultiAction
 
+case object Barrier extends SelfAction
 case object HealWounds extends SelfAction
 case object Haste extends SelfAction
 
@@ -114,19 +107,19 @@ case object EssenceBoost extends DiscardCardAction
 case object ReduceRequirements extends DiscardCardAction
 case object IncreaseCharges extends DiscardCardAction
 
-
+sealed trait DiscardingCampFireAction extends CampFireAction
 case object Rest extends CampFireAction
 case object Explore extends CampFireAction
 case object RestAndExplore extends CampFireAction
-case object Drop extends CampFireAction
-case object Destroy extends CampFireAction
+case object Drop extends DiscardingCampFireAction
+case object Destroy extends DiscardingCampFireAction
 
 
 case object Club extends EquipWeapon
 case object Mace extends EquipWeapon
 case object ShortSword extends EquipWeapon
 case object BroadSword extends EquipWeapon
-case object Kodachi extends EquipWeapon
+case object LongSword extends EquipWeapon
 case object GiantClub extends EquipWeapon
 case object TrollCrusher extends EquipWeapon
 case object SwordOfIntellect extends EquipWeapon

@@ -144,7 +144,7 @@ class EquipmentActionHandlerSpec extends WordSpec {
     }
 
     "Given Kodachi" should {
-      val result = equipActionHandler.handle(Kodachi, uuid)(startedGame)
+      val result = equipActionHandler.handle(LongSword, uuid)(startedGame)
 
       equipWeaponAssertions(result, startedGame)
     }

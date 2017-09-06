@@ -118,6 +118,43 @@ class MultiTargetActionHandlerSpec extends WordSpec {
       standardAssertions(startedGame, result, targets)
     }
 
+    "Given Mass Drain" should {
+      val (startedGame, result, targets) = completeAction(MassDrain)
+
+      standardAssertions(startedGame, result, targets)
+    }
+
+    "Given Shatter" should {
+      val (startedGame, result, targets) = completeAction(Shatter)
+
+      "Lower the targeted enemies health" in {
+        targets.foreach(t => assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == t)))
+        assert(startedGame.dungeon.currentEncounter.enemies.size == 2)
+        assert(result.dungeon.currentEncounter.enemies.size == 2)
+        assert(getFirstEnemyHp(result) < getFirstEnemyHp(startedGame))
+        assert(getSecondEnemyHp(result) < getSecondEnemyHp(startedGame))
+      }
+
+      "the players position is reduced" in {
+        assert(result.player.position < 100)
+      }
+
+      lazy val numberOfNewMessages = result.messages.size - startedGame.messages.size
+      lazy val latestMessages = result.messages.takeRight(numberOfNewMessages)
+
+      "game messages are created for the player's attack" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "the enemy does not take a turn" in {
+        assert(latestMessages.exists(!_.text.contains("Slime attacks Test Player")))
+      }
+
+      "the player's health is reduced" in {
+        assert(startedGame.player.stats.currentHp > result.player.stats.currentHp)
+      }
+    }
+
     "Given Potion of Flames" should {
       val (startedGame, result, targets) = completeAction(PotionOfFlames)
 
@@ -148,6 +185,39 @@ class MultiTargetActionHandlerSpec extends WordSpec {
 
       "Gives enemies the burn status" in {
         assert(result.dungeon.currentEncounter.enemies.forall(_.status.exists(_.effect == Burn)))
+      }
+    }
+
+    "Given Scroll of Fear" should {
+      val (startedGame, result, targets) = completeAction(ScrollOfFear)
+
+      "Not Lower the targeted enemies health" in {
+        targets.foreach(t => assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == t)))
+        assert(startedGame.dungeon.currentEncounter.enemies.size == 2)
+        assert(result.dungeon.currentEncounter.enemies.size == 2)
+        assert(getFirstEnemyHp(result) == getFirstEnemyHp(startedGame))
+        assert(getSecondEnemyHp(result) == getSecondEnemyHp(startedGame))
+      }
+
+      "the players position is reduced" in {
+        assert(result.player.position < 100)
+      }
+
+      lazy val numberOfNewMessages = result.messages.size - startedGame.messages.size
+      lazy val latestMessages = result.messages.takeRight(numberOfNewMessages)
+
+      "game messages are created for the player's attack" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "the enemy does not take a turn" in {
+        assert(result.player.stats.currentHp == startedGame.player.stats.currentHp)
+
+        assert(latestMessages.exists(!_.text.contains("Slime attacks Test Player")))
+      }
+
+      "Gives enemies the fear status" in {
+        assert(result.dungeon.currentEncounter.enemies.forall(_.status.exists(_.effect == Fear)))
       }
     }
 

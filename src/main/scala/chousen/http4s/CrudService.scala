@@ -3,56 +3,73 @@ package chousen.http4s
 import java.util.UUID
 
 import chousen.api.core.GameAccess
+import chousen.api.data._
 import chousen.game.core.GameStateCreation
 import chousen.game.status.StatusCalculator
 import fs2.Task
-import io.circe.Json
-import io.circe.generic.auto._
 import io.circe.syntax._
-import org.http4s.circe._
-import org.http4s.dsl.{->, /, Created, CreatedSyntax, GET, IntVar, Ok, OkSyntax, POST, QueryParamDecoderMatcher, Root}
+import io.circe.{Encoder, Json, Printer}
+import org.http4s.{EntityEncoder, Header}
+//import org.http4s.dsl.{->, /, Created, CreatedSyntax, GET, IntVar, Ok, OkSyntax, POST, QueryParamDecoderMatcher, Root}
+import org.http4s.circe.jsonEncoderWithPrinter
+import org.http4s.dsl._
 import org.http4s.{HttpService, Response}
 
 class CrudService(pbga: GameAccess[Task, Response], creator: GameStateCreation, sc: StatusCalculator) extends ChousenCookie {
+
   object NameMatcher extends QueryParamDecoderMatcher[String]("name")
 
-  val routes: HttpService = HttpService {
+  val routes: HttpService = {
+    import io.circe.generic.extras.semiauto.deriveEnumerationEncoder
 
-    // load
-    case req@GET -> Root / "game" / id =>
+    implicit def jsonEnc: EntityEncoder[Json] = jsonEncoderWithPrinter(Printer.noSpaces.copy(dropNullKeys = true))
+    implicit def statusEncoder: Encoder[StatusEffect] = deriveEnumerationEncoder[StatusEffect]
+    implicit def actionEncoder: Encoder[Action] = deriveEnumerationEncoder[Action]
+    import io.circe.generic.auto._
 
-      val optToken = req.requestToken
+    HttpService {
 
-      val uuid = UUID.fromString(id)
+      // load
+      case req@GET -> Root / "game" / id =>
 
-      pbga.withGame(uuid, optToken) { game =>
-        val ng = game.copy(player = sc.calculate(game.player))
-        Ok(ng.asJson)
-      }
+        val optToken = req.requestToken
 
-    //  create
-    case req@POST -> Root / "game" / playerName / "start"  => // used
-      val startedGame = creator.createAndStart(playerName)
+        val uuid = UUID.fromString(id)
 
-      val optToken = req.requestToken
+        pbga.withGame(uuid, optToken) { game =>
+          val ng = game.copy(player = sc.calculate(game.player))
+          val resp = ng.asResponse
+          //Access-Control-Allow-Origin: *
+          Ok(resp.asJson).putHeaders(Header("Access-Control-Allow-Origin", "*"))
+        }
 
-      for {
-        game <- pbga.storeGame(startedGame, optToken)
-        asJson: Json = game.asJson
-        result <- Created(asJson)
-      } yield result
+      //  create
+      case req@POST -> Root / "game" / playerName / "start" => // used
+        val startedGame = creator.createAndStart(playerName)
 
-    //  create
-    case req@POST -> Root / "game" / playerName / "start" / IntVar(choice) => // used
-      val startedGame = creator.createAndStart(playerName, choice)
-      val optToken = req.requestToken
+        val optToken = req.requestToken
 
-      for {
-        game <- pbga.storeGame(startedGame, optToken)
-        asJson: Json = game.asJson
-        result <- Created(asJson)
-      } yield result
+        for {
+          game <- pbga.storeGame(startedGame, optToken)
+          resp = game.asResponse
+          asJson: Json = resp.asJson
+          result <- Created(asJson)
+        } yield result.putHeaders(Header("Access-Control-Allow-Origin", "*"))
+
+      //  create
+      case req@POST -> Root / "game" / playerName / "start" / IntVar(choice) => // used
+        val startedGame = creator.createAndStart(playerName, choice)
+        val optToken = req.requestToken
+
+        for {
+          game <- pbga.storeGame(startedGame, optToken)
+          resp = game.asResponse
+          asJson: Json = resp.asJson
+          result <- Created(asJson)
+        } yield result.putHeaders(Header("Access-Control-Allow-Origin", "*"))
+    }
   }
+
 
 }
 

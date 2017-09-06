@@ -1,5 +1,7 @@
 package chousen.game.core
 
+import java.util.UUID
+
 import chousen.api.data._
 import chousen.game.actions.{MultiTargetActionHandler, SelfActionHandler, SingleTargetActionHandler, _}
 import chousen.game.cards.CardManager
@@ -25,10 +27,10 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
   lazy val essenceActions = Seq(EssenceOfStrength, EssenceOfDexterity, EssenceOfVitality, EssenceOfIntelligence)
 
   override def useCard(card: Card, commandRequest: CommandRequest, game: GameState): GameState = {
-    val p = damageCalculator.sc.calculate(game.player)
+    val sePlayer = damageCalculator.sc.calculate(game.player)
     lazy val baseStats = game.player.stats
 
-    if (p.status.map(_.effect).contains(Rage) && !card.action.isInstanceOf[CampFireAction]) {
+    if (sePlayer.status.map(_.effect).contains(Rage) && !card.action.isInstanceOf[CampFireAction]) {
       val msg = GameMessage(s"Cannot use ${card.name} whilst Berserk")
       game.copy(messages = game.messages :+ msg)
     } else if(essenceActions.contains(card.action) && game.cards.playedEssence) {
@@ -38,7 +40,7 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
       || baseStats.dexterity < card.requirements.dex.getOrElse(0)
       || baseStats.intellect < card.requirements.int.getOrElse(0)) {
       val msg = GameMessage(
-        s"Cannot use ${card.name}, ${p.name} does not meet the requirements " +
+        s"Cannot use ${card.name}, ${sePlayer.name} does not meet the requirements " +
           s"${card.requirements.str.map(i => s"Str: $i ").getOrElse("")}" +
           s"${card.requirements.dex.map(i => s"Dex: $i ").getOrElse("")}" +
           s"${card.requirements.int.map(i => s"Int: $i").getOrElse("")}")
@@ -86,7 +88,7 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
         val ns= GameTurnLoop.  takeTurn(game,
           singleTargetActionHandler.handle(targetId, action))
         transition(ns, usedCard = true)
-      case MultiTargetActionRequest(targets, action) =>
+      case MultiTargetActionRequest(targets: Set[UUID], action) =>
         val ns = GameTurnLoop.takeTurn(game,
           multiTargetActionHandler.handle(targets, action))
         transition(ns, usedCard = true)

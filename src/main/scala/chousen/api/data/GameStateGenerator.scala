@@ -32,12 +32,14 @@ object GameStateGenerator {
     import cats.implicits.catsSyntaxSemigroup
     import chousen.Implicits._
 
-    val cards = CardManager.startGame(CardCatalogue.fighterDeck, CardCatalogue.passiveCards)
+    val cs = CardManager.startGame(CardCatalogue.fighterDeck, CardCatalogue.passiveCards)
     def mkBattle(e: Enemy) = Battle(Set(e))
     def createBattle = mkBattle(firstEnemy) |+| mkBattle(secondEnemy)
 
-    val dungeon = Dungeon(createBattle, LinearSeq(createBattle, createBattle |+| createBattle))
+    val dungeon = Dungeon(createBattle, LinearSeq(mkBattle(firstEnemy), createBattle |+| createBattle))
     val msgs = Seq.empty[GameMessage]
+
+    val cards = cs.copy(hand = cs.hand.tail :+ CardCatalogue.essenceOfStrength)
 
     GameState(uuid, player, cards, dungeon, msgs)
   }

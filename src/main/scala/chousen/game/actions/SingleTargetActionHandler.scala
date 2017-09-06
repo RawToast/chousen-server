@@ -34,6 +34,8 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
 
       case Pain => pain
       case MagicMissile => magicMissile
+      case Ember => ember
+      case LifeSwap => lifeswap
     }
 
   def attackAbility(calc: (Player, Enemy, Multipliers) => Int ) = {
@@ -113,9 +115,9 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
       msgs :+ targetMsg :+ dmgMsg
     } else msgs :+ GameMessage(s"${p.name} lands a destructive blow on ${e.name} and deals $dmg damage!")
 
-    (calculatePosition(p,
-      SLUGGISH,
-      sePlayer.stats.strength / 4), Option(newEnemy), gameMessages)
+    val updatedPlayer = p.copy(position = calculatePosition(sePlayer, SLUGGISH, sePlayer.stats.strength / 4).position)
+
+    (updatedPlayer, Option(newEnemy), gameMessages)
   }
 
 
@@ -123,7 +125,8 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
   def quickAttack(p: Player, e: Enemy, msgs: Seq[GameMessage]) = ability(p, e, msgs)(
     useMsg = (p, _) => s"$p uses Quick Attack!",
     multi = Multipliers.dexteritySkill,
-    speed = QUICK - (p.stats.dexterity / 2))
+    speed = QUICK - (p.stats.dexterity / 2),
+    bonusDamage = p.experience.level)
 
   def assassinate(p: Player, e: Enemy, msgs: Seq[GameMessage]): (Player, Option[Enemy], Seq[GameMessage]) = {
 
@@ -143,7 +146,9 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
       .modify(hp => hp - dmg)(e)
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
-    (calculatePosition(p), Option(newEnemy), gameMessages)
+    val updatedPlayer = p.copy(position = calculatePosition(sePlayer).position)
+
+    (updatedPlayer, Option(newEnemy), gameMessages)
   }
 
 
@@ -163,28 +168,46 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
       .modify(hp => hp - dmg)(e)
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
-    (calculatePosition(p), Option(newEnemy), gameMessages)
+    val updatedPlayer = p.copy(position = calculatePosition(sePlayer).position)
+
+    (updatedPlayer, Option(newEnemy), gameMessages)
   }
 
-  def magicMissile2(p: Player, e: Enemy, msgs: Seq[GameMessage]) = ability(p, e, msgs)(
+  def magicMissile(p: Player, e: Enemy, msgs: Seq[GameMessage]) = ability(p, e, msgs)(
     useMsg = (p, _) => s"$p uses Magic Missile!",
     damageMsg = (e, d) => s"The missile strikes $e for $d damage!",
+    bonusDamage = 2,
     multi = Multipliers.intellectSkill,
     damageCalc = damageCalculator.calculatePlayerMagicDamage)
 
-  def magicMissile(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
-    val magicDmg = damageCalculator.calculatePlayerMagicDamage(p, e, Multipliers.intellectSkill)
 
-    val dmg = Math.max(1, 2 + magicDmg)
+  def ember(p: Player, e: Enemy, msgs: Seq[GameMessage]) = ability(p, e, msgs)(
+    useMsg = (p, _) => s"$p uses Ember!",
+    damageMsg = (e, d) => s"$e is burnt by the flames for $d damage!",
+    multi = Multipliers.lowIntellectSkill,
+    enemyEffect = EnemyStatusLens.modify(ss => ss :+ StatusBuilder.makeBurn(ss.count(_.effect == Burn) + (p.stats.intellect / 2))),
+    bonusDamage =  Math.max(0, e.status.count(_.effect == Burn) * (p.stats.intellect / 8)),
+    damageCalc = damageCalculator.calculatePlayerMagicDamage
+  )
 
-    val targetMsg = GameMessage(s"${p.name} uses Magic Missile!")
-    val dmgMsg = GameMessage(s"The missile strikes ${e.name} for $dmg damage!")
+  // Int
+  def lifeswap(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
 
-    // This should be replaced by a generic attack/damage function
+    val targetMsg = GameMessage(s"${p.name} uses Life Swap!")
+
+
     val newEnemy = EnemyStatsLens.composeLens(HpLens)
-      .modify(hp => hp - dmg)(e)
+      .set(
+        if (e.stats.currentHp > p.stats.maxHp) Math.min(Math.max(p.stats.currentHp, (e.stats.currentHp * 0.80).toInt), e.stats.maxHp)
+        else Math.max(e.stats.maxHp, p.stats.currentHp))(e)
+
+    val dmg = newEnemy.stats.currentHp - e.stats.currentHp
+
+    val dmgMsg = GameMessage(s"${e.name}'s takes $dmg as their health is swapped with ${p.name}!")
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
-    (calculatePosition(p), Option(newEnemy), gameMessages)
+
+    (calculatePosition(PlayerHealthLens.set(Math.min(e.stats.currentHp, p.stats.maxHp))(p)),
+      Option(newEnemy), gameMessages)
   }
 }

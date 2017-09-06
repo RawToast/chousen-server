@@ -2,9 +2,6 @@ package chousen.http4s
 
 import org.http4s
 import org.http4s.headers.Cookie
-import org.http4s.twirl.TwirlInstances
-
-trait HtmlService extends TwirlInstances
 
 trait ChousenCookie {
   import org.http4s.Request
