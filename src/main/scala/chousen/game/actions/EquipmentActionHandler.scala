@@ -28,6 +28,7 @@ class EquipmentActionHandler {
       case TrollCrusher => trollCrusher
       case SwordOfIntellect => swordOfIntellect
       case DaggerOfDavid => daggerOfDavid
+      case QuickBlade => quickBlade
 
       case Cape => cape
       case LeatherArmour => leatherArmour
@@ -64,6 +65,9 @@ class EquipmentActionHandler {
 
   def daggerOfDavid(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
     weapon("Dagger of David", 0, Seq(Deadly))(p, msgs, uuid)
+
+  def quickBlade(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Quick Blade", 9, Seq(Quick))(p, msgs, uuid)
 
   def weapon(name: String, dmg: Int, effects: Seq[WeaponEffect]= Seq.empty) = (p: Player, msgs: Seq[GameMessage], uuid: UUID) => {
 

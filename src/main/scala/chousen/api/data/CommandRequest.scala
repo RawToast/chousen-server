@@ -50,12 +50,13 @@ case object Assassinate extends SingleTargetAction
 case object Pain extends SingleTargetAction
 case object MagicMissile extends SingleTargetAction
 case object Ember extends SingleTargetAction
-case object LifeSwap extends SingleTargetAction
-
+case object Drain extends SingleTargetAction
+case object ToxicShiv extends SingleTargetAction
 
 case object Fireball extends MultiAction
 case object Extinguish extends MultiAction
 case object PotionOfFlames extends MultiAction
+case object PotionOfPoison extends MultiAction
 case object ScrollOfFear extends MultiAction
 case object MassDrain extends MultiAction
 case object Shatter extends MultiAction
@@ -124,6 +125,7 @@ case object GiantClub extends EquipWeapon
 case object TrollCrusher extends EquipWeapon
 case object SwordOfIntellect extends EquipWeapon
 case object DaggerOfDavid extends EquipWeapon
+case object QuickBlade extends EquipWeapon
 
 
 case object Cape extends EquipArmour

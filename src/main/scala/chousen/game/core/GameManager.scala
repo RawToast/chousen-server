@@ -5,13 +5,15 @@ import java.util.UUID
 import chousen.api.data._
 import chousen.game.actions.{MultiTargetActionHandler, SelfActionHandler, SingleTargetActionHandler, _}
 import chousen.game.cards.CardManager
+import chousen.game.core.turn.PostTurnOps
 import chousen.game.status.PostTurnStatusCalc
+import chousen.util.LensUtil
 
 trait GameManager[A] {
 
   def takeCommand(command: CommandRequest, game: A): A
 
-  def transition(game: A, usedCard:Boolean=false): A
+  def transition(game: A, action: Action, usedCard:Boolean=false): A
 
   def useCard(card: Card, commandRequest: CommandRequest, game: A): A
 }
@@ -69,39 +71,39 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
     }
   }
 
-  override def transition(game: GameState, usedCard: Boolean): GameState =
-    transitionGame(game, postStatusCalc, usedCard)
+  override def transition(game: GameState, action: Action, usedCard: Boolean): GameState =
+    transitionGame(game, postStatusCalc, action, usedCard)
 
   override def takeCommand(command: CommandRequest, game: GameState): GameState = {
     val newState = command match {
       case AttackRequest(targetId) =>
         val newState = GameTurnLoop.takeTurn(game, basicAttack.attack(targetId))
-        transition(newState)
+        transition(newState, QuickAttack)
       case BlockRequest() =>
         val newState = GameTurnLoop.takeTurn(game, blockHandler.block())
-        transition(newState)
+        transition(newState, QuickAttack) //Rather hacky, need something else
       case SelfInflictingActionRequest(a) =>
         val resetEssences = !essenceActions.contains(a)
         val ns = GameTurnLoop.takeTurn(game,
           selfActionHandler.handle(a).apply, resetEssence = resetEssences)
-          transition(ns, usedCard = true)
+          transition(ns, a, usedCard = true)
       case SingleTargetActionRequest(targetId, action) =>
         val ns= GameTurnLoop.  takeTurn(game,
           singleTargetActionHandler.handle(targetId, action))
-        transition(ns, usedCard = true)
+        transition(ns, action, usedCard = true)
       case MultiTargetActionRequest(targets: Set[UUID], action) =>
         val ns = GameTurnLoop.takeTurn(game,
           multiTargetActionHandler.handle(targets, action))
-        transition(ns, usedCard = true)
+        transition(ns, action, usedCard = true)
       case CardActionRequest(action, id) =>
         val ns = GameTurnLoop.takeTurn(game, CardActionHandler.handle(action, id), resetEssence = false)
-        transition(ns, usedCard = true)
+        transition(ns, action, usedCard = true)
       case CampfireActionRequest(action, cardId) =>
         val ns = GameTurnLoop.takeTurn(game, CampFireActionHandler.handle(action, cardId))
-        transition(ns)
+        transition(ns, action)
       case EquipmentActionRequest(id, action) =>
         val ns = GameTurnLoop.takeTurn(game, equipmentActionHandler.handle(action, id))
-        transition(ns)
+        transition(ns, action)
     }
 
     newState
@@ -113,18 +115,30 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
 trait TurnTransition {
   import chousen.Optics._
 
-  def transitionGame(game: GameState, statusCalc: PostTurnStatusCalc, usedCard: Boolean = false): GameState = {
-    val playerIsDead = game.player.stats.currentHp <= 0
-    lazy val deathMessage = GameMessage(s"${game.player.name} dies.")
-    lazy val winMessage = GameMessage(s"A winner is ${game.player.name}!")
+  def transitionGame(game: GameState, statusCalc: PostTurnStatusCalc, action: Action, usedCard: Boolean = false): GameState = {
 
-    def completedBattle = game.dungeon.currentEncounter.enemies.isEmpty && game.dungeon.remainingEncounters.nonEmpty
-    def completedDungeon = game.dungeon.currentEncounter.enemies.isEmpty && game.dungeon.remainingEncounters.isEmpty
+    @scala.annotation.tailrec
+    def finalChecks(gs: GameState, looped:Boolean=false): GameState = {
+      val playerIsDead = gs.player.stats.currentHp <= 0
+      lazy val deathMessage = GameMessage(s"${gs.player.name} dies.")
+      lazy val winMessage = GameMessage(s"A winner is ${gs.player.name}!")
 
-    if (playerIsDead) MessagesLens.modify(msgs => msgs :+ deathMessage)(game)
-    else if (completedDungeon) MessagesLens.modify(msgs => msgs :+ winMessage)(game)
-    else if (completedBattle) postBattle(game, statusCalc, usedCard)
-    else statusCalc.applyStatusEffects(game)
+      def completedBattle = gs.dungeon.currentEncounter.enemies.isEmpty && gs.dungeon.remainingEncounters.nonEmpty
+      def completedDungeon = gs.dungeon.currentEncounter.enemies.isEmpty && gs.dungeon.remainingEncounters.isEmpty
+
+
+      if (playerIsDead) MessagesLens.modify(msgs => msgs :+ deathMessage)(gs)
+      else if (completedDungeon) MessagesLens.modify(msgs => msgs :+ winMessage)(gs)
+      else if (completedBattle) postBattle(gs, statusCalc, usedCard)
+      else if (looped) gs
+      else {
+        val effGame = LensUtil.triLens(PlayerLens, CurrentEnemiesLens, MessagesLens).modify(PostTurnOps.handleDead).
+          compose(statusCalc.applyStatusEffects(_:GameState, action))(gs)
+
+        finalChecks(effGame, looped = true)}
+    }
+
+    finalChecks(game)
   }
 
   private def postBattle(gs: GameState, statusCalc: PostTurnStatusCalc, playedCard: Boolean): GameState = {

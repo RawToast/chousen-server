@@ -50,7 +50,7 @@ trait GameStateOps {
             case _ => Seq(ActionRequestBody(c.name, Some(c.action)))
           })
 
-        CardResponse(c.name, c.description, c.id, mkChargesStr(c), ars.request.isEmpty, ars)
+        CardResponse(c.name, c.description, c.id, mkChargesStr(c), ars.request.nonEmpty, ars)
       }
       case _: CampFireAction => CardResponse(c.name, c.description,  c.id, mkChargesStr(c), canPlayCard(c),
         ActionRequest(c.name, c.description, s"game/${gs.uuid}/camp/${c.id}", Seq.empty))

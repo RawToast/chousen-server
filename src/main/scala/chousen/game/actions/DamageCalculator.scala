@@ -63,6 +63,7 @@ class DamageCalculator(val sc: StatusCalculator) {
             case Magic => atkInt / 2
             case Crush => defender.stats.currentHp / 8
             case Deadly => 1 + defender.stats.maxHp / 12
+            case Quick => Math.min(0, attacker.stats.speed - 8)
             case Toxic => 0
           }
         })

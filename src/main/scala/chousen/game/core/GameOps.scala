@@ -65,9 +65,13 @@ object EnemyTurnOps {
 
     def finish(es: Set[Enemy], ae: Enemy, st: Option[Status]=None) = {
       def affectStatus = EnemyStatusLens.modify(handleStatus)
-      def handleStatus(status: Seq[Status]): Seq[Status] =
-                  status.filter(_.turns > 0)
-                    .map(s => s.copy(turns = s.turns - 1))
+      def handleStatus(status: Seq[Status]): Seq[Status] = {
+        val altStatus = status.filter(_.turns > 0).filter(s => s.effect == Poison)
+        val mainStatus= status.filter(_.turns > 0).filterNot(s => s.effect == Poison)
+
+        altStatus ++
+          mainStatus.map(s => s.copy(turns = s.turns - 1))
+      }
 
       def reset(e: Enemy) = e.copy(position = e.position - 100)
 
@@ -200,7 +204,7 @@ object EnemyTurnOps {
       .reduceLeftOption[Status] { case (a, b) => a.copy(amount = a.amount |+| b.amount) }
 
     def effectsForComputation(e: Enemy): Seq[Status] =
-      e.status.filterNot(ef => ef.effect != Regen || ef.effect !=Burn) ++ regenEffects(e) ++ burnEffects(e)
+      e.status.filterNot(ef => ef.effect == Regen || ef.effect == Burn) ++ regenEffects(e) ++ burnEffects(e)
 
     def foldStatus(e: Enemy, s: Status) = {
       s.effect match {
@@ -222,19 +226,20 @@ object EnemyTurnOps {
         case _ => e
       }
     }
-    def handleStatus(e: Enemy) = {
+    def handleStatus(e: Enemy) =
       effectsForComputation(e).foldLeft(e)(foldStatus)
-    }
+
 
     def reducePerTurnStatus(e: Enemy) = e.copy(status = e.status.map(sf => sf.effect match {
       case Burn => sf.copy(turns = sf.turns - 1)
       case _ => sf
     }))
 
-    def  removeDeadStatuses(e: Enemy) = e.copy(status = e.status.filter(_.turns > 0))
+    def removeDeadStatuses(e: Enemy) = e.copy(status = e.status.filter(_.turns > 0))
 
 
-    val updateEnemy: (Enemy) => Enemy = e => if(e.id == ae.id) (handleStatus _).andThen(reducePerTurnStatus).andThen(removeDeadStatuses)(e) else e
+    val updateEnemy: (Enemy) => Enemy = e => if(e.id == ae.id) {
+      (handleStatus _).andThen(reducePerTurnStatus).andThen(removeDeadStatuses)(e) } else e
 
     (p, es.map(updateEnemy), ms ++ msgs)
    }

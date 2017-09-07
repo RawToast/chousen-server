@@ -90,19 +90,18 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     essenceOfVitality, essenceOfStrength,
     rarePepe, rarePepe,
 
-    burningHammer, burningHammer, burningHammer,
+    burningHammer, burningHammer, burningHammer, burningHammer,
     extinguish, extinguish,
     barrier, barrier,
 
 
     lignification, lignification, lignification, lignification,
-    stoneSkin, stoneSkin,
     flames, flames, flames, flames,
-    scrollOfFear, scrollOfFear, scrollOfFear,
-    continuation,
+    poison, poison, poison,
+    scrollOfFear, scrollOfFear,
 
-    daggerOfDavid, trollCrusher,
-    ringmail, orcishArmour,
+    daggerOfDavid, swordOfIntellect,
+    ringmail, chainmail,
 
 
     rummage, rummage, rummage, rummage,
@@ -125,62 +124,65 @@ object CardCatalogue extends Potions with PermanentEffects with Magic with Stren
     haste, haste,
     stoneSkin,
     dexterity,
+    poison, poison,
 
-    elixirOfVitality, elixirOfIntelligence, // 2 exl
+    elixirOfVitality, elixirOfStrength, // 2 exl
 
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
     essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
     essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
     essenceOfDexterity, essenceOfDexterity,
-    essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
-    essenceOfVitality,                                    // 18 Essences
+    essenceOfVitality, essenceOfVitality,                                   // 16 Essences
 
 
-    quickStep, barrier,
+    quickStep, quickStep,
     quickAttack, quickAttack,
+    toxicShiv, toxicShiv,
+
     assassinate, assassinate,
     windStrike, windStrike, // 8 Abilities
 
-    swordOfIntellect, ringmail,  // 2 equip
+    shortSword, quickBlade, ringmail,  // 2 equip
 
-    armoury, armoury,          // 18 Card
+    armoury, restore,          // 18 Card
     trade, trade,
     rummage, rummage, rummage, rummage,
-    increaseCharges, increaseCharges, increaseCharges, increaseCharges,
-    essenceBoost, essenceBoost,
+    increaseCharges, increaseCharges,
+    recharge,
+    essenceBoost,
     miracle, miracle,
-    refresh, refresh
+    refresh
   )
 
   def tricksterDeck = Seq(
     essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
-    essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
+    essenceOfDexterity, essenceOfDexterity,
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
-    essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
-    essenceOfVitality, essenceOfVitality, // 16 Essences
+    essenceOfIntelligence, essenceOfIntelligence,
+    essenceOfVitality,   // 14 Essences
 
 
     elixirOfVitality, elixirOfVitality,  // 2 Elixirs
 
     haste, haste, haste, haste,           // 8 Potions
     scrollOfFear, scrollOfFear,
-    flames, flames, flames,
+    poison, poison, poison, poison,
 
     rarePepe, rarePepe,  // 2 Pepes
 
     pain, pain, pain,
     assassinate, assassinate, assassinate,
     quickStep, quickStep, quickStep, quickStep,
-    lifeswap, lifeswap,// 12 Abilities
+    drain, drain, drain, drain,
 
     daggerOfDavid, cape,                  // 2 Equipment
 
     miracle, miracle, miracle, miracle,   // 16 Card Actions
     rummage, rummage, rummage, rummage,
-    increaseCharges, increaseCharges, increaseCharges, increaseCharges,
-    recharge, recharge, recharge,
-    trade,
-    refresh
+    restore, restore, restore, restore,
+
+    increaseCharges, increaseCharges, increaseCharges,
+    recharge, recharge
   )
 
   def mage = Seq(
@@ -278,6 +280,7 @@ trait Potions extends CardBuilder {
   def regen: Card = Card(UUID.randomUUID(), "Potion of Regeneration", "Temporary increases life regeneration", PotionOfRegeneration)
 
   def flames: Card = mkCard("Potion of Flames", "Applies a long lasting Burn to all enemies", PotionOfFlames)
+  def poison: Card = mkCard("Potion of Poison", "Applies poison to all enemies", PotionOfPoison)
   def lignification: Card = mkCard("Potion of Lignification", "Turns the user into a slow Tree, increasing armour, strength, and regen.", PotionOfLignification)
 
   def scrollOfFear: Card = mkCard("Scroll of Fear", "Causes any enemies on with health to turn and flee", ScrollOfFear)
@@ -307,7 +310,7 @@ trait Magic extends CardBuilder{
   def magicMissile: Card = mkCard("Magic Missile", "Deals high magic damage to a single enemy", MagicMissile, 4)
   def ember: Card = mkCard("Ember", "Burn a single target with fire magic", Ember, 4)
   def barrier: Card = mkCard("Barrier", "Creates a magic barrier to protect the user", Barrier, 3)
-  def lifeswap: Card = mkCard("Life Swap", "Swap's the health of the player with an enemy", LifeSwap, 1)
+  def drain: Card = mkCard("Drain", "Drains the health of an enemy, healing the player", Drain, 1)
   def massDrain: Card = mkCard("Mass Drain", "Drains health from multiple enemies and heals the player", MassDrain, 3)
 }
 
@@ -327,6 +330,7 @@ trait Dexterity extends CardBuilder{
   def assassinate: Card = mkCard("Assassinate", "Attack that deals more damage the more hp the enemy is missing", Assassinate, 3)
   def quickStep: Card = mkCard("Quick Step", "Increases the Player's position (affected by Dexterity)", QuickStep, 2)
   def windStrike: Card = mkCard("Wind Strike", "Attacks all enemies", WindStrike, 3)
+  def toxicShiv: Card = mkCard("Toxic Shiv", "Attack that poisons and applies a short slow", ToxicShiv, 4)
 //  def tripleStrike: Card = mkCard("Triple Strike", "Attacks an enemy three times", TripleStrike)
 }
 
@@ -388,6 +392,8 @@ trait Equipment extends CardBuilder {
     SwordOfIntellect, Requirements(str = Some(13), dex = Some(13)))
   def daggerOfDavid: Card = mkEquip("Dagger of David", "No increase to damage. Deal bonus damage based on the enemies max HP.",
     DaggerOfDavid)
+  def quickBlade: Card = mkEquip("Quick blade", "Moderate increase to damage, increased action speed.",
+    QuickBlade, Requirements(dex = Some(15)))
 
   def cape: Card = mkEquip("Cape", "Shiny red cape, quick to equip, has a minimal effect on damage taken",
     Cape, Requirements())

@@ -18,13 +18,13 @@ trait EnemyBuilder {
 
   // T2
   def gnoll: Enemy = mkEnemy("Gnoll", CharStats(35, 35, strength = 15, dexterity = 8, vitality = 8))
-  def giantWorm: Enemy = mkEnemy("Giant Worm", CharStats(50, 50, strength = 22, vitality = 6, speed = 4))
+  def giantWorm: Enemy = mkEnemy("Giant Worm", CharStats(50, 50, strength = 22, vitality = 6, speed = 5))
 
 
   // T3
   def giantRat: Enemy = mkEnemy("Giant Rat", CharStats(26, 26, dexterity = 10, vitality = 6, speed = 11))
   def oldOrc: Enemy = mkEnemy("Old Orc", CharStats(70, 70, strength = 28, dexterity = 2, vitality = 10, speed = 6))
-  def goblin: Enemy = mkEnemy("Goblin", CharStats(50, 50, strength = 7, dexterity = 22, vitality = 9, speed = 9))
+  def goblin: Enemy = mkEnemy("Goblin", CharStats(48, 48, strength = 7, dexterity = 22, vitality = 9, speed = 9))
   def golem: Enemy = mkEnemy("Steam Golem", CharStats(100, 100, strength = 30, dexterity = 4, vitality = 16, speed = 3))
 
 

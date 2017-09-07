@@ -31,11 +31,12 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
 
       case QuickAttack => quickAttack
       case Assassinate => assassinate
+      case ToxicShiv => toxicShiv
 
       case Pain => pain
       case MagicMissile => magicMissile
       case Ember => ember
-      case LifeSwap => lifeswap
+      case Drain => drain
     }
 
   def attackAbility(calc: (Player, Enemy, Multipliers) => Int ) = {
@@ -128,6 +129,15 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     speed = QUICK - (p.stats.dexterity / 2),
     bonusDamage = p.experience.level)
 
+
+  def toxicShiv(p: Player, e: Enemy, msgs: Seq[GameMessage]) = ability(p, e, msgs)(
+    useMsg = (p, _) => s"$p uses Toxic Shiv!",
+    damageMsg = (e, d) => s"$e is dazed, poisoned and takes $d damage!",
+    multi = Multipliers.lowDexteritySkill,
+    enemyEffect = EnemyStatusLens.modify(_ :+ StatusBuilder.makeSlow(1, turns = 1) :+
+      StatusBuilder.makePoison((p.experience.level + damageCalculator.sc.calculate(p).stats.dexterity) / 2))
+  )
+
   def assassinate(p: Player, e: Enemy, msgs: Seq[GameMessage]): (Player, Option[Enemy], Seq[GameMessage]) = {
 
     val sePlayer = damageCalculator.sc.calculate(p)
@@ -190,24 +200,21 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     damageCalc = damageCalculator.calculatePlayerMagicDamage
   )
 
-  // Int
-  def lifeswap(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+  def drain(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
 
-    val targetMsg = GameMessage(s"${p.name} uses Life Swap!")
+    val targetMsg = GameMessage(s"${p.name} uses Drain!")
 
+    val dmg = Math.max(1,Math.min(p.stats.maxHp - p.stats.currentHp,
+      p.stats.maxHp - p.stats.currentHp + damageCalculator.sc.calculate(p).stats.intellect - 20))
 
     val newEnemy = EnemyStatsLens.composeLens(HpLens)
-      .set(
-        if (e.stats.currentHp > p.stats.maxHp) Math.min(Math.max(p.stats.currentHp, (e.stats.currentHp * 0.80).toInt), e.stats.maxHp)
-        else Math.max(e.stats.maxHp, p.stats.currentHp))(e)
+      .modify(_ - dmg)(e)
 
-    val dmg = newEnemy.stats.currentHp - e.stats.currentHp
-
-    val dmgMsg = GameMessage(s"${e.name}'s takes $dmg as their health is swapped with ${p.name}!")
+    val dmgMsg = GameMessage(s"${p.name} drains $dmg health from ${e.name}!")
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
 
-    (calculatePosition(PlayerHealthLens.set(Math.min(e.stats.currentHp, p.stats.maxHp))(p)),
+    (calculatePosition(PlayerHealthLens.set(Math.min(e.stats.currentHp + dmg, p.stats.maxHp))(p)),
       Option(newEnemy), gameMessages)
   }
 }

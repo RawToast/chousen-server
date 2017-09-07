@@ -24,7 +24,7 @@ class GameStateOpsSpec extends WordSpec {
       }
 
       "Retain all messages" in {
-        assert(result.messages == gameState.messages)
+        assert(result.messages == gameState.messages.map(_.text))
       }
 
       "Retain the Player's hand size" in {
@@ -44,9 +44,12 @@ class GameStateOpsSpec extends WordSpec {
 
       val result = gameStateOps.toGameResponse(essencePlayedState, Seq.empty)
 
-      "Disable only the Player's Essence cards" in {
+      "Disable the Player's Essence cards" in {
         assert(result.cards.hand.filter(_.name.contains("Essence")).forall(_.playable == false))
-        assert(result.cards.hand.filterNot(_.name.contains("Essence")).forall(_.playable == true))
+      }
+
+      "Leave non Essences playable" in {
+        assert(result.cards.hand.filterNot(_.name.contains("Essence")).exists(_.playable == true))
       }
     }
   }
