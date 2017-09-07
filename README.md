@@ -11,9 +11,12 @@ To start a local server on port 8080: sbt run
 
 ## Dev interface
 
-The basic developer web interface will be available at http://localhost:8080
+The basic developer web interface has been removed from this project, which is now only a backend server. A frontend is available as part of the `chousen-frontend` project.
 
-Latest development build playable on [Heroku](https://immense-bastion-74506.herokuapp.com)
+Latest development API URI on [Heroku](https://immense-bastion-74506.herokuapp.com)
+
+Latest development frontend on [Heroku](https://intense-crystal-36712.herokuapp.com)
+
 
 ## Libraries
 
@@ -23,4 +26,3 @@ Built in Scala with the following opensource libraries:
 * [Cats](https://github.com/typelevel/cats)
 * [Monocle](https://github.com/julien-truffaut/monocle)
 * [Circe](https://github.com/circe/circe)
-* [Twirl](https://github.com/playframework/twirl)
