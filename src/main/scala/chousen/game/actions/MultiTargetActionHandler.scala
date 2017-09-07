@@ -170,11 +170,9 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
   def poison(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
 
-    val gameMessages = msgs :+ GameMessage(s"${e.name} is poisoned.")
-
     val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makePoison(7, turns = 6))(e)
 
-    (p, Option(newE), gameMessages)
+    (p, Option(newE), msgs)
   }
 
   def fear(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
