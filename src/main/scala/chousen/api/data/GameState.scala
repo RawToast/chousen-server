@@ -13,7 +13,7 @@ case class CharStats(maxHp: Int,
                      speed: Int = 8)
 
 
-case class Player(name:String, className: String, stats: CharStats, experience: Experience, equipment: Equipment, position: Int, status: Seq[Status] = Seq.empty)
+case class Player(name:String, className: String, stats: CharStats, experience: Experience, equipment: Equipment, gold: Int, position: Int, status: Seq[Status] = Seq.empty)
 
 case class Experience(current: Int=0, next: Int=3, level: Int=1)
 

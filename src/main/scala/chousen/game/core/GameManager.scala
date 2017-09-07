@@ -16,6 +16,7 @@ trait GameManager[A] {
   def useCard(card: Card, commandRequest: CommandRequest, game: A): A
 }
 
+// Lets tidy this up to make more sense
 class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostTurnStatusCalc) extends GameManager[GameState] with TurnTransition {
 
   val basicAttack = new BasicAttack(damageCalculator)
@@ -117,14 +118,13 @@ trait TurnTransition {
     lazy val deathMessage = GameMessage(s"${game.player.name} dies.")
     lazy val winMessage = GameMessage(s"A winner is ${game.player.name}!")
 
+    def completedBattle = game.dungeon.currentEncounter.enemies.isEmpty && game.dungeon.remainingEncounters.nonEmpty
+    def completedDungeon = game.dungeon.currentEncounter.enemies.isEmpty && game.dungeon.remainingEncounters.isEmpty
+
     if (playerIsDead) MessagesLens.modify(msgs => msgs :+ deathMessage)(game)
-    else {
-      if (game.dungeon.currentEncounter.enemies.isEmpty && game.dungeon.remainingEncounters.isEmpty)
-        MessagesLens.modify(msgs => msgs :+ winMessage)(game)
-      else if (game.dungeon.currentEncounter.enemies.isEmpty && game.dungeon.remainingEncounters.nonEmpty) {
-        postBattle(game, statusCalc, usedCard)
-      } else statusCalc.applyStatusEffects(game)
-    }
+    else if (completedDungeon) MessagesLens.modify(msgs => msgs :+ winMessage)(game)
+    else if (completedBattle) postBattle(game, statusCalc, usedCard)
+    else statusCalc.applyStatusEffects(game)
   }
 
   private def postBattle(gs: GameState, statusCalc: PostTurnStatusCalc, playedCard: Boolean): GameState = {

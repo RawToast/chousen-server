@@ -14,7 +14,7 @@ class DamageCalculatorSpec extends WordSpec {
     lazy val statusCalculator = new StatusCalculator()
     lazy val damageCalculator = new DamageCalculator(statusCalculator)
 
-    lazy val player = Player("test", "class", CharStats(10, 10), Experience(), Equipment(), 0)
+    lazy val player = Player("test", "class", CharStats(10, 10), Experience(), Equipment(), 0, 0)
     lazy val enemy = GameStateGenerator.firstEnemy
 
 

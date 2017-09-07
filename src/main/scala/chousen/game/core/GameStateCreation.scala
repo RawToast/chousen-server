@@ -18,7 +18,7 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
 
     val p = Player(name, "Rouge",
       CharStats(70, 70, strength = 6, dexterity = 6, intellect = 6, vitality = 6),
-      Experience(), Equipment(None, None), 0)
+      Experience(), Equipment(None, None), 10, 0)
 
     val dungeon = dungeonBuilder.makeDungeon(dungeonSeed, dungeonSeed2, dungeonSeed3)
 

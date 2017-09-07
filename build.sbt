@@ -5,24 +5,6 @@ name := "chousen-server"
 
 version := "0.5.0-SNAPSHOT"
 
-//lazy val root = (project in file(".")).
-//  enablePlugins(BuildInfoPlugin).
-//  settings(
-//    buildInfoKeys := Seq[BuildInfoKey](
-//      name, version, scalaVersion, sbtVersion,
-//      "buildTimestamp" -> new java.util.Date(System.currentTimeMillis()),
-//      "gitHash" -> new java.lang.Object(){
-//        override def toString(): String = {
-//          try {
-//            val extracted = new java.io.InputStreamReader(
-//              java.lang.Runtime.getRuntime().exec("git rev-parse HEAD").getInputStream())
-//            (new java.io.BufferedReader(extracted)).readLine()
-//          } catch {      case t: Throwable => "get git hash failed"}
-//        }}.toString()
-//    ),
-//    buildInfoPackage := "chousen"
-//  )
-
 
 mainClass in(Compile, run) := Some("chousen.Http4sServer")
 parallelExecution in Test:= false
@@ -32,7 +14,7 @@ enablePlugins(JavaAppPackaging)
 
 val SCALA_VERSION = "2.12.3"
 val FINCH_VERSION = "0.14.0"
-val HTTP4S_VERSION = "0.17.0-M2"
+val HTTP4S_VERSION = "0.17.0"
 val CIRCE_VERSION = "0.8.0"
 
 scalaVersion := SCALA_VERSION
@@ -48,7 +30,7 @@ libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.1"
 libraryDependencies += "com.google.api-client" % "google-api-client" % "1.22.0"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.3" % Test
 libraryDependencies += "org.mockito" % "mockito-core" % "2.9.0" % Test
-//"org.mockito" % "mockito-all" % "1.10.19"
+
 // libraryDependencies ++= finch
 libraryDependencies ++= http4s
 libraryDependencies ++= circe

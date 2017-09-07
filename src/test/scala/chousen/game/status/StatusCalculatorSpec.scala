@@ -8,7 +8,7 @@ import org.scalatest.WordSpec
 class StatusCalculatorSpec extends WordSpec {
 
   val statusCalculator = new StatusCalculator()
-  val basicPlayer = Player(playerName, "test", CharStats(100, 100), Experience(), Equipment(None, None), 1, Seq.empty)
+  val basicPlayer = Player(playerName, "test", CharStats(100, 100), Experience(), Equipment(None, None), 0, 1, Seq.empty)
 
   def playerWithStatus(status: Status) = {
     basicPlayer.copy(status = Seq(status))

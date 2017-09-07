@@ -193,11 +193,14 @@ object EnemyTurnOps {
     import cats.instances.int.catsKernelStdGroupForInt
     import cats.implicits.catsSyntaxSemigroup
 
-    def regenEffects(e: Enemy) = e.status.filter(s => s.effect == Regen || s.effect == Burn)
+    def regenEffects(e: Enemy) = e.status.filter(s => s.effect == Regen)
+      .reduceLeftOption[Status] { case (a, b) => a.copy(amount = a.amount |+| b.amount) }
+
+    def burnEffects(e: Enemy) = e.status.filter(s => s.effect == Burn)
       .reduceLeftOption[Status] { case (a, b) => a.copy(amount = a.amount |+| b.amount) }
 
     def effectsForComputation(e: Enemy): Seq[Status] =
-      e.status.filterNot(_.effect == Regen) ++ regenEffects(e)
+      e.status.filterNot(ef => ef.effect != Regen || ef.effect !=Burn) ++ regenEffects(e) ++ burnEffects(e)
 
     def foldStatus(e: Enemy, s: Status) = {
       s.effect match {

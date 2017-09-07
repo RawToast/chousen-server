@@ -4,15 +4,14 @@ import chousen.api.data.{GameState, GameStateGenerator}
 import fs2.Task
 import org.http4s.dsl._
 import org.scalatest.WordSpec
+import io.circe.generic.auto._
+import io.circe.syntax._
+import org.http4s._
+import org.http4s.circe._
 
 class PlayedBasedGameAccessSpec extends WordSpec {
 
   "PlayedBasedGameAccess" should {
-
-    import io.circe.generic.auto._
-    import io.circe.syntax._
-    import org.http4s._
-    import org.http4s.circe._
 
     val mappedGameAccess = new PlayerBasedGameAccess()
 
