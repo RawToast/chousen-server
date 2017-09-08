@@ -240,6 +240,31 @@ class GameStateManagerSpec extends WordSpec {
           assert(!result2.cards.hand.exists(_.id == singleChargeCard.id))
         }
       }
+
+      "Is a valid multi target request for a card with charges" should {
+
+        lazy val card = GameStateGenerator.fireballCard.copy(charges = Option(2))
+
+        val initialState = GameStateOptics.HandLens.modify(_ :+ card)(gameState)
+
+        val request = MultiTargetActionRequest(
+          Set(GameStateGenerator.firstEnemy.id, GameStateGenerator.secondEnemy.id), Fireball)
+
+        lazy val result = gameStateManager.useCard(card, request, initialState)
+
+        "Change the game state" in {
+          assert(result != initialState)
+        }
+
+        "Does not remove the card from the player's hand" in {
+          assert(result.cards.hand.exists(_.id == card.id))
+        }
+
+        "Reduces the number of charges" in {
+          assert(result.cards.hand.find(_.id == card.id)
+            .flatMap(_.charges) == Option(1))
+        }
+      }
     }
 
     "Accepting an action card" when {
