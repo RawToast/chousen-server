@@ -66,4 +66,7 @@ case object Magic extends WeaponEffect
 case object Crush extends WeaponEffect
 case object Deadly extends WeaponEffect
 case object Quick extends WeaponEffect
+case object Maim extends WeaponEffect
+case object Deceive extends WeaponEffect
 case object Toxic extends WeaponEffect
+case object Protection extends WeaponEffect

@@ -176,12 +176,12 @@ trait TurnTransition {
 
     // basic implementation of treasure
 
+    val takeTreasure: (Cards) => Cards = CardManager.drawTreasure
+    val takeCard: (Cards) => Cards = CardManager.drawCard(_, drawLimit)
 
-
-
-//    CardManager.drawTreasure
-
-    g.copy(cards = CardManager.drawCard(CardManager.drawCard(g.cards, drawLimit), drawLimit))
+    g.copy(
+      cards= takeCard.andThen(takeCard).andThen(takeTreasure)(g.cards)
+    )
   }
 
 

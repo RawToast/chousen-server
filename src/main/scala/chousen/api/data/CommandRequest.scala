@@ -127,6 +127,12 @@ case object SwordOfIntellect extends EquipWeapon
 case object DaggerOfDavid extends EquipWeapon
 case object QuickBlade extends EquipWeapon
 
+case object RenartsDeceiver extends EquipWeapon
+case object Manamune extends EquipWeapon
+case object TroggsAnnihilator extends EquipWeapon
+case object WandOfDefiance extends EquipWeapon
+
+
 
 case object Cape extends EquipArmour
 case object LeatherArmour extends EquipArmour
@@ -134,3 +140,7 @@ case object Ringmail extends EquipArmour
 case object Chainmail extends EquipArmour
 case object HeavyArmour extends EquipArmour
 case object OrcishArmour extends EquipArmour
+
+case object MagePlate extends EquipArmour
+
+

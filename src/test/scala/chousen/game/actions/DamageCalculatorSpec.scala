@@ -55,6 +55,27 @@ class DamageCalculatorSpec extends WordSpec {
           assert(magicDmg > dmg)
         }
 
+        "Deal more damage if the Player has a weapon with the Maim Status effect" in {
+          val magicDmgWeaponPlayer = giveWeaponWithStatus(player, Maim)
+          val magicDmg = damageCalculator.calculatePlayerDamage(magicDmgWeaponPlayer, enemy)
+
+          assert(magicDmg > dmg)
+        }
+
+        "Deal more damage if the Player has a weapon with the Quick Status effect" in {
+          val magicDmgWeaponPlayer = giveWeaponWithStatus(player, Quick)
+          val magicDmg = damageCalculator.calculatePlayerDamage(magicDmgWeaponPlayer, enemy)
+
+          assert(magicDmg > dmg)
+        }
+
+        "Deal more damage if the Player has a weapon with the Deceive Status effect" in {
+          val magicDmgWeaponPlayer = giveWeaponWithStatus(player, Deceive)
+          val magicDmg = damageCalculator.calculatePlayerDamage(magicDmgWeaponPlayer, enemy)
+
+          assert(magicDmg > dmg)
+        }
+
         "Deal less damage if the enemy has the StoneSkin status" in {
           val stoneskinEnemy = EnemyStatusLens.set(Seq(StatusBuilder.makeStoneSkin(5)))(enemy)
           val magicDmg = damageCalculator.calculatePlayerDamage(player, stoneskinEnemy)

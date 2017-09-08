@@ -39,9 +39,6 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
       case Drain => drain
     }
 
-  def attackAbility(calc: (Player, Enemy, Multipliers) => Int ) = {
-
-  }
 
   def ability(p: Player, e: Enemy, msgs: Seq[GameMessage])(
     useMsg: (String, String) => String = (p: String, e: String) => s"$p uses non-descript ability on $e.",

@@ -4,7 +4,9 @@ import java.util.UUID
 
 import chousen.api.data._
 
-object CardCatalogue extends Potions with PermanentEffects with Magic with Strength with Dexterity with Utility with CampFire with Equipment {
+object CardCatalogue extends Potions with PermanentEffects with Utility with CampFire with Equipment
+                            with Strength with Dexterity with Magic
+                              with TreasureCards {
 
   // Deck built around stun/counter ST
   def fighterDeck: Seq[Card] = // 15
@@ -408,4 +410,25 @@ trait Equipment extends CardBuilder {
   def orcishArmour: Card = mkEquip("Orcish Armour", "Orc armour, heavily reduces damage taken",
     OrcishArmour, Requirements(str = Some(24)))
 
+}
+
+
+trait TreasureCards extends CardBuilder {
+  def magePlate: Card = mkEquip("Mage Plate", "Lightweight armour, moderately reduces damage taken",
+    MagePlate, Requirements(str = Some(9)))
+
+  def deceiver: Card = mkEquip("Renarts Deceiver",
+    "Moderate damage, increased action speed, increased damage whilst on low life",
+    RenartsDeceiver, Requirements(dex = Some(14)))
+
+  def manamune: Card = mkEquip("Manamune",
+    "Minimal increase to damage. Intellect heavily affects attack damage",
+    Manamune, Requirements(str = Some(12), dex = Some(12)))
+
+  def troggs: Card = mkEquip("Troggs Annihilator",
+    "Moderate increase to damage. Deals bonus damage based on both missing and max HP",
+    TroggsAnnihilator, Requirements(dex = Some(20)))
+
+  def wandOfDefiance: Card = mkEquip("Wand of Defiance", "Minimal increase to damage, reduces damage taken",
+    WandOfDefiance, Requirements(int = Some(15)))
 }

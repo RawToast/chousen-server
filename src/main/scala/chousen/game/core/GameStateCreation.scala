@@ -4,7 +4,7 @@ import java.util.UUID
 
 import chousen.api.data.PlayerOptics.{PlayerClassLens, SetPlayerStats}
 import chousen.api.data._
-import chousen.game.cards.{CardCatalogue, CardManager}
+import chousen.game.cards.{CardCatalogue => CC, CardManager}
 import chousen.game.core.GameStateOptics.EncounterLens
 import chousen.game.dungeon.DungeonBuilder
 
@@ -33,20 +33,31 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
     }
 
     val deck = choice match {
-      case 1 => CardCatalogue.fighterDeck
-      case 2 => CardCatalogue.berserkerDeck
-      case 3 => CardCatalogue.chieftainDeck
-      case 4 => CardCatalogue.rogueDeck
-      case 5 => CardCatalogue.tricksterDeck
-      case 6 => CardCatalogue.mage
-      case _ => CardCatalogue.wizard
+      case 1 => CC.fighterDeck
+      case 2 => CC.berserkerDeck
+      case 3 => CC.chieftainDeck
+      case 4 => CC.rogueDeck
+      case 5 => CC.tricksterDeck
+      case 6 => CC.mage
+      case _ => CC.wizard
     }
 
-    val cards: Cards = CardManager.startGame(deck, CardCatalogue.passiveCards)
+    val cards: Cards = CardManager.startGame(deck, CC.passiveCards)
+
+
+    val dungeonTreasure: Seq[Card] = Seq (
+      CC.rarePepe, CC.rarePepe, CC.rarePepe, CC.rarePepe,
+      CC.elixirOfStrength, CC.elixirOfDexterity, CC.elixirOfVitality, CC.elixirOfIntelligence,
+
+
+      // UNIQUES :D
+
+      CC.troggs, CC.manamune, CC.wandOfDefiance, CC.deceiver, CC.magePlate
+    )
 
     val msgs = Seq.empty[GameMessage]
 
-    GameState(uuid, player, cards, dungeon, msgs)
+    GameState(uuid, player, cards.copy(treasure = dungeonTreasure), dungeon, msgs)
   }
 
 }
