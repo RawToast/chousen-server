@@ -26,7 +26,7 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
         essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
         essenceOfDexterity, essenceOfDexterity,
 
-        shortSword, broadsword, longSword,    // 5 equips
+        shortSword, broadsword, longsword,    // 5 equips
         chainmail, heavyArmour,
 
         groundStrike, groundStrike,       // 8 skills
@@ -363,6 +363,9 @@ trait Utility extends CardBuilder {
   // Require target
   def reduceRequirements: Card = mkCard("Reduce Requirements", "Reduces all requirements for the chosen card by 5", ReduceRequirements)
   def increaseCharges: Card = mkCard("Increase Charges", "Increases the number of charges of an ability card by 2", IncreaseCharges)
+
+
+  def bagOfGold: Card = mkCard("Bag of Gold", "Gives 30 gold", BagOfGold)
 }
 
 trait CampFire extends CardBuilder {
@@ -384,8 +387,8 @@ trait Equipment extends CardBuilder {
     BroadSword, Requirements(str = Some(16), dex = Some(11)))
   def giantClub: Card = mkEquip("Giant Club", "Heavy increase to damage",
     GiantClub, Requirements(str = Some(19)))
-  def longSword: Card = mkEquip("Long Sword", "Heavy increase to damage",
-    LongSword, Requirements(str = Some(17), dex = Some(13)))
+  def longsword: Card = mkEquip("Longsword", "Heavy increase to damage",
+    Longsword, Requirements(str = Some(17), dex = Some(13)))
 
 
   def trollCrusher: Card = mkEquip("Troll Crusher", "Moderate increase to damage. Bonus damage based on the enemies current HP",
@@ -397,7 +400,7 @@ trait Equipment extends CardBuilder {
   def quickBlade: Card = mkEquip("Quick blade", "Moderate increase to damage, increased action speed.",
     QuickBlade, Requirements(dex = Some(15)))
 
-  def cape: Card = mkEquip("Cape", "Shiny red cape, quick to equip, has a minimal effect on damage taken",
+  def cape: Card = mkEquip("Cape", "Shiny cape, quick to equip, has a minimal effect on damage taken",
     Cape, Requirements())
   def leatherArmour: Card = mkEquip("Leather Armour", "Generic armour, slightly reduces damage taken",
     LeatherArmour, Requirements(str = Some(8)))
@@ -414,10 +417,11 @@ trait Equipment extends CardBuilder {
 
 
 trait TreasureCards extends CardBuilder {
+
   def magePlate: Card = mkEquip("Mage Plate", "Lightweight armour, moderately reduces damage taken",
     MagePlate, Requirements(str = Some(9)))
 
-  def deceiver: Card = mkEquip("Renarts Deceiver",
+  def deceiver: Card = mkEquip("Renart's Deceiver",
     "Moderate damage, increased action speed, increased damage whilst on low life",
     RenartsDeceiver, Requirements(dex = Some(14)))
 
@@ -425,7 +429,7 @@ trait TreasureCards extends CardBuilder {
     "Minimal increase to damage. Intellect heavily affects attack damage",
     Manamune, Requirements(str = Some(12), dex = Some(12)))
 
-  def troggsAnnilator: Card = mkEquip("Troggs Annihilator",
+  def troggsAnnilator: Card = mkEquip("Trogg's Annihilator",
     "Moderate increase to damage. Deals bonus damage based on both missing and max HP",
     TroggsAnnihilator, Requirements(str = Some(20)))
 
@@ -433,4 +437,6 @@ trait TreasureCards extends CardBuilder {
     WandOfDefiance, Requirements(int = Some(15)))
 
   def potionOfMiasma: Card = mkEquip("Potion of Miasma", "Applies a strong poison and burn to all enemies", PotionOfMiasma)
+
+  def potOfGold: Card = mkCard("Pot of Gold", "Full of gold! Gives 100 gold", PotOfGold)
 }

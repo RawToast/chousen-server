@@ -52,6 +52,8 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
       CC.elixirOfStrength, CC.elixirOfDexterity, CC.elixirOfVitality, CC.elixirOfIntelligence,
 
       CC.potionOfMiasma, CC.potionOfMiasma,
+
+      CC.bagOfGold, CC.potOfGold,
       // UNIQUES :D
 
       CC.troggsAnnilator, CC.manamune, CC.wandOfDefiance, CC.deceiver, CC.magePlate

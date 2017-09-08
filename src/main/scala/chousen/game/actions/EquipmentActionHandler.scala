@@ -22,7 +22,7 @@ class EquipmentActionHandler {
       case ShortSword => shortSword
       case Mace => mace
       case BroadSword => boardSword
-      case LongSword => kodachi
+      case Longsword => kodachi
       case GiantClub => giantClub
 
       case TrollCrusher => trollCrusher

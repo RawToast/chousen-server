@@ -76,22 +76,47 @@ class DamageCalculatorSpec extends WordSpec {
           assert(magicDmg > dmg)
         }
 
+        "Deal the same damage if the Player has a weapon with the Toxic effect" in {
+          val magicDmgWeaponPlayer = giveWeaponWithStatus(player, Toxic)
+          val magicDmg = damageCalculator.calculatePlayerDamage(magicDmgWeaponPlayer, enemy)
+
+          assert(magicDmg == dmg)
+        }
+
+        "Deal the same damage if the Player has a weapon with the Protection effect" in {
+          val magicDmgWeaponPlayer = giveWeaponWithStatus(player, Protection)
+          val magicDmg = damageCalculator.calculatePlayerDamage(magicDmgWeaponPlayer, enemy)
+
+          assert(magicDmg == dmg)
+        }
+
         "Deal less damage if the enemy has the StoneSkin status" in {
           val stoneskinEnemy = EnemyStatusLens.set(Seq(StatusBuilder.makeStoneSkin(5)))(enemy)
           val magicDmg = damageCalculator.calculatePlayerDamage(player, stoneskinEnemy)
 
           assert(magicDmg < dmg)
         }
-
-
-        def giveWeaponWithStatus(p: Player, we: WeaponEffect) =
-          PlayerWeaponLens.set(Some(Weapon(UUID.randomUUID(), "Weapon", 0, Requirements(), Seq(we))))(p)
-
-
       }
 
+      "An enemy attacks the player" must {
+
+        lazy val dmg = damageCalculator.calculateEnemyDamage(enemy, player)
+
+        "Return a number greater than 0" in {
+          assert(dmg > 0)
+        }
+
+        "Deal less damage if the player has a Protection weapon" in {
+          val protectWeaponPlayer = giveWeaponWithStatus(player, Protection)
+          val magicDmg = damageCalculator.calculateEnemyDamage(enemy, protectWeaponPlayer)
+
+          assert(magicDmg < dmg)
+        }
+      }
     }
 
+    def giveWeaponWithStatus(p: Player, we: WeaponEffect) =
+      PlayerWeaponLens.set(Some(Weapon(UUID.randomUUID(), "Weapon", 0, Requirements(), Seq(we))))(p)
   }
 
 }

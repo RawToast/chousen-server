@@ -99,6 +99,8 @@ case object Restore extends StandardCardAction
 case object Refresh extends StandardCardAction
 case object Armoury extends StandardCardAction
 case object Recharge extends StandardCardAction
+case object BagOfGold extends StandardCardAction
+case object PotOfGold extends StandardCardAction
 
 
 case object ForgeArmour extends DiscardCardAction
@@ -121,7 +123,7 @@ case object Club extends EquipWeapon
 case object Mace extends EquipWeapon
 case object ShortSword extends EquipWeapon
 case object BroadSword extends EquipWeapon
-case object LongSword extends EquipWeapon
+case object Longsword extends EquipWeapon
 case object GiantClub extends EquipWeapon
 case object TrollCrusher extends EquipWeapon
 case object SwordOfIntellect extends EquipWeapon
