@@ -143,7 +143,13 @@ trait PostTurnStatusCalc {
     a match {
       case _: SingleTargetAction => PlayerLens.composeLens(PlayerStatusLens).modify(reduceStatusLength)(gs)
       case _: MultiAction => PlayerLens.composeLens(PlayerStatusLens).modify(reduceStatusLength)(gs)
-      case _: SelfAction => PlayerLens.composeLens(PlayerStatusLens).modify(reduceStatusLength)(gs)
+      case s: SelfAction => s match {
+        case EssenceOfStrength => gs
+        case EssenceOfDexterity => gs
+        case EssenceOfIntelligence => gs
+        case EssenceOfVitality => gs
+        case _ => PlayerLens.composeLens(PlayerStatusLens).modify(reduceStatusLength)(gs)
+      }
       case _: EquipAction => PlayerLens.composeLens(PlayerStatusLens).modify(reduceStatusLength)(gs)
       case _: CardAction => gs
       case _: CampFireAction => gs

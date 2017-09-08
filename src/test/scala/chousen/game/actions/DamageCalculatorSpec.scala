@@ -106,6 +106,13 @@ class DamageCalculatorSpec extends WordSpec {
           assert(dmg > 0)
         }
 
+        "Deal the same damage if the player has a weapon" in {
+          val playedWithWeapon = giveWeaponWithStatus(player, Quick)
+          val magicDmg = damageCalculator.calculateEnemyDamage(enemy, playedWithWeapon)
+
+          assert(magicDmg == dmg)
+        }
+
         "Deal less damage if the player has a Protection weapon" in {
           val protectWeaponPlayer = giveWeaponWithStatus(player, Protection)
           val magicDmg = damageCalculator.calculateEnemyDamage(enemy, protectWeaponPlayer)

@@ -265,6 +265,79 @@ class GameStateManagerSpec extends WordSpec {
             .flatMap(_.charges) == Option(1))
         }
       }
+
+      "Is a valid self targeted request" should {
+
+        lazy val card = CardCatalogue.rarePepe
+
+        val initialState = GameStateOptics.HandLens.modify(_ :+ card)(gameState)
+
+        val request = SelfInflictingActionRequest(RarePepe)
+
+        lazy val result = gameStateManager.useCard(card, request, initialState)
+
+        "Changes the game state" in {
+          assert(result != initialState)
+        }
+
+        "Remove's the card from the player's hand" in {
+          assert(!result.cards.hand.exists(_.id == card.id))
+        }
+      }
+
+      "Is a valid discard action" should {
+
+        lazy val card = CardCatalogue.essenceBoost
+        lazy val toDiscard = GameStateGenerator.fireballCard
+
+        val initialState = GameStateOptics.HandLens.modify(_ :+ card :+ toDiscard)(gameState)
+
+        val request = CardActionRequest(EssenceBoost, Option(toDiscard.id))
+
+        lazy val result = gameStateManager.useCard(card, request, initialState)
+
+        "Change the game state" in {
+          assert(result != initialState)
+        }
+
+        "Remove both cards from the player's hand" in {
+          //assert(initialState.cards.hand.size > result.cards.hand.size)
+          assert(!result.cards.hand.contains(card))
+          assert(!result.cards.hand.contains(toDiscard))
+        }
+      }
+
+    }
+
+    "Accepting an Essence card" when {
+
+
+      "One has already been played" should {
+        lazy val card = CardCatalogue.essenceOfIntelligence
+
+        val state1 = GameStateOptics.HandLens.modify(_ :+ card)(gameState)
+
+        val initialState = state1.copy(cards = state1.cards.copy(playedEssence = true))
+
+        val request = SelfInflictingActionRequest(EssenceOfIntelligence)
+
+        lazy val result = gameStateManager.useCard(card, request, initialState)
+
+        "Change the game state" in {
+          assert(result != initialState)
+        }
+
+        "Add a warning message to the game" in {
+          //assert(initialState.cards.hand.size > result.cards.hand.size)
+          assert(result.messages.size > initialState.messages.size)
+        }
+
+        "Retain the card in the Player's hand" in {
+          //assert(initialState.cards.hand.size > result.cards.hand.size)
+          assert(result.cards.hand.contains(card))
+        }
+
+      }
     }
 
     "Accepting an action card" when {
@@ -293,8 +366,6 @@ class GameStateManagerSpec extends WordSpec {
         }
       }
     }
-
-
       "The player is already equipped" should {
         import chousen.Optics._
 
@@ -320,7 +391,6 @@ class GameStateManagerSpec extends WordSpec {
           assert(result.cards.hand.contains(shortsword))
         }
       }
-
   }
 
   def getFirstEnemyHp(result: GameState) =

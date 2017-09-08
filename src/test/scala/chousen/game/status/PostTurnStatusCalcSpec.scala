@@ -75,6 +75,28 @@ class PostTurnStatusCalcSpec extends WordSpec {
       }
     }
 
+    "The Player uses an Essence" should {
+      val gameState = GameStateGenerator.staticGameState
+
+      import chousen.Optics._
+
+      val initialState = PlayerLens.composeLens(PlayerStatusLens).set(Seq(StatusBuilder.makeHaste(5)))
+        .andThen(PlayerLens.composeLens(PlayerHealthLens).set(20)).apply(gameState)
+
+
+      lazy val newState = calc.applyStatusEffects(initialState, EssenceOfDexterity)
+      lazy val newState2 = calc.applyStatusEffects(initialState, EssenceOfIntelligence)
+      lazy val newState3= calc.applyStatusEffects(initialState, EssenceOfStrength)
+      lazy val newState4 = calc.applyStatusEffects(initialState, EssenceOfVitality)
+
+
+      "Not reduce the the length of any effects" in {
+        assert(getStatusLength(newState) == getStatusLength(initialState))
+        assert(getStatusLength(newState2) == getStatusLength(initialState))
+        assert(getStatusLength(newState3) == getStatusLength(initialState))
+        assert(getStatusLength(newState4) == getStatusLength(initialState))
+      }
+    }
   }
   private def getStatusLength(bb: GameState): Int = bb.player.status.headOption.map(_.turns).getOrElse(0)
 }
