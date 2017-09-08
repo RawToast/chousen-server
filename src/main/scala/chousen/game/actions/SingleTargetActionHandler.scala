@@ -95,7 +95,7 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     useMsg = (p, _) => s"$p uses Burning Hammer!",
     damageMsg = (e, d) => s"$e is burnt and takes $d damage!",
     multi = Multipliers.lowStrengthSkill,
-    enemyEffect = EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(p.stats.strength / 2)),
+    enemyEffect = EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(damageCalculator.sc.calculate(p).stats.strength / 2)),
     bonusDamage = if (e.status.exists(_.effect == Burn)) {Math.max(3, (e.stats.maxHp - e.stats.currentHp) / 8)} else 0
   )
 
@@ -195,8 +195,9 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     useMsg = (p, _) => s"$p uses Ember!",
     damageMsg = (e, d) => s"$e is burnt by the flames for $d damage!",
     multi = Multipliers.lowIntellectSkill,
-    enemyEffect = EnemyStatusLens.modify(ss => ss :+ StatusBuilder.makeBurn(ss.count(_.effect == Burn) + (p.stats.intellect / 2))),
-    bonusDamage =  Math.max(0, e.status.count(_.effect == Burn) * (p.stats.intellect / 8)),
+    enemyEffect = EnemyStatusLens.modify(ss => ss :+
+      StatusBuilder.makeBurn((2 * ss.count(_.effect == Burn)) + (damageCalculator.sc.calculate(p).stats.intellect / 2))),
+    bonusDamage =  Math.max(0, e.status.count(_.effect == Burn)),
     damageCalc = damageCalculator.calculatePlayerMagicDamage
   )
 

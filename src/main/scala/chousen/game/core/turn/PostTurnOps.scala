@@ -15,7 +15,7 @@ object PostTurnOps {
 
       val battleExp = deadEnemies.map(_.stats.maxHp / 10).sum
 
-      val (pl, lvlupMsgs) = levelUp(PlayerCurrentExperienceLens.modify(xp => xp + battleExp)(p))
+      val (pl, lvlupMsgs) = levelUp(p.increaseExperience(battleExp))
 
       val newMessages = deadEnemies
         .map(e =>
@@ -24,14 +24,7 @@ object PostTurnOps {
           else if (e.stats.currentHp > -30) GameMessage(s"${e.name} is destroyed!")
           else GameMessage(s"${e.name} is annihilated!")) ++ lvlupMsgs
 
-      val deNames = deadEnemies.map(_.name)
-      val player = if (deNames.contains("")) {
-
-
-        pl
-      } else pl
-
-      (player, aliveEnemies, msgs ++: newMessages)
+      (pl, aliveEnemies, msgs ++: newMessages)
   }
 
   def levelUp(player: Player): (Player, Seq[GameMessage]) = {
@@ -47,7 +40,7 @@ object PostTurnOps {
           val newLevel =  e.level + 1
           val newNext = e.next + (((e.level + 1) * e.level) / 2)
 
-          val newExp = Experience(remainder, newNext, newLevel)
+          val newExp = Experience(remainder, newNext, newLevel, e.total)
 
           numberOfLevels(newExp, acc + 1)
         } else e -> acc
@@ -67,6 +60,18 @@ object PostTurnOps {
 
     } else {
       (player, Seq.empty)
+    }
+  }
+
+  implicit class PlayerSyntax(p: Player) {
+    def increaseExperience(battleExp: Int): Player =
+      p.copy(experience = p.experience.increase(battleExp))
+  }
+
+  implicit class ExperienceSyntax(exp: Experience) {
+    def increase(battleExp :Int): Experience = {
+      println(s"Gain exp $battleExp")
+      exp.copy(current = exp.current + battleExp, total = exp.total + battleExp)
     }
   }
 }

@@ -2,6 +2,7 @@ package chousen.util
 
 import chousen.Optics
 import chousen.api.data.GameStateGenerator
+import chousen.game.cards.CardCatalogue
 import org.scalatest.WordSpec
 
 class GameStateOpsSpec extends WordSpec {
@@ -40,7 +41,7 @@ class GameStateOpsSpec extends WordSpec {
 
     "An Essence has been played" should {
 
-      val essencePlayedState = Optics.CardsLens.modify(c => c.copy(playedEssence = true))(gameState)
+      val essencePlayedState = Optics.CardsLens.modify(c => c.copy(playedEssence = true, hand = c.hand :+ CardCatalogue.essenceOfVitality))(gameState)
 
       val result = gameStateOps.toGameResponse(essencePlayedState, Seq.empty)
 

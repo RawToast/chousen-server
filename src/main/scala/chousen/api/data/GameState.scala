@@ -15,7 +15,7 @@ case class CharStats(maxHp: Int,
 
 case class Player(name:String, className: String, stats: CharStats, experience: Experience, equipment: Equipment, gold: Int, position: Int, status: Seq[Status] = Seq.empty)
 
-case class Experience(current: Int=0, next: Int=3, level: Int=1)
+case class Experience(current: Int=0, next: Int=3, level: Int=1, total: Int=0)
 
 case class Cards(hand: Seq[Card], deck: Seq[Card], discard: Seq[Card], passive: Seq[Card], equippedCards: EquippedCards, playedEssence:Boolean=false)
 
