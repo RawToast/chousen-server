@@ -13,11 +13,11 @@ case class CharStats(maxHp: Int,
                      speed: Int = 8)
 
 
-case class Player(name:String, className: String, stats: CharStats, experience: Experience, equipment: Equipment, position: Int, status: Seq[Status] = Seq.empty)
+case class Player(name:String, className: String, stats: CharStats, experience: Experience, equipment: Equipment, gold: Int, position: Int, status: Seq[Status] = Seq.empty)
 
-case class Experience(current: Int=0, next: Int=3, level: Int=1)
+case class Experience(current: Int=0, next: Int=3, level: Int=1, total: Int=0)
 
-case class Cards(hand: Seq[Card], deck: Seq[Card], discard: Seq[Card], passive: Seq[Card], equippedCards: EquippedCards, playedEssence:Boolean=false)
+case class Cards(hand: Seq[Card], deck: Seq[Card], discard: Seq[Card], passive: Seq[Card], equippedCards: EquippedCards, treasure: Seq[Card], playedEssence:Boolean=false)
 
 case class EquippedCards(weapon: Option[Card]=None, armour: Option[Card]=None, jewelery: Option[Card]=None)
 
@@ -65,4 +65,8 @@ sealed trait WeaponEffect
 case object Magic extends WeaponEffect
 case object Crush extends WeaponEffect
 case object Deadly extends WeaponEffect
+case object Quick extends WeaponEffect
+case object Maim extends WeaponEffect
+case object Deceive extends WeaponEffect
 case object Toxic extends WeaponEffect
+case object Protection extends WeaponEffect

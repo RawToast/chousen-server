@@ -349,5 +349,29 @@ class CardActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given BagOfGold" should {
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = CardActionHandler.handle(BagOfGold, None)(startedGame)
+
+      "Give the player 30 gold" in {
+        assert(result.player.gold > startedGame.player.gold)
+        val diff = result.player.gold - startedGame.player.gold
+        assert(diff == 30)
+      }
+    }
+
+    "Given PotOfGold" should {
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = CardActionHandler.handle(PotOfGold, None)(startedGame)
+
+      "Give the player 100 gold" in {
+        assert(result.player.gold > startedGame.player.gold)
+        val diff = result.player.gold - startedGame.player.gold
+        assert(diff == 100)
+      }
+    }
+
   }
 }

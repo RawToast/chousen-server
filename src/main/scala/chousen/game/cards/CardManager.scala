@@ -91,7 +91,7 @@ trait CardManager {
 
     val (hand, deck) = shuffledCards.splitAt(MAX_HAND_SIZE)
 
-    Cards(hand, deck, Seq.empty, passiveCards, EquippedCards())
+    Cards(hand, deck, Seq.empty, passiveCards, EquippedCards(), Seq.empty)
   }
 
   def moveCardToHand(cards: Cards, pred: Card => Boolean): Cards = {
@@ -106,7 +106,7 @@ trait CardManager {
   @tailrec
   final def drawCard(cards: Cards, limit: Int = MAX_HAND_SIZE): Cards = {
     if (cards.hand.size < limit) {
-      if (cards.deck.isEmpty) drawCard(cards.copy(deck = cards.discard.map(c => c.copy(charges = c.maxCharges)), discard = Seq.empty))
+      if (cards.deck.isEmpty) drawCard(cards.copy(deck = cards.discard.map(c => c.copy(charges = c.maxCharges)), discard = Seq.empty), limit)
       else cards.copy(hand = cards.hand :+ cards.deck.head, deck = cards.deck.tail)
     } else cards
   }
@@ -144,5 +144,11 @@ trait CardManager {
       val newHand = cards.hand.filterNot(_ ~= c)
       cards.copy(hand = newHand, discard = cards.discard :+ c)
     }
+  }
+
+
+  final def drawTreasure(cards: Cards): Cards = {
+    if (cards.treasure.isEmpty) drawCard(cards, limit = ABSOLUTE_MAX)
+    else cards.copy(hand = cards.hand :+ cards.treasure.head, treasure = cards.treasure.tail)
   }
 }

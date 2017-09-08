@@ -31,16 +31,14 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
 
       case QuickAttack => quickAttack
       case Assassinate => assassinate
+      case ToxicShiv => toxicShiv
 
       case Pain => pain
       case MagicMissile => magicMissile
       case Ember => ember
-      case LifeSwap => lifeswap
+      case Drain => drain
     }
 
-  def attackAbility(calc: (Player, Enemy, Multipliers) => Int ) = {
-
-  }
 
   def ability(p: Player, e: Enemy, msgs: Seq[GameMessage])(
     useMsg: (String, String) => String = (p: String, e: String) => s"$p uses non-descript ability on $e.",
@@ -94,7 +92,7 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     useMsg = (p, _) => s"$p uses Burning Hammer!",
     damageMsg = (e, d) => s"$e is burnt and takes $d damage!",
     multi = Multipliers.lowStrengthSkill,
-    enemyEffect = EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(p.stats.strength / 2)),
+    enemyEffect = EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(damageCalculator.sc.calculate(p).stats.strength / 2)),
     bonusDamage = if (e.status.exists(_.effect == Burn)) {Math.max(3, (e.stats.maxHp - e.stats.currentHp) / 8)} else 0
   )
 
@@ -127,6 +125,15 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     multi = Multipliers.dexteritySkill,
     speed = QUICK - (p.stats.dexterity / 2),
     bonusDamage = p.experience.level)
+
+
+  def toxicShiv(p: Player, e: Enemy, msgs: Seq[GameMessage]) = ability(p, e, msgs)(
+    useMsg = (p, _) => s"$p uses Toxic Shiv!",
+    damageMsg = (e, d) => s"$e is dazed, poisoned and takes $d damage!",
+    multi = Multipliers.lowDexteritySkill,
+    enemyEffect = EnemyStatusLens.modify(_ :+ StatusBuilder.makeSlow(1, turns = 1) :+
+      StatusBuilder.makePoison((p.experience.level + damageCalculator.sc.calculate(p).stats.dexterity) / 2))
+  )
 
   def assassinate(p: Player, e: Enemy, msgs: Seq[GameMessage]): (Player, Option[Enemy], Seq[GameMessage]) = {
 
@@ -185,29 +192,27 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     useMsg = (p, _) => s"$p uses Ember!",
     damageMsg = (e, d) => s"$e is burnt by the flames for $d damage!",
     multi = Multipliers.lowIntellectSkill,
-    enemyEffect = EnemyStatusLens.modify(ss => ss :+ StatusBuilder.makeBurn(ss.count(_.effect == Burn) + (p.stats.intellect / 2))),
-    bonusDamage =  Math.max(0, e.status.count(_.effect == Burn) * (p.stats.intellect / 8)),
+    enemyEffect = EnemyStatusLens.modify(ss => ss :+
+      StatusBuilder.makeBurn((2 * ss.count(_.effect == Burn)) + (damageCalculator.sc.calculate(p).stats.intellect / 2))),
+    bonusDamage =  Math.max(0, e.status.count(_.effect == Burn)),
     damageCalc = damageCalculator.calculatePlayerMagicDamage
   )
 
-  // Int
-  def lifeswap(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+  def drain(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
 
-    val targetMsg = GameMessage(s"${p.name} uses Life Swap!")
+    val targetMsg = GameMessage(s"${p.name} uses Drain!")
 
+    val dmg = Math.max(1,Math.min(p.stats.maxHp - p.stats.currentHp,
+      p.stats.maxHp - p.stats.currentHp + damageCalculator.sc.calculate(p).stats.intellect - 20))
 
     val newEnemy = EnemyStatsLens.composeLens(HpLens)
-      .set(
-        if (e.stats.currentHp > p.stats.maxHp) Math.min(Math.max(p.stats.currentHp, (e.stats.currentHp * 0.80).toInt), e.stats.maxHp)
-        else Math.max(e.stats.maxHp, p.stats.currentHp))(e)
+      .modify(_ - dmg)(e)
 
-    val dmg = newEnemy.stats.currentHp - e.stats.currentHp
-
-    val dmgMsg = GameMessage(s"${e.name}'s takes $dmg as their health is swapped with ${p.name}!")
+    val dmgMsg = GameMessage(s"${p.name} drains $dmg health from ${e.name}!")
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
 
-    (calculatePosition(PlayerHealthLens.set(Math.min(e.stats.currentHp, p.stats.maxHp))(p)),
+    (calculatePosition(PlayerHealthLens.set(Math.min(e.stats.currentHp + dmg, p.stats.maxHp))(p)),
       Option(newEnemy), gameMessages)
   }
 }

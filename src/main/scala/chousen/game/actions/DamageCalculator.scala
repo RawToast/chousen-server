@@ -61,8 +61,12 @@ class DamageCalculator(val sc: StatusCalculator) {
         .foldLeft(0)((i, we) => i + {
           we match {
             case Magic => atkInt / 2
-            case Crush => defender.stats.currentHp / 8
-            case Deadly => 1 + defender.stats.maxHp / 12
+            case Crush => Math.max(1, defender.stats.currentHp / 8)
+            case Deadly => 1 + (defender.stats.maxHp / 12)
+            case Quick => 1 + (Math.max(0, attacker.stats.speed - 8) * 2)
+            case Maim => Math.max(1, (defender.stats.maxHp - defender.stats.currentHp) / 8)
+            case Deceive => Math.max(1, (attacker.stats.maxHp - attacker.stats.currentHp) / 4)
+            case Protection => 0
             case Toxic => 0
           }
         })
@@ -70,7 +74,15 @@ class DamageCalculator(val sc: StatusCalculator) {
       weaponDmg + weaponBonus
     }
 
-    val armour = defender.equipment.armour.map(_.defense).getOrElse(stoneSkin) + treeDef
+    val weapBonusArm = defender.equipment.weapon.map(_.effects)
+        .getOrElse(Seq.empty)
+          .foldLeft(0)((i ,we) => i + {
+            we match {
+            case Protection => 5
+            case _ => 0
+          }})
+
+    val armour = defender.equipment.armour.map(_.defense).getOrElse(stoneSkin) + treeDef + weapBonusArm
 
     implicit class BlockEffect(i: Int) {
       def block: Int = {

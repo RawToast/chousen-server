@@ -4,9 +4,11 @@ import java.util.UUID
 
 import chousen.api.data.PlayerOptics.{PlayerClassLens, SetPlayerStats}
 import chousen.api.data._
-import chousen.game.cards.{CardCatalogue, CardManager}
+import chousen.game.cards.{CardManager, CardCatalogue => CC}
 import chousen.game.core.GameStateOptics.EncounterLens
 import chousen.game.dungeon.DungeonBuilder
+
+import scala.util.Random
 
 class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCreation {
 
@@ -18,7 +20,7 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
 
     val p = Player(name, "Rouge",
       CharStats(70, 70, strength = 6, dexterity = 6, intellect = 6, vitality = 6),
-      Experience(), Equipment(None, None), 0)
+      Experience(), Equipment(None, None), 10, 0)
 
     val dungeon = dungeonBuilder.makeDungeon(dungeonSeed, dungeonSeed2, dungeonSeed3)
 
@@ -33,20 +35,33 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
     }
 
     val deck = choice match {
-      case 1 => CardCatalogue.fighterDeck
-      case 2 => CardCatalogue.berserkerDeck
-      case 3 => CardCatalogue.chieftainDeck
-      case 4 => CardCatalogue.rogueDeck
-      case 5 => CardCatalogue.tricksterDeck
-      case 6 => CardCatalogue.mage
-      case _ => CardCatalogue.wizard
+      case 1 => CC.fighterDeck
+      case 2 => CC.berserkerDeck
+      case 3 => CC.chieftainDeck
+      case 4 => CC.rogueDeck
+      case 5 => CC.tricksterDeck
+      case 6 => CC.mage
+      case _ => CC.wizard
     }
 
-    val cards: Cards = CardManager.startGame(deck, CardCatalogue.passiveCards)
+    val cards: Cards = CardManager.startGame(deck, CC.passiveCards)
+
+
+    val dungeonTreasure: Seq[Card] = Random.shuffle(Seq (
+      CC.rarePepe, CC.rarePepe, CC.rarePepe, CC.rarePepe,
+      CC.elixirOfStrength, CC.elixirOfDexterity, CC.elixirOfVitality, CC.elixirOfIntelligence,
+
+      CC.potionOfMiasma, CC.potionOfMiasma,
+
+      CC.bagOfGold, CC.potOfGold,
+      // UNIQUES :D
+
+      CC.troggsAnnilator, CC.manamune, CC.wandOfDefiance, CC.deceiver, CC.magePlate
+    ))
 
     val msgs = Seq.empty[GameMessage]
 
-    GameState(uuid, player, cards, dungeon, msgs)
+    GameState(uuid, player, cards.copy(treasure = dungeonTreasure), dungeon, msgs)
   }
 
 }

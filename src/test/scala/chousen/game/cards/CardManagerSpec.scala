@@ -15,7 +15,7 @@ class CardManagerSpec extends WordSpec with Matchers {
     "starting a new makeChar" should {
       "shuffle the cards" in {
         // FIXME Not a real test for shuffling, spy object may be best here
-        shuffledCards shouldNot equal(Cards(cards, Seq.empty, Seq.empty, Seq.empty, EquippedCards()))
+        shuffledCards shouldNot equal(Cards(cards, Seq.empty, Seq.empty, Seq.empty, EquippedCards(), Seq.empty))
       }
 
       "deal cards to the player" in {
@@ -125,6 +125,58 @@ class CardManagerSpec extends WordSpec with Matchers {
 
       "place it at the bottom of the deck" in {
         testDeck.deck.last should equal(cardToUse)
+      }
+    }
+
+    "the player draws treasure" should {
+
+      val cardsWithTreasure = shuffledCards.copy(treasure = Seq(CardCatalogue.destroy))
+      val fullCards: Cards = CardManager.drawTreasure(cardsWithTreasure)
+
+      "add a card even if the hand is full" in {
+        fullCards.hand.size shouldBe > (cardsWithTreasure.hand.size)
+        fullCards.hand.diff(cardsWithTreasure.hand) should have size 1
+      }
+
+
+      "add a card to the players hand" in {
+        fullCards.hand.size shouldBe >(cardsWithTreasure.hand.size)
+        fullCards.hand.diff(cardsWithTreasure.hand) should have size 1
+      }
+
+      "reduce the size of the treasure deck" in {
+        fullCards.treasure.size shouldBe <(cardsWithTreasure.treasure.size)
+        fullCards.deck.size shouldBe cardsWithTreasure.deck.size
+        fullCards.discard.size shouldBe cardsWithTreasure.discard.size
+      }
+    }
+
+    "the player draws treasure and there are no treasure cards left" should {
+      val newCards: Cards = CardManager.drawTreasure(shuffledCards)
+
+      "add a card even if the hand is full" in {
+        newCards.hand.size shouldBe >(shuffledCards.hand.size)
+        newCards.hand.diff(shuffledCards.hand) should have size 1
+      }
+
+
+      "add a card to the players hand" in {
+        newCards.hand.size shouldBe >(shuffledCards.hand.size)
+        newCards.hand.diff(shuffledCards.hand) should have size 1
+      }
+
+      "reduce the size of the deck" in {
+        newCards.deck.size shouldBe <(shuffledCards.deck.size)
+        newCards.discard.size should equal(shuffledCards.discard.size)
+      }
+
+      "refresh the deck from the discard pile when required" in {
+        val emptyDeck = shuffledCards.copy(deck = Seq.empty, discard = shuffledCards.deck)
+        val testDeck = CardManager.drawTreasure(emptyDeck)
+
+        emptyDeck.hand.size shouldBe < (testDeck.hand.size)
+        emptyDeck.deck.size shouldBe < (testDeck.deck.size)
+        emptyDeck.discard.size shouldBe > (testDeck.discard.size)
       }
     }
   }

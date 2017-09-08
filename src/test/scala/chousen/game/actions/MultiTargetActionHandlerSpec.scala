@@ -188,6 +188,76 @@ class MultiTargetActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given Potion of Poison" should {
+      val (startedGame, result, targets) = completeAction(PotionOfPoison)
+
+      "Not Lower the targeted enemies health" in {
+        targets.foreach(t => assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == t)))
+        assert(startedGame.dungeon.currentEncounter.enemies.size == 2)
+        assert(result.dungeon.currentEncounter.enemies.size == 2)
+        assert(getFirstEnemyHp(result) == getFirstEnemyHp(startedGame))
+        assert(getSecondEnemyHp(result) == getSecondEnemyHp(startedGame))
+      }
+
+      "the players position is reduced" in {
+        assert(result.player.position < 100)
+      }
+
+      lazy val numberOfNewMessages = result.messages.size - startedGame.messages.size
+      lazy val latestMessages = result.messages.takeRight(numberOfNewMessages)
+
+      "game messages are created for the player's attack" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "the enemy does not take a turn" in {
+        assert(result.player.stats.currentHp == startedGame.player.stats.currentHp)
+
+        assert(latestMessages.exists(!_.text.contains("Slime attacks Test Player")))
+      }
+
+      "Gives enemies the poison status" in {
+        assert(result.dungeon.currentEncounter.enemies.forall(_.status.exists(_.effect == Poison)))
+      }
+    }
+
+    "Given Potion of Miasma" should {
+      val (startedGame, result, targets) = completeAction(PotionOfMiasma)
+
+      "Not Lower the targeted enemies health" in {
+        targets.foreach(t => assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == t)))
+        assert(startedGame.dungeon.currentEncounter.enemies.size == 2)
+        assert(result.dungeon.currentEncounter.enemies.size == 2)
+        assert(getFirstEnemyHp(result) == getFirstEnemyHp(startedGame))
+        assert(getSecondEnemyHp(result) == getSecondEnemyHp(startedGame))
+      }
+
+      "the players position is reduced" in {
+        assert(result.player.position < 100)
+      }
+
+      lazy val numberOfNewMessages = result.messages.size - startedGame.messages.size
+      lazy val latestMessages = result.messages.takeRight(numberOfNewMessages)
+
+      "game messages are created for the player's attack" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "the enemy does not take a turn" in {
+        assert(result.player.stats.currentHp == startedGame.player.stats.currentHp)
+
+        assert(latestMessages.exists(!_.text.contains("Slime attacks Test Player")))
+      }
+
+      "Gives enemies the burn status" in {
+        assert(result.dungeon.currentEncounter.enemies.forall(_.status.exists(_.effect == Burn)))
+      }
+
+      "Gives enemies the poison status" in {
+        assert(result.dungeon.currentEncounter.enemies.forall(_.status.exists(_.effect == Poison)))
+      }
+    }
+
     "Given Scroll of Fear" should {
       val (startedGame, result, targets) = completeAction(ScrollOfFear)
 
@@ -218,6 +288,40 @@ class MultiTargetActionHandlerSpec extends WordSpec {
 
       "Gives enemies the fear status" in {
         assert(result.dungeon.currentEncounter.enemies.forall(_.status.exists(_.effect == Fear)))
+      }
+    }
+
+    "Given Extinguish" should {
+      val (startedGame, result, targets) = completeAction(Extinguish)
+
+      "Not Lower the targeted enemies health" in {
+        targets.foreach(t => assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == t)))
+        assert(startedGame.dungeon.currentEncounter.enemies.size == 2)
+        assert(result.dungeon.currentEncounter.enemies.size == 2)
+        assert(getFirstEnemyHp(result) == getFirstEnemyHp(startedGame))
+        assert(getSecondEnemyHp(result) == getSecondEnemyHp(startedGame))
+      }
+
+      "the players position is reduced" ignore {
+        // Doesn't apply as no enemies are burnt
+        assert(result.player.position < 100)
+      }
+
+//      lazy val numberOfNewMessages = result.messages.size - startedGame.messages.size
+//      lazy val latestMessages = result.messages.takeRight(numberOfNewMessages)
+//
+//      "game messages are created for the player's attack" in {
+//        assert(result.messages.size > startedGame.messages.size)
+//      }
+
+      "the enemy does not take a turn" in {
+        assert(result.player.stats.currentHp == startedGame.player.stats.currentHp)
+
+//        assert(latestMessages.exists(!_.text.contains("Slime attacks Test Player")))
+      }
+
+      "Removes the Burn status" in {
+        assert(result.dungeon.currentEncounter.enemies.forall(!_.status.exists(_.effect == Burn)))
       }
     }
 

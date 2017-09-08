@@ -31,7 +31,7 @@ class GameOpsSpec extends WordSpec {
   "GameOps.update" when {
 
     "provided with a fast player and a slow enemy" should {
-      val player = Player("Player", "test", speed10Char, experience, emptyEquipment, position = 0)
+      val player = Player("Player", "test", speed10Char, experience, emptyEquipment, gold = 0, position = 0)
       val enemy = Enemy("Enemy", UUID.randomUUID(), speed8Char, position = 0)
       val emptyMessages = Seq.empty[GameMessage]
 
@@ -60,7 +60,7 @@ class GameOpsSpec extends WordSpec {
     "provided two a player and enemy with equal speeds and different positions" should {
 
       // Note that the enemy is closer to their next turn
-      val player = Player("Player", "test", speed10Char, experience, Equipment(None, None), position = 0)
+      val player = Player("Player", "test", speed10Char, experience, Equipment(None, None), gold = 0, position = 0)
       val enemy = Enemy("Quick Enemy", UUID.randomUUID(), speed10Char, position = 50)
       val emptyMessages = Seq.empty[GameMessage]
 
@@ -120,7 +120,7 @@ class GameOpsSpec extends WordSpec {
       "two actors reach the position goal" should {
 
         // Note that the enemy is closer to their next turn
-        val player = Player("Player", "test", speed10Char, experience, emptyEquipment, position = 90)
+        val player = Player("Player", "test", speed10Char, experience, emptyEquipment, 0, position = 90)
         val enemy = Enemy("Enemy", UUID.randomUUID(), speed10Char, position = 91)
         val emptyMessages = Seq.empty[GameMessage]
 
@@ -144,7 +144,7 @@ class GameOpsSpec extends WordSpec {
 
     "provided with an equal enemy and player" should {
 
-      val player = Player("Player", "test", speed10Char, experience, emptyEquipment, position = 0)
+      val player = Player("Player", "test", speed10Char, experience, emptyEquipment, 0, position = 0)
       val enemy = Enemy("Quick Enemy", UUID.randomUUID(), speed10Char, position = 0)
 
       val emptyMessages = Seq.empty[GameMessage]
@@ -181,7 +181,7 @@ class GameOpsSpec extends WordSpec {
 
         Range.inclusive(0, 5).foreach { (_: Int) =>
 
-          val player = Player("Player", "test", speed10Char, experience, emptyEquipment, position = 0)
+          val player = Player("Player", "test", speed10Char, experience, emptyEquipment, 0, position = 0)
           val enemy = Enemy("Quick Enemy", UUID.randomUUID(), speed10Char, position = 0)
           val emptyMessages = Seq.empty[GameMessage]
 
@@ -207,7 +207,7 @@ class GameOpsSpec extends WordSpec {
   "GameOps.updateUntilPlayerIsActive" when {
     "provided with an ahead equal enemy and player" should {
 
-      val player = Player("Player", "test", speed10Char, experience, emptyEquipment, position = 0)
+      val player = Player("Player", "test", speed10Char, experience, emptyEquipment, 0, position = 0)
       val enemy = Enemy("Quick Enemy", UUID.randomUUID(), speed10Char, position = 50)
       val emptyMessages = Seq.empty[GameMessage]
 
@@ -249,7 +249,7 @@ class GameOpsSpec extends WordSpec {
     }
 
     "provided with various enemies including a fast enemy" should {
-      val player = Player("Player", "test", CharStats(100, 100), experience, emptyEquipment, 0)
+      val player = Player("Player", "test", CharStats(100, 100), experience, emptyEquipment, 0 ,0)
 
       def createSlime = Enemy("Slime", UUID.randomUUID(), CharStats(10, 10), 0)
       def createSloth = Enemy("Sloth", UUID.randomUUID(), CharStats(15, 15, strength = 11, speed = 5), 0)
@@ -272,7 +272,7 @@ class GameOpsSpec extends WordSpec {
 
   "GameOps.isGameActive" when {
 
-    val player = Player("Player", "test", speed10Char, experience, emptyEquipment, position = 0)
+    val player = Player("Player", "test", speed10Char, experience, emptyEquipment, gold = 0, position = 0)
     val enemies = Set(Enemy("Enemy", UUID.randomUUID(), speed8Char, position = 0))
     val emptyMessages = Seq.empty[GameMessage]
 

@@ -2,6 +2,7 @@ package chousen.util
 
 import chousen.Optics
 import chousen.api.data.GameStateGenerator
+import chousen.game.cards.CardCatalogue
 import org.scalatest.WordSpec
 
 class GameStateOpsSpec extends WordSpec {
@@ -24,7 +25,7 @@ class GameStateOpsSpec extends WordSpec {
       }
 
       "Retain all messages" in {
-        assert(result.messages == gameState.messages)
+        assert(result.messages == gameState.messages.map(_.text))
       }
 
       "Retain the Player's hand size" in {
@@ -40,13 +41,16 @@ class GameStateOpsSpec extends WordSpec {
 
     "An Essence has been played" should {
 
-      val essencePlayedState = Optics.CardsLens.modify(c => c.copy(playedEssence = true))(gameState)
+      val essencePlayedState = Optics.CardsLens.modify(c => c.copy(playedEssence = true, hand = c.hand :+ CardCatalogue.essenceOfVitality))(gameState)
 
       val result = gameStateOps.toGameResponse(essencePlayedState, Seq.empty)
 
-      "Disable only the Player's Essence cards" in {
+      "Disable the Player's Essence cards" in {
         assert(result.cards.hand.filter(_.name.contains("Essence")).forall(_.playable == false))
-        assert(result.cards.hand.filterNot(_.name.contains("Essence")).forall(_.playable == true))
+      }
+
+      "Leave non Essences playable" in {
+        assert(result.cards.hand.filterNot(_.name.contains("Essence")).exists(_.playable == true))
       }
     }
   }

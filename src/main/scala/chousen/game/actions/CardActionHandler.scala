@@ -34,6 +34,8 @@ object CardActionHandler extends ActionHandler {
       case Armoury => armoury
       case Recharge => recharge
       case IncreaseCharges => chargeUp(cardId)
+      case BagOfGold => bagOfGold
+      case PotOfGold => potOfGold
     }
 
 
@@ -288,5 +290,26 @@ object CardActionHandler extends ActionHandler {
 
 
       cardsAndMessages.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+  def bagOfGold(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
+
+    val gold = 30
+    val m = GameMessage(s"${p.name} opens a bag of gold and finds $gold gold!")
+
+    val gameMessages = msgs :+ m
+
+    (p.copy(gold = p.gold + gold), cs, gameMessages)
+  }
+
+  def potOfGold(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
+
+    val gold = 100
+    val m = GameMessage(s"${p.name} looks in a pot of gold and finds $gold gold!")
+
+    val gameMessages
+    = msgs :+ m
+
+    (p.copy(gold = p.gold + gold), cs, gameMessages)
   }
 }

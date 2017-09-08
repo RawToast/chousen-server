@@ -126,6 +126,11 @@ class SingleTargetActionHandlerSpec extends WordSpec {
       standardAssertions(startedGame, result, target)
     }
 
+    "Given Drain" should {
+      val (startedGame, result, target) = completeAction(Drain)
+      standardAssertions(startedGame, result, target)
+    }
+
     "Given Ember" should {
       val (startedGame, result, target) = completeAction(Ember)
       standardAssertions(startedGame, result, target)
@@ -137,11 +142,6 @@ class SingleTargetActionHandlerSpec extends WordSpec {
       }
     }
 
-    "Given Life Swap" should {
-      val (startedGame, result, target) = completeAction(MagicMissile)
-      standardAssertions(startedGame, result, target)
-    }
-
 
     "Given Quick Attack" should {
       val (startedGame, result, target) = completeAction(QuickAttack)
@@ -150,6 +150,11 @@ class SingleTargetActionHandlerSpec extends WordSpec {
 
     "Given Assassinate Attack" should {
       val (startedGame, result, target) = completeAction(Assassinate)
+      standardAssertions(startedGame, result, target)
+    }
+
+    "Given Toxic Shiv" should {
+      val (startedGame, result, target) = completeAction(ToxicShiv)
       standardAssertions(startedGame, result, target)
     }
   }

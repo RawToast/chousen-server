@@ -17,16 +17,17 @@ object GameStateGenerator {
   val secondEnemy: Enemy = createBigSlime(UUID.fromString("403768ae-a336-4654-bebf-6920ff4d5eb8"))
 
   val staticGameState: GameState = {
-    val player = Player(playerName, "Static", CharStats(100, 100), Experience(), Equipment(None, None), 0)
+    val player = Player(playerName, "Static", CharStats(100, 100), Experience(), Equipment(None, None), 10, 0)
     gameStateWithPlayer(player)
   }
 
   val gameStateWithFastPlayer: GameState = {
-    val player = Player(playerName, "FastStatic", CharStats(100, 100), Experience(), Equipment(None, None), 1)
+    val player = Player(playerName, "FastStatic", CharStats(100, 100), Experience(), Equipment(None, None), 10, 1)
     gameStateWithPlayer(player)
   }
 
   lazy val crushingBlowCard = Card(UUID.fromString("614e566c-03a5-43b0-ae55-e131f4428fc3"), "Crushing Blow", "Deals heavy damage to a single target", CrushingBlow)
+  lazy val fireballCard = Card(UUID.fromString("403768ae-a336-4654-bebf-6920ff4d5eb8"), "Fireball", "Deals heavy damage to a single target", Fireball)
 
   private def gameStateWithPlayer(player:Player) = {
     import cats.implicits.catsSyntaxSemigroup

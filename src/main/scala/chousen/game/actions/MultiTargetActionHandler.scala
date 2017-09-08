@@ -50,6 +50,8 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
       case WindStrike => windStrike
       case Fireball => fireball
       case PotionOfFlames => flames
+      case PotionOfPoison => poison
+      case PotionOfMiasma => miasma
       case ScrollOfFear => fear
       case Extinguish => extinguish
       case Shatter => shatter
@@ -80,7 +82,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
         .intMulti(Multipliers.lowMulti)
         .maxMulti(Multipliers.multiTarget).m) + (dc.sc.calculate(p).stats.intellect / 4)
 
-    val gameMessages = msgs :+ GameMessage(s"${e.name} takes $dmg damage.")
+    val gameMessages = msgs :+ GameMessage(s"${e.name} is struck and takes $dmg damage.")
 
     // This should be replaced by a generic attack/damage function
     val newE = EnemyOptics.EnemyStatsLens.composeLens(CharStatsOptics.HpLens)
@@ -162,7 +164,23 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
     val gameMessages = msgs :+ GameMessage(s"${e.name} is burnt by the flames.")
 
-    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(8, turns = 6))(e)
+    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeBurn(7, turns = 6))(e)
+
+    (p, Option(newE), gameMessages)
+  }
+
+  def poison(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+
+    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makePoison(7, turns = 6))(e)
+
+    (p, Option(newE), msgs)
+  }
+
+  def miasma(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+    val gameMessages = msgs :+ GameMessage(s"${e.name} is burnt by the toxic flames.")
+
+    val newE = EnemyOptics.EnemyStatusLens
+      .modify(_ :+ StatusBuilder.makeBurn(8, turns = 6) :+ StatusBuilder.makePoison(8, turns = 6))(e)
 
     (p, Option(newE), gameMessages)
   }

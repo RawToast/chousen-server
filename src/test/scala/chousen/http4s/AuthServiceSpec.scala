@@ -2,7 +2,6 @@ package chousen.http4s
 
 import fs2.{Strategy, Task}
 import org.http4s.{Entity, EntityEncoder, Request, UrlForm, Uri, Method}
-import org.http4s.headers.`Set-Cookie`
 import org.mockito.Mockito._
 import org.scalatest.WordSpec
 import org.scalatest.mockito.MockitoSugar
@@ -34,7 +33,7 @@ class AuthServiceSpec extends WordSpec with MockitoSugar {
         val result = happyService.routes.apply(req).unsafeRun()
 
         assert(result.orNotFound.status.code == 200)
-        assert(result.orNotFound.headers.get(`Set-Cookie`).nonEmpty)
+        assert(result.orNotFound.cookies.nonEmpty)
       }
     }
 
@@ -46,7 +45,7 @@ class AuthServiceSpec extends WordSpec with MockitoSugar {
         val result = happyService.routes.apply(req).unsafeRun()
 
         assert(result.orNotFound.status.code == 400)
-        assert(result.orNotFound.headers.get(`Set-Cookie`).isEmpty)
+        assert(result.orNotFound.cookies.isEmpty)
       }
     }
   }

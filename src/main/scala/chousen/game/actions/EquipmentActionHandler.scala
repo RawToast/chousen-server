@@ -22,12 +22,13 @@ class EquipmentActionHandler {
       case ShortSword => shortSword
       case Mace => mace
       case BroadSword => boardSword
-      case LongSword => kodachi
+      case Longsword => kodachi
       case GiantClub => giantClub
 
       case TrollCrusher => trollCrusher
       case SwordOfIntellect => swordOfIntellect
       case DaggerOfDavid => daggerOfDavid
+      case QuickBlade => quickBlade
 
       case Cape => cape
       case LeatherArmour => leatherArmour
@@ -35,6 +36,13 @@ class EquipmentActionHandler {
       case Chainmail => chainmail
       case HeavyArmour => heavyArmour
       case OrcishArmour => orcArmour
+
+      // Treasure
+      case MagePlate => magePlate
+      case RenartsDeceiver => rensDeceiver
+      case Manamune => manamune
+      case TroggsAnnihilator => troggsAnni
+      case WandOfDefiance => wandOfDef
     }
   }
 
@@ -64,6 +72,9 @@ class EquipmentActionHandler {
 
   def daggerOfDavid(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
     weapon("Dagger of David", 0, Seq(Deadly))(p, msgs, uuid)
+
+  def quickBlade(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Quick Blade", 9, Seq(Quick))(p, msgs, uuid)
 
   def weapon(name: String, dmg: Int, effects: Seq[WeaponEffect]= Seq.empty) = (p: Player, msgs: Seq[GameMessage], uuid: UUID) => {
 
@@ -101,6 +112,26 @@ class EquipmentActionHandler {
   def orcArmour(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
     armour("Orcish Armour", 19)(p, msgs, uuid)
   }
+
+
+
+  //Treasure Only
+
+  def magePlate(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
+    armour("Mage Plate", 9)(p, msgs, uuid)
+  }
+
+  def rensDeceiver(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Renart's Deciever", 10, Seq(Quick, Deceive))(p, msgs, uuid)
+
+  def troggsAnni(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Trogg's Annihilator", 11, Seq(Deadly, Maim))(p, msgs, uuid)
+
+  def manamune(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Manamune", 3, Seq(Magic, Magic))(p, msgs, uuid)
+
+  def wandOfDef(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Defiant Wand", 4, Seq(Protection))(p, msgs, uuid)
 
   private def armour(name: String, ac: Int, pen:Int = 100) = (p: Player, msgs: Seq[GameMessage], uuid: UUID) => {
     val message = GameMessage(s"${p.name} puts on $name.")

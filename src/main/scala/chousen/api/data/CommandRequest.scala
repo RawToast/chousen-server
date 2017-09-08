@@ -50,12 +50,14 @@ case object Assassinate extends SingleTargetAction
 case object Pain extends SingleTargetAction
 case object MagicMissile extends SingleTargetAction
 case object Ember extends SingleTargetAction
-case object LifeSwap extends SingleTargetAction
-
+case object Drain extends SingleTargetAction
+case object ToxicShiv extends SingleTargetAction
 
 case object Fireball extends MultiAction
 case object Extinguish extends MultiAction
 case object PotionOfFlames extends MultiAction
+case object PotionOfPoison extends MultiAction
+case object PotionOfMiasma extends MultiAction
 case object ScrollOfFear extends MultiAction
 case object MassDrain extends MultiAction
 case object Shatter extends MultiAction
@@ -97,6 +99,8 @@ case object Restore extends StandardCardAction
 case object Refresh extends StandardCardAction
 case object Armoury extends StandardCardAction
 case object Recharge extends StandardCardAction
+case object BagOfGold extends StandardCardAction
+case object PotOfGold extends StandardCardAction
 
 
 case object ForgeArmour extends DiscardCardAction
@@ -119,11 +123,18 @@ case object Club extends EquipWeapon
 case object Mace extends EquipWeapon
 case object ShortSword extends EquipWeapon
 case object BroadSword extends EquipWeapon
-case object LongSword extends EquipWeapon
+case object Longsword extends EquipWeapon
 case object GiantClub extends EquipWeapon
 case object TrollCrusher extends EquipWeapon
 case object SwordOfIntellect extends EquipWeapon
 case object DaggerOfDavid extends EquipWeapon
+case object QuickBlade extends EquipWeapon
+
+case object RenartsDeceiver extends EquipWeapon
+case object Manamune extends EquipWeapon
+case object TroggsAnnihilator extends EquipWeapon
+case object WandOfDefiance extends EquipWeapon
+
 
 
 case object Cape extends EquipArmour
@@ -132,3 +143,7 @@ case object Ringmail extends EquipArmour
 case object Chainmail extends EquipArmour
 case object HeavyArmour extends EquipArmour
 case object OrcishArmour extends EquipArmour
+
+case object MagePlate extends EquipArmour
+
+
