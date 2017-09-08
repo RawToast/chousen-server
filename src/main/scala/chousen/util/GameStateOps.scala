@@ -39,7 +39,7 @@ trait GameStateOps {
             case action: DiscardCardAction =>
               action match {
                 case ReduceRequirements => gs.cards.hand
-                  .filter(r => r.requirements.str.nonEmpty && r.requirements.dex.nonEmpty && r.requirements.int.nonEmpty)
+                  .filter(r => r.requirements.str.nonEmpty || r.requirements.dex.nonEmpty || r.requirements.int.nonEmpty)
                   .map(h => ActionRequestBody(h.name, Some(c.action), cardId = Option(h.id)))
                 case IncreaseCharges =>
                   val as = gs.cards.hand

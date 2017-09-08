@@ -4,9 +4,11 @@ import java.util.UUID
 
 import chousen.api.data.PlayerOptics.{PlayerClassLens, SetPlayerStats}
 import chousen.api.data._
-import chousen.game.cards.{CardCatalogue => CC, CardManager}
+import chousen.game.cards.{CardManager, CardCatalogue => CC}
 import chousen.game.core.GameStateOptics.EncounterLens
 import chousen.game.dungeon.DungeonBuilder
+
+import scala.util.Random
 
 class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCreation {
 
@@ -45,15 +47,15 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
     val cards: Cards = CardManager.startGame(deck, CC.passiveCards)
 
 
-    val dungeonTreasure: Seq[Card] = Seq (
+    val dungeonTreasure: Seq[Card] = Random.shuffle(Seq (
       CC.rarePepe, CC.rarePepe, CC.rarePepe, CC.rarePepe,
       CC.elixirOfStrength, CC.elixirOfDexterity, CC.elixirOfVitality, CC.elixirOfIntelligence,
 
-
+      CC.potionOfMiasma, CC.potionOfMiasma,
       // UNIQUES :D
 
-      CC.troggs, CC.manamune, CC.wandOfDefiance, CC.deceiver, CC.magePlate
-    )
+      CC.troggsAnnilator, CC.manamune, CC.wandOfDefiance, CC.deceiver, CC.magePlate
+    ))
 
     val msgs = Seq.empty[GameMessage]
 

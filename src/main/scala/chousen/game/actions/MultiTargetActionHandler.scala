@@ -51,6 +51,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
       case Fireball => fireball
       case PotionOfFlames => flames
       case PotionOfPoison => poison
+      case PotionOfMiasma => miasma
       case ScrollOfFear => fear
       case Extinguish => extinguish
       case Shatter => shatter
@@ -173,6 +174,15 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
     val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makePoison(7, turns = 6))(e)
 
     (p, Option(newE), msgs)
+  }
+
+  def miasma(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+    val gameMessages = msgs :+ GameMessage(s"${e.name} is burnt by the toxic flames.")
+
+    val newE = EnemyOptics.EnemyStatusLens
+      .modify(_ :+ StatusBuilder.makeBurn(8, turns = 6) :+ StatusBuilder.makePoison(8, turns = 6))(e)
+
+    (p, Option(newE), gameMessages)
   }
 
   def fear(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {

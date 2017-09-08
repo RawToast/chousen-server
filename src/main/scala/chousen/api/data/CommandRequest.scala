@@ -57,6 +57,7 @@ case object Fireball extends MultiAction
 case object Extinguish extends MultiAction
 case object PotionOfFlames extends MultiAction
 case object PotionOfPoison extends MultiAction
+case object PotionOfMiasma extends MultiAction
 case object ScrollOfFear extends MultiAction
 case object MassDrain extends MultiAction
 case object Shatter extends MultiAction

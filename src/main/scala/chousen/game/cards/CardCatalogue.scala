@@ -425,10 +425,12 @@ trait TreasureCards extends CardBuilder {
     "Minimal increase to damage. Intellect heavily affects attack damage",
     Manamune, Requirements(str = Some(12), dex = Some(12)))
 
-  def troggs: Card = mkEquip("Troggs Annihilator",
+  def troggsAnnilator: Card = mkEquip("Troggs Annihilator",
     "Moderate increase to damage. Deals bonus damage based on both missing and max HP",
-    TroggsAnnihilator, Requirements(dex = Some(20)))
+    TroggsAnnihilator, Requirements(str = Some(20)))
 
   def wandOfDefiance: Card = mkEquip("Wand of Defiance", "Minimal increase to damage, reduces damage taken",
     WandOfDefiance, Requirements(int = Some(15)))
+
+  def potionOfMiasma: Card = mkEquip("Potion of Miasma", "Applies a strong poison and burn to all enemies", PotionOfMiasma)
 }
