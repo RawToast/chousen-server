@@ -173,6 +173,14 @@ trait TurnTransition {
 
     val drawLimit = if (playedCard) CardManager.PRE_DISCARD_MAX_HAND_SIZE else CardManager.MAX_HAND_SIZE
 
+
+    // basic implementation of treasure
+
+
+
+
+//    CardManager.drawTreasure
+
     g.copy(cards = CardManager.drawCard(CardManager.drawCard(g.cards, drawLimit), drawLimit))
   }
 

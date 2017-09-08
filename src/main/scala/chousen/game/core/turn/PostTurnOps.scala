@@ -69,9 +69,7 @@ object PostTurnOps {
   }
 
   implicit class ExperienceSyntax(exp: Experience) {
-    def increase(battleExp :Int): Experience = {
-      println(s"Gain exp $battleExp")
+    def increase(battleExp :Int): Experience =
       exp.copy(current = exp.current + battleExp, total = exp.total + battleExp)
-    }
   }
 }
