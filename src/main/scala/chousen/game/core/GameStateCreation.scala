@@ -31,6 +31,7 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
       case 4 => SetPlayerStats.apply(1, 1, 0, 1).compose(PlayerClassLens.set("Rogue"))(p)
       case 5 => SetPlayerStats.apply(0, 1, 1, 1).compose(PlayerClassLens.set("Trickster"))(p)
       case 6 => SetPlayerStats.apply(0, 0, 2, 1).compose(PlayerClassLens.set("Mage"))(p)
+      case 7 => SetPlayerStats.apply(0, 0, 3, 0).compose(PlayerClassLens.set("Wizard"))(p)
       case _ => SetPlayerStats.apply(0, 0, 3, 0).compose(PlayerClassLens.set("Wizard"))(p)
     }
 

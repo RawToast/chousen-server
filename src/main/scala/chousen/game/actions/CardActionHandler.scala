@@ -118,7 +118,7 @@ object CardActionHandler extends ActionHandler {
         discardCard <- h.hand.find(_.id == id)
         armourCard <- h.deck.find(_.action.isInstanceOf[EquipArmour])
         m = GameMessage(s"${p.name} discards ${discardCard.name} and forges: ${armourCard.name}")
-        nc: Cards = h.discardCard(discardCard).moveToHand(id)
+        nc: Cards = h.discardCard(discardCard).moveToHand(armourCard.id)
       } yield (nc, m)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
@@ -132,7 +132,7 @@ object CardActionHandler extends ActionHandler {
         discardCard <- h.hand.find(_.id == id)
         weaponCard <- h.deck.find(_.action.isInstanceOf[EquipWeapon])
         m = GameMessage(s"${p.name} discards ${discardCard.name} and forges: ${weaponCard.name}")
-        nc = h.discardCard(discardCard).moveToHand(id)
+        nc = h.discardCard(discardCard).moveToHand(weaponCard.id)
       } yield (nc, m)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))

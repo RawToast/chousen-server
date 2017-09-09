@@ -28,19 +28,20 @@ class CardManagerSpec extends WordSpec with Matchers {
     }
 
     "the player discards a card" should {
+      val cardToDiscard = CardCatalogue.club
 
-      val cardToDiscard = shuffledCards.hand.head
-      val newCards: Cards = shuffledCards.discardCard(cardToDiscard)
+      val initialCards = shuffledCards.addToHand(cardToDiscard)
+      val newCards: Cards = initialCards.discardCard(cardToDiscard)
 
       "remove the card from the players hand" in {
-        newCards.hand.size shouldBe <(shuffledCards.hand.size)
+        newCards.hand.size shouldBe <(initialCards.hand.size)
         newCards.hand shouldNot contain(cardToDiscard)
       }
 
       "discard the card" in {
-        shuffledCards.discard shouldNot contain(cardToDiscard)
+        initialCards.discard shouldNot contain(cardToDiscard)
         newCards.discard should contain(cardToDiscard)
-        newCards.discard.size shouldBe >(shuffledCards.discard.size)
+        newCards.discard.size shouldBe >(initialCards.discard.size)
 
         // Should be head card
         newCards.discard.head should equal(cardToDiscard)
@@ -56,6 +57,18 @@ class CardManagerSpec extends WordSpec with Matchers {
         assert(!result.discard.exists(_.id == treasureCard.id))
         assert(!result.hand.exists(_.id == treasureCard.id))
         assert(!result.deck.exists(_.id == treasureCard.id))
+      }
+
+      "destroy the card if it is an Essence" in {
+        val essesence = CardCatalogue.essenceOfDexterity
+        val initialCards = shuffledCards.addToHand(essesence)
+
+        val result = initialCards.discardCard(essesence)
+
+        result.hand.size shouldBe <(initialCards.hand.size)
+        assert(!result.discard.exists(_.id == essesence.id))
+        assert(!result.hand.exists(_.id == essesence.id))
+        assert(!result.deck.exists(_.id == essesence.id))
       }
     }
 
@@ -94,9 +107,11 @@ class CardManagerSpec extends WordSpec with Matchers {
 
     "repopulating from the discard pile" should {
 
-      val cardToDiscard = shuffledCards.hand.head
+      val cardToDiscard = CardCatalogue.club
 
-      val afterDiscard: Cards = CardManager.discard(cardToDiscard)(shuffledCards)
+      val initialCards = shuffledCards.addToHand(cardToDiscard)
+
+      val afterDiscard: Cards = CardManager.discard(cardToDiscard)(initialCards)
 
       val afterPopulate = CardManager.moveLastDiscardToTopDeck(afterDiscard)
 

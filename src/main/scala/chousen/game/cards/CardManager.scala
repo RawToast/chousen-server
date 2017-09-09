@@ -30,8 +30,8 @@ trait CardManager {
         .find(_ ~= card)
     }
 
-    def discard(card: Card, ng: GameState) = HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= card))
-      .andThen(DiscardLens.modify((ds: Seq[data.Card]) => if (card.name.contains("Essence of")) ds else card +: ds)).apply(ng)
+//    def discard(card: Card, ng: GameState) = HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= card))
+//      .andThen(DiscardLens.modify((ds: Seq[data.Card]) => if (card.name.contains("Essence of")) ds else card +: ds)).apply(ng)
 
     def handleEquipAction(ea: EquipAction, c: Card): (GameState) => GameState = {
       def equip(optCard: Option[Card], lens: Lens[EquippedCards, Option[Card]]): (GameState) => GameState = {
@@ -53,6 +53,8 @@ trait CardManager {
       }
     }
 
+    import chousen.util.CardsSyntax._
+
     action
       .fold(game) { c =>
         val nextGameState = f(c)
@@ -67,8 +69,8 @@ trait CardManager {
               c.charges match {
                 case Some(i) =>
                   if (i > 1) HandLens.modify(_.map(x => if (x ~= c) c.copy(charges = c.charges.map(_ - 1)) else x))(nextGameState)
-                  else discard(c, nextGameState)
-                case None => discard(c, nextGameState)
+                  else nextGameState.copy(cards = nextGameState.cards.discardCard(c))//discard(c, nextGameState)
+                case None => nextGameState.copy(cards = nextGameState.cards.discardCard(c)) // discard(c, nextGameState)
               }
           }
         }
@@ -142,7 +144,7 @@ trait CardManager {
     import chousen.Implicits._
     cards.hand.find(_ ~= card).fold(cards) { c =>
       val newHand = cards.hand.filterNot(_ ~= c)
-      if (c.treasure) cards.copy(hand = newHand)
+      if (c.treasure || c.name.contains("Essence of")) cards.copy(hand = newHand)
       else cards.copy(hand = newHand, discard = cards.discard :+ c)
 
     }
