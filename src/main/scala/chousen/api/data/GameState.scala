@@ -29,7 +29,8 @@ case class Armour(cardId: UUID, name: String, defense: Int, requirements: Requir
 
 case class Requirements(str: Option[Int]=None, dex: Option[Int]=None, int: Option[Int]=None)
 
-case class Card(id: UUID, name: String, description: String, action: Action, charges: Option[Int]=None, maxCharges:Option[Int]=None, requirements: Requirements=Requirements())
+case class Card(id: UUID, name: String, description: String, action: Action, charges: Option[Int]=None,
+                maxCharges:Option[Int]=None, requirements: Requirements=Requirements(), treasure: Boolean=false)
 
 case class GameMessage(text: String)
 

@@ -142,13 +142,19 @@ trait CardManager {
     import chousen.Implicits._
     cards.hand.find(_ ~= card).fold(cards) { c =>
       val newHand = cards.hand.filterNot(_ ~= c)
-      cards.copy(hand = newHand, discard = cards.discard :+ c)
+      if (c.treasure) cards.copy(hand = newHand)
+      else cards.copy(hand = newHand, discard = cards.discard :+ c)
+
     }
   }
 
 
-  final def drawTreasure(cards: Cards): Cards = {
+  def drawTreasure(cards: Cards): Cards = {
     if (cards.treasure.isEmpty) drawCard(cards, limit = ABSOLUTE_MAX)
     else cards.copy(hand = cards.hand :+ cards.treasure.head, treasure = cards.treasure.tail)
+  }
+
+  def addCard(c: Card) = { cards: Cards =>
+    cards.copy(hand = cards.hand :+ c)
   }
 }

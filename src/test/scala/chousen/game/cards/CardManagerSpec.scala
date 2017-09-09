@@ -4,7 +4,7 @@ import chousen.api.data
 import chousen.api.data.{Cards, EquippedCards}
 import org.scalatest.{Matchers, WordSpec}
 
-
+import chousen.util.CardsSyntax._
 class CardManagerSpec extends WordSpec with Matchers {
 
   "The Deck manager" when {
@@ -30,7 +30,7 @@ class CardManagerSpec extends WordSpec with Matchers {
     "the player discards a card" should {
 
       val cardToDiscard = shuffledCards.hand.head
-      val newCards: Cards = CardManager.discard(cardToDiscard)(shuffledCards)
+      val newCards: Cards = shuffledCards.discardCard(cardToDiscard)
 
       "remove the card from the players hand" in {
         newCards.hand.size shouldBe <(shuffledCards.hand.size)
@@ -45,11 +45,23 @@ class CardManagerSpec extends WordSpec with Matchers {
         // Should be head card
         newCards.discard.head should equal(cardToDiscard)
       }
+
+      "destroy the card if it is a treasure card" in {
+        val treasureCard = CardCatalogue.deceiver.copy(treasure = true)
+        val cardsWithTreasure = shuffledCards.addToHand(treasureCard)
+
+        val result = cardsWithTreasure.discardCard(treasureCard)
+
+        result.hand.size shouldBe <(cardsWithTreasure.hand.size)
+        assert(!result.discard.exists(_.id == treasureCard.id))
+        assert(!result.hand.exists(_.id == treasureCard.id))
+        assert(!result.deck.exists(_.id == treasureCard.id))
+      }
     }
 
     "the player draws a card" should {
 
-      val fullCards: Cards = CardManager.drawCard(shuffledCards)
+      val fullCards: Cards = shuffledCards.drawCard()
 
       "not add a card if the hand is full" in {
         fullCards.hand.size shouldBe shuffledCards.hand.size
@@ -72,7 +84,7 @@ class CardManagerSpec extends WordSpec with Matchers {
 
       "refresh the deck from the discard pile when required" in {
         val emptyDeck = nonFullHandCards.copy(deck = Seq.empty, discard = nonFullHandCards.deck)
-        val testDeck = CardManager.drawCard(emptyDeck)
+        val testDeck = emptyDeck.drawCard()
 
         emptyDeck.hand.size shouldBe < (testDeck.hand.size)
         emptyDeck.deck.size shouldBe < (testDeck.deck.size)

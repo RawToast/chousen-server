@@ -8,9 +8,9 @@ import chousen.game.cards.{CardManager, Potions}
 import chousen.util.LensUtil
 
 import scala.util.Random
+import chousen.util.CardsSyntax._
 
 object CardActionHandler extends ActionHandler {
-
   def handle(action: CardAction, cardId: Option[UUID]): (GameState) => GameState = {
     LensUtil.triLens(PlayerLens, CardsLens, MessagesLens).modify {
       case (p, cs, msgs) =>
@@ -58,9 +58,12 @@ object CardActionHandler extends ActionHandler {
 
     val gameMessages = msgs :+ targetMsg
 
-    val discardedHandCards: Cards = cs.hand
-      .map(c => CardManager.discard(c))
-        .foldLeft(cs)((c, ca) => ca(c))
+    val discardedHandCards: Cards =
+      cs.hand.foldLeft(cs)((cs, c) => cs.discardCard(c))
+//
+//    val discardedHandCards: Cards = cs.hand
+//      .map(c => CardManager.discard(c))
+//        .foldLeft(cs)((c, ca) => ca(c))
 
     val handSize = Math.max(3, cs.hand.size)
 
@@ -115,11 +118,7 @@ object CardActionHandler extends ActionHandler {
         discardCard <- h.hand.find(_.id == id)
         armourCard <- h.deck.find(_.action.isInstanceOf[EquipArmour])
         m = GameMessage(s"${p.name} discards ${discardCard.name} and forges: ${armourCard.name}")
-        nh = h.hand.filterNot(_.id == id) :+ armourCard
-
-        nc = h.copy(hand = nh,
-          deck = h.deck.filterNot(_.id == armourCard.id),
-          discard = h.discard :+ discardCard)
+        nc: Cards = h.discardCard(discardCard).moveToHand(id)
       } yield (nc, m)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
@@ -133,10 +132,7 @@ object CardActionHandler extends ActionHandler {
         discardCard <- h.hand.find(_.id == id)
         weaponCard <- h.deck.find(_.action.isInstanceOf[EquipWeapon])
         m = GameMessage(s"${p.name} discards ${discardCard.name} and forges: ${weaponCard.name}")
-        nh = h.hand.filterNot(_.id == id) :+ weaponCard
-        nc = h.copy(hand = nh,
-          deck = h.deck.filterNot(_.id == weaponCard.id),
-          discard = h.discard :+ discardCard)
+        nc = h.discardCard(discardCard).moveToHand(id)
       } yield (nc, m)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
@@ -149,10 +145,7 @@ object CardActionHandler extends ActionHandler {
         id <- cardId
         discardCard <- h.hand.find(_.id == id)
 
-        dc = h.copy(hand = h.hand.filterNot(_.id == id), discard = h.discard :+ discardCard)
-        cs1 = CardManager.drawCard(dc, limit = CardManager.ABSOLUTE_MAX)
-        cs2 = CardManager.drawCard(cs1, limit = CardManager.ABSOLUTE_MAX)
-        cards = CardManager.drawCard(cs2, limit = CardManager.ABSOLUTE_MAX)
+        cards = h.discardCard(discardCard).drawNoLimit.drawNoLimit.drawNoLimit
 
         foundCards = cards.hand.filter(c => !h.hand.contains(c))
         m = GameMessage(s"${p.name} trades ${discardCard.name} and receives: ${foundCards.map(_.name).mkString(", ")}")
@@ -171,8 +164,7 @@ object CardActionHandler extends ActionHandler {
         id <- cardId
         discardCard <- h.hand.find(_.id == id)
 
-        discardedHand = h.copy(hand = h.hand.filterNot(_.id == id), discard = h.discard :+ discardCard)
-        handWithPotion = discardedHand.copy(hand = discardedHand.hand :+ potionBuilder.rage)
+        handWithPotion = h.discardCard(discardCard).addToHand(potionBuilder.rage)
         cards = handWithPotion.copy(deck = Random.shuffle(h.deck :+ potionBuilder.rage))
 
         m = GameMessage(s"${p.name} uses Manifest Rage! ${p.name} finds a Potion of Rage. " +
@@ -195,7 +187,7 @@ object CardActionHandler extends ActionHandler {
       val newCards = for {
         id <- cardId
         discardCard <- h.hand.find(_.id == id)
-        discardedHand = h.copy(hand = h.hand.filterNot(_.id == id), discard = h.discard :+ discardCard)
+        discardedHand = h.discardCard(discardCard)
         cards = addEssences(discardedHand)
         foundCards = cards.hand.filter(c => !h.hand.contains(c))
 
@@ -230,20 +222,20 @@ object CardActionHandler extends ActionHandler {
   def refresh(p: Player, cards: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
     val emptiedHand = cards.hand.filter(_.charges.nonEmpty)
 
-    val toDiscard = cards.hand.filterNot(_.charges.nonEmpty)
+    val toDiscard: Seq[Card] = cards.hand.filterNot(_.charges.nonEmpty)
 
-    val nc = cards.copy(hand = emptiedHand, discard = cards.discard ++ toDiscard)
+    val newCards = toDiscard.foldLeft(cards)((cs, c) => cs.discardCard(c))
+        .drawCard(CardManager.PRE_DISCARD_MAX_HAND_SIZE)
+        .drawCard(CardManager.PRE_DISCARD_MAX_HAND_SIZE)
+        .drawCard(CardManager.PRE_DISCARD_MAX_HAND_SIZE)
+        .drawCard(CardManager.PRE_DISCARD_MAX_HAND_SIZE)
 
-    val d1 = CardManager.drawCard(nc, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)
-    val d2= CardManager.drawCard(d1, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)
-    val d3 = CardManager.drawCard(d2, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)
-    val d4 = CardManager.drawCard(d3, limit = CardManager.PRE_DISCARD_MAX_HAND_SIZE)
 
-    val foundCards = d4.hand.filter(c => !emptiedHand.contains(c))
+    val foundCards = newCards.hand.filter(c => !emptiedHand.contains(c))
 
     val foundMsg = GameMessage(s"${p.name} uses Refresh and finds: ${foundCards.map(_.name).mkString(", ")}")
 
-    (p, d4, msgs :+ foundMsg)
+    (p, newCards, msgs :+ foundMsg)
   }
 
 

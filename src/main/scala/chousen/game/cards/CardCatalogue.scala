@@ -116,7 +116,6 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
   )
 
-
   def rogueDeck: Seq[Card] = Seq(
 
     healWounds, healWounds,
@@ -218,7 +217,6 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     refresh, refresh
   )
 
-
   def wizard: Seq[Card] = Seq(
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
@@ -247,6 +245,36 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     increaseCharges, increaseCharges, increaseCharges, increaseCharges,
     recharge, recharge, recharge,
     refresh, refresh
+  )
+
+  def alchemist: Seq[Card] = Seq(
+
+    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+    essenceOfStrength, essenceOfStrength,
+    essenceOfVitality, essenceOfVitality,
+
+
+    bagOfGold, bagOfGold, bagOfGold, bagOfGold,   // +30g
+    // smelt, smelt,  // turn any equipaction into gold
+
+    //purchaseTreasure, purchaseTreasure, purchaseTreasure, purchaseTreasure,
+    // findersKeepers, findersKeepers,  // 10g Take any card from DECK
+    // restoration, restoration, // 10g Take any card from DISCARD
+
+    // mammonite, mammonite,   // ro skill  -10g, lots of damage
+    // bankruptcy,             // lose 1/2 gold, deal as additional damage
+    // fort,                   // pay gold, massively reduces damage
+
+    // for aoe, use pots
+    // makeMiasma     // turn any poison or flame potions into miasma potions
+    poison, poison, poison, poison,
+    flames, flames, flames, flames,
+    // quagmire, quagmire,  // slow only potion effect
+
+
+    rummage, rummage, rummage, rummage,
+    increaseCharges, increaseCharges,
+    recharge, recharge,
   )
 
 

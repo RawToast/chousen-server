@@ -54,9 +54,13 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
       CC.potionOfMiasma, CC.potionOfMiasma,
 
       CC.bagOfGold, CC.potOfGold,
-      // UNIQUES :D
 
-      CC.troggsAnnilator, CC.manamune, CC.wandOfDefiance, CC.deceiver, CC.magePlate
+      // UNIQUES :D
+      CC.troggsAnnilator, CC.manamune, CC.wandOfDefiance, CC.deceiver,
+      CC.magePlate,
+      // 1 normal alt
+      CC.club, CC.shortSword,
+      CC.cape, CC.ringmail,
     ))
 
     val msgs = Seq.empty[GameMessage]
