@@ -93,6 +93,7 @@ case object EssenceOfVitality extends SelfAction
 
 
 case object Rummage extends StandardCardAction
+case object Acquire extends StandardCardAction
 case object Miracle extends StandardCardAction
 case object Replace extends StandardCardAction
 case object Restore extends StandardCardAction

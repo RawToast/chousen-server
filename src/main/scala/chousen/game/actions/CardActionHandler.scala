@@ -21,6 +21,7 @@ object CardActionHandler extends ActionHandler {
   private def cardActions(actionId: CardAction, cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) =
     actionId match {
       case Rummage => rummage
+      case Acquire => acquire
       case Miracle => miracle
       case Replace => replace
       case Restore => restore
@@ -97,18 +98,28 @@ object CardActionHandler extends ActionHandler {
   }
 
   def rummage(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
-    val cs1 = CardManager.drawCard(cs, limit = CardManager.ABSOLUTE_MAX)
-    val cs2 = CardManager.drawCard(cs1, limit = CardManager.ABSOLUTE_MAX)
+    val newCards = cs.drawNoLimit.drawNoLimit.drawNoLimit
 
-    val foundCards = cs2.hand.filter(c => !cs.hand.contains(c))
+    val foundCards = newCards.hand.filter(c => !cs.hand.contains(c))
 
-    val targetMsg = GameMessage(s"${p.name} quickly searches the area and finds: ${foundCards.map(_.name).mkString(", ")}")
+    val targetMsg = GameMessage(s"${p.name} searches the area and finds: ${foundCards.map(_.name).mkString(", ")}")
 
     val gameMessages = msgs :+ targetMsg
 
-    (p, cs2, gameMessages)
+    (p, newCards, gameMessages)
   }
 
+  def acquire(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
+    val newCards = cs.drawNoLimit.drawNoLimit.drawNoLimit.drawNoLimit
+
+    val foundCards = newCards.hand.filter(c => !cs.hand.contains(c))
+
+    val targetMsg = GameMessage(s"${p.name} uses Acquire and gains: ${foundCards.map(_.name).mkString(", ")}")
+
+    val gameMessages = msgs :+ targetMsg
+
+    (p, newCards, gameMessages)
+  }
 
   def forgeArmour(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
     case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>

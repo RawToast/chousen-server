@@ -86,10 +86,10 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
   def chieftainDeck = Seq(
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfStrength, essenceOfStrength, essenceOfIntelligence, essenceOfIntelligence,
+    essenceOfDexterity, essenceOfDexterity, essenceOfIntelligence, essenceOfIntelligence,
     essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality,
 
-    essenceOfVitality, essenceOfStrength,
+    essenceOfVitality, elixirOfStrength,
     rarePepe, rarePepe,
 
     burningHammer, burningHammer, burningHammer, burningHammer,
@@ -99,21 +99,21 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
     lignification, lignification, lignification, lignification,
     flames, flames, flames, flames,
-    poison, poison, poison,
-    scrollOfFear, scrollOfFear,
+    scrollOfFear, scrollOfFear, scrollOfFear,
+    regen, regen,
 
-    daggerOfDavid, swordOfIntellect,
+    mace, swordOfIntellect,
     ringmail, chainmail,
 
 
     rummage, rummage, rummage, rummage,
-    miracle, miracle, miracle, miracle,
+    miracle, miracle, miracle,
     increaseCharges, increaseCharges,
     recharge, recharge,
     restore, restore,
+    acquire,
 
     armoury,
-
   )
 
   def rogueDeck: Seq[Card] = Seq(
@@ -261,6 +261,7 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     // findersKeepers, findersKeepers,  // 10g Take any card from DECK
     // restoration, restoration, // 10g Take any card from DISCARD
 
+    healWounds, healWounds,
     // mammonite, mammonite,   // ro skill  -10g, lots of damage
     // bankruptcy,             // lose 1/2 gold, deal as additional damage
     // fort,                   // pay gold, massively reduces damage
@@ -272,7 +273,8 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     // quagmire, quagmire,  // slow only potion effect
 
 
-    rummage, rummage, rummage, rummage,
+    rummage, rummage, rummage,
+    acquire, acquire, acquire,
     increaseCharges, increaseCharges,
     recharge, recharge,
   )
@@ -291,8 +293,11 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 }
 
 sealed trait CardBuilder {
-  def mkCard(name: String, description: String, action: Action, charges:Int=0, requirements: Requirements=Requirements()) =
-    Card(UUID.randomUUID(), name, description, action, if (charges == 0) None else Some(charges), if (charges == 0) None else Some(charges), requirements)
+  def mkCard(name: String, description: String, action: Action, charges:Int=0, requirements: Requirements=Requirements(),
+             cost: Int= 0)=
+    Card(UUID.randomUUID(), name, description, action,
+      if (charges == 0) None else Some(charges), if (charges == 0) None else Some(charges),
+      requirements, treasure = false, cost)
 
   def mkEquip(name: String, description: String, action: Action, requirements: Requirements=Requirements()) =
     Card(UUID.randomUUID(), name, description, action, None, None, requirements)
@@ -370,7 +375,8 @@ trait Utility extends CardBuilder {
   def miracle: Card = mkCard("Miracle", "Draw cards until your hand is full", Miracle)
 
   // Not limited
-  def rummage: Card = mkCard("Rummage", "Quickly search the area and always draw 2 cards (no hand limit)", Rummage)
+  def rummage: Card = mkCard("Rummage", "Draw 2 cards", Rummage)
+  def acquire: Card = mkCard("Acquire", "Draw 4 cards", Acquire, cost = 25)
   def replace: Card = mkCard("Replace", "Instantly replaces the player's hand (will draw at least 3 cards)", Replace)
   def restore: Card = mkCard("Restore", "Instantly places the top discarded card into your hand", Restore)
 

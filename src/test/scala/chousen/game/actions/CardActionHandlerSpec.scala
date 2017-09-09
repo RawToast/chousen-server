@@ -40,6 +40,16 @@ class CardActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given Acquire" should {
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = CardActionHandler.handle(Acquire, None)(startedGame)
+
+      "Draw four cards" in {
+        assert(result.cards.hand.size > (3 + startedGame.cards.hand.size))
+      }
+    }
+
     "Given Miracle" should {
 
       val game: GameState = stateCreator.start(gameState)
