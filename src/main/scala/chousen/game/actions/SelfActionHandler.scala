@@ -31,6 +31,8 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
       case QuickStep => quickStep
       case Haste => haste
 
+      case GoldenBarrier => goldenBarrier
+
       case PotionOfMight => might
       case PotionOfDexterity => dexterity
       case PotionOfIntelligence => intelligence
@@ -78,6 +80,19 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
     val lens = PlayerStatusLens.modify(_ :+ blockStatus)
       (lens.apply(pWithPos), cs, gameMessages)
   }
+
+  def goldenBarrier(p: Player, cs: Cards, msgs: Seq[GameMessage]): Update = {
+    val message = GameMessage(s"${p.name} uses his gold to form a Golden Barrier!")
+    val gameMessages = msgs :+ message
+
+    val blockStatus = StatusBuilder.makeFort(turns = 3, amount = 100)
+
+    val pWithPos = calculatePosition(p)
+
+    val lens = PlayerStatusLens.modify(_ :+ blockStatus)
+    (lens.apply(pWithPos), cs, gameMessages)
+  }
+
 
   def elixirOfStrength(p: Player, cs: Cards, msgs: Seq[GameMessage]): Update =
     elixir(p, cs, msgs, "Strength", PlayerStrengthLens)

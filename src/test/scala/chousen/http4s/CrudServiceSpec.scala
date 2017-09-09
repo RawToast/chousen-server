@@ -89,6 +89,5 @@ class CrudServiceSpec extends WordSpec {
         assert(result.status.code == 200)
       }
     }
-
   }
 }

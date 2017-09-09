@@ -530,5 +530,52 @@ class SelfActionHandlerSpec extends WordSpec {
         assert(result.cards.playedEssence)
       }
     }
+
+    "Given Barrier" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(Barrier)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Reduce the player's position" in {
+        assert(result.player.position < 100)
+      }
+
+      "The Player gains the Block status" in {
+        assert(result.player.status.nonEmpty)
+        assert(result.player.status.exists(_.effect == Block))
+      }
+    }
+
+    "Given Golden Barrier" should {
+      val gameState = GameStateGenerator.gameStateWithFastPlayer
+
+      val dungeonBuilder = new SimpleDungeonBuilder()
+      val stateCreator = new RandomGameStateCreator(dungeonBuilder)
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = selfActionHandler.handle(GoldenBarrier)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Reduce the player's position" in {
+        assert(result.player.position < 100)
+      }
+
+      "The Player gains the Fort status" in {
+        assert(result.player.status.nonEmpty)
+        assert(result.player.status.exists(_.effect == Fort))
+      }
+    }
+
   }
 }

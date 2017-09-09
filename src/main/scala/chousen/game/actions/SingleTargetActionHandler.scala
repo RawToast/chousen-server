@@ -28,6 +28,8 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
       case Counter => counter
       case Destruction => destruction
       case BurningHammer => burningHammer
+      case Mammonite => mammonite
+      case Bankruptcy => bankruptcy
 
       case QuickAttack => quickAttack
       case Assassinate => assassinate
@@ -47,7 +49,8 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     bonusDamage: Int = 0,
     damageCalc: (Player, Enemy, Multipliers) => Int = damageCalculator.calculatePlayerDamage,
     enemyEffect: Enemy => Enemy = e => e,
-    speed: Int = STANDARD): (Player, Option[Enemy], Seq[GameMessage]) = {
+    speed: Int = STANDARD,
+    goldCost: Int=0): (Player, Option[Enemy], Seq[GameMessage]) = {
 
     val sePlayer = damageCalculator.sc.calculate(p)
 
@@ -62,7 +65,8 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     val gameMessages = msgs :+ targetMsg :+ dmgMsg
 
     val updatedPlayer = p.copy(position = calculatePosition(sePlayer, speed).position)
-    (updatedPlayer, Option(newEnemy), gameMessages)
+    val finalPlayer = updatedPlayer.copy(gold = updatedPlayer.gold - goldCost)
+    (finalPlayer, Option(newEnemy), gameMessages)
   }
 
   type ActionUpdate = (Player, Option[Enemy], Seq[GameMessage])
@@ -117,6 +121,22 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
 
     (updatedPlayer, Option(newEnemy), gameMessages)
   }
+
+  def mammonite(p: Player, e: Enemy, msgs: Seq[GameMessage]): ActionUpdate = ability(p, e, msgs)(
+    useMsg = (p, e) => s"$p uses Mammonite!",
+    multi = Multipliers.strengthSkill,
+    bonusDamage = p.experience.level + 10,
+    goldCost = 10,
+    speed = ENHANCED,
+  )
+
+  def bankruptcy(p: Player, e: Enemy, msgs: Seq[GameMessage]): ActionUpdate = ability(p, e, msgs)(
+    useMsg = (p, e) => s"$p lands a crushing blow on $e!",
+    multi = Multipliers.highStrengthSkill,
+    bonusDamage = p.experience.level + (p.gold / 2),
+    goldCost = p.gold / 2,
+    speed = ENHANCED
+  )
 
 
   // Dex

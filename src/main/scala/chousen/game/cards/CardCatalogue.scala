@@ -250,23 +250,24 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
   def alchemist: Seq[Card] = Seq(
 
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfStrength, essenceOfStrength,
+    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+    essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
     essenceOfVitality, essenceOfVitality,
 
 
     bagOfGold, bagOfGold, bagOfGold, bagOfGold,   // +30g
     // smelt, smelt,  // turn any equipaction into gold
 
-    //purchaseTreasure, purchaseTreasure, purchaseTreasure, purchaseTreasure,
+    // purchaseTreasure, purchaseTreasure, purchaseTreasure, purchaseTreasure,
     // findersKeepers, findersKeepers,  // 10g Take any card from DECK
     // restoration, restoration, // 10g Take any card from DISCARD
 
     healWounds, healWounds,
-    // mammonite, mammonite,   // ro skill  -10g, lots of damage
-    // bankruptcy,             // lose 1/2 gold, deal as additional damage
-    // fort,                   // pay gold, massively reduces damage
+    mammonite, mammonite,   // ro skill  -10g, lots of damage
+    bankruptcy,             // lose 1/2 gold, deal as additional damage
+    goldenBarrier,                   // pay gold, massively reduces damage
 
-    // for aoe, use pots
+    // for aoe, use potstest
     // makeMiasma     // turn any poison or flame potions into miasma potions
     poison, poison, poison, poison,
     flames, flames, flames, flames,
@@ -274,9 +275,16 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
 
     rummage, rummage, rummage,
-    acquire, acquire, acquire,
+    acquire, acquire, acquire,      // -25g
     increaseCharges, increaseCharges,
     recharge, recharge,
+
+
+    // fluff
+    miracle, miracle, miracle, miracle, trade, trade, trade, trade,
+    ringmail, mace, scrollOfFear, scrollOfFear, scrollOfFear, scrollOfFear,
+    potionOfMiasma,
+    elixirOfStrength, elixirOfDexterity, elixirOfIntelligence,
   )
 
 
@@ -358,6 +366,9 @@ trait Strength extends CardBuilder{
 
   def counter: Card = mkCard("Counter", "Attack that deals more damage the more strength an enemy has", Counter, 2)
   def destruction: Card = mkCard("Destruction", "Destructive attack that lowers an enemies vitality", Destruction, 4)
+
+  def mammonite: Card = mkCard("Mammonite", "Attack that costs 5 gold in order to deal high damage", Mammonite, 4)
+  def bankruptcy: Card = mkCard("Bankruptcy", "Fast attack that uses half the players gold to deal huge damage", Bankruptcy, 3)
 }
 
 trait Dexterity extends CardBuilder{
@@ -400,6 +411,8 @@ trait Utility extends CardBuilder {
 
 
   def bagOfGold: Card = mkCard("Bag of Gold", "Gives 30 gold", BagOfGold)
+
+  def goldenBarrier: Card = mkCard("Fortify", "F", GoldenBarrier, charges = 4, cost = 20)
 }
 
 trait CampFire extends CardBuilder {

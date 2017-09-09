@@ -52,6 +52,7 @@ case object Slow extends StatusEffect
 case object StoneSkin extends StatusEffect
 case object Might extends StatusEffect
 case object Block extends StatusEffect
+case object Fort extends StatusEffect
 case object Dexterity extends StatusEffect
 case object Smart extends StatusEffect
 case object Rage extends StatusEffect

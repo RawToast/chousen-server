@@ -156,6 +156,36 @@ class SingleTargetActionHandlerSpec extends WordSpec {
     "Given Toxic Shiv" should {
       val (startedGame, result, target) = completeAction(ToxicShiv)
       standardAssertions(startedGame, result, target)
+
+      "Apply the Poison status" in {
+        lazy val targetEnemy = result.dungeon.currentEncounter.enemies.find(p => p.id == target.id)
+
+        assert(targetEnemy.map(_.status).getOrElse(Seq()).exists(_.effect == Poison))
+      }
+
+      "Apply the Slow status" in {
+        lazy val targetEnemy = result.dungeon.currentEncounter.enemies.find(p => p.id == target.id)
+
+        assert(targetEnemy.map(_.status).getOrElse(Seq()).exists(_.effect == Slow))
+      }
+    }
+
+    "Given Mammonite" should {
+      val (startedGame, result, target) = completeAction(Mammonite)
+      standardAssertions(startedGame, result, target)
+
+      "Reduce the player's gold" in {
+        startedGame.player.gold > result.player.gold
+      }
+    }
+
+    "Given Bankruptcy" should {
+      val (startedGame, result, target) = completeAction(Bankruptcy)
+      standardAssertions(startedGame, result, target)
+
+      "Reduce the player's gold" in {
+        startedGame.player.gold > result.player.gold
+      }
     }
   }
 

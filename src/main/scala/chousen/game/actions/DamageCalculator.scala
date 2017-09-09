@@ -48,6 +48,10 @@ class DamageCalculator(val sc: StatusCalculator) {
     val blockEffect = if (defStatusEffects.contains(Block)) 0.5 else 1
     val treeDef = if (defStatusEffects.contains(Tree)) 10 else 0
 
+    val fortDef: Int = defender.status.filter(_.effect == Fort)
+      .map(_.amount)
+      .foldLeft(0)((i, o) => i + o.getOrElse(0))
+
     val atkStr = m.str(attacker.stats.strength)
     val atkDex = m.dex(attacker.stats.dexterity)
     val atkInt = m.int(attacker.stats.intellect)
@@ -91,7 +95,7 @@ class DamageCalculator(val sc: StatusCalculator) {
     }
 
     val bonusDamage = mightDamage + berserkDamage + weaponDamage
-    val bonusArmour = armour + stoneSkin
+    val bonusArmour = armour + stoneSkin + fortDef
 
     val min = Math.max(1, (atkDex / 2) + (bonusDamage / 4) - (bonusArmour / 4) - stoneSkin).block
     val max: Int = m.max((atkStr + (atkDex / 2) + bonusDamage) - defender.stats.vitality - bonusArmour).block

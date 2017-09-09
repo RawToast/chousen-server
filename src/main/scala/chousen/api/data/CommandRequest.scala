@@ -52,6 +52,8 @@ case object MagicMissile extends SingleTargetAction
 case object Ember extends SingleTargetAction
 case object Drain extends SingleTargetAction
 case object ToxicShiv extends SingleTargetAction
+case object Mammonite extends SingleTargetAction
+case object Bankruptcy extends SingleTargetAction
 
 case object Fireball extends MultiAction
 case object Extinguish extends MultiAction
@@ -85,6 +87,7 @@ case object ElixirOfIntelligence extends SelfAction
 case object ElixirOfVitality extends SelfAction
 case object RarePepe extends SelfAction
 case object QuickStep extends SelfAction
+case object GoldenBarrier extends SelfAction
 
 case object EssenceOfStrength extends SelfAction
 case object EssenceOfDexterity extends SelfAction

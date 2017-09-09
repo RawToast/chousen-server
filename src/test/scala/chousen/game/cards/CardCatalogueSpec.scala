@@ -28,7 +28,7 @@ class CardCatalogueSpec extends WordSpec {
       val deck5 = catalogue.tricksterDeck
       val deck6 = catalogue.wizard
       val deck7=  catalogue.chieftainDeck
-//      val deck8=  catalogue.alchemist
+      val deck8=  catalogue.alchemist
 
       standardAssertions("Fighter", deck1)
       standardAssertions("Berserker", deck2)
@@ -37,7 +37,7 @@ class CardCatalogueSpec extends WordSpec {
       standardAssertions("Trickster", deck5)
       standardAssertions("Wizard", deck6)
       standardAssertions("Chieftain", deck7)
-//      standardAssertions("Alchemist", deck8)
+      standardAssertions("Alchemist", deck8)
     }
 
 
