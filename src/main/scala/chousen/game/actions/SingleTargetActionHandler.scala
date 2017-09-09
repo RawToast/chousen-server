@@ -126,15 +126,15 @@ class SingleTargetActionHandler(damageCalculator: DamageCalculator) extends Acti
     useMsg = (p, e) => s"$p uses Mammonite!",
     multi = Multipliers.strengthSkill,
     bonusDamage = p.experience.level + 10,
-    goldCost = 10,
     speed = ENHANCED,
   )
 
   def bankruptcy(p: Player, e: Enemy, msgs: Seq[GameMessage]): ActionUpdate = ability(p, e, msgs)(
-    useMsg = (p, e) => s"$p lands a crushing blow on $e!",
+    useMsg = (p, e) => s"$p hits $e with bankruptcy!",
     multi = Multipliers.highStrengthSkill,
     bonusDamage = p.experience.level + (p.gold / 2),
     goldCost = p.gold / 2,
+    enemyEffect = e => e.copy(position = e.position - (p.gold / 2)),
     speed = ENHANCED
   )
 

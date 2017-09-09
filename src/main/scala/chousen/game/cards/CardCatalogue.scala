@@ -370,8 +370,8 @@ trait Strength extends CardBuilder{
   def counter: Card = mkCard("Counter", "Attack that deals more damage the more strength an enemy has", Counter, 2)
   def destruction: Card = mkCard("Destruction", "Destructive attack that lowers an enemies vitality", Destruction, 4)
 
-  def mammonite: Card = mkCard("Mammonite", "Attack that costs 5 gold in order to deal high damage", Mammonite, 4)
-  def bankruptcy: Card = mkCard("Bankruptcy", "Fast attack that uses half the players gold to deal huge damage", Bankruptcy, 3)
+  def mammonite: Card = mkCard("Mammonite", "Attack that costs 5 gold in order to deal high damage", Mammonite, 4, cost = 5)
+  def bankruptcy: Card = mkCard("Bankruptcy", "Fast attack that stuns and uses half the players gold to deal huge damage", Bankruptcy, 3)
 }
 
 trait Dexterity extends CardBuilder{
@@ -415,7 +415,7 @@ trait Utility extends CardBuilder {
 
   def bagOfGold: Card = mkCard("Bag of Gold", "Gives 30 gold", BagOfGold)
 
-  def goldenBarrier: Card = mkCard("Fortify Armour", "Spend 20 gold to temporarily boost your defenses", GoldenBarrier, charges = 4, cost = 20)
+  def goldenBarrier: Card = mkCard("Fortify Armour", "Spend 20 gold to temporarily boost your defenses", FortifyArmour, charges = 4, cost = 20)
   def brewPoison: Card = mkCard("Brew Poison", "Spend 20 gold and gain 2 poison potions", BrewPoison, cost = 20)
 }
 

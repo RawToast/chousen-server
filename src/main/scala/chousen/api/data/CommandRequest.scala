@@ -90,7 +90,7 @@ case object ElixirOfIntelligence extends SelfAction
 case object ElixirOfVitality extends SelfAction
 case object RarePepe extends SelfAction
 case object QuickStep extends SelfAction
-case object GoldenBarrier extends SelfAction
+case object FortifyArmour extends SelfAction
 
 
 case object EssenceOfStrength extends SelfAction

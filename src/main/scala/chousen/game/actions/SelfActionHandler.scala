@@ -31,7 +31,7 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
       case QuickStep => quickStep
       case Haste => haste
 
-      case GoldenBarrier => goldenBarrier
+      case FortifyArmour => goldenBarrier
 
       case PotionOfMight => might
       case PotionOfDexterity => dexterity
