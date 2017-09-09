@@ -383,5 +383,60 @@ class CardActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given Brew Poison" should {
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = CardActionHandler.handle(BrewPoison, None)(startedGame)
+
+      "Draw two cards" in {
+        assert(result.cards.hand.size > (1 + startedGame.cards.hand.size))
+      }
+    }
+
+    "Given Make Miasma" should {
+      import chousen.util.CardsSyntax._
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val initialState = startedGame.copy(cards = startedGame.cards
+        .addToHand(CardCatalogue.poison).addToHand(CardCatalogue.flames))
+
+      val result = CardActionHandler.handle(MakeMiasma, None)(initialState)
+
+      "Retain the hand size" in {
+        assert(result.cards.hand.size == initialState.cards.hand.size)
+      }
+
+      "Remove any potions of poison or flames" in {
+        assert(result.cards.hand.forall(_.action != PotionOfFlames))
+        assert(result.cards.hand.forall(_.action != PotionOfPoison))
+      }
+
+      "Add potions of Miasma to the player's hand" in {
+        assert(result.cards.hand.exists(_.action == PotionOfMiasma))
+      }
+    }
+
+    "Given Make Alkahest" should {
+      import chousen.util.CardsSyntax._
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val initialState = startedGame.copy(cards = startedGame.cards
+        .addToHand(CardCatalogue.poison).addToHand(CardCatalogue.flames))
+
+      val result = CardActionHandler.handle(MakeMiasma, None)(initialState)
+
+      "Retain the hand size" in {
+        assert(result.cards.hand.size == initialState.cards.hand.size)
+      }
+
+      "Remove any potions of poison" in {
+        assert(result.cards.hand.forall(_.action != PotionOfPoison))
+      }
+
+      "Add potions of Alkahest to the player's hand" in {
+        assert(result.cards.hand.exists(_.action == PotionOfAlkahest))
+      }
+    }
+
   }
 }

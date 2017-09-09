@@ -4,7 +4,7 @@ import java.util.UUID
 
 import chousen.Optics.{CardsLens, MessagesLens, PlayerLens}
 import chousen.api.data._
-import chousen.game.cards.{CardManager, Potions}
+import chousen.game.cards.{CardCatalogue, CardManager, Potions}
 import chousen.util.LensUtil
 
 import scala.util.Random
@@ -29,12 +29,16 @@ object CardActionHandler extends ActionHandler {
       case ForgeWeapon => forgeWeapon(cardId)
       case Trade => trade(cardId)
       case ManifestRage => manifestRage(cardId)
+      case BrewPoison => brewPoison
+      case MakeMiasma => makeMiasma
+      case MakeAlkahest => makeAlkahest
       case EssenceBoost => essenceBoost(cardId)
       case ReduceRequirements => reduceRequirements(cardId)
       case Refresh => refresh
       case Armoury => armoury
       case Recharge => recharge
       case IncreaseCharges => chargeUp(cardId)
+
       case BagOfGold => bagOfGold
       case PotOfGold => potOfGold
     }
@@ -294,6 +298,46 @@ object CardActionHandler extends ActionHandler {
 
       cardsAndMessages.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
   }
+
+
+  def makeMiasma(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
+
+    def shouldMap(c: Card) = c.action == PotionOfFlames || c.action == PotionOfPoison
+
+    val nh = cs.hand.map(c => if(shouldMap(c)) CardCatalogue.potionOfMiasma else c)
+
+    val m = GameMessage(s"${p.name} turns their potions of Flames and Poison into Miasma")
+
+    val gameMessages = msgs :+ m
+
+    (p, cs.copy(hand = nh), gameMessages)
+  }
+
+  def makeAlkahest(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
+
+    def shouldMap(c: Card) = c.action == PotionOfPoison
+
+    val nh = cs.hand.map(c => if(shouldMap(c)) CardCatalogue.potionOfAlkahest else c)
+
+    val m = GameMessage(s"${p.name} turns their potions of Poison into Alkahest")
+
+    val gameMessages = msgs :+ m
+
+    (p, cs.copy(hand = nh), gameMessages)
+  }
+
+
+  def brewPoison(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
+
+    val m = GameMessage(s"${p.name} makes two potions of poison")
+
+    val gameMessages = msgs :+ m
+
+    (p, cs.addToHand(CardCatalogue.poison).addToHand(CardCatalogue.poison), gameMessages)
+  }
+
+
+
 
   def bagOfGold(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
 

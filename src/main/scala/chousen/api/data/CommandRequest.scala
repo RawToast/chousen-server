@@ -23,6 +23,7 @@ final case class EquipmentActionRequest(id: UUID, action: EquipAction) extends C
 
 sealed trait Action
 
+
 sealed trait SingleTargetAction extends Action
 sealed trait MultiAction extends Action
 sealed trait SelfAction extends Action
@@ -59,6 +60,8 @@ case object Fireball extends MultiAction
 case object Extinguish extends MultiAction
 case object PotionOfFlames extends MultiAction
 case object PotionOfPoison extends MultiAction
+case object PotionOfAlkahest extends MultiAction
+case object PotionOfQuagmire extends MultiAction
 case object PotionOfMiasma extends MultiAction
 case object ScrollOfFear extends MultiAction
 case object MassDrain extends MultiAction
@@ -89,6 +92,7 @@ case object RarePepe extends SelfAction
 case object QuickStep extends SelfAction
 case object GoldenBarrier extends SelfAction
 
+
 case object EssenceOfStrength extends SelfAction
 case object EssenceOfDexterity extends SelfAction
 case object EssenceOfIntelligence extends SelfAction
@@ -106,6 +110,9 @@ case object Recharge extends StandardCardAction
 case object BagOfGold extends StandardCardAction
 case object PotOfGold extends StandardCardAction
 
+case object MakeMiasma extends StandardCardAction
+case object MakeAlkahest extends StandardCardAction
+case object BrewPoison extends StandardCardAction
 
 case object ForgeArmour extends DiscardCardAction
 case object ForgeWeapon extends DiscardCardAction

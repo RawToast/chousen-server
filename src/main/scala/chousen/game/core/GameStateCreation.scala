@@ -53,7 +53,7 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
       CC.rarePepe, CC.rarePepe, CC.rarePepe, CC.rarePepe,
       CC.elixirOfStrength, CC.elixirOfDexterity, CC.elixirOfVitality, CC.elixirOfIntelligence,
 
-      CC.potionOfMiasma, CC.potionOfMiasma,
+      CC.potionOfMiasma, CC.potionOfMiasma, CC.potionOfAlkahest, CC.potionOfAlkahest,
 
       CC.bagOfGold, CC.potOfGold,
 

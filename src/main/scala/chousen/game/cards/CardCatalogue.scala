@@ -251,8 +251,7 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
-    essenceOfVitality, essenceOfVitality,
+    essenceOfDexterity, essenceOfIntelligence, essenceOfVitality, essenceOfVitality,
 
 
     bagOfGold, bagOfGold, bagOfGold, bagOfGold,   // +30g
@@ -268,23 +267,23 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     goldenBarrier,                   // pay gold, massively reduces damage
 
     // for aoe, use potstest
-    // makeMiasma     // turn any poison or flame potions into miasma potions
+    makeMiasma, makeMiasma, makeMiasma,    // turn any poison or flame potions into miasma potions
+    makeAlkahest, makeAlkahest,
     poison, poison, poison, poison,
     flames, flames, flames, flames,
-    // quagmire, quagmire,  // slow only potion effect
+    quagmire, quagmire,  // slow only potion effect
 
-
-    rummage, rummage, rummage,
+    brewPoison, brewPoison,
+    rummage, rummage, rummage, miracle,
     acquire, acquire, acquire,      // -25g
-    increaseCharges, increaseCharges,
+    increaseCharges, increaseCharges, increaseCharges, increaseCharges,
     recharge, recharge,
 
 
     // fluff
-    miracle, miracle, miracle, miracle, trade, trade, trade, trade,
-    ringmail, mace, scrollOfFear, scrollOfFear, scrollOfFear, scrollOfFear,
-    potionOfMiasma,
-    elixirOfStrength, elixirOfDexterity, elixirOfIntelligence,
+    miracle, miracle, trade, trade,
+    ringmail, mace,
+    elixirOfStrength, elixirOfIntelligence,
   )
 
 
@@ -324,6 +323,7 @@ trait Potions extends CardBuilder {
 
   def flames: Card = mkCard("Potion of Flames", "Applies a long lasting Burn to all enemies", PotionOfFlames)
   def poison: Card = mkCard("Potion of Poison", "Applies poison to all enemies", PotionOfPoison)
+  def quagmire: Card = mkCard("Potion of Quagmire", "Applies slow to all enemies", PotionOfQuagmire)
   def lignification: Card = mkCard("Potion of Lignification", "Turns the user into a slow Tree, increasing armour, strength, and regen.", PotionOfLignification)
 
   def scrollOfFear: Card = mkCard("Scroll of Fear", "Causes any enemies on with health to turn and flee", ScrollOfFear)
@@ -355,6 +355,9 @@ trait Magic extends CardBuilder{
   def barrier: Card = mkCard("Barrier", "Creates a magic barrier to protect the user", Barrier, 3)
   def drain: Card = mkCard("Drain", "Drains the health of an enemy, healing the player", Drain, 1)
   def massDrain: Card = mkCard("Mass Drain", "Drains health from multiple enemies and heals the player", MassDrain, 3)
+
+  def makeMiasma: Card = mkCard("Make Miasma", "Turns any potions of Poison or Flames into Potions of Miasma", MakeMiasma, 0, Requirements(int = Some(10)))
+  def makeAlkahest: Card = mkCard("Make Alkahest", "Turns any potions of Poison into Potions of Alkahest", MakeAlkahest, 0, Requirements(int = Some(12)), cost = 50)
 }
 
 trait Strength extends CardBuilder{
@@ -412,7 +415,8 @@ trait Utility extends CardBuilder {
 
   def bagOfGold: Card = mkCard("Bag of Gold", "Gives 30 gold", BagOfGold)
 
-  def goldenBarrier: Card = mkCard("Fortify", "F", GoldenBarrier, charges = 4, cost = 20)
+  def goldenBarrier: Card = mkCard("Fortify Armour", "Spend 20 gold to temporarily boost your defenses", GoldenBarrier, charges = 4, cost = 20)
+  def brewPoison: Card = mkCard("Brew Poison", "Spend 20 gold and gain 2 poison potions", BrewPoison, charges = 4, cost = 20)
 }
 
 trait CampFire extends CardBuilder {
@@ -484,6 +488,7 @@ trait TreasureCards extends CardBuilder {
     WandOfDefiance, Requirements(int = Some(15)))
 
   def potionOfMiasma: Card = mkEquip("Potion of Miasma", "Applies a strong poison and burn to all enemies", PotionOfMiasma)
+  def potionOfAlkahest: Card = mkEquip("Potion of Miasma", "Applies a deadly poison to all enemies", PotionOfAlkahest)
 
   def potOfGold: Card = mkCard("Pot of Gold", "Full of gold! Gives 100 gold", PotOfGold)
 }

@@ -52,6 +52,8 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
       case PotionOfFlames => flames
       case PotionOfPoison => poison
       case PotionOfMiasma => miasma
+      case PotionOfQuagmire => quagmire
+      case PotionOfAlkahest => alkahest
       case ScrollOfFear => fear
       case Extinguish => extinguish
       case Shatter => shatter
@@ -176,11 +178,28 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
     (p, Option(newE), msgs)
   }
 
+  def quagmire(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+    val gameMessages = msgs :+ GameMessage(s"${e.name} gets stuck in the quagmire.")
+
+    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeSlow(1))(e)
+
+    (p, Option(newE), gameMessages)
+  }
+
+  def alkahest(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+    val newE = EnemyOptics.EnemyStatusLens
+      .modify(_ :+ StatusBuilder.makePoison(10 + p.experience.level, turns = 20))(e)
+
+    (p, Option(newE), msgs)
+  }
+
   def miasma(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
     val gameMessages = msgs :+ GameMessage(s"${e.name} is burnt by the toxic flames.")
 
     val newE = EnemyOptics.EnemyStatusLens
-      .modify(_ :+ StatusBuilder.makeBurn(8, turns = 6) :+ StatusBuilder.makePoison(8, turns = 6))(e)
+      .modify(_ :+ StatusBuilder.makeBurn(10, turns = 5)
+        :+ StatusBuilder.makePoison(10, turns = 5)
+        :+ StatusBuilder.makeSlow(1, turns = 2))(e)
 
     (p, Option(newE), gameMessages)
   }
