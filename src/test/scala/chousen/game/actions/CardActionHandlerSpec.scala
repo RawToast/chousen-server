@@ -7,7 +7,7 @@ import chousen.game.core.RandomGameStateCreator
 import chousen.game.dungeon.SimpleDungeonBuilder
 import org.scalatest.WordSpec
 import chousen.Optics._
-import chousen.game.cards.Strength
+import chousen.game.cards.{CardCatalogue, Strength}
 import monocle.macros.GenLens
 
 class CardActionHandlerSpec extends WordSpec {
@@ -153,7 +153,7 @@ class CardActionHandlerSpec extends WordSpec {
 
     "Given Trade" should {
       val game: GameState = stateCreator.start(gameState)
-      val cardToDiscard = game.cards.hand.head
+      val cardToDiscard = CardCatalogue.drain
 
       val startedGame: GameState = HandLens.set(Seq(cardToDiscard))(game)
 
@@ -170,7 +170,7 @@ class CardActionHandlerSpec extends WordSpec {
 
     "Given Manifest Rage" should {
       val game: GameState = stateCreator.start(gameState)
-      val cardToDiscard = game.cards.hand.head
+      val cardToDiscard = CardCatalogue.drain
 
       val startedGame: GameState = HandLens.set(Seq(cardToDiscard))(game)
 
@@ -196,7 +196,7 @@ class CardActionHandlerSpec extends WordSpec {
 
     "Given Essence Boost" should {
       val game: GameState = stateCreator.start(gameState)
-      val cardToDiscard = game.cards.hand.head
+      val cardToDiscard = CardCatalogue.drain
 
       val startedGame: GameState = HandLens.set(Seq(cardToDiscard))(game)
 
@@ -222,7 +222,7 @@ class CardActionHandlerSpec extends WordSpec {
 
     "Given Armoury" should {
       val game: GameState = stateCreator.start(gameState)
-      val cardToDiscard = game.cards.hand.head
+      val cardToDiscard = CardCatalogue.drain
       val builder = new chousen.game.cards.Equipment{}
 
       val startedGame: GameState = HandLens.set(Seq(cardToDiscard))

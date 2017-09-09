@@ -30,9 +30,6 @@ trait CardManager {
         .find(_ ~= card)
     }
 
-//    def discard(card: Card, ng: GameState) = HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= card))
-//      .andThen(DiscardLens.modify((ds: Seq[data.Card]) => if (card.name.contains("Essence of")) ds else card +: ds)).apply(ng)
-
     def handleEquipAction(ea: EquipAction, c: Card): (GameState) => GameState = {
       def equip(optCard: Option[Card], lens: Lens[EquippedCards, Option[Card]]): (GameState) => GameState = {
         optCard match {
@@ -60,7 +57,6 @@ trait CardManager {
         val nextGameState = f(c)
         if (nextGameState == game) nextGameState
         else {
-          //          val nextGameState = if (!essenceActions.contains(c.action)) CardsLens.modify(_.copy(playedEssence = false))(actionResult) else actionResult
           // Move to discard
           c.action match {
             case _: CampFireAction => nextGameState
@@ -69,8 +65,8 @@ trait CardManager {
               c.charges match {
                 case Some(i) =>
                   if (i > 1) HandLens.modify(_.map(x => if (x ~= c) c.copy(charges = c.charges.map(_ - 1)) else x))(nextGameState)
-                  else nextGameState.copy(cards = nextGameState.cards.discardCard(c))//discard(c, nextGameState)
-                case None => nextGameState.copy(cards = nextGameState.cards.discardCard(c)) // discard(c, nextGameState)
+                  else nextGameState.copy(cards = nextGameState.cards.discardCard(c))
+                case None => nextGameState.copy(cards = nextGameState.cards.discardCard(c))
               }
           }
         }
