@@ -222,7 +222,7 @@ class MultiTargetActionHandlerSpec extends WordSpec {
     }
 
     "Given Potion of Quagmire" should {
-      val (startedGame, result, targets) = completeAction(PotionOfPoison)
+      val (startedGame, result, targets) = completeAction(PotionOfQuagmire)
 
       "Not Lower the targeted enemies health" in {
         targets.foreach(t => assert(startedGame.dungeon.currentEncounter.enemies.exists(_.id == t)))

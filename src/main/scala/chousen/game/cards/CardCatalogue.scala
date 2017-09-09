@@ -275,13 +275,13 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
     brewPoison, brewPoison,
     rummage, rummage, rummage, miracle,
-    acquire, acquire, acquire,      // -25g
+    acquire, acquire,
+
+    // fluff
+    miracle, miracle, trade, trade, acquire,      // -25g
     increaseCharges, increaseCharges, increaseCharges, increaseCharges,
     recharge, recharge,
 
-
-    // fluff
-    miracle, miracle, trade, trade,
     ringmail, mace,
     elixirOfStrength, elixirOfIntelligence,
   )

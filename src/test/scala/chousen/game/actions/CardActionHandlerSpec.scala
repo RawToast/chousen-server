@@ -423,7 +423,7 @@ class CardActionHandlerSpec extends WordSpec {
       val initialState = startedGame.copy(cards = startedGame.cards
         .addToHand(CardCatalogue.poison).addToHand(CardCatalogue.flames))
 
-      val result = CardActionHandler.handle(MakeMiasma, None)(initialState)
+      val result = CardActionHandler.handle(MakeAlkahest, None)(initialState)
 
       "Retain the hand size" in {
         assert(result.cards.hand.size == initialState.cards.hand.size)
