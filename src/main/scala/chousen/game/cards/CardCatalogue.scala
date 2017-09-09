@@ -416,7 +416,7 @@ trait Utility extends CardBuilder {
   def bagOfGold: Card = mkCard("Bag of Gold", "Gives 30 gold", BagOfGold)
 
   def goldenBarrier: Card = mkCard("Fortify Armour", "Spend 20 gold to temporarily boost your defenses", GoldenBarrier, charges = 4, cost = 20)
-  def brewPoison: Card = mkCard("Brew Poison", "Spend 20 gold and gain 2 poison potions", BrewPoison, charges = 4, cost = 20)
+  def brewPoison: Card = mkCard("Brew Poison", "Spend 20 gold and gain 2 poison potions", BrewPoison, cost = 20)
 }
 
 trait CampFire extends CardBuilder {
@@ -488,7 +488,7 @@ trait TreasureCards extends CardBuilder {
     WandOfDefiance, Requirements(int = Some(15)))
 
   def potionOfMiasma: Card = mkEquip("Potion of Miasma", "Applies a strong poison and burn to all enemies", PotionOfMiasma)
-  def potionOfAlkahest: Card = mkEquip("Potion of Miasma", "Applies a deadly poison to all enemies", PotionOfAlkahest)
+  def potionOfAlkahest: Card = mkEquip("Potion of Alkahest", "Applies a deadly poison to all enemies", PotionOfAlkahest)
 
   def potOfGold: Card = mkCard("Pot of Gold", "Full of gold! Gives 100 gold", PotOfGold)
 }
