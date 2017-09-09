@@ -285,6 +285,30 @@ class GameStateManagerSpec extends WordSpec {
         }
       }
 
+      "Is a valid action with an affordable cost" should {
+
+        lazy val card = GameStateGenerator.crushingBlowCard.copy(cost = 5)
+
+        val initialState = GameStateOptics.HandLens.modify(_ :+ card)(gameState)
+
+        val request = SingleTargetActionRequest(GameStateGenerator.firstEnemy.id, CrushingBlow)
+
+        lazy val result = gameStateManager.useCard(card, request, initialState)
+
+        "Change the game state" in {
+          assert(result != initialState)
+        }
+
+        "Remove the card from the player's hand" in {
+          assert(!result.cards.hand.contains(card))
+        }
+
+        "Reduce the player's gold" in {
+          assert(result.player.gold < initialState.player.gold)
+          assert(initialState.player.gold - card.cost == result.player.gold)
+        }
+      }
+
       "Is a valid discard action" should {
 
         lazy val card = CardCatalogue.essenceBoost

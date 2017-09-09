@@ -23,7 +23,7 @@ trait CardManager {
 
   def playCard(card: data.Card)(f: data.Card => GameState): (GameState) => GameState = { game: GameState =>
     import chousen.Implicits._
-    val action = card.action match {
+    val maybeCard: Option[Card] = card.action match {
       case _: CampFireAction => game.cards.passive
         .find(_ ~= card)
       case _: Action => game.cards.hand
@@ -52,21 +52,22 @@ trait CardManager {
 
     import chousen.util.CardsSyntax._
 
-    action
+    maybeCard
       .fold(game) { c =>
         val nextGameState = f(c)
         if (nextGameState == game) nextGameState
         else {
+          val postCostState = GenLens[GameState](_.player.gold).modify(_ - c.cost)(nextGameState)
           // Move to discard
           c.action match {
-            case _: CampFireAction => nextGameState
-            case eq: EquipAction => handleEquipAction(eq, c)(nextGameState)
+            case _: CampFireAction => postCostState
+            case eq: EquipAction => handleEquipAction(eq, c)(postCostState)
             case _ =>
               c.charges match {
                 case Some(i) =>
-                  if (i > 1) HandLens.modify(_.map(x => if (x ~= c) c.copy(charges = c.charges.map(_ - 1)) else x))(nextGameState)
-                  else nextGameState.copy(cards = nextGameState.cards.discardCard(c))
-                case None => nextGameState.copy(cards = nextGameState.cards.discardCard(c))
+                  if (i > 1) HandLens.modify(_.map(x => if (x ~= c) c.copy(charges = c.charges.map(_ - 1)) else x))(postCostState)
+                  else postCostState.copy(cards = postCostState.cards.discardCard(c))
+                case None => postCostState.copy(cards = postCostState.cards.discardCard(c))
               }
           }
         }
