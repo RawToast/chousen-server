@@ -82,10 +82,10 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
   }
 
   def goldenBarrier(p: Player, cs: Cards, msgs: Seq[GameMessage]): Update = {
-    val message = GameMessage(s"${p.name} uses his gold to form a Golden Barrier!")
+    val message = GameMessage(s"${p.name} uses his gold to fortify his armour!")
     val gameMessages = msgs :+ message
 
-    val blockStatus = StatusBuilder.makeFort(turns = 3, amount = 100)
+    val blockStatus = StatusBuilder.makeFort(turns = 5, amount = 50 + (p.experience.level * 10))
 
     val pWithPos = calculatePosition(p)
 
