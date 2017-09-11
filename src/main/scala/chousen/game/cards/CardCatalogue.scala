@@ -250,7 +250,7 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
   def alchemist: Seq[Card] = Seq(
 
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength, // 2
     essenceOfDexterity, essenceOfIntelligence, essenceOfVitality, essenceOfVitality,
 
 
@@ -268,13 +268,13 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     chrysopoeia,
 
     // for aoe, use potstest
-    makeMiasma, makeMiasma, makeMiasma,    // turn any poison or flame potions into miasma potions
-    makeAlkahest, makeAlkahest,
+    makeAlkahest, makeAlkahest, makeAlkahest,
     poison, poison, poison, poison,
-    flames, flames, flames, flames,
-    quagmire, quagmire,  // slow only potion effect
+    quagmire, quagmire, quagmire, // slow only potion effect
+    might, might,
+    haste, haste,
 
-    brewPoison, brewPoison,
+    brewPoison, brewPoison, brewPoison,
     rummage, rummage, rummage, miracle,
     acquire, acquire,
 
@@ -373,7 +373,7 @@ trait Strength extends CardBuilder{
   def destruction: Card = mkCard("Destruction", "Destructive attack that lowers an enemies vitality", Destruction, 4)
 
   def mammonite: Card = mkCard("Mammonite", "Attack that costs 5 gold in order to deal high damage", Mammonite, 4, cost = 5)
-  def bankruptcy: Card = mkCard("Bankruptcy", "Fast attack that stuns and uses half the players gold to deal huge damage", Bankruptcy, 3)
+  def bankruptcy: Card = mkCard("Bankruptcy", "Fast attack that stuns and uses half the players gold to deal huge damage", Bankruptcy, 1)
 }
 
 trait Dexterity extends CardBuilder{
