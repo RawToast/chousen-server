@@ -49,21 +49,7 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
     val cards: Cards = CardManager.startGame(deck, CC.passiveCards)
 
 
-    val dungeonTreasure: Seq[Card] = Random.shuffle(Seq (
-      CC.rarePepe, CC.rarePepe, CC.rarePepe, CC.rarePepe,
-      CC.elixirOfStrength, CC.elixirOfDexterity, CC.elixirOfVitality, CC.elixirOfIntelligence,
-
-      CC.potionOfMiasma, CC.potionOfMiasma, CC.potionOfAlkahest, CC.potionOfAlkahest,
-
-      CC.bagOfGold, CC.potOfGold,
-
-      // UNIQUES :D
-      CC.troggsAnnilator, CC.manamune, CC.wandOfDefiance, CC.deceiver,
-      CC.magePlate,
-      // 1 normal alt
-      CC.club, CC.shortSword,
-      CC.cape, CC.ringmail,
-    )).map(c => c.copy(treasure = true))
+    val dungeonTreasure: Seq[Card] = Random.shuffle(CC.treasureDeck)
 
     val msgs = Seq.empty[GameMessage]
 

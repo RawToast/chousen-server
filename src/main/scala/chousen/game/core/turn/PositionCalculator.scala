@@ -16,6 +16,6 @@ object PositionCalculator {
       val dexBonus = player.stats.dexterity / 2
       val weaponBonus: Int = player.equipment.weapon.map(_.effects.contains(Quick)).map(if(_) 15 else 0).getOrElse(0)
       val rageBonus = player.status.find(_.effect == Rage).fold(0)(r => Math.min(15, (r.amount.getOrElse(4) - 4) * 2))
-      player.copy(position = player.position - cost - dexBonus - bonus - rageBonus - weaponBonus)
+      player.copy(position = player.position + dexBonus + rageBonus - cost - bonus  - weaponBonus)
     }
   }

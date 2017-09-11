@@ -38,7 +38,9 @@ class EquipmentActionHandler {
       case OrcishArmour => orcArmour
 
       // Treasure
+      case RedCape => redCape
       case MagePlate => magePlate
+      case RoyalChainmail => royalchain
       case RenartsDeceiver => rensDeceiver
       case Manamune => manamune
       case TroggsAnnihilator => troggsAnni
@@ -51,7 +53,7 @@ class EquipmentActionHandler {
     val message = GameMessage(s"${p.name} equips $name.")
 
     val lens = PlayerWeaponLens.set(Option(Weapon(uuid, name, dmg, effects = effects)))
-      .andThen(PositionCalculator.calculatePosition(_: Player))
+      .andThen(PositionCalculator.calculatePosition(_: Player, cost = PositionCalculator.ENHANCED))
 
     lens.apply(p) -> (msgs :+ message)
   }
@@ -89,7 +91,7 @@ class EquipmentActionHandler {
 
   // Armour
   def cape(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
-    armour("Cape", 2, pen = 0)(p, msgs, uuid)
+    armour("Cape", 2, pen = PositionCalculator.FAST)(p, msgs, uuid)
   }
 
   def leatherArmour(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
@@ -108,17 +110,25 @@ class EquipmentActionHandler {
     armour("Heavy Armour", 16)(p, msgs, uuid)
   }
 
-  def orcArmour(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
-    armour("Orcish Armour", 19)(p, msgs, uuid)
-  }
-
-
 
   //Treasure Only
+  def redCape(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
+    armour("Red Cape", 5, pen = PositionCalculator.FAST)(p, msgs, uuid)
+  }
+
 
   def magePlate(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
     armour("Mage Plate", 9)(p, msgs, uuid)
   }
+
+  def royalchain(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
+    armour("Royal Chainmail", 15)(p, msgs, uuid)
+  }
+
+  def orcArmour(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) = {
+    armour("Orcish Armour", 21)(p, msgs, uuid)
+  }
+
 
   def rensDeceiver(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
     weapon("Renart's Deciever", 10, Seq(Quick, Deceive))(p, msgs, uuid)
@@ -132,11 +142,11 @@ class EquipmentActionHandler {
   def wandOfDef(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
     weapon("Defiant Wand", 4, Seq(Protection))(p, msgs, uuid)
 
-  private def armour(name: String, ac: Int, pen:Int = 100) = (p: Player, msgs: Seq[GameMessage], uuid: UUID) => {
+  private def armour(name: String, ac: Int, pen:Int = PositionCalculator.TURTLE) = (p: Player, msgs: Seq[GameMessage], uuid: UUID) => {
     val message = GameMessage(s"${p.name} puts on $name.")
 
     val lens = PlayerArmourLens.set(Option(Armour(uuid, name, ac)))
-      .andThen(PositionCalculator.calculatePosition(_: Player, bonus = pen))
+      .andThen(PositionCalculator.calculatePosition(_: Player, cost = pen))
 
     lens.apply(p) -> (msgs :+ message)
   }

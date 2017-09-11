@@ -182,6 +182,27 @@ class EquipmentActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given Red Cape" should {
+      val result = equipActionHandler.handle(RedCape, uuid)(startedGame)
+
+      "State the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "State the armour was equipped" in {
+        assert(result.messages.map(_.text).exists(_.contains(s"${GameStateGenerator.playerName} puts on")))
+      }
+
+      "Equips the armour" in {
+        assert(result.player.equipment.armour.nonEmpty)
+      }
+
+      "Affects the players equipment" in {
+        assert(startedGame.player.equipment.weapon.isEmpty && startedGame.player.equipment.armour.isEmpty)
+        assert(startedGame.player.equipment != result.player.equipment)
+      }
+    }
+
     "Given LeatherArmour" should {
       val result = equipActionHandler.handle(LeatherArmour, uuid)(startedGame)
 
@@ -200,13 +221,13 @@ class EquipmentActionHandlerSpec extends WordSpec {
       equipArmourAssertions(result, startedGame)
     }
 
+
     "Given OrcishArmour" should {
       val result = equipActionHandler.handle(OrcishArmour, uuid)(startedGame)
 
       equipArmourAssertions(result, startedGame)
     }
 
-    //
 
     "Given MagePlate" should {
       val result = equipActionHandler.handle(MagePlate, uuid)(startedGame)

@@ -156,8 +156,10 @@ case object LeatherArmour extends EquipArmour
 case object Ringmail extends EquipArmour
 case object Chainmail extends EquipArmour
 case object HeavyArmour extends EquipArmour
-case object OrcishArmour extends EquipArmour
 
+
+case object RedCape extends EquipArmour
 case object MagePlate extends EquipArmour
-
+case object RoyalChainmail extends EquipArmour
+case object OrcishArmour extends EquipArmour
 

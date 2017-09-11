@@ -263,7 +263,7 @@ class CardActionHandlerSpec extends WordSpec {
 
       val startedGame: GameState = HandLens.set(Seq(cardToDiscard))
         .andThen(DeckLens.modify(_ :+ builder.club))
-        .andThen(DeckLens.modify(_ :+ builder.orcishArmour))(game)
+        .andThen(DeckLens.modify(_ :+ builder.chainmail))(game)
 
       val result = CardActionHandler.handle(Armoury, None)(startedGame)
 
@@ -310,7 +310,7 @@ class CardActionHandlerSpec extends WordSpec {
 
     "Given Reduce Requirements" should {
       val game: GameState = stateCreator.start(gameState)
-      val cardToAffect =  new chousen.game.cards.Equipment{}.orcishArmour
+      val cardToAffect =  new chousen.game.cards.Equipment{}.heavyArmour
 
       val startedGame: GameState = HandLens.set(Seq(cardToAffect))(game)
 

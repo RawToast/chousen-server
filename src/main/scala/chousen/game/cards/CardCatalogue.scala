@@ -8,6 +8,31 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
                             with Strength with Dexterity with Magic
                               with TreasureCards {
 
+  val treasureDeck: Seq[Card] =
+    Seq (
+      rarePepe, rarePepe, rarePepe, rarePepe,
+      elixirOfStrength, elixirOfDexterity, elixirOfVitality, elixirOfIntelligence,
+
+      might, dexterity, intelligence, stoneSkin,
+      lignification, regen, rage, trog,
+
+      potionOfMiasma, potionOfMiasma, potionOfAlkahest, potionOfAlkahest,
+
+      bagOfGold, bagOfGold, bagOfGold, bagOfGold,
+      potOfGold, potOfGold, acquire, essenceBoost,
+
+      // UNIQUES :D
+      troggsAnnilator, manamune, wandOfDefiance, deceiver,
+      redCape, magePlate, royalChainmail, orcishArmour,
+
+      club, shortSword, cape, ringmail,
+
+      // 40, need 20 after this point
+      increaseCharges, reduceRequirements,
+
+    ).map(c => c.copy(treasure = true))
+  
+  
   // Deck built around stun/counter ST
   def fighterDeck: Seq[Card] = // 15
       Seq(
@@ -40,7 +65,7 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
         rummage, rummage, rummage, rummage,
         refresh, refresh,
-        miracle, miracle,
+        acquire, acquire,
         manifestRage,
         recharge,
         increaseCharges,
@@ -51,35 +76,36 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
   // Deck built around auto-attacks and rage
   def berserkerDeck: Seq[Card] = Seq(
 
-    regen, regen, regen,
+    regen, regen,
     rarePepe, rarePepe,                     // 7
 
     elixirOfStrength, elixirOfVitality,     // 2 el
 
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfStrength, essenceOfStrength,
-    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality, // 14 elix
+    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+    essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality, // 15 elix
 
+    fortify, fortify,
 
     rage, rage, rage, rage,
     might, might, might, might,
     haste, haste, haste, haste,
-    continuation, continuation, continuation, continuation,       // 16 pots
+    continuation, continuation,       // 16 pots
     trog, trog,
     lignification,
 
     mace, trollCrusher,               // 5 equip
-    ringmail, orcishArmour,
+    ringmail, heavyArmour,
 
     // 16 card
     armoury,
 
+    increaseCharges,
     rummage, rummage, rummage, rummage,
     trade, trade,
-    essenceBoost,
     reduceRequirements, reduceRequirements,
-    miracle, miracle, miracle, miracle,
+    miracle, miracle, miracle,
     manifestRage, scrollOfFear
   )
 
@@ -92,22 +118,27 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     essenceOfVitality, elixirOfStrength,
     rarePepe, rarePepe,
 
-    burningHammer, burningHammer, burningHammer, burningHammer,
+    burningHammer, burningHammer, burningHammer,
     extinguish, extinguish,
     barrier, barrier,
+    fortify, fortify,
 
 
     lignification, lignification, lignification, lignification,
     flames, flames, flames, flames,
-    scrollOfFear, scrollOfFear, scrollOfFear,
+    makeMiasma, makeMiasma,
+    scrollOfFear,
     regen, regen,
 
-    mace, swordOfIntellect,
-    ringmail, chainmail,
+    mace,
+    ringmail,
 
 
     rummage, rummage, rummage, rummage,
     miracle, miracle, miracle,
+
+
+    buyTreasure,
     increaseCharges, increaseCharges,
     recharge, recharge,
     restore, restore,
@@ -147,11 +178,11 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
     armoury, restore,          // 18 Card
     trade, trade,
-    rummage, rummage, rummage, rummage,
+    rummage, rummage, bagOfGold, buyTreasure,
     increaseCharges, increaseCharges,
     recharge,
     essenceBoost,
-    miracle, miracle,
+    acquire, acquire,
     refresh
   )
 
@@ -178,7 +209,7 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
     daggerOfDavid, cape,                  // 2 Equipment
 
-    miracle, miracle, miracle, miracle,   // 16 Card Actions
+    miracle, miracle, acquire, acquire,   // 16 Card Actions
     rummage, rummage, rummage, rummage,
     restore, restore, restore, restore,
 
@@ -205,12 +236,12 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     ember, ember, ember, ember,
     fireball, fireball, fireball,
     extinguish, extinguish,
-    barrier, barrier,
+    barrier, fortify,
 
 
     leatherArmour,                  // 2 Equipment
 
-    miracle, miracle, miracle, miracle,   // 16 Card Actions
+    miracle, miracle, acquire, acquire,   // 16 Card Actions
     rummage, rummage, rummage, rummage,
     increaseCharges, increaseCharges, increaseCharges, increaseCharges,
     recharge, recharge, recharge,
@@ -240,8 +271,8 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
     leatherArmour,                  // 2 Equipment
 
-    miracle, miracle, miracle, miracle,   // 16 Card Actions
-    rummage, rummage, rummage, rummage,
+    miracle, miracle, buyTreasure, buyTreasure,   // 16 Card Actions
+    rummage, rummage, rummage, acquire,
     increaseCharges, increaseCharges, increaseCharges, increaseCharges,
     recharge, recharge, recharge,
     refresh, refresh
@@ -257,14 +288,14 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     bagOfGold, bagOfGold, bagOfGold, bagOfGold,   // +30g
     transmute, transmute, // turn any card into gold
 
-    purchaseTreasure, purchaseTreasure,  // 50g
+    buyTreasure, buyTreasure,  // 50g
     // findersKeepers, findersKeepers,  // 10g Take any card from DECK
     // restoration, restoration, // 10g Take any card from DISCARD
 
     healWounds, healWounds,
     mammonite, mammonite,   // ro skill  -10g, lots of damage
     bankruptcy,             // lose 1/2 gold, deal as additional damage
-    goldenBarrier,
+    fortify,
     chrysopoeia,
 
     // for aoe, use potstest
@@ -420,10 +451,10 @@ trait Utility extends CardBuilder {
 
   def bagOfGold: Card = mkCard("Bag of Gold", "Gives 30 gold", BagOfGold)
 
-  def goldenBarrier: Card = mkCard("Fortify Armour", "Spend 20 gold to temporarily boost your defenses", FortifyArmour, charges = 4, cost = 20)
+  def fortify: Card = mkCard("Fortify Armour", "Spend 20 gold to temporarily boost your defenses", FortifyArmour, charges = 4, cost = 20)
   def brewPoison: Card = mkCard("Brew Poison", "Spend 20 gold and gain 2 poison potions", BrewPoison, cost = 20)
 
-  def purchaseTreasure: Card = mkCard("Buy Treasure", "Pay 50 gold to acquire a single treasure card", PurchaseTreasure, cost = 50)
+  def buyTreasure: Card = mkCard("Buy Treasure", "Pay 50 gold to acquire a single treasure card", PurchaseTreasure, cost = 50)
 }
 
 trait CampFire extends CardBuilder {
@@ -468,20 +499,27 @@ trait Equipment extends CardBuilder {
     Chainmail, Requirements(str = Some(16)))
   def heavyArmour: Card = mkEquip("Heavy Armour", "Generic armour, heavily reduces damage taken",
     HeavyArmour, Requirements(str = Some(22)))
-  def orcishArmour: Card = mkEquip("Orcish Armour", "Orc armour, heavily reduces damage taken",
-    OrcishArmour, Requirements(str = Some(24)))
 
 }
 
 
 trait TreasureCards extends CardBuilder {
 
+  def redCape: Card = mkEquip("Red Cape", "Shiny red cape, quick to equip, has a slight effect on damage taken",
+    RedCape, Requirements(dex = Some(7)))
+
   def magePlate: Card = mkEquip("Mage Plate", "Lightweight armour, moderately reduces damage taken",
     MagePlate, Requirements(str = Some(9)))
 
+  def royalChainmail: Card = mkEquip("Royal Chainmail", "Chainmail fit for a king. Heavily reduces damage taken",
+    RoyalChainmail, Requirements(str = Some(16)))
+
+  def orcishArmour: Card = mkEquip("Orcish Armour", "Orc armour, greatly reduces damage taken",
+    OrcishArmour, Requirements(str = Some(24)))
+
   def deceiver: Card = mkEquip("Renart's Deceiver",
     "Moderate damage, increased action speed, increased damage whilst on low life",
-    RenartsDeceiver, Requirements(dex = Some(14)))
+    RenartsDeceiver, Requirements(dex = Some(16)))
 
   def manamune: Card = mkEquip("Manamune",
     "Minimal increase to damage. Intellect heavily affects attack damage",

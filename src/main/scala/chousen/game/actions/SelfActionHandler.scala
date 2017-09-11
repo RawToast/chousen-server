@@ -31,7 +31,7 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
       case QuickStep => quickStep
       case Haste => haste
 
-      case FortifyArmour => goldenBarrier
+      case FortifyArmour => fortify
 
       case PotionOfMight => might
       case PotionOfDexterity => dexterity
@@ -81,11 +81,14 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
       (lens.apply(pWithPos), cs, gameMessages)
   }
 
-  def goldenBarrier(p: Player, cs: Cards, msgs: Seq[GameMessage]): Update = {
+  def fortify(p: Player, cs: Cards, msgs: Seq[GameMessage]): Update = {
     val message = GameMessage(s"${p.name} uses his gold to fortify his armour!")
     val gameMessages = msgs :+ message
+    val seInt = sc.calculate(p).stats.intellect
 
-    val blockStatus = StatusBuilder.makeFort(turns = 5, amount = 50 + (p.experience.level * 10))
+    val blockStatus = StatusBuilder.makeFort(
+      turns = 1 + (seInt / 3),
+      amount = 50 + (p.experience.level * 10) + seInt)
 
     val pWithPos = calculatePosition(p)
 
