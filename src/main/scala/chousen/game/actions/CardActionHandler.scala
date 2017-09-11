@@ -33,11 +33,13 @@ object CardActionHandler extends ActionHandler {
       case MakeMiasma => makeMiasma
       case MakeAlkahest => makeAlkahest
       case EssenceBoost => essenceBoost(cardId)
+      case Transmute => transmute(cardId)
       case ReduceRequirements => reduceRequirements(cardId)
       case Refresh => refresh
       case Armoury => armoury
       case Recharge => recharge
       case IncreaseCharges => chargeUp(cardId)
+      case PurchaseTreasure => purchaseTreasure
 
       case BagOfGold => bagOfGold
       case PotOfGold => potOfGold
@@ -212,6 +214,29 @@ object CardActionHandler extends ActionHandler {
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
   }
 
+  def transmute(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
+
+      def computeGold(c: Card): Int = c.action match {
+        case _: EquipAction => 60
+
+        case _: CardAction => 30
+        case _: CampFireAction => 1
+
+        case _ => 20 + (5 * c.charges.getOrElse(1))
+      }
+
+      val newCards = for {
+        id <- cardId
+        discardCard <- h.hand.find(_.id == id)
+        discardedHand = h.discardCard(discardCard)
+        gld = computeGold(discardCard)
+        m = GameMessage(s"${p.name} uses Transmute on ${discardCard.name} and gains $gld gold")
+      } yield (discardedHand, m, gld)
+
+      newCards.fold((p, h, msgs))(ncm => (p.copy(gold = p.gold + ncm._3), ncm._1, msgs :+ ncm._2))
+  }
+
   def armoury(p: Player, cards: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
 
     @scala.annotation.tailrec
@@ -299,6 +324,19 @@ object CardActionHandler extends ActionHandler {
       cardsAndMessages.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
   }
 
+  def purchaseTreasure(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
+    val newCards = cs.drawTreasure
+
+    val foundCards = newCards.hand.filter(c => !cs.hand.contains(c))
+
+    val targetMsg = GameMessage(s"${p.name} buys ${foundCards.map(_.name).mkString(", ")}")
+
+    val gameMessages = msgs :+ targetMsg
+
+    (p, newCards, gameMessages)
+  }
+
+
 
   def makeMiasma(p: Player, cs: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
 
@@ -319,7 +357,7 @@ object CardActionHandler extends ActionHandler {
 
     val nh = cs.hand.map(c => if(shouldMap(c)) CardCatalogue.potionOfAlkahest else c)
 
-    val m = GameMessage(s"${p.name} turns their potions of Poison into Alkahest")
+    val m = GameMessage(s"${p.name} concentrates their potions of poison into Poison into Alkahest")
 
     val gameMessages = msgs :+ m
 

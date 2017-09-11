@@ -21,6 +21,8 @@ trait CardsSyntax {
 
     def drawCard(limit: Int=CardManager.MAX_HAND_SIZE) = CardManager.drawCard(cs, limit)
     def drawNoLimit = CardManager.drawCard(cs, CardManager.ABSOLUTE_MAX)
+
+    def drawTreasure = CardManager.drawTreasure(cs)
   }
 
 

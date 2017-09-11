@@ -63,7 +63,7 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
       // 1 normal alt
       CC.club, CC.shortSword,
       CC.cape, CC.ringmail,
-    ))
+    )).map(c => c.copy(treasure = true))
 
     val msgs = Seq.empty[GameMessage]
 

@@ -68,6 +68,7 @@ case object MassDrain extends MultiAction
 case object Shatter extends MultiAction
 case object GroundStrike extends MultiAction
 case object WindStrike extends MultiAction
+case object Chrysopoeia extends MultiAction
 
 case object Barrier extends SelfAction
 case object HealWounds extends SelfAction
@@ -109,6 +110,7 @@ case object Armoury extends StandardCardAction
 case object Recharge extends StandardCardAction
 case object BagOfGold extends StandardCardAction
 case object PotOfGold extends StandardCardAction
+case object PurchaseTreasure extends StandardCardAction
 
 case object MakeMiasma extends StandardCardAction
 case object MakeAlkahest extends StandardCardAction
@@ -119,6 +121,7 @@ case object ForgeWeapon extends DiscardCardAction
 case object Trade extends DiscardCardAction
 case object ManifestRage extends DiscardCardAction
 case object EssenceBoost extends DiscardCardAction
+case object Transmute extends DiscardCardAction
 case object ReduceRequirements extends DiscardCardAction
 case object IncreaseCharges extends DiscardCardAction
 

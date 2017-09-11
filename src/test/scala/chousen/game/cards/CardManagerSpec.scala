@@ -179,7 +179,7 @@ class CardManagerSpec extends WordSpec with Matchers {
     }
 
     "the player draws treasure and there are no treasure cards left" should {
-      val newCards: Cards = CardManager.drawTreasure(shuffledCards)
+      val newCards: Cards = CardManager.drawTreasure(shuffledCards.copy(treasure = Seq.empty))
 
       "add a card even if the hand is full" in {
         newCards.hand.size shouldBe >(shuffledCards.hand.size)
@@ -198,7 +198,7 @@ class CardManagerSpec extends WordSpec with Matchers {
       }
 
       "refresh the deck from the discard pile when required" in {
-        val emptyDeck = shuffledCards.copy(deck = Seq.empty, discard = shuffledCards.deck)
+        val emptyDeck = shuffledCards.copy(deck = Seq.empty, treasure = Seq.empty, discard = shuffledCards.deck)
         val testDeck = CardManager.drawTreasure(emptyDeck)
 
         emptyDeck.hand.size shouldBe < (testDeck.hand.size)

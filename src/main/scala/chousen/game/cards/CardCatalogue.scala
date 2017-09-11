@@ -255,16 +255,17 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
 
     bagOfGold, bagOfGold, bagOfGold, bagOfGold,   // +30g
-    // smelt, smelt,  // turn any equipaction into gold
+    transmute, transmute, // turn any card into gold
 
-    // purchaseTreasure, purchaseTreasure, purchaseTreasure, purchaseTreasure,
+    purchaseTreasure, purchaseTreasure,  // 50g
     // findersKeepers, findersKeepers,  // 10g Take any card from DECK
     // restoration, restoration, // 10g Take any card from DISCARD
 
     healWounds, healWounds,
     mammonite, mammonite,   // ro skill  -10g, lots of damage
     bankruptcy,             // lose 1/2 gold, deal as additional damage
-    goldenBarrier,                   // pay gold, massively reduces damage
+    goldenBarrier,
+    chrysopoeia,
 
     // for aoe, use potstest
     makeMiasma, makeMiasma, makeMiasma,    // turn any poison or flame potions into miasma potions
@@ -278,7 +279,6 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     acquire, acquire,
 
     // fluff
-    miracle, miracle, trade, trade, acquire,      // -25g
     increaseCharges, increaseCharges, increaseCharges, increaseCharges,
     recharge, recharge,
 
@@ -356,6 +356,8 @@ trait Magic extends CardBuilder{
   def drain: Card = mkCard("Drain", "Drains the health of an enemy, healing the player", Drain, 1)
   def massDrain: Card = mkCard("Mass Drain", "Drains health from multiple enemies and heals the player", MassDrain, 3)
 
+  def chrysopoeia: Card = mkCard("Chrysopoeia", "Attempt to transmute all enemies into gold. Increased success the less health the enemy has.", Chrysopoeia, 4)
+
   def makeMiasma: Card = mkCard("Make Miasma", "Turns any potions of Poison or Flames into Potions of Miasma", MakeMiasma, 0, Requirements(int = Some(10)))
   def makeAlkahest: Card = mkCard("Make Alkahest", "Turns any potions of Poison into Potions of Alkahest", MakeAlkahest, 0, Requirements(int = Some(12)), cost = 50)
 }
@@ -401,6 +403,9 @@ trait Utility extends CardBuilder {
   def forgeArmour: Card = mkCard("Forge Armour", "Discard one card and place the next armour in your deck in your hand", ForgeArmour)
   def manifestRage: Card = mkCard("Manifest Rage", "Discard one card. Place an additional Potion of Rage to your hand and deck", ManifestRage)
   def essenceBoost: Card = mkCard("Essence Boost", "Discard one card. Draw essences from your deck until your hand is full", EssenceBoost)
+  def transmute: Card = mkCard("Transmute", "Transmute a card into gold, gain more gold for transmuting equipment cards", Transmute)
+
+
   def recharge: Card = mkCard("Recharge", "Recharges all charges of all ability cards in your hand", Recharge)
 
 
@@ -417,6 +422,8 @@ trait Utility extends CardBuilder {
 
   def goldenBarrier: Card = mkCard("Fortify Armour", "Spend 20 gold to temporarily boost your defenses", FortifyArmour, charges = 4, cost = 20)
   def brewPoison: Card = mkCard("Brew Poison", "Spend 20 gold and gain 2 poison potions", BrewPoison, cost = 20)
+
+  def purchaseTreasure: Card = mkCard("Buy Treasure", "Pay 50 gold to acquire a single treasure card", PurchaseTreasure, cost = 50)
 }
 
 trait CampFire extends CardBuilder {

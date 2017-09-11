@@ -204,6 +204,32 @@ class CardActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given Transmute" should {
+      val game: GameState = stateCreator.start(gameState)
+      val cardToDiscard = CardCatalogue.rummage
+      val abilityToDiscard = CardCatalogue.windStrike
+      val equipActionToDiscard = CardCatalogue.club
+
+      val startedGame: GameState = HandLens.set(Seq(cardToDiscard))(game)
+
+      val resultDiscardingCard = CardActionHandler.handle(Transmute, Some(cardToDiscard.id))(startedGame)
+      val resultDiscardingAbility = CardActionHandler.handle(Transmute, Some(abilityToDiscard.id))(HandLens.set(Seq(abilityToDiscard))(game))
+      val resultDiscardingEquipment = CardActionHandler.handle(Transmute, Some(equipActionToDiscard.id))(HandLens.set(Seq(equipActionToDiscard))(game))
+
+      "States the action was used" in {
+        assert(resultDiscardingCard.messages.size > startedGame.messages.size)
+      }
+
+      "Give the Player gold" in {
+        assert(resultDiscardingCard.player.gold > gameState.player.gold)
+      }
+
+      "Give the Player more gold for equipment" in {
+        assert(resultDiscardingEquipment.player.gold > resultDiscardingCard.player.gold)
+        assert(resultDiscardingEquipment.player.gold > resultDiscardingAbility.player.gold)
+      }
+    }
+
     "Given Essence Boost" should {
       val game: GameState = stateCreator.start(gameState)
       val cardToDiscard = CardCatalogue.drain
@@ -437,6 +463,21 @@ class CardActionHandlerSpec extends WordSpec {
         assert(result.cards.hand.exists(_.action == PotionOfAlkahest))
       }
     }
+
+
+    "Given Purchase Treasure" should {
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = CardActionHandler.handle(PurchaseTreasure, None)(startedGame)
+
+      "Draw a single card" in {
+      assert(result.cards.hand.size > startedGame.cards.hand.size)
+      }
+
+      "Draw a treasure card" in {
+        assert(result.cards.hand.exists(_.treasure))
+      }
+      }
 
   }
 }

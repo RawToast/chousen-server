@@ -15,8 +15,9 @@ object PostTurnOps {
 
       val battleExp = deadEnemies.map(_.stats.maxHp / 10).sum
 
-      val battleGold = deadEnemies.count(_.stats.maxHp < 50) +
-        (deadEnemies.count(_.stats.maxHp >= 50) * 2) +
+      val battleGold = deadEnemies.count(_.stats.maxHp < 25) +
+        (deadEnemies.count(_.stats.maxHp >= 25) * 2)
+        (deadEnemies.count(_.stats.maxHp >= 50) * 3) +
         (deadEnemies.count(_.stats.maxHp >= 100) * 5) +
         (deadEnemies.count(_.stats.maxHp >= 200) * 15) +
         (deadEnemies.count(_.stats.maxHp >= 300) * 30)

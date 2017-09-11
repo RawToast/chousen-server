@@ -2,6 +2,7 @@ package chousen.game.actions
 
 import java.util.UUID
 
+import chousen.Optics
 import chousen.Optics.HpLens
 import chousen.api.data._
 import chousen.game.core.turn.PositionCalculator.calculatePosition
@@ -58,6 +59,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
       case Extinguish => extinguish
       case Shatter => shatter
       case MassDrain => massDrain
+      case Chrysopoeia => chrysopoeia
     }
   }
 
@@ -213,5 +215,25 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
     val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeFear())(ne)
 
     (p, Option(newE), m)
+  }
+
+  def chrysopoeia(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+
+    val sePlayer = dc.sc.calculate(p)
+
+    val poisonBoost = if (e.status.exists(_.effect == Poison)) 10 else 0
+
+    val score = (sePlayer.stats.intellect * 2 ) + poisonBoost - e.stats.currentHp
+
+    if (score >= 0) {
+      val newEnemy = Optics.EnemyHpLens.set(-7)(e)
+      (p, Option(newEnemy), msgs :+ GameMessage(s"${e.name} is transmuted into $score gold pei"))
+    } else if(score < 0 && score >= -10) {
+      (p, Option(e), msgs :+ GameMessage(s"${e.name} struggles to resist"))
+    } else if(score < -10 && score >= -30){
+      (p, Option(e), msgs :+ GameMessage(s"${e.name} resists"))
+    } else {
+      (p, Option(e), msgs :+ GameMessage(s"${e.name} resists with ease"))
+    }
   }
 }

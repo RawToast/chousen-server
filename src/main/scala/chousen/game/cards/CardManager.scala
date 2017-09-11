@@ -90,7 +90,7 @@ trait CardManager {
 
     val (hand, deck) = shuffledCards.splitAt(MAX_HAND_SIZE)
 
-    Cards(hand, deck, Seq.empty, passiveCards, EquippedCards(), Seq.empty)
+    Cards(hand, deck, Seq.empty, passiveCards, EquippedCards(), Seq(CardCatalogue.makeAlkahest, CardCatalogue.troggsAnnilator).map(e => e.copy(treasure = true)))
   }
 
   def moveCardToHand(cards: Cards, pred: Card => Boolean): Cards = {
