@@ -2,6 +2,7 @@ package chousen.game.actions
 
 import java.util.UUID
 
+import chousen.Optics
 import chousen.Optics.HpLens
 import chousen.api.data._
 import chousen.game.core.turn.PositionCalculator.calculatePosition
@@ -52,10 +53,13 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
       case PotionOfFlames => flames
       case PotionOfPoison => poison
       case PotionOfMiasma => miasma
+      case PotionOfQuagmire => quagmire
+      case PotionOfAlkahest => alkahest
       case ScrollOfFear => fear
       case Extinguish => extinguish
       case Shatter => shatter
       case MassDrain => massDrain
+      case Chrysopoeia => chrysopoeia
     }
   }
 
@@ -176,11 +180,28 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
     (p, Option(newE), msgs)
   }
 
+  def quagmire(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+    val gameMessages = msgs :+ GameMessage(s"${e.name} gets stuck in the quagmire.")
+
+    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeSlow(1))(e)
+
+    (p, Option(newE), gameMessages)
+  }
+
+  def alkahest(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+    val newE = EnemyOptics.EnemyStatusLens
+      .modify(_ :+ StatusBuilder.makePoison(10 + p.experience.level, turns = 20))(e)
+
+    (p, Option(newE), msgs)
+  }
+
   def miasma(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
     val gameMessages = msgs :+ GameMessage(s"${e.name} is burnt by the toxic flames.")
 
     val newE = EnemyOptics.EnemyStatusLens
-      .modify(_ :+ StatusBuilder.makeBurn(8, turns = 6) :+ StatusBuilder.makePoison(8, turns = 6))(e)
+      .modify(_ :+ StatusBuilder.makeBurn(10, turns = 5)
+        :+ StatusBuilder.makePoison(10, turns = 5)
+        :+ StatusBuilder.makeSlow(1, turns = 2))(e)
 
     (p, Option(newE), gameMessages)
   }
@@ -194,5 +215,25 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
     val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeFear())(ne)
 
     (p, Option(newE), m)
+  }
+
+  def chrysopoeia(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
+
+    val sePlayer = dc.sc.calculate(p)
+
+    val poisonBoost = if (e.status.exists(_.effect == Poison)) 10 else 0
+
+    val score = (sePlayer.stats.intellect * 2 ) + poisonBoost + p.experience.level - e.stats.currentHp
+
+    if (score >= 0) {
+      val newEnemy = Optics.EnemyHpLens.set(-7)(e)
+      (p, Option(newEnemy), msgs :+ GameMessage(s"${e.name} is transmuted into $score gold pei"))
+    } else if(score < 0 && score >= -10) {
+      (p, Option(e), msgs :+ GameMessage(s"${e.name} struggles to resist"))
+    } else if(score < -10 && score > -30){
+      (p, Option(e), msgs :+ GameMessage(s"${e.name} resists"))
+    } else {
+      (p, Option(e), msgs :+ GameMessage(s"${e.name} resists with ease"))
+    }
   }
 }

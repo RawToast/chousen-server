@@ -46,6 +46,16 @@ class EquipmentActionHandler {
     }
   }
 
+  def weapon(name: String, dmg: Int, effects: Seq[WeaponEffect]= Seq.empty) = (p: Player, msgs: Seq[GameMessage], uuid: UUID) => {
+
+    val message = GameMessage(s"${p.name} equips $name.")
+
+    val lens = PlayerWeaponLens.set(Option(Weapon(uuid, name, dmg, effects = effects)))
+      .andThen(PositionCalculator.calculatePosition(_: Player))
+
+    lens.apply(p) -> (msgs :+ message)
+  }
+
   def club(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
     weapon("Club", 3)(p, msgs, uuid)
 
@@ -75,17 +85,6 @@ class EquipmentActionHandler {
 
   def quickBlade(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
     weapon("Quick Blade", 9, Seq(Quick))(p, msgs, uuid)
-
-  def weapon(name: String, dmg: Int, effects: Seq[WeaponEffect]= Seq.empty) = (p: Player, msgs: Seq[GameMessage], uuid: UUID) => {
-
-    val message = GameMessage(s"${p.name} equips $name.")
-
-    val lens = PlayerWeaponLens.set(Option(Weapon(uuid, name, dmg, effects = effects)))
-      .andThen(PositionCalculator.calculatePosition(_: Player))
-
-    lens.apply(p) -> (msgs :+ message)
-  }
-
 
 
   // Armour

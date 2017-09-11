@@ -26,12 +26,13 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
 
     val player = choice match {
       case 1 => SetPlayerStats.apply(2, 1, -1, 1).compose(PlayerClassLens.set("Fighter"))(p)
-      case 2 => SetPlayerStats.apply(2, 0, -1, 2).compose(PlayerClassLens.set("Berserker"))(p)
+      case 2 => SetPlayerStats.apply(2, 1, -2, 2).compose(PlayerClassLens.set("Berserker"))(p)
       case 3 => SetPlayerStats.apply(1, 0, 0, 2).compose(PlayerClassLens.set("Chieftain"))(p)
-      case 4 => SetPlayerStats.apply(1, 1, 0, 1).compose(PlayerClassLens.set("Rogue"))(p)
+      case 4 => SetPlayerStats.apply(1, 2, -1, 1).compose(PlayerClassLens.set("Rogue"))(p)
       case 5 => SetPlayerStats.apply(0, 1, 1, 1).compose(PlayerClassLens.set("Trickster"))(p)
-      case 6 => SetPlayerStats.apply(0, 0, 2, 1).compose(PlayerClassLens.set("Mage"))(p)
-      case _ => SetPlayerStats.apply(0, 0, 3, 0).compose(PlayerClassLens.set("Wizard"))(p)
+      case 6 => SetPlayerStats.apply(-1, 0, 3, 1).compose(PlayerClassLens.set("Mage"))(p)
+      case 7 => SetPlayerStats.apply(-1, 0, 4, 0).compose(PlayerClassLens.set("Wizard"))(p)
+      case _ => SetPlayerStats.apply(1, 0, 1, 1).compose(PlayerClassLens.set("Alchemist"))(p)
     }
 
     val deck = choice match {
@@ -41,7 +42,8 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
       case 4 => CC.rogueDeck
       case 5 => CC.tricksterDeck
       case 6 => CC.mage
-      case _ => CC.wizard
+      case 7 => CC.wizard
+      case _ => CC.alchemist
     }
 
     val cards: Cards = CardManager.startGame(deck, CC.passiveCards)
@@ -51,13 +53,17 @@ class RandomGameStateCreator(dungeonBuilder: DungeonBuilder) extends GameStateCr
       CC.rarePepe, CC.rarePepe, CC.rarePepe, CC.rarePepe,
       CC.elixirOfStrength, CC.elixirOfDexterity, CC.elixirOfVitality, CC.elixirOfIntelligence,
 
-      CC.potionOfMiasma, CC.potionOfMiasma,
+      CC.potionOfMiasma, CC.potionOfMiasma, CC.potionOfAlkahest, CC.potionOfAlkahest,
 
       CC.bagOfGold, CC.potOfGold,
-      // UNIQUES :D
 
-      CC.troggsAnnilator, CC.manamune, CC.wandOfDefiance, CC.deceiver, CC.magePlate
-    ))
+      // UNIQUES :D
+      CC.troggsAnnilator, CC.manamune, CC.wandOfDefiance, CC.deceiver,
+      CC.magePlate,
+      // 1 normal alt
+      CC.club, CC.shortSword,
+      CC.cape, CC.ringmail,
+    )).map(c => c.copy(treasure = true))
 
     val msgs = Seq.empty[GameMessage]
 

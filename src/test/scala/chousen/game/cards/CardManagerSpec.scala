@@ -4,7 +4,7 @@ import chousen.api.data
 import chousen.api.data.{Cards, EquippedCards}
 import org.scalatest.{Matchers, WordSpec}
 
-
+import chousen.util.CardsSyntax._
 class CardManagerSpec extends WordSpec with Matchers {
 
   "The Deck manager" when {
@@ -28,28 +28,53 @@ class CardManagerSpec extends WordSpec with Matchers {
     }
 
     "the player discards a card" should {
+      val cardToDiscard = CardCatalogue.club
 
-      val cardToDiscard = shuffledCards.hand.head
-      val newCards: Cards = CardManager.discard(cardToDiscard)(shuffledCards)
+      val initialCards = shuffledCards.addToHand(cardToDiscard)
+      val newCards: Cards = initialCards.discardCard(cardToDiscard)
 
       "remove the card from the players hand" in {
-        newCards.hand.size shouldBe <(shuffledCards.hand.size)
+        newCards.hand.size shouldBe <(initialCards.hand.size)
         newCards.hand shouldNot contain(cardToDiscard)
       }
 
       "discard the card" in {
-        shuffledCards.discard shouldNot contain(cardToDiscard)
+        initialCards.discard shouldNot contain(cardToDiscard)
         newCards.discard should contain(cardToDiscard)
-        newCards.discard.size shouldBe >(shuffledCards.discard.size)
+        newCards.discard.size shouldBe >(initialCards.discard.size)
 
         // Should be head card
         newCards.discard.head should equal(cardToDiscard)
+      }
+
+      "destroy the card if it is a treasure card" in {
+        val treasureCard = CardCatalogue.deceiver.copy(treasure = true)
+        val cardsWithTreasure = shuffledCards.addToHand(treasureCard)
+
+        val result = cardsWithTreasure.discardCard(treasureCard)
+
+        result.hand.size shouldBe <(cardsWithTreasure.hand.size)
+        assert(!result.discard.exists(_.id == treasureCard.id))
+        assert(!result.hand.exists(_.id == treasureCard.id))
+        assert(!result.deck.exists(_.id == treasureCard.id))
+      }
+
+      "destroy the card if it is an Essence" in {
+        val essesence = CardCatalogue.essenceOfDexterity
+        val initialCards = shuffledCards.addToHand(essesence)
+
+        val result = initialCards.discardCard(essesence)
+
+        result.hand.size shouldBe <(initialCards.hand.size)
+        assert(!result.discard.exists(_.id == essesence.id))
+        assert(!result.hand.exists(_.id == essesence.id))
+        assert(!result.deck.exists(_.id == essesence.id))
       }
     }
 
     "the player draws a card" should {
 
-      val fullCards: Cards = CardManager.drawCard(shuffledCards)
+      val fullCards: Cards = shuffledCards.drawCard()
 
       "not add a card if the hand is full" in {
         fullCards.hand.size shouldBe shuffledCards.hand.size
@@ -72,7 +97,7 @@ class CardManagerSpec extends WordSpec with Matchers {
 
       "refresh the deck from the discard pile when required" in {
         val emptyDeck = nonFullHandCards.copy(deck = Seq.empty, discard = nonFullHandCards.deck)
-        val testDeck = CardManager.drawCard(emptyDeck)
+        val testDeck = emptyDeck.drawCard()
 
         emptyDeck.hand.size shouldBe < (testDeck.hand.size)
         emptyDeck.deck.size shouldBe < (testDeck.deck.size)
@@ -82,9 +107,11 @@ class CardManagerSpec extends WordSpec with Matchers {
 
     "repopulating from the discard pile" should {
 
-      val cardToDiscard = shuffledCards.hand.head
+      val cardToDiscard = CardCatalogue.club
 
-      val afterDiscard: Cards = CardManager.discard(cardToDiscard)(shuffledCards)
+      val initialCards = shuffledCards.addToHand(cardToDiscard)
+
+      val afterDiscard: Cards = CardManager.discard(cardToDiscard)(initialCards)
 
       val afterPopulate = CardManager.moveLastDiscardToTopDeck(afterDiscard)
 
@@ -152,7 +179,7 @@ class CardManagerSpec extends WordSpec with Matchers {
     }
 
     "the player draws treasure and there are no treasure cards left" should {
-      val newCards: Cards = CardManager.drawTreasure(shuffledCards)
+      val newCards: Cards = CardManager.drawTreasure(shuffledCards.copy(treasure = Seq.empty))
 
       "add a card even if the hand is full" in {
         newCards.hand.size shouldBe >(shuffledCards.hand.size)
@@ -171,7 +198,7 @@ class CardManagerSpec extends WordSpec with Matchers {
       }
 
       "refresh the deck from the discard pile when required" in {
-        val emptyDeck = shuffledCards.copy(deck = Seq.empty, discard = shuffledCards.deck)
+        val emptyDeck = shuffledCards.copy(deck = Seq.empty, treasure = Seq.empty, discard = shuffledCards.deck)
         val testDeck = CardManager.drawTreasure(emptyDeck)
 
         emptyDeck.hand.size shouldBe < (testDeck.hand.size)

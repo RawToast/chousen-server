@@ -7,6 +7,7 @@ import chousen.api.data._
 import chousen.game.cards.CardManager
 import chousen.util.LensUtil
 import monocle.macros.GenLens
+import chousen.util.CardsSyntax._
 
 object CampFireActionHandler extends ActionHandler {
 
@@ -37,13 +38,11 @@ object CampFireActionHandler extends ActionHandler {
 
   def drop(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
     case (p: Player, h: Cards, msgs: Seq[GameMessage]) =>
-
       val newCards = for {
         id <- cardId
         discardCard <- h.hand.find(_.id == id)
-        m = GameMessage(s"${p.name} dropped ${discardCard.name} by the camp fire")
-        nh = h.hand.filterNot(_.id == id)
-        nc = h.copy(hand = nh, discard = h.discard :+ discardCard)
+        m = GameMessage(s"${p.name} drops ${discardCard.name} by the camp fire")
+        nc = h.discardCard(discardCard)
       } yield (nc, m)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))

@@ -7,7 +7,7 @@ import chousen.game.core.RandomGameStateCreator
 import chousen.game.dungeon.SimpleDungeonBuilder
 import org.scalatest.WordSpec
 import chousen.Optics._
-import chousen.game.cards.Strength
+import chousen.game.cards.{CardCatalogue, Strength}
 import monocle.macros.GenLens
 
 class CardActionHandlerSpec extends WordSpec {
@@ -37,6 +37,16 @@ class CardActionHandlerSpec extends WordSpec {
 
       "Draw two cards" in {
         assert(result.cards.hand.size > (1 + startedGame.cards.hand.size))
+      }
+    }
+
+    "Given Acquire" should {
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = CardActionHandler.handle(Acquire, None)(startedGame)
+
+      "Draw four cards" in {
+        assert(result.cards.hand.size > (3 + startedGame.cards.hand.size))
       }
     }
 
@@ -153,7 +163,7 @@ class CardActionHandlerSpec extends WordSpec {
 
     "Given Trade" should {
       val game: GameState = stateCreator.start(gameState)
-      val cardToDiscard = game.cards.hand.head
+      val cardToDiscard = CardCatalogue.drain
 
       val startedGame: GameState = HandLens.set(Seq(cardToDiscard))(game)
 
@@ -170,7 +180,7 @@ class CardActionHandlerSpec extends WordSpec {
 
     "Given Manifest Rage" should {
       val game: GameState = stateCreator.start(gameState)
-      val cardToDiscard = game.cards.hand.head
+      val cardToDiscard = CardCatalogue.drain
 
       val startedGame: GameState = HandLens.set(Seq(cardToDiscard))(game)
 
@@ -194,9 +204,35 @@ class CardActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given Transmute" should {
+      val game: GameState = stateCreator.start(gameState)
+      val cardToDiscard = CardCatalogue.rummage
+      val abilityToDiscard = CardCatalogue.windStrike
+      val equipActionToDiscard = CardCatalogue.club
+
+      val startedGame: GameState = HandLens.set(Seq(cardToDiscard))(game)
+
+      val resultDiscardingCard = CardActionHandler.handle(Transmute, Some(cardToDiscard.id))(startedGame)
+      val resultDiscardingAbility = CardActionHandler.handle(Transmute, Some(abilityToDiscard.id))(HandLens.set(Seq(abilityToDiscard))(game))
+      val resultDiscardingEquipment = CardActionHandler.handle(Transmute, Some(equipActionToDiscard.id))(HandLens.set(Seq(equipActionToDiscard))(game))
+
+      "States the action was used" in {
+        assert(resultDiscardingCard.messages.size > startedGame.messages.size)
+      }
+
+      "Give the Player gold" in {
+        assert(resultDiscardingCard.player.gold > gameState.player.gold)
+      }
+
+      "Give the Player more gold for equipment" in {
+        assert(resultDiscardingEquipment.player.gold > resultDiscardingCard.player.gold)
+        assert(resultDiscardingEquipment.player.gold > resultDiscardingAbility.player.gold)
+      }
+    }
+
     "Given Essence Boost" should {
       val game: GameState = stateCreator.start(gameState)
-      val cardToDiscard = game.cards.hand.head
+      val cardToDiscard = CardCatalogue.drain
 
       val startedGame: GameState = HandLens.set(Seq(cardToDiscard))(game)
 
@@ -222,7 +258,7 @@ class CardActionHandlerSpec extends WordSpec {
 
     "Given Armoury" should {
       val game: GameState = stateCreator.start(gameState)
-      val cardToDiscard = game.cards.hand.head
+      val cardToDiscard = CardCatalogue.drain
       val builder = new chousen.game.cards.Equipment{}
 
       val startedGame: GameState = HandLens.set(Seq(cardToDiscard))
@@ -372,6 +408,76 @@ class CardActionHandlerSpec extends WordSpec {
         assert(diff == 100)
       }
     }
+
+    "Given Brew Poison" should {
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = CardActionHandler.handle(BrewPoison, None)(startedGame)
+
+      "Draw two cards" in {
+        assert(result.cards.hand.size > (1 + startedGame.cards.hand.size))
+      }
+    }
+
+    "Given Make Miasma" should {
+      import chousen.util.CardsSyntax._
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val initialState = startedGame.copy(cards = startedGame.cards
+        .addToHand(CardCatalogue.poison).addToHand(CardCatalogue.flames))
+
+      val result = CardActionHandler.handle(MakeMiasma, None)(initialState)
+
+      "Retain the hand size" in {
+        assert(result.cards.hand.size == initialState.cards.hand.size)
+      }
+
+      "Remove any potions of poison or flames" in {
+        assert(result.cards.hand.forall(_.action != PotionOfFlames))
+        assert(result.cards.hand.forall(_.action != PotionOfPoison))
+      }
+
+      "Add potions of Miasma to the player's hand" in {
+        assert(result.cards.hand.exists(_.action == PotionOfMiasma))
+      }
+    }
+
+    "Given Make Alkahest" should {
+      import chousen.util.CardsSyntax._
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val initialState = startedGame.copy(cards = startedGame.cards
+        .addToHand(CardCatalogue.poison).addToHand(CardCatalogue.flames))
+
+      val result = CardActionHandler.handle(MakeAlkahest, None)(initialState)
+
+      "Retain the hand size" in {
+        assert(result.cards.hand.size == initialState.cards.hand.size)
+      }
+
+      "Remove any potions of poison" in {
+        assert(result.cards.hand.forall(_.action != PotionOfPoison))
+      }
+
+      "Add potions of Alkahest to the player's hand" in {
+        assert(result.cards.hand.exists(_.action == PotionOfAlkahest))
+      }
+    }
+
+
+    "Given Purchase Treasure" should {
+      val startedGame: GameState = stateCreator.start(gameState)
+
+      val result = CardActionHandler.handle(PurchaseTreasure, None)(startedGame)
+
+      "Draw a single card" in {
+      assert(result.cards.hand.size > startedGame.cards.hand.size)
+      }
+
+      "Draw a treasure card" in {
+        assert(result.cards.hand.exists(_.treasure))
+      }
+      }
 
   }
 }

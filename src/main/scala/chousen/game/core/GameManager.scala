@@ -41,12 +41,16 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
     val sePlayer = damageCalculator.sc.calculate(game.player)
     lazy val baseStats = game.player.stats
 
-    if (sePlayer.status.map(_.effect).contains(Rage) && !card.action.isInstanceOf[CampFireAction]) {
-      val msg = GameMessage(s"Cannot use ${card.name} whilst Berserk")
-      Left(game.copy(messages = game.messages :+ msg))
+    import chousen.util.GameStateOps.GameStateSyntax
+
+
+    if (sePlayer.gold < card.cost) {
+      Left(game.addMessage(GameMessage(
+        s"${sePlayer.name} only has ${sePlayer.gold} gold and cannot afford to play ${card.name}")))
+    } else if (sePlayer.status.map(_.effect).contains(Rage) && !card.action.isInstanceOf[CampFireAction]) {
+      Left(game.addMessage(GameMessage(s"Cannot use ${card.name} whilst Berserk")))
     } else if (essenceActions.contains(card.action) && game.cards.playedEssence) {
-      val msg = GameMessage(s"Cannot use ${card.name}, as an Essence has already been played")
-      Left(game.copy(messages = game.messages :+ msg))
+      Left(game.addMessage(GameMessage(s"Cannot use ${card.name}, as an Essence has already been played")))
     } else if (baseStats.strength < card.requirements.str.getOrElse(0)
       || baseStats.dexterity < card.requirements.dex.getOrElse(0)
       || baseStats.intellect < card.requirements.int.getOrElse(0)) {
@@ -55,7 +59,7 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
           s"${card.requirements.str.map(i => s"Str: $i ").getOrElse("")}" +
           s"${card.requirements.dex.map(i => s"Dex: $i ").getOrElse("")}" +
           s"${card.requirements.int.map(i => s"Int: $i").getOrElse("")}")
-      Left(game.copy(messages = game.messages :+ msg))
+      Left(game.addMessage(msg))
     } else {
       // All good
       Right(game)

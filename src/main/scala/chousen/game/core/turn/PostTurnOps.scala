@@ -8,12 +8,23 @@ import scala.annotation.tailrec
 
 object PostTurnOps {
 
-  def handleDead(pem: (Player, Set[Enemy], Seq[GameMessage])) = {
+  def handleDead(pem: (Player, Set[Enemy], Seq[GameMessage])): (Player, Set[Enemy], Seq[GameMessage]) = {
     val (p, es, msgs) = pem
       val aliveEnemies = es.filter(_.stats.currentHp > 0)
       val deadEnemies = es.filter(_.stats.currentHp <= 0).toSeq
 
       val battleExp = deadEnemies.map(_.stats.maxHp / 10).sum
+
+      val battleGold = deadEnemies.count(_.stats.maxHp < 25) +
+        (deadEnemies.count(_.stats.maxHp >= 25) * 2)
+        (deadEnemies.count(_.stats.maxHp >= 50) * 3) +
+        (deadEnemies.count(_.stats.maxHp >= 100) * 5) +
+        (deadEnemies.count(_.stats.maxHp >= 200) * 15) +
+        (deadEnemies.count(_.stats.maxHp >= 300) * 30)
+
+      val goldMsg: Option[GameMessage] =
+        if (battleGold > 0) Option(GameMessage(s"${p.name} finds $battleGold gold"))
+        else None
 
       val (pl, lvlupMsgs) = levelUp(p.increaseExperience(battleExp))
 
@@ -24,7 +35,7 @@ object PostTurnOps {
           else if (e.stats.currentHp > -30) GameMessage(s"${e.name} is destroyed!")
           else GameMessage(s"${e.name} is annihilated!")) ++ lvlupMsgs
 
-      (pl, aliveEnemies, msgs ++: newMessages)
+      (pl.copy(gold = pl.gold + battleGold), aliveEnemies, (msgs ++: newMessages) ++ goldMsg)
   }
 
   def levelUp(player: Player): (Player, Seq[GameMessage]) = {

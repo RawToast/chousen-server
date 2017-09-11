@@ -29,7 +29,8 @@ case class Armour(cardId: UUID, name: String, defense: Int, requirements: Requir
 
 case class Requirements(str: Option[Int]=None, dex: Option[Int]=None, int: Option[Int]=None)
 
-case class Card(id: UUID, name: String, description: String, action: Action, charges: Option[Int]=None, maxCharges:Option[Int]=None, requirements: Requirements=Requirements())
+case class Card(id: UUID, name: String, description: String, action: Action, charges: Option[Int]=None,
+                maxCharges:Option[Int]=None, requirements: Requirements=Requirements(), treasure: Boolean=false, cost:Int=0)
 
 case class GameMessage(text: String)
 
@@ -51,6 +52,7 @@ case object Slow extends StatusEffect
 case object StoneSkin extends StatusEffect
 case object Might extends StatusEffect
 case object Block extends StatusEffect
+case object Fort extends StatusEffect
 case object Dexterity extends StatusEffect
 case object Smart extends StatusEffect
 case object Rage extends StatusEffect

@@ -4,9 +4,21 @@ import java.util.UUID
 
 import chousen.api.data._
 
+object GameStateOps extends GameStateOps
 
-trait GameStateOps {
+trait GameStateOps extends GameResponseGenerator {
 
+  implicit class ToCardResponse(gs: GameState){
+    def asResponse: GameResponse = toGameResponse(gs, Seq.empty)
+    def asResponse(diff: Seq[GameMessage]): GameResponse = toGameResponse(gs, diff)
+  }
+
+  implicit class GameStateSyntax(gs: GameState) {
+    def addMessage(gameMessage: GameMessage): GameState = gs.copy(messages = gs.messages :+ gameMessage)
+  }
+}
+
+trait GameResponseGenerator {
   def toGameResponse(gs: GameState, diff: Seq[GameMessage]): GameResponse = {
 
 
@@ -67,8 +79,8 @@ trait GameStateOps {
       .foldLeft(Seq.empty[ShortCardResponse])((cs, cr) => if (!cs.exists(_.name == cr.name)) cs :+ cr else cs)
     val newDiscard = gs.cards.discard.map(toShortCardResponse)
       .foldLeft(Seq.empty[ShortCardResponse])((cs, cr) => if (!cs.exists(_.name == cr.name)) cs :+ cr else cs)
-//    val newDiscard = gs.cards.discard.map(toCardResponse)
-//    val newPassives = gs.cards.passive.map(toCardResponse)
+    //    val newDiscard = gs.cards.discard.map(toCardResponse)
+    //    val newPassives = gs.cards.passive.map(toCardResponse)
 
     val weaponResp = gs.cards.equippedCards.weapon.map(toCardResponse)
     val armourResp = gs.cards.equippedCards.armour.map(toCardResponse)
@@ -80,26 +92,26 @@ trait GameStateOps {
     val actions: Seq[ActionRequest] = if (gs.dungeon.currentEncounter.enemies.forall(_.name == "Camp Fire")) {
       gs.cards.passive
         .withFilter(_.action.isInstanceOf[CampFireAction])
-          .map(p => p.action.asInstanceOf[CampFireAction] match {
-            case _: DiscardingCampFireAction =>
+        .map(p => p.action.asInstanceOf[CampFireAction] match {
+          case _: DiscardingCampFireAction =>
 
-              val reqs = for {
-                c <- gs.cards.hand
-                cid = Option(c.id)
-                req = ActionRequestBody(c.name, Option(p.action.asInstanceOf[CampFireAction]), cardId = cid)
-              } yield req
+            val reqs = for {
+              c <- gs.cards.hand
+              cid = Option(c.id)
+              req = ActionRequestBody(c.name, Option(p.action.asInstanceOf[CampFireAction]), cardId = cid)
+            } yield req
 
-              ActionRequest(p.name, p.description, s"game/${gs.uuid}/camp/${p.id}", reqs)
-            case _: CampFireAction =>
-              ActionRequest(p.name, p.description, s"game/${gs.uuid}/camp/${p.id}", Seq(ActionRequestBody(p.name, Option(p.action.asInstanceOf[CampFireAction]))))
-          }) :+ blockReq
+            ActionRequest(p.name, p.description, s"game/${gs.uuid}/camp/${p.id}", reqs)
+          case _: CampFireAction =>
+            ActionRequest(p.name, p.description, s"game/${gs.uuid}/camp/${p.id}", Seq(ActionRequestBody(p.name, Option(p.action.asInstanceOf[CampFireAction]))))
+        }) :+ blockReq
     } else {
       gs.dungeon.currentEncounter.enemies
         .map(e => ActionRequest(s"Attack ${e.name}",
           s"Use a basic attack on ${e.name}",
           s"game/${gs.uuid}/attack",
           Seq(ActionRequestBody(s"Attack ${e.name}", targetId = Some(e.id)))))
-          .toSeq :+ blockReq
+        .toSeq :+ blockReq
     }
 
     def hasTurn(gm: GameMessage) = gm.text.contains(" turn.")
@@ -107,12 +119,6 @@ trait GameStateOps {
     val msgs: Seq[String] = gs.messages.drop(diff.size).filterNot(hasTurn).map(_.text)
 
     GameResponse(gs.uuid, gs.player, cards, gs.dungeon.currentEncounter, actions, msgs)
-  }
-
-
-  implicit class ToCardResponse(gs: GameState){
-    def asResponse: GameResponse = toGameResponse(gs, Seq.empty)
-    def asResponse(diff: Seq[GameMessage]): GameResponse = toGameResponse(gs, diff)
   }
 }
 

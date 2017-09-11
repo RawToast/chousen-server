@@ -93,7 +93,7 @@ class GameStateManagerSpec extends WordSpec {
 
       "Is a basic single target command" should {
         val target = GameStateGenerator.firstEnemy
-        val singleTargetCommand =  SingleTargetActionRequest(target.id, CrushingBlow)
+        val singleTargetCommand = SingleTargetActionRequest(target.id, CrushingBlow)
         val result = gameStateManager.takeCommand(singleTargetCommand, startedGame)
 
         "Lower the targeted enemies health" in {
@@ -150,7 +150,7 @@ class GameStateManagerSpec extends WordSpec {
       "The user does not meet the requirements for" should {
 
         lazy val anotherCard = GameStateGenerator.crushingBlowCard
-          .copy(id = UUID.fromString("221c878f-5a6f-4276-a52e-862cfa90e114"), requirements = Requirements(str=Some(99)))
+          .copy(id = UUID.fromString("221c878f-5a6f-4276-a52e-862cfa90e114"), requirements = Requirements(str = Some(99)))
 
         lazy val request = SingleTargetActionRequest(GameStateGenerator.firstEnemy.id, CrushingBlow)
 
@@ -285,6 +285,30 @@ class GameStateManagerSpec extends WordSpec {
         }
       }
 
+      "Is a valid action with an affordable cost" should {
+
+        lazy val card = GameStateGenerator.crushingBlowCard.copy(cost = 5)
+
+        val initialState = GameStateOptics.HandLens.modify(_ :+ card)(gameState)
+
+        val request = SingleTargetActionRequest(GameStateGenerator.firstEnemy.id, CrushingBlow)
+
+        lazy val result = gameStateManager.useCard(card, request, initialState)
+
+        "Change the game state" in {
+          assert(result != initialState)
+        }
+
+        "Remove the card from the player's hand" in {
+          assert(!result.cards.hand.contains(card))
+        }
+
+        "Reduce the player's gold" in {
+          assert(result.player.gold < initialState.player.gold)
+          assert(initialState.player.gold - card.cost == result.player.gold)
+        }
+      }
+
       "Is a valid discard action" should {
 
         lazy val card = CardCatalogue.essenceBoost
@@ -344,7 +368,7 @@ class GameStateManagerSpec extends WordSpec {
 
       "The player is berserk" should {
 
-        import chousen.Optics.{PlayerStatusLens, PlayerLens}
+        import chousen.Optics.{PlayerLens, PlayerStatusLens}
 
         val initialState = (PlayerLens ^|-> PlayerStatusLens).set(Seq(Status(Rage, "test", 4, Some(5))))(gameState)
         val anotherCard = GameStateGenerator.crushingBlowCard.copy(id = UUID.fromString("221c878f-5a6f-4276-a52e-862cfa90e114"))
@@ -366,32 +390,61 @@ class GameStateManagerSpec extends WordSpec {
         }
       }
     }
-      "The player is already equipped" should {
-        import chousen.Optics._
 
-        val shortsword = CardCatalogue.shortSword
+    "The player cannot afford the cost" should {
 
-        val club = CardCatalogue.club
-        val swordId = club.id
-        val request = EquipmentActionRequest(swordId, Club)
+      val initialState = gameState
+      val anotherCard = GameStateGenerator.crushingBlowCard
+        .copy(id = UUID.fromString("221c878f-5a6f-4276-a52e-862cfa90e114"),
+          cost = Int.MaxValue)
 
 
-        val initialState = GameStateOptics.HandLens.modify(_ :+ club)
-          .andThen(PlayerLens.composeLens(PlayerWeaponLens).set(Option(Weapon(shortsword.id, "Broadsword", 10))))
-            .andThen(EquipmentLens.set(EquippedCards(Option(shortsword))))(gameState)
+      val request = SingleTargetActionRequest(GameStateGenerator.firstEnemy.id, CrushingBlow)
 
-        lazy val result = gameStateManager.useCard(club, request, initialState)
+      lazy val result = gameStateManager.useCard(anotherCard, request, initialState)
 
-        "Equip the new card" in {
-          assert(result.cards.equippedCards.weapon != initialState.cards.equippedCards.weapon)
-        }
-
-        "Place the old item in the Player's hand" in {
-          assert(!initialState.cards.hand.contains(shortsword))
-          assert(result.cards.hand.contains(shortsword))
-        }
+      "Change the game state" in {
+        assert(result != initialState)
       }
+
+      "Add a new message" in {
+        assert(result.messages.size > initialState.messages.size)
+      }
+
+      "Not affect the current encounter" in {
+        assert(result.dungeon.currentEncounter == initialState.dungeon.currentEncounter)
+      }
+    }
+
+
+
+    "The player is already equipped" should {
+      import chousen.Optics._
+
+      val shortsword = CardCatalogue.shortSword
+
+      val club = CardCatalogue.club
+      val swordId = club.id
+      val request = EquipmentActionRequest(swordId, Club)
+
+
+      val initialState = GameStateOptics.HandLens.modify(_ :+ club)
+        .andThen(PlayerLens.composeLens(PlayerWeaponLens).set(Option(Weapon(shortsword.id, "Broadsword", 10))))
+        .andThen(EquipmentLens.set(EquippedCards(Option(shortsword))))(gameState)
+
+      lazy val result = gameStateManager.useCard(club, request, initialState)
+
+      "Equip the new card" in {
+        assert(result.cards.equippedCards.weapon != initialState.cards.equippedCards.weapon)
+      }
+
+      "Place the old item in the Player's hand" in {
+        assert(!initialState.cards.hand.contains(shortsword))
+        assert(result.cards.hand.contains(shortsword))
+      }
+    }
   }
+
 
   def getFirstEnemyHp(result: GameState) =
     result.dungeon.currentEncounter.enemies

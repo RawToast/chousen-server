@@ -1,7 +1,8 @@
 package chousen.game.actions
 
   import chousen.api.data._
-import chousen.Optics._
+  import chousen.Optics._
+  import chousen.game.cards.CardCatalogue
   import chousen.game.core.RandomGameStateCreator
   import chousen.game.dungeon.SimpleDungeonBuilder
   import org.scalatest.WordSpec
@@ -141,12 +142,14 @@ import chousen.Optics._
         val initialState: GameState = GameStateGenerator.gameStateWithFastPlayer
         val game: GameState = stateCreator.start(initialState)
 
+        val cardToDiscard = CardCatalogue.cape
+
         val startedGame =
           DungeonLens
             .set(game.dungeon.copy(currentEncounter = Battle(Set(dungeonBuilder.campFire))))
-            .compose(PlayerLens.composeLens(PlayerHealthLens).modify(hp => hp / 2))(game)
+            .andThen(PlayerLens.composeLens(PlayerHealthLens).modify(hp => hp / 2))
+            .andThen(HandLens.modify(_ :+ cardToDiscard))(game)
 
-        val cardToDiscard = startedGame.cards.hand.head
 
         lazy val result = CampFireActionHandler.handle(Drop, Some(cardToDiscard.id)).apply(startedGame)
 

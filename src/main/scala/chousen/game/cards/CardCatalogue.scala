@@ -86,10 +86,10 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
   def chieftainDeck = Seq(
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
     essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
-    essenceOfStrength, essenceOfStrength, essenceOfIntelligence, essenceOfIntelligence,
+    essenceOfDexterity, essenceOfDexterity, essenceOfIntelligence, essenceOfIntelligence,
     essenceOfVitality, essenceOfVitality, essenceOfVitality, essenceOfVitality,
 
-    essenceOfVitality, essenceOfStrength,
+    essenceOfVitality, elixirOfStrength,
     rarePepe, rarePepe,
 
     burningHammer, burningHammer, burningHammer, burningHammer,
@@ -99,23 +99,22 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
     lignification, lignification, lignification, lignification,
     flames, flames, flames, flames,
-    poison, poison, poison,
-    scrollOfFear, scrollOfFear,
+    scrollOfFear, scrollOfFear, scrollOfFear,
+    regen, regen,
 
-    daggerOfDavid, swordOfIntellect,
+    mace, swordOfIntellect,
     ringmail, chainmail,
 
 
     rummage, rummage, rummage, rummage,
-    miracle, miracle, miracle, miracle,
+    miracle, miracle, miracle,
     increaseCharges, increaseCharges,
     recharge, recharge,
     restore, restore,
+    acquire,
 
     armoury,
-
   )
-
 
   def rogueDeck: Seq[Card] = Seq(
 
@@ -218,7 +217,6 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     refresh, refresh
   )
 
-
   def wizard: Seq[Card] = Seq(
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
@@ -249,6 +247,45 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     refresh, refresh
   )
 
+  def alchemist: Seq[Card] = Seq(
+
+    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength,
+    essenceOfStrength, essenceOfStrength, essenceOfStrength, essenceOfStrength, // 2
+    essenceOfDexterity, essenceOfIntelligence, essenceOfVitality, essenceOfVitality,
+
+
+    bagOfGold, bagOfGold, bagOfGold, bagOfGold,   // +30g
+    transmute, transmute, // turn any card into gold
+
+    purchaseTreasure, purchaseTreasure,  // 50g
+    // findersKeepers, findersKeepers,  // 10g Take any card from DECK
+    // restoration, restoration, // 10g Take any card from DISCARD
+
+    healWounds, healWounds,
+    mammonite, mammonite,   // ro skill  -10g, lots of damage
+    bankruptcy,             // lose 1/2 gold, deal as additional damage
+    goldenBarrier,
+    chrysopoeia,
+
+    // for aoe, use potstest
+    makeAlkahest, makeAlkahest, makeAlkahest,
+    poison, poison, poison, poison,
+    quagmire, quagmire, quagmire, // slow only potion effect
+    might, might,
+    haste, haste,
+
+    brewPoison, brewPoison, brewPoison,
+    rummage, rummage, rummage, miracle,
+    acquire, acquire,
+
+    // fluff
+    increaseCharges, increaseCharges, increaseCharges, increaseCharges,
+    recharge, recharge,
+
+    ringmail, mace,
+    elixirOfStrength, elixirOfIntelligence,
+  )
+
 
 
   //  def cheeseDeck: Seq[Card] = // 15
@@ -263,8 +300,11 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 }
 
 sealed trait CardBuilder {
-  def mkCard(name: String, description: String, action: Action, charges:Int=0, requirements: Requirements=Requirements()) =
-    Card(UUID.randomUUID(), name, description, action, if (charges == 0) None else Some(charges), if (charges == 0) None else Some(charges), requirements)
+  def mkCard(name: String, description: String, action: Action, charges:Int=0, requirements: Requirements=Requirements(),
+             cost: Int= 0)=
+    Card(UUID.randomUUID(), name, description, action,
+      if (charges == 0) None else Some(charges), if (charges == 0) None else Some(charges),
+      requirements, treasure = false, cost)
 
   def mkEquip(name: String, description: String, action: Action, requirements: Requirements=Requirements()) =
     Card(UUID.randomUUID(), name, description, action, None, None, requirements)
@@ -283,6 +323,7 @@ trait Potions extends CardBuilder {
 
   def flames: Card = mkCard("Potion of Flames", "Applies a long lasting Burn to all enemies", PotionOfFlames)
   def poison: Card = mkCard("Potion of Poison", "Applies poison to all enemies", PotionOfPoison)
+  def quagmire: Card = mkCard("Potion of Quagmire", "Applies slow to all enemies", PotionOfQuagmire)
   def lignification: Card = mkCard("Potion of Lignification", "Turns the user into a slow Tree, increasing armour, strength, and regen.", PotionOfLignification)
 
   def scrollOfFear: Card = mkCard("Scroll of Fear", "Causes any enemies on with health to turn and flee", ScrollOfFear)
@@ -314,6 +355,11 @@ trait Magic extends CardBuilder{
   def barrier: Card = mkCard("Barrier", "Creates a magic barrier to protect the user", Barrier, 3)
   def drain: Card = mkCard("Drain", "Drains the health of an enemy, healing the player", Drain, 1)
   def massDrain: Card = mkCard("Mass Drain", "Drains health from multiple enemies and heals the player", MassDrain, 3)
+
+  def chrysopoeia: Card = mkCard("Chrysopoeia", "Attempt to transmute all enemies into gold. Increased success the less health the enemy has.", Chrysopoeia, 4)
+
+  def makeMiasma: Card = mkCard("Make Miasma", "Turns any potions of Poison or Flames into Potions of Miasma", MakeMiasma, 0, Requirements(int = Some(10)))
+  def makeAlkahest: Card = mkCard("Make Alkahest", "Turns any potions of Poison into Potions of Alkahest", MakeAlkahest, 0, Requirements(int = Some(12)), cost = 50)
 }
 
 trait Strength extends CardBuilder{
@@ -325,6 +371,9 @@ trait Strength extends CardBuilder{
 
   def counter: Card = mkCard("Counter", "Attack that deals more damage the more strength an enemy has", Counter, 2)
   def destruction: Card = mkCard("Destruction", "Destructive attack that lowers an enemies vitality", Destruction, 4)
+
+  def mammonite: Card = mkCard("Mammonite", "Attack that costs 5 gold in order to deal high damage", Mammonite, 4, cost = 5)
+  def bankruptcy: Card = mkCard("Bankruptcy", "Fast attack that stuns and uses half the players gold to deal huge damage", Bankruptcy, 1)
 }
 
 trait Dexterity extends CardBuilder{
@@ -342,7 +391,8 @@ trait Utility extends CardBuilder {
   def miracle: Card = mkCard("Miracle", "Draw cards until your hand is full", Miracle)
 
   // Not limited
-  def rummage: Card = mkCard("Rummage", "Quickly search the area and always draw 2 cards (no hand limit)", Rummage)
+  def rummage: Card = mkCard("Rummage", "Draw 2 cards", Rummage)
+  def acquire: Card = mkCard("Acquire", "Draw 4 cards", Acquire, cost = 25)
   def replace: Card = mkCard("Replace", "Instantly replaces the player's hand (will draw at least 3 cards)", Replace)
   def restore: Card = mkCard("Restore", "Instantly places the top discarded card into your hand", Restore)
 
@@ -353,6 +403,9 @@ trait Utility extends CardBuilder {
   def forgeArmour: Card = mkCard("Forge Armour", "Discard one card and place the next armour in your deck in your hand", ForgeArmour)
   def manifestRage: Card = mkCard("Manifest Rage", "Discard one card. Place an additional Potion of Rage to your hand and deck", ManifestRage)
   def essenceBoost: Card = mkCard("Essence Boost", "Discard one card. Draw essences from your deck until your hand is full", EssenceBoost)
+  def transmute: Card = mkCard("Transmute", "Transmute a card into gold, gain more gold for transmuting equipment cards", Transmute)
+
+
   def recharge: Card = mkCard("Recharge", "Recharges all charges of all ability cards in your hand", Recharge)
 
 
@@ -366,6 +419,11 @@ trait Utility extends CardBuilder {
 
 
   def bagOfGold: Card = mkCard("Bag of Gold", "Gives 30 gold", BagOfGold)
+
+  def goldenBarrier: Card = mkCard("Fortify Armour", "Spend 20 gold to temporarily boost your defenses", FortifyArmour, charges = 4, cost = 20)
+  def brewPoison: Card = mkCard("Brew Poison", "Spend 20 gold and gain 2 poison potions", BrewPoison, cost = 20)
+
+  def purchaseTreasure: Card = mkCard("Buy Treasure", "Pay 50 gold to acquire a single treasure card", PurchaseTreasure, cost = 50)
 }
 
 trait CampFire extends CardBuilder {
@@ -437,6 +495,7 @@ trait TreasureCards extends CardBuilder {
     WandOfDefiance, Requirements(int = Some(15)))
 
   def potionOfMiasma: Card = mkEquip("Potion of Miasma", "Applies a strong poison and burn to all enemies", PotionOfMiasma)
+  def potionOfAlkahest: Card = mkEquip("Potion of Alkahest", "Applies a deadly poison to all enemies", PotionOfAlkahest)
 
   def potOfGold: Card = mkCard("Pot of Gold", "Full of gold! Gives 100 gold", PotOfGold)
 }

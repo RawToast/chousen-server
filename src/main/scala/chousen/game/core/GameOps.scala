@@ -4,8 +4,7 @@ import chousen.api.data._
 import chousen.game.actions.DamageCalculator
 import chousen.game.status.{StatusBuilder, StatusCalculator}
 import chousen.Optics._
-import chousen.game.core.turn.PostTurnOps
-import chousen.game.dungeon.EnemyBuilder
+import chousen.game.core.turn.{PlayerDamageUtil, PostTurnOps}
 
 import scala.annotation.tailrec
 import scala.util.{Left, Random, Right}
@@ -51,78 +50,32 @@ abstract class GameOps(encOps: EncounterOps, damageCalculator: DamageCalculator)
 object EnemyTurnOps {
 
   // This method will use the enemy with the highest position
-  def takeTurn(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage])(dc: DamageCalculator): (Player, Set[Enemy], Seq[GameMessage]) = {
+  def takeTurn(player: Player, enemies: Set[Enemy], messages: Seq[GameMessage])(implicit dc: DamageCalculator): (Player, Set[Enemy], Seq[GameMessage]) = {
     import chousen.Optics.EnemyStatusLens
 
     val activeEnemy = enemies.maxBy(_.position)
-    val dmg = dc.calculateEnemyDamage(activeEnemy, player)
-
-
-    val playerHp = PlayerOptics.PlayerCharStatsLens.composeLens(CharStatsOptics.HpLens)
-    val hpLens: (Player) => Player = playerHp.modify(hp => hp - dmg)
-
-
-
-    def finish(es: Set[Enemy], ae: Enemy, st: Option[Status]=None) = {
-      def affectStatus = EnemyStatusLens.modify(handleStatus)
-      def handleStatus(status: Seq[Status]): Seq[Status] = {
-        val altStatus = status.filter(_.turns > 0).filter(s => s.effect == Poison)
-        val mainStatus= status.filter(_.turns > 0).filterNot(s => s.effect == Poison)
-
-        altStatus ++
-          mainStatus.map(s => s.copy(turns = s.turns - 1))
-      }
-
-      def reset(e: Enemy) = e.copy(position = e.position - 100)
-
-
-      // Then reset
-      import chousen.Implicits._
-      es.map(e => if (e ~= ae) affectStatus.andThen(reset).andThen(EnemyStatusLens.modify(s => s ++ st.toSeq))(e) else e)
-    }
 
     //TODO: Move elsewhere
 
     def diceRoll = Random.nextInt(6) + 1
 
-    def doDamage(p: Player, es: Set[Enemy], messages: Seq[GameMessage], activeEnemy: Enemy) = {
-      val attackMessage = if (dmg < 5) GameMessage(s"${activeEnemy.name} grazes ${player.name} for $dmg damage.")
-      else if (dmg < 10) GameMessage(s"${activeEnemy.name} hits ${player.name} for $dmg damage.")
-      else if (dmg < 20) GameMessage(s"${activeEnemy.name} attacks ${player.name} for $dmg damage!")
-      else if (dmg < 30) GameMessage(s"${activeEnemy.name} smashes ${player.name} for $dmg damage!!")
-      else if (dmg < 40) GameMessage(s"${activeEnemy.name} crushes ${player.name} for $dmg damage!!!")
-      else if (dmg < 50) GameMessage(s"${activeEnemy.name} bops ${player.name} for $dmg damage!!!")
-      else GameMessage(s"${activeEnemy.name} crits ${player.name} for $dmg damage!!!!!")
-
-      // Then reset
-      val es = finish(enemies, activeEnemy)
-      val isTripleOrc = es.map(_.name).contains("TripleOrc") & es.size < 5
-      val finalEs = if (isTripleOrc) es + EnemyBuilder.smallOrc else es
-
-      val msg2 = if (isTripleOrc) Option(GameMessage(s"A Tiny Orc comes to the aid of TripleOrc")) else None
-
-
-      (hpLens.apply(player), finalEs, (messages :+ attackMessage) ++ msg2)
-    }
-
-
     val afterDmgGame = if (activeEnemy.name == "Warrior" && diceRoll == 6) {
       val message = GameMessage(s"${activeEnemy.name} blocks.")
-      val es = finish(enemies, activeEnemy, Some(StatusBuilder.makeBlock()))
+      val es = PlayerDamageUtil.finish(enemies, activeEnemy, Some(StatusBuilder.makeBlock()))
       (player, es, messages :+ message)
     } else if ((activeEnemy.name.contains("Orc") && activeEnemy.stats.currentHp <= 65) && diceRoll == 1) {
       val message = GameMessage(s"${activeEnemy.name} bursts into an Orcish Rage!")
-      val es = finish(enemies, activeEnemy, Some(StatusBuilder.makeBerserk(2, turns = 2)))
+      val es = PlayerDamageUtil.finish(enemies, activeEnemy, Some(StatusBuilder.makeBerserk(2, turns = 2)))
       (player, es, messages :+ message)
     } else if (activeEnemy.name.contains("Steam Golem") && activeEnemy.stats.speed < 16 && diceRoll >= 5) {
       val message = GameMessage(s"Steam spouts from the ${activeEnemy.name} as it speeds up!")
-      val es = finish(enemies, activeEnemy)
+      val es = PlayerDamageUtil.finish(enemies, activeEnemy)
       val ez = es.map(e => if(e.id == activeEnemy.id) EnemyStatsLens.composeLens(SpeedLens).modify(i => i + 2).andThen(EnemyPosition.modify(_ - 100))(e) else e)
       (player, ez, messages :+ message)
     } else if (activeEnemy.name.contains("Orc Fighter") && !activeEnemy.status.map(_.effect).contains(Might) && diceRoll == 3) {
       val message = GameMessage(s"The Orc Fighter drinks a Potion of Might!")
 
-      val es = finish(enemies, activeEnemy)
+      val es = PlayerDamageUtil.finish(enemies, activeEnemy)
       val ez = es.map(e => if(e.id == activeEnemy.id) EnemyStatusLens.modify(i => i :+ StatusBuilder.makeMight(4))(activeEnemy) else e)
 
       (player, ez, messages :+ message)
@@ -172,15 +125,16 @@ object EnemyTurnOps {
         EnemyStatsLens.composeLens(DexterityLens).modify(_ + 2)
       )(activeEnemy)
 
-      doDamage(player, enemies.map(e => if (e.id == newActive.id) newActive else e), messages :+ message, newActive)
+      PlayerDamageUtil.doDamage(player, enemies.map(e => if (e.id == newActive.id) newActive else e), messages :+ message, newActive)
     } else if (activeEnemy.name.contains("Kraken")) {
-      val message = GameMessage(s"${activeEnemy.name} whips ${player.name} for $dmg!")
+      val pem = PlayerDamageUtil.doDamage(player, enemies, messages, activeEnemy)
 
-      (PlayerHealthLens.modify(_ - dmg)(player),
-        enemies.map(e=> if (e.id == activeEnemy.id) e.copy(position = e.position - 50) else e),
-        messages :+ message)
+      (pem._1,
+        pem._2.map(e=> if (e.id == activeEnemy.id) e.copy(position = e.position + 50) else e),
+        pem._3)
     }else {
-      doDamage(player, enemies, messages, activeEnemy)
+      PlayerDamageUtil.doDamage(player, enemies, messages, activeEnemy)(dc)
+//      doDamage(player, enemies, messages, activeEnemy)
     }
 
     val statusHandler: ((Player, Set[Enemy], Seq[GameMessage])) => (Player, Set[Enemy], Seq[GameMessage]) =
