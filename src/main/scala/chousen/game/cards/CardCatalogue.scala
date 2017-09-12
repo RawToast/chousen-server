@@ -404,7 +404,7 @@ trait Strength extends CardBuilder{
   def destruction: Card = mkCard("Destruction", "Destructive attack that lowers an enemies vitality", Destruction, 4)
 
   def mammonite: Card = mkCard("Mammonite", "Attack that costs 5 gold in order to deal high damage", Mammonite, 4, cost = 5)
-  def bankruptcy: Card = mkCard("Bankruptcy", "Fast attack that stuns and uses half the players gold to deal huge damage", Bankruptcy, 1)
+  def bankruptcy: Card = mkCard("Bankruptcy", "Fast attack that stuns and uses half the players gold to deal huge damage", Bankruptcy, 1, cost = 2)
 }
 
 trait Dexterity extends CardBuilder{
@@ -423,7 +423,7 @@ trait Utility extends CardBuilder {
 
   // Not limited
   def rummage: Card = mkCard("Rummage", "Draw 2 cards", Rummage)
-  def acquire: Card = mkCard("Acquire", "Draw 4 cards", Acquire, cost = 25)
+  def acquire: Card = mkCard("Acquire", "Pay 25 gold and draw 4 cards", Acquire, cost = 25)
   def replace: Card = mkCard("Replace", "Instantly replaces the player's hand (will draw at least 3 cards)", Replace)
   def restore: Card = mkCard("Restore", "Instantly places the top discarded card into your hand", Restore)
 
@@ -442,7 +442,7 @@ trait Utility extends CardBuilder {
 
   // def randomDiscovery: Card = mkCard("Random Discovery", "Choose a card and place on top of the deck", RandomDiscovery)
   def refresh: Card = mkCard("Refresh", "Discard all non-Ability cards, draw 4 cards", Refresh)
-  def armoury: Card = mkCard("Armoury", "Move the first 2 Equip cards in your deck to the top of the deck", Armoury)
+  def armoury: Card = mkCard("Armoury", "Pay 5 gold and move the first 2 Equip cards in your deck to the top of the deck", Armoury, cost = 5)
 
   // Require target
   def reduceRequirements: Card = mkCard("Reduce Requirements", "Reduces all requirements for the chosen card by 5", ReduceRequirements)
@@ -451,10 +451,10 @@ trait Utility extends CardBuilder {
 
   def bagOfGold: Card = mkCard("Bag of Gold", "Gives 30 gold", BagOfGold)
 
-  def fortify: Card = mkCard("Fortify Armour", "Spend 20 gold to temporarily boost your defenses", FortifyArmour, charges = 4, cost = 20)
+  def fortify: Card = mkCard("Fortify Armour", "Spend 10 gold to temporarily boost your defenses", FortifyArmour, charges = 4, cost = 10)
   def brewPoison: Card = mkCard("Brew Poison", "Spend 20 gold and gain 2 poison potions", BrewPoison, cost = 20)
 
-  def buyTreasure: Card = mkCard("Buy Treasure", "Pay 50 gold to acquire a single treasure card", PurchaseTreasure, cost = 50)
+  def buyTreasure: Card = mkCard("Buy Treasure", "Pay 35 gold to acquire a single treasure card", PurchaseTreasure, cost = 35)
 }
 
 trait CampFire extends CardBuilder {

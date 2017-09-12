@@ -175,7 +175,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
   def poison(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
 
-    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makePoison(7, turns = 6))(e)
+    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makePoison(8, turns = 7))(e)
 
     (p, Option(newE), msgs)
   }
@@ -190,7 +190,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
   def alkahest(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
     val newE = EnemyOptics.EnemyStatusLens
-      .modify(_ :+ StatusBuilder.makePoison(10 + p.experience.level, turns = 20))(e)
+      .modify(_ :+ StatusBuilder.makePoison(10 + p.experience.level + (e.stats.maxHp / 12), turns = 7))(e)
 
     (p, Option(newE), msgs)
   }
@@ -227,7 +227,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
     if (score >= 0) {
       val newEnemy = Optics.EnemyHpLens.set(-7)(e)
-      (p, Option(newEnemy), msgs :+ GameMessage(s"${e.name} is transmuted into $score gold pei"))
+      (p, Option(newEnemy), msgs :+ GameMessage(s"${e.name} is transmuted into $score gold pieces"))
     } else if(score < 0 && score >= -10) {
       (p, Option(e), msgs :+ GameMessage(s"${e.name} struggles to resist"))
     } else if(score < -10 && score > -30){

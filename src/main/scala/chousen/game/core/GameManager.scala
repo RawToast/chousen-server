@@ -46,7 +46,7 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
 
     if (sePlayer.gold < card.cost) {
       Left(game.addMessage(GameMessage(
-        s"${sePlayer.name} only has ${sePlayer.gold} gold and cannot afford to play ${card.name}")))
+        s"${sePlayer.name} only has ${sePlayer.gold} gold and cannot afford to play ${card.name} (cost ${card.cost})")))
     } else if (sePlayer.status.map(_.effect).contains(Rage) && !card.action.isInstanceOf[CampFireAction]) {
       Left(game.addMessage(GameMessage(s"Cannot use ${card.name} whilst Berserk")))
     } else if (essenceActions.contains(card.action) && game.cards.playedEssence) {
