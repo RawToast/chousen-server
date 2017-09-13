@@ -35,6 +35,8 @@ object CardActionHandler extends ActionHandler {
       case EssenceBoost => essenceBoost(cardId)
       case Transmute => transmute(cardId)
       case ReduceRequirements => reduceRequirements(cardId)
+      case FindersKeepers => findersKeepers(cardId)
+      case AnotherTime => anotherTime(cardId)
       case Refresh => refresh
       case Armoury => armoury
       case Recharge => recharge
@@ -299,6 +301,40 @@ object CardActionHandler extends ActionHandler {
       } yield (cs, m)
 
       newCards.fold((p, h, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+  def findersKeepers(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, cards: Cards, msgs: Seq[GameMessage]) =>
+
+      def makeMessage(newCards: Cards, oldCards: Cards) = {
+        val foundCards = newCards.hand.filter(c => !oldCards.hand.contains(c))
+        GameMessage(s"${p.name} finds ${foundCards.map(_.name).mkString(", ")}")
+      }
+
+      val newCards: Option[(Cards, GameMessage)] = for {
+        id <- cardId
+        newCards = cards.moveToHand(id)
+        m = makeMessage(newCards, cards)
+      } yield (newCards, m)
+
+      newCards.fold((p, cards, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+  }
+
+  def anotherTime(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, cards: Cards, msgs: Seq[GameMessage]) =>
+
+      def makeMessage(newCards: Cards, oldCards: Cards) = {
+        val foundCards = newCards.hand.filter(c => !oldCards.hand.contains(c))
+        GameMessage(s"${p.name} finds ${foundCards.map(_.name).mkString(", ")} once more")
+      }
+
+      val newCards: Option[(Cards, GameMessage)] = for {
+        id <- cardId
+        newCards = cards.moveFromDiscardToHand(id)
+        m = makeMessage(newCards, cards)
+      } yield (newCards, m)
+
+      newCards.fold((p, cards, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
   }
 
   def recharge(p: Player, h: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {

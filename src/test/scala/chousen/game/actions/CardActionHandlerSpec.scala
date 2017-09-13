@@ -178,6 +178,56 @@ class CardActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given Finders Keepers" should {
+      val game: GameState = stateCreator.start(gameState)
+      val cardToFind = CardCatalogue.drain
+
+      val startedGame: GameState = DeckLens.modify(_ :+ cardToFind)(game)
+
+      val result = CardActionHandler.handle(FindersKeepers, Some(cardToFind.id))(startedGame)
+
+      "States the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Place new cards into the Player's hand" in {
+        assert(result.cards.hand.size > startedGame.cards.hand.size)
+      }
+
+      "Place the chosen cards into the Player's hand" in {
+        assert(result.cards.hand.exists(_.id == cardToFind.id))
+      }
+
+      "Removes the chosen card from the deck pile" in {
+        assert(!result.cards.deck.exists(_.id == cardToFind.id))
+      }
+    }
+
+    "Given Another Time" should {
+      val game: GameState = stateCreator.start(gameState)
+      val cardToFind = CardCatalogue.drain
+
+      val startedGame: GameState = DiscardLens.modify(_ :+ cardToFind)(game)
+
+      val result = CardActionHandler.handle(AnotherTime, Some(cardToFind.id))(startedGame)
+
+      "States the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Place new cards into the Player's hand" in {
+        assert(result.cards.hand.size > startedGame.cards.hand.size)
+      }
+
+      "Place the chosen cards into the Player's hand" in {
+        assert(result.cards.hand.exists(_.id == cardToFind.id))
+      }
+
+      "Removes the chosen card from the discard pile" in {
+        assert(!result.cards.discard.exists(_.id == cardToFind.id))
+      }
+    }
+
     "Given Manifest Rage" should {
       val game: GameState = stateCreator.start(gameState)
       val cardToDiscard = CardCatalogue.drain

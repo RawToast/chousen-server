@@ -19,15 +19,12 @@ trait CardsSyntax {
     def moveToHand(pred : Card => Boolean) = CardManager.moveCardToHand(cs, pred)
     def moveToHand(id : UUID) = CardManager.moveCardToHand(cs, c => c.id == id)
 
+    def moveFromDiscardToHand(id : UUID) = CardManager.moveCardFromDiscardToHand(cs, c => c.id == id)
+
+
     def drawCard(limit: Int=CardManager.MAX_HAND_SIZE) = CardManager.drawCard(cs, limit)
     def drawNoLimit = CardManager.drawCard(cs, CardManager.ABSOLUTE_MAX)
 
     def drawTreasure = CardManager.drawTreasure(cs)
   }
-
-
-//  implicit class ToCardResponse(c: Card){
-//    def asResponse: GameResponse = toGameResponse(gs, Seq.empty)
-//    def asResponse(diff: Seq[GameMessage]): GameResponse = toGameResponse(gs, diff)
-//  }
 }
