@@ -224,10 +224,11 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
     val poisonBoost = if (e.status.exists(_.effect == Poison)) 10 else 0
 
     val score = (sePlayer.stats.intellect * 2 ) + poisonBoost + p.experience.level - e.stats.currentHp
+    lazy val goldCoins = Math.max(1, score / 3)
 
     if (score >= 0) {
       val newEnemy = Optics.EnemyHpLens.set(-7)(e)
-      (p, Option(newEnemy), msgs :+ GameMessage(s"${e.name} is transmuted into $score gold pieces"))
+      (p.copy(gold = p.gold + goldCoins), Option(newEnemy), msgs :+ GameMessage(s"${e.name} is transmuted into $goldCoins gold pieces"))
     } else if(score < 0 && score >= -10) {
       (p, Option(e), msgs :+ GameMessage(s"${e.name} struggles to resist"))
     } else if(score < -10 && score > -30){

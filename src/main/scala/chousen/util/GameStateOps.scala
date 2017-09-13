@@ -31,54 +31,56 @@ trait GameResponseGenerator {
       if (gs.cards.playedEssence) false else true
     } else true
 
-    def toCardResponse(c: Card):CardResponse = c.action match {
-      case _: SingleTargetAction => CardResponse(c.name, c.description, c.id, mkChargesStr(c), canPlayCard(c),
-        ActionRequest(c.name, c.description, s"game/${gs.uuid}/single/${c.id}",
+    def toCardResponse(card: Card):CardResponse = card.action match {
+      case _: SingleTargetAction => CardResponse(card.name, card.description, card.id, mkChargesStr(card), canPlayCard(card),
+        ActionRequest(card.name, card.description, s"game/${gs.uuid}/single/${card.id}",
           gs.dungeon.currentEncounter.enemies.toSeq.map(e =>
-            ActionRequestBody(e.name, Some(c.action), targetId = Option(e.id)))))
+            ActionRequestBody(e.name, Some(card.action), targetId = Option(e.id)))))
 
-      case _: MultiAction => CardResponse(c.name, c.description, c.id, mkChargesStr(c), canPlayCard(c),
-        ActionRequest(c.name, c.description, s"game/${gs.uuid}/multi/${c.id}",
-          Seq(ActionRequestBody(c.name, Some(c.action), targetIds = Option(gs.dungeon.currentEncounter.enemies.map(_.id))))))
+      case _: MultiAction => CardResponse(card.name, card.description, card.id, mkChargesStr(card), canPlayCard(card),
+        ActionRequest(card.name, card.description, s"game/${gs.uuid}/multi/${card.id}",
+          Seq(ActionRequestBody(card.name, Some(card.action), targetIds = Option(gs.dungeon.currentEncounter.enemies.map(_.id))))))
 
-      case _: SelfAction => CardResponse(c.name, c.description,  c.id, mkChargesStr(c), canPlayCard(c),
-        ActionRequest(c.name, c.description, s"game/${gs.uuid}/self/${c.id}",
-          Seq(ActionRequestBody(c.name, Some(c.action)))))
+      case _: SelfAction => CardResponse(card.name, card.description,  card.id, mkChargesStr(card), canPlayCard(card),
+        ActionRequest(card.name, card.description, s"game/${gs.uuid}/self/${card.id}",
+          Seq(ActionRequestBody(card.name, Some(card.action)))))
 
       case ca: CardAction => {
-        val ars = ActionRequest(c.name, c.description, s"game/${gs.uuid}/card/${c.id}",
+        val ars = ActionRequest(card.name, card.description, s"game/${gs.uuid}/card/${card.id}",
           ca match {
             case action: DiscardCardAction =>
               action match {
                 case ReduceRequirements => gs.cards.hand
                   .filter(r => r.requirements.str.nonEmpty || r.requirements.dex.nonEmpty || r.requirements.int.nonEmpty)
-                  .map(h => ActionRequestBody(h.name, Some(c.action), cardId = Option(h.id)))
+                  .map(h => ActionRequestBody(h.name, Some(card.action), cardId = Option(h.id)))
                 case IncreaseCharges =>
                   gs.cards.hand
                     .filter(_.charges.nonEmpty)
-                    .map(h => ActionRequestBody(h.name, Some(c.action), cardId = Option(h.id)))
+                    .map(h => ActionRequestBody(h.name, Some(card.action), cardId = Option(h.id)))
                 case _ => gs.cards.hand
-                  .filter(_.id != c.id)
-                  .map(h => ActionRequestBody(h.name, Some(c.action), cardId = Option(h.id)) )
+                  .filter(_.id != card.id)
+                  .map(h => ActionRequestBody(h.name, Some(card.action), cardId = Option(h.id)) )
               }
             case std: StandardCardAction =>
               std match {
                 case AnotherTime => gs.cards.discard
-                  .map(c => ActionRequestBody(c.name, Some(c.action), cardId = Option(c.id)))
+                    .foldLeft(Seq.empty[Card])((cs, c) => if (cs.exists(_.action == c.action)) cs else cs :+ c)
+                  .map(c => ActionRequestBody(c.name, Some(card.action), cardId = Option(c.id)))
                 case FindersKeepers => gs.cards.deck
-                  .map(c => ActionRequestBody(c.name, Some(c.action), cardId = Option(c.id)))
-                case _ => Seq(ActionRequestBody(c.name, Some(c.action)))
+                  .foldLeft(Seq.empty[Card])((cs, c) => if (cs.exists(_.action == c.action)) cs else cs :+ c)
+                  .map(c => ActionRequestBody(c.name, Some(card.action), cardId = Option(c.id)))
+                case _ => Seq(ActionRequestBody(card.name, Some(card.action)))
               }
           })
 
-        CardResponse(c.name, c.description, c.id, mkChargesStr(c), ars.request.nonEmpty, ars)
+        CardResponse(card.name, card.description, card.id, mkChargesStr(card), ars.request.nonEmpty, ars)
       }
-      case _: CampFireAction => CardResponse(c.name, c.description,  c.id, mkChargesStr(c), canPlayCard(c),
-        ActionRequest(c.name, c.description, s"game/${gs.uuid}/camp/${c.id}", Seq.empty))
+      case _: CampFireAction => CardResponse(card.name, card.description,  card.id, mkChargesStr(card), canPlayCard(card),
+        ActionRequest(card.name, card.description, s"game/${gs.uuid}/camp/${card.id}", Seq.empty))
 
-      case _: EquipAction => CardResponse(c.name, c.description,  c.id, mkChargesStr(c), canPlayCard(c),
-        ActionRequest(c.name, c.description, s"game/${gs.uuid}/equip/${c.id}",
-          Seq(ActionRequestBody(c.name, action= Option(c.action), id = Option(c.id)))))
+      case _: EquipAction => CardResponse(card.name, card.description,  card.id, mkChargesStr(card), canPlayCard(card),
+        ActionRequest(card.name, card.description, s"game/${gs.uuid}/equip/${card.id}",
+          Seq(ActionRequestBody(card.name, action= Option(card.action), id = Option(card.id)))))
     }
 
     def toShortCardResponse(c: Card) = ShortCardResponse(c.name, c.id, c.action)
