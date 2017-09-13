@@ -45,21 +45,30 @@ trait GameResponseGenerator {
         ActionRequest(c.name, c.description, s"game/${gs.uuid}/self/${c.id}",
           Seq(ActionRequestBody(c.name, Some(c.action)))))
 
-      case _: CardAction => {
+      case ca: CardAction => {
         val ars = ActionRequest(c.name, c.description, s"game/${gs.uuid}/card/${c.id}",
-          c.action match {
+          ca match {
             case action: DiscardCardAction =>
               action match {
                 case ReduceRequirements => gs.cards.hand
                   .filter(r => r.requirements.str.nonEmpty || r.requirements.dex.nonEmpty || r.requirements.int.nonEmpty)
                   .map(h => ActionRequestBody(h.name, Some(c.action), cardId = Option(h.id)))
                 case IncreaseCharges =>
-                  val as = gs.cards.hand
-                    .filter(_.charges.nonEmpty).map(h => ActionRequestBody(h.name, Some(c.action), cardId = Option(h.id)))
-                  as
-                case _ => gs.cards.hand.map(h => ActionRequestBody(h.name, Some(c.action), cardId = Option(h.id)))
+                  gs.cards.hand
+                    .filter(_.charges.nonEmpty)
+                    .map(h => ActionRequestBody(h.name, Some(c.action), cardId = Option(h.id)))
+                case _ => gs.cards.hand
+                  .filter(_.id != c.id)
+                  .map(h => ActionRequestBody(h.name, Some(c.action), cardId = Option(h.id)) )
               }
-            case _ => Seq(ActionRequestBody(c.name, Some(c.action)))
+            case std: StandardCardAction =>
+              std match {
+                case AnotherTime => gs.cards.discard
+                  .map(c => ActionRequestBody(c.name, Some(c.action), cardId = Option(c.id)))
+                case FindersKeepers => gs.cards.deck
+                  .map(c => ActionRequestBody(c.name, Some(c.action), cardId = Option(c.id)))
+                case _ => Seq(ActionRequestBody(c.name, Some(c.action)))
+              }
           })
 
         CardResponse(c.name, c.description, c.id, mkChargesStr(c), ars.request.nonEmpty, ars)

@@ -102,6 +102,15 @@ trait CardManager {
     optCards.getOrElse(cards)
   }
 
+  def moveCardFromDiscardToHand(cards: Cards, pred: Card => Boolean): Cards = {
+    val optCards = for {
+      ac <- cards.discard.find(pred)
+      nh = cards.copy(hand = cards.hand :+ ac, discard = cards.discard.filterNot(_.id == ac.id))
+    } yield nh
+
+    optCards.getOrElse(cards)
+  }
+
   @tailrec
   final def drawCard(cards: Cards, limit: Int = MAX_HAND_SIZE): Cards = {
     if (cards.hand.size < limit) {

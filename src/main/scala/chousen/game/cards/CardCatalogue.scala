@@ -63,10 +63,10 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
         armoury,                         // 14 cards
         trade, trade,
 
-        rummage, rummage, rummage, rummage,
+        rummage, rummage, findersKeepers, findersKeepers,
+        anotherTime,
         refresh, refresh,
         acquire, acquire,
-        manifestRage,
         recharge,
         increaseCharges,
         essenceBoost,
@@ -102,7 +102,7 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     armoury,
 
     increaseCharges,
-    rummage, rummage, rummage, rummage,
+    rummage, rummage, findersKeepers, findersKeepers,
     trade, trade,
     reduceRequirements, reduceRequirements,
     miracle, miracle, miracle,
@@ -120,11 +120,11 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
     burningHammer, burningHammer, burningHammer,
     extinguish, extinguish,
-    barrier, barrier,
-    fortify, fortify,
+    barrier,
+    fortify,
 
 
-    lignification, lignification, lignification, lignification,
+    lignification, lignification,
     flames, flames, flames, flames,
     makeMiasma, makeMiasma,
     scrollOfFear,
@@ -134,17 +134,17 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     ringmail,
 
 
-    rummage, rummage, rummage, rummage,
-    miracle, miracle, miracle,
+    findersKeepers, findersKeepers, findersKeepers, findersKeepers,
+    anotherTime, anotherTime, anotherTime, anotherTime,
 
+    rummage, rummage,
 
-    buyTreasure,
+    bagOfGold, bagOfGold,
+
     increaseCharges, increaseCharges,
     recharge, recharge,
     restore, restore,
-    acquire,
-
-    armoury,
+    acquire, acquire
   )
 
   def rogueDeck: Seq[Card] = Seq(
@@ -190,38 +190,42 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     essenceOfDexterity, essenceOfDexterity, essenceOfDexterity, essenceOfDexterity,
     essenceOfDexterity, essenceOfDexterity,
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
-    essenceOfIntelligence, essenceOfIntelligence,
-    essenceOfVitality,   // 14 Essences
+    essenceOfIntelligence, essenceOfIntelligence,   // 13 Essences
 
 
     elixirOfVitality, elixirOfVitality,  // 2 Elixirs
 
     haste, haste, haste, haste,           // 8 Potions
-    scrollOfFear, scrollOfFear,
-    poison, poison, poison, poison,
+    poison, poison,
 
     rarePepe, rarePepe,  // 2 Pepes
 
-    pain, pain, pain,
-    assassinate, assassinate, assassinate,
-    quickStep, quickStep, quickStep, quickStep,
-    drain, drain, drain, drain,
+    pain, pain,
+    assassinate, assassinate,
+    quickStep, quickStep,
+    drain, drain,
+    massDrain,
 
     daggerOfDavid, cape,                  // 2 Equipment
 
-    miracle, miracle, acquire, acquire,   // 16 Card Actions
-    rummage, rummage, rummage, rummage,
+
+    findersKeepers, findersKeepers, findersKeepers, findersKeepers,
+    anotherTime, anotherTime, anotherTime, anotherTime,
+
+    bagOfGold, bagOfGold,
+    acquire, acquire,   // 16 Card Actions
+    rummage, rummage, rummage,
     restore, restore, restore, restore,
 
-    increaseCharges, increaseCharges, increaseCharges,
-    recharge, recharge
+    increaseCharges, increaseCharges, increaseCharges, increaseCharges,
+    recharge, recharge, recharge, recharge,
   )
 
   def mage = Seq(
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
     essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence, essenceOfIntelligence,
-    essenceOfVitality, essenceOfVitality, essenceOfVitality, // 15 Essences
+    essenceOfVitality, essenceOfVitality, // 14 Essences
 
     elixirOfIntelligence, elixirOfVitality,  // 2 Elixirs
 
@@ -233,15 +237,17 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     healWounds, rarePepe, rarePepe,  // 4 Pepes
 
 
-    ember, ember, ember, ember,
-    fireball, fireball, fireball,
+    ember, ember, ember,
+    fireball, fireball,
     extinguish, extinguish,
     barrier, fortify,
 
+    findersKeepers, findersKeepers, findersKeepers,
+    anotherTime, anotherTime,
 
     leatherArmour,                  // 2 Equipment
 
-    miracle, miracle, acquire, acquire,   // 16 Card Actions
+    acquire, acquire,   // 16 Card Actions
     rummage, rummage, rummage, rummage,
     increaseCharges, increaseCharges, increaseCharges, increaseCharges,
     recharge, recharge, recharge,
@@ -256,8 +262,8 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
     elixirOfIntelligence, elixirOfVitality,  // 2 Elixirs
 
-    haste, haste, haste, haste,              // 8 Potions
-    stoneSkin, flames, flames,
+    haste, haste,              // 8 Potions
+    stoneSkin,
     intelligence, intelligence,
 
     rarePepe, rarePepe,  // 4 Pepes
@@ -265,9 +271,13 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     magicMissile, magicMissile, magicMissile,    // 12 Abilities
     pain, pain,
     shatter, shatter,
-    massDrain, massDrain, massDrain, massDrain,
+    massDrain, massDrain,
     barrier, barrier,
 
+
+    findersKeepers, findersKeepers, findersKeepers,
+    anotherTime,
+    bagOfGold, bagOfGold,
 
     leatherArmour,                  // 2 Equipment
 
@@ -289,8 +299,8 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     transmute, transmute, // turn any card into gold
 
     buyTreasure, buyTreasure,  // 50g
-    // findersKeepers, findersKeepers,  // 10g Take any card from DECK
-    // restoration, restoration, // 10g Take any card from DISCARD
+    findersKeepers, findersKeepers,  // 10g Take any card from DECK
+    anotherTime, anotherTime, anotherTime, // 10g Take any card from DISCARD
 
     healWounds, healWounds,
     mammonite, mammonite,   // ro skill  -10g, lots of damage
@@ -299,14 +309,14 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     chrysopoeia,
 
     // for aoe, use potstest
-    makeAlkahest, makeAlkahest, makeAlkahest,
+    makeAlkahest, makeAlkahest,
     poison, poison, poison, poison,
-    quagmire, quagmire, quagmire, // slow only potion effect
+    quagmire, quagmire,  // slow only potion effect
     might, might,
     haste, haste,
 
     brewPoison, brewPoison, brewPoison,
-    rummage, rummage, rummage, miracle,
+    rummage,
     acquire, acquire,
 
     // fluff
@@ -316,16 +326,6 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     ringmail, mace,
     elixirOfStrength, elixirOfIntelligence,
   )
-
-
-
-  //  def cheeseDeck: Seq[Card] = // 15
-//    usefulCards ++
-//      (4 of assassinate) ++ (4 of windStrike) ++ (4 of quickStep) ++
-//      (4 of pain) ++ (4 of staticField) ++ (4 of fireball) ++
-//      (4 of elixirOfDexterity) ++ (4 of elixirOfIntelligence) ++
-//      restore.times(4) ++ replace.times(4) ++ miracle.times(4) ++ rummage.times(4)
-
 
   def passiveCards: Seq[Card] = Seq(rest, explore, restAndExplore, drop, destroy)
 }
@@ -453,6 +453,8 @@ trait Utility extends CardBuilder {
 
   def fortify: Card = mkCard("Fortify Armour", "Spend 10 gold to temporarily boost your defenses", FortifyArmour, charges = 4, cost = 10)
   def brewPoison: Card = mkCard("Brew Poison", "Spend 20 gold and gain 2 poison potions", BrewPoison, cost = 20)
+  def findersKeepers: Card = Card(UUID.randomUUID(), "Finders Keepers", "Spend 10 gold and draw any card from your deck", FindersKeepers, cost = 10)
+  def anotherTime: Card = Card(UUID.randomUUID(), "Another Time", "Spend 10 gold and draw any card from your discard pile", AnotherTime, cost = 10)
 
   def buyTreasure: Card = mkCard("Buy Treasure", "Pay 35 gold to acquire a single treasure card", PurchaseTreasure, cost = 35)
 }
