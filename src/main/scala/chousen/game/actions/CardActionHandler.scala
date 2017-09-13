@@ -339,9 +339,10 @@ object CardActionHandler extends ActionHandler {
 
   def recharge(p: Player, h: Cards, msgs: Seq[GameMessage]): (Player, Cards, Seq[GameMessage]) = {
       val newHand = h.hand.map(c => c.copy(charges = c.maxCharges))
+      val newSkills = h.equippedCards.skills.map(c => c.copy(charges = c.maxCharges))
       val msg = GameMessage(s"${p.name} uses Recharge")
 
-      (p, h.copy(hand = newHand), msgs :+ msg)
+      (p, h.copy(hand = newHand, equippedCards = h.equippedCards.copy(skills = newSkills)), msgs :+ msg)
   }
 
   def chargeUp(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
@@ -349,10 +350,11 @@ object CardActionHandler extends ActionHandler {
 
       val cardsAndMessages = for {
         id <- cardId
-        affectedCard <- h.hand.find(_.id == id).filter(_.charges.nonEmpty)
+        affectedCard <- h.hand.filter(_.charges.nonEmpty).find(_.id == id)
+          .fold(h.equippedCards.skills.filter(_.charges.nonEmpty).find(_.id == id))(c => Option(c))
         m = GameMessage(s"${p.name} uses Increase Charges on ${affectedCard.name}")
 
-        rechargedCard = affectedCard.copy(charges = affectedCard.charges.map(_ + 2), maxCharges = affectedCard.maxCharges.map(_ + 2))
+        rechargedCard = affectedCard.copy(charges = affectedCard.charges.map(_ + 1), maxCharges = affectedCard.maxCharges.map(_ + 1))
         cs = h.copy(hand = h.hand.map(c => if (c.id == rechargedCard.id) rechargedCard else c))
       } yield (cs, m)
 

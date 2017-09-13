@@ -56,6 +56,9 @@ trait GameResponseGenerator {
                 case IncreaseCharges =>
                   gs.cards.hand
                     .filter(_.charges.nonEmpty)
+                    .map(h => ActionRequestBody(h.name, Some(card.action), cardId = Option(h.id))) ++
+                  gs.cards.equippedCards.skills
+                    .filter(_.charges.nonEmpty)
                     .map(h => ActionRequestBody(h.name, Some(card.action), cardId = Option(h.id)))
                 case _ => gs.cards.hand
                   .filter(_.id != card.id)
@@ -75,8 +78,8 @@ trait GameResponseGenerator {
 
         CardResponse(card.name, card.description, card.id, mkChargesStr(card), ars.request.nonEmpty, ars)
       }
-      case _: CampFireAction => CardResponse(card.name, card.description,  card.id, mkChargesStr(card), canPlayCard(card),
-        ActionRequest(card.name, card.description, s"game/${gs.uuid}/camp/${card.id}", Seq.empty))
+      case _: CampFireAction =>  CardResponse(card.name, card.description,  card.id, mkChargesStr(card), canPlayCard(card),
+                    ActionRequest(card.name, card.description, s"game/${gs.uuid}/camp/${card.id}", Seq.empty))
 
       case _: EquipAction => CardResponse(card.name, card.description,  card.id, mkChargesStr(card), canPlayCard(card),
         ActionRequest(card.name, card.description, s"game/${gs.uuid}/equip/${card.id}",
@@ -95,7 +98,8 @@ trait GameResponseGenerator {
 
     val weaponResp = gs.cards.equippedCards.weapon.map(toCardResponse)
     val armourResp = gs.cards.equippedCards.armour.map(toCardResponse)
-    val equipResp = EquippedCardsResponse(weaponResp, armourResp)
+    val skillResp = gs.cards.equippedCards.skills.map(toCardResponse)
+    val equipResp = EquippedCardsResponse(weaponResp, armourResp, skills = skillResp)
 
     val cards = CardsResponse(newHand, equipResp, newDeck, newDiscard)
 
@@ -104,10 +108,12 @@ trait GameResponseGenerator {
       gs.cards.passive
         .withFilter(_.action.isInstanceOf[CampFireAction])
         .map(p => p.action.asInstanceOf[CampFireAction] match {
-          case _: DiscardingCampFireAction =>
+          case dcfa: DiscardingCampFireAction =>
+
+            def learnFilter(c: Card): Boolean = c.charges.nonEmpty || p.action != LearnSkill
 
             val reqs = for {
-              c <- gs.cards.hand
+              c <- gs.cards.hand.filter(learnFilter)
               cid = Option(c.id)
               req = ActionRequestBody(c.name, Option(p.action.asInstanceOf[CampFireAction]), cardId = cid)
             } yield req
@@ -138,7 +144,7 @@ case class GameResponse(uuid: UUID, player: Player, cards: CardsResponse, curren
 case class CardsResponse(hand: Seq[CardResponse], equippedCards: EquippedCardsResponse, inDeck: Seq[ShortCardResponse], inDiscard: Seq[ShortCardResponse])
 case class ShortCardResponse(name: String, id: UUID, action: Action)
 
-case class EquippedCardsResponse(weapon: Option[CardResponse]=None, armour: Option[CardResponse]=None, jewelery: Option[CardResponse]=None)
+case class EquippedCardsResponse(weapon: Option[CardResponse]=None, armour: Option[CardResponse]=None, jewelery: Option[CardResponse]=None, skills: Seq[CardResponse])
 
 case class CardResponse(name: String, description: String, id: UUID, charges: Option[String], playable:Boolean, action: ActionRequest)
 

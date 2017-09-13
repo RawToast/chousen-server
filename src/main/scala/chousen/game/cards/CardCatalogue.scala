@@ -327,7 +327,7 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     elixirOfStrength, elixirOfIntelligence,
   )
 
-  def passiveCards: Seq[Card] = Seq(rest, explore, restAndExplore, drop, destroy)
+  def passiveCards: Seq[Card] = Seq(rest, explore, restAndExplore, drop, destroy, learnSkill)
 }
 
 sealed trait CardBuilder {
@@ -446,7 +446,7 @@ trait Utility extends CardBuilder {
 
   // Require target
   def reduceRequirements: Card = mkCard("Reduce Requirements", "Reduces all requirements for the chosen card by 5", ReduceRequirements)
-  def increaseCharges: Card = mkCard("Increase Charges", "Increases the number of charges of an ability card by 2", IncreaseCharges)
+  def increaseCharges: Card = mkCard("Increase Charges", "Increases the number of charges of an ability card by 1", IncreaseCharges)
 
 
   def bagOfGold: Card = mkCard("Bag of Gold", "Gives 30 gold", BagOfGold)
@@ -465,6 +465,7 @@ trait CampFire extends CardBuilder {
   def restAndExplore: Card = mkCard("Rest and Explore", "Recover some health and draw two cards (or one if full)", RestAndExplore)
   def drop: Card = mkCard("Drop", "Discard an item by the Camp Fire", Drop)
   def destroy: Card = mkCard("Destroy", "Destroy an item in the fire", Destroy)
+  def learnSkill: Card = mkCard("Learn Skill", "Permanently learn a skill, limited to 1 skill per 10 int", LearnSkill)
 }
 
 trait Equipment extends CardBuilder {
