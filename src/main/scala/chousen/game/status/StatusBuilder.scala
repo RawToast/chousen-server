@@ -16,5 +16,5 @@ object StatusBuilder {
   def makeBurn(amount: Int, turns:Int=3) = Status(Burn, "Take damage on each turn from Burns", turns, Option(amount))
   def makePoison(amount: Int, turns:Int=4) = Status(Poison, "Take damage on each turn from Burns", turns, Option(amount))
   def makeTree(amount: Int, turns:Int=7) = Status(Tree, "Reduces speed, but increases strength, armour, and regen.", turns, Option(amount))
-  def makeFear(amount: Int=0, turns:Int=6) = Status(Fear, "May run away on low health", turns, Option(amount))
+  def makeFear(amount: Int, turns:Int=6) = Status(Fear, "May run away on low health", turns, Option(amount))
 }

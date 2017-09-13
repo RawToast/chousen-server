@@ -171,7 +171,8 @@ object EnemyTurnOps {
           EnemyHpLens.modify(doDmg)(e)
         }
         case Fear => {
-          if (e.stats.currentHp < 25 || (e.stats.currentHp.toDouble / e.stats.maxHp.toDouble) <= 0.25) {
+          if (e.stats.currentHp < s.amount.getOrElse(1) ||
+            (e.stats.currentHp.toDouble / e.stats.maxHp.toDouble) <= (s.amount.getOrElse(1).toDouble / 100d)) {
             EnemyHpLens.set(-666)(e)
           } else {
             e
