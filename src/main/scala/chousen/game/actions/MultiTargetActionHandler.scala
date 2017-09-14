@@ -208,11 +208,11 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
   def fear(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
 
-    val (ne, m) = if (e.stats.currentHp < 50 || (e.stats.currentHp.toDouble / e.stats.maxHp.toDouble) <= 0.50) {
-      (e.copy(position = e.position - 50), msgs :+ GameMessage(s"${e.name} trembles in fear!"))
+    val (ne, m) = if (e.stats.currentHp < (50 + p.experience.level) || (e.stats.currentHp.toDouble / e.stats.maxHp.toDouble) <= 0.50) {
+      (e.copy(position = e.position - 70), msgs :+ GameMessage(s"${e.name} trembles in fear!"))
     } else (e, msgs :+ GameMessage(s"${e.name} is frightened."))
 
-    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeFear())(ne)
+    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makeFear(10 + p.experience.level))(ne)
 
     (p, Option(newE), m)
   }

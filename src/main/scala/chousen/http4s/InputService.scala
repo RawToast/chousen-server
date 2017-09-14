@@ -120,7 +120,11 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
                                               (f: (Card, CommandRequest, GameState) => GameState)
                                               (implicit decoder: Decoder[T]): Task[Response] = {
 
-    g.cards.hand.find(_.id == cardId) match {
+    val optCard = g.cards.hand
+      .find(_.id == cardId)
+      .fold(g.cards.equippedCards.skills.find(_.id == cardId))((c: Card) => Option(c))
+
+    optCard match {
       case Some(card) => for {
         ar <- req.as(jsonOf[T])
         ng = f(card, ar, g)

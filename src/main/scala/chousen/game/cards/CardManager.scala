@@ -1,7 +1,6 @@
 package chousen.game.cards
 
 import chousen.Optics._
-import chousen.api.data
 import chousen.api.data._
 import monocle.Lens
 import monocle.macros.GenLens
@@ -16,18 +15,20 @@ object CardManager extends CardManager {
 
 trait CardManager {
 
+  type CardEffect = (Cards) => Cards
   lazy val MAX_HAND_SIZE = 7
   lazy val PRE_DISCARD_MAX_HAND_SIZE = 8
   lazy val ABSOLUTE_MAX = 15
   lazy val essenceActions = Seq(EssenceOfStrength, EssenceOfDexterity, EssenceOfVitality, EssenceOfIntelligence)
 
-  def playCard(card: data.Card)(f: data.Card => GameState): (GameState) => GameState = { game: GameState =>
+  def playCard(card: Card)(f: Card => GameState): (GameState) => GameState = { game: GameState =>
     import chousen.Implicits._
     val maybeCard: Option[Card] = card.action match {
       case _: CampFireAction => game.cards.passive
         .find(_ ~= card)
       case _: Action => game.cards.hand
         .find(_ ~= card)
+        .fold(game.cards.equippedCards.skills.find(_ ~= card))((c: Card) => Option(c))
     }
 
     def handleEquipAction(ea: EquipAction, c: Card): (GameState) => GameState = {
@@ -35,11 +36,11 @@ trait CardManager {
         optCard match {
           case Some(k) =>
             EquipmentLens.composeLens(lens).set(Option(c))
-              .andThen(HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= c)))
+              .andThen(HandLens.modify((cs: Seq[Card]) => cs.filterNot(_ ~= c)))
               .andThen(HandLens.modify(_ :+ k))
           case None =>
             EquipmentLens.composeLens(lens).set(Option(c)).andThen(
-              HandLens.modify((cs: Seq[data.Card]) => cs.filterNot(_ ~= c)))
+              HandLens.modify((cs: Seq[Card]) => cs.filterNot(_ ~= c)))
         }
 
       }
@@ -65,7 +66,13 @@ trait CardManager {
             case _ =>
               c.charges match {
                 case Some(i) =>
-                  if (i > 1) HandLens.modify(_.map(x => if (x ~= c) c.copy(charges = c.charges.map(_ - 1)) else x))(postCostState)
+
+                  if (game.cards.equippedCards.skills.exists(_ ~= c))
+                    SkillsLens.modify(
+                      _.map(x =>
+                        if (x ~= c) c.copy(charges = c.charges.map(i => Math.max(0, i - 1)))
+                        else x))(postCostState)
+                  else if (i > 1) HandLens.modify(_.map(x => if (x ~= c) c.copy(charges = c.charges.map(_ - 1)) else x))(postCostState)
                   else postCostState.copy(cards = postCostState.cards.discardCard(c))
                 case None => postCostState.copy(cards = postCostState.cards.discardCard(c))
               }
@@ -76,7 +83,7 @@ trait CardManager {
 
   }
 
-  def startGame(cards: Seq[data.Card], passiveCards: Seq[data.Card] = Seq.empty): Cards = {
+  def startGame(cards: Seq[Card], passiveCards: Seq[Card] = Seq.empty): Cards = {
 
     val (t, b) = cards.splitAt(cards.size / 2)
     val (tt, tb) = t.splitAt(t.size / 2)
@@ -130,12 +137,12 @@ trait CardManager {
   }
 
   def moveLastDiscardToTopDeck(cards: Cards): Cards = {
-    cards.discard.headOption.fold(cards) { (c: data.Card) =>
+    cards.discard.headOption.fold(cards) { (c: Card) =>
       cards.copy(deck = Seq(c) ++ cards.deck, discard = cards.discard.tail)
     }
   }
 
-  def moveCardToBottomOfDeck(card: data.Card): Cards => Cards = {
+  def moveCardToBottomOfDeck(card: Card): CardEffect = {
     (cards: Cards) =>
       import chousen.Implicits._
       cards.hand
@@ -146,16 +153,15 @@ trait CardManager {
   }
 
 
-  def discard(card: data.Card): (Cards) => Cards = { cards: Cards =>
+  def discard(card: Card): CardEffect = { cards: Cards =>
     import chousen.Implicits._
     cards.hand.find(_ ~= card).fold(cards) { c =>
       val newHand = cards.hand.filterNot(_ ~= c)
       if (c.treasure || c.name.contains("Essence of")) cards.copy(hand = newHand)
-      else cards.copy(hand = newHand, discard = cards.discard :+ c)
+      else cards.copy(hand = newHand, discard = c +: cards.discard)
 
     }
   }
-
 
   def drawTreasure(cards: Cards): Cards = {
     if (cards.treasure.isEmpty) drawCard(cards, limit = ABSOLUTE_MAX)

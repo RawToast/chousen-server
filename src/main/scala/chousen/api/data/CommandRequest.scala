@@ -18,8 +18,8 @@ final case class CardActionRequest(action: CardAction, cardId: Option[UUID]) ext
 
 final case class CampfireActionRequest(action: CampFireAction, cardId: Option[UUID]) extends CommandRequest
 
-final case class EquipmentActionRequest(id: UUID, action: EquipAction) extends CommandRequest
 
+final case class EquipmentActionRequest(id: UUID, action: EquipAction) extends CommandRequest
 
 sealed trait Action
 
@@ -133,6 +133,8 @@ case object Explore extends CampFireAction
 case object RestAndExplore extends CampFireAction
 case object Drop extends DiscardingCampFireAction
 case object Destroy extends DiscardingCampFireAction
+case object LearnSkill extends DiscardingCampFireAction
+
 
 
 case object Club extends EquipWeapon

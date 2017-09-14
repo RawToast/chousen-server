@@ -88,7 +88,7 @@ class SelfActionHandler(sc: StatusCalculator) extends ActionHandler {
 
     val blockStatus = StatusBuilder.makeFort(
       turns = 1 + (seInt / 3),
-      amount = 20 + (p.experience.level * 10) + (seInt * 2))
+      amount = 30 + (p.experience.level * 5) + (seInt * 2))
 
     val pWithPos = calculatePosition(p)
 

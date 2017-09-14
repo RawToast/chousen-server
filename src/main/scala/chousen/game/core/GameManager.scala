@@ -77,7 +77,8 @@ class GameStateManager(damageCalculator: DamageCalculator, postStatusCalc: PostT
         val isCorrectAction = c.action == action
         val inDeck = id.fold(true)(uuid => game.cards.hand.exists(_.id == uuid) ||
           game.cards.deck.exists(_.id == uuid) ||
-          game.cards.discard.exists(_.id == uuid))
+          game.cards.discard.exists(_.id == uuid) ||
+          game.cards.equippedCards.skills.exists(_.id == uuid))
         isCorrectAction && inDeck
       case CampfireActionRequest(action, id) =>
         val isCorrectAction = c.action == action
