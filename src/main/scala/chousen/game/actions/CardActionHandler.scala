@@ -5,10 +5,10 @@ import java.util.UUID
 import chousen.Optics.{CardsLens, MessagesLens, PlayerLens}
 import chousen.api.data._
 import chousen.game.cards.{CardCatalogue, CardManager, Potions}
+import chousen.util.CardsSyntax._
 import chousen.util.LensUtil
 
 import scala.util.Random
-import chousen.util.CardsSyntax._
 
 object CardActionHandler extends ActionHandler {
   def handle(action: CardAction, cardId: Option[UUID]): (GameState) => GameState = {
@@ -306,18 +306,19 @@ object CardActionHandler extends ActionHandler {
   def findersKeepers(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
     case (p: Player, cards: Cards, msgs: Seq[GameMessage]) =>
 
-      def makeMessage(newCards: Cards, oldCards: Cards) = {
-        val foundCards = newCards.hand.filter(c => !oldCards.hand.contains(c))
-        GameMessage(s"${p.name} finds ${foundCards.map(_.name).mkString(", ")}")
+      def makeMessage(newCards: Cards, oldCards: Cards): Seq[GameMessage] = {
+        newCards.hand.filter(c => !oldCards.hand.contains(c))
+          .map(c => GameMessage(s"${p.name} finds ${c.name}"))
+
       }
 
-      val newCards: Option[(Cards, GameMessage)] = for {
+      val newCards: Option[(Cards, Seq[GameMessage])] = for {
         id <- cardId
         newCards = cards.moveToHand(id)
         m = makeMessage(newCards, cards)
       } yield (newCards, m)
 
-      newCards.fold((p, cards, msgs))(ncm => (p, ncm._1, msgs :+ ncm._2))
+      newCards.fold((p, cards, msgs))(ncm => (p, ncm._1, msgs ++ ncm._2))
   }
 
   def anotherTime(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
@@ -355,7 +356,9 @@ object CardActionHandler extends ActionHandler {
         m = GameMessage(s"${p.name} uses Increase Charges on ${affectedCard.name}")
 
         rechargedCard = affectedCard.copy(charges = affectedCard.charges.map(_ + 1), maxCharges = affectedCard.maxCharges.map(_ + 1))
-        cs = h.copy(hand = h.hand.map(c => if (c.id == rechargedCard.id) rechargedCard else c))
+        cs = h.copy(hand = h.hand.map(c => if (c.id == rechargedCard.id) rechargedCard else c),
+          equippedCards = h.equippedCards
+            .copy(skills = h.equippedCards.skills.map(c => if (c.id == rechargedCard.id) rechargedCard else c)))
       } yield (cs, m)
 
 
