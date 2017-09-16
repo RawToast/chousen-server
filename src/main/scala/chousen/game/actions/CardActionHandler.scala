@@ -312,13 +312,15 @@ object CardActionHandler extends ActionHandler {
 
       }
 
-      val newCards: Option[(Cards, Seq[GameMessage])] = for {
+      lazy val newCards: Option[(Cards, Seq[GameMessage])] = for {
         id <- cardId
         newCards = cards.moveToHand(id)
         m = makeMessage(newCards, cards)
       } yield (newCards, m)
 
-      newCards.fold((p, cards, msgs))(ncm => (p, ncm._1, msgs ++ ncm._2))
+      if (!cards.deck.find(_.id == cardId.get).forall(_.action.isInstanceOf[CardAction]))
+        newCards.fold((p, cards, msgs))(ncm => (p, ncm._1, msgs ++ ncm._2))
+      else (p, cards, msgs)
   }
 
   def anotherTime(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
@@ -355,7 +357,8 @@ object CardActionHandler extends ActionHandler {
           .fold(h.equippedCards.skills.filter(_.charges.nonEmpty).find(_.id == id))(c => Option(c))
         m = GameMessage(s"${p.name} uses Increase Charges on ${affectedCard.name}")
 
-        rechargedCard = affectedCard.copy(charges = affectedCard.charges.map(_ + 1), maxCharges = affectedCard.maxCharges.map(_ + 1))
+        rechargedCard = affectedCard
+          .copy(charges = affectedCard.charges.map(_ + 1), maxCharges = affectedCard.maxCharges.map(_ + 1))
         cs = h.copy(hand = h.hand.map(c => if (c.id == rechargedCard.id) rechargedCard else c),
           equippedCards = h.equippedCards
             .copy(skills = h.equippedCards.skills.map(c => if (c.id == rechargedCard.id) rechargedCard else c)))
