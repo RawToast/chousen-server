@@ -70,7 +70,9 @@ trait GameResponseGenerator {
                     .foldLeft(Seq.empty[Card])((cs, c) => if (cs.exists(_.action == c.action)) cs else cs :+ c)
                   .map(c => ActionRequestBody(c.name, Some(card.action), cardId = Option(c.id)))
                 case FindersKeepers => gs.cards.deck
-                  .foldLeft(Seq.empty[Card])((cs, c) => if (cs.exists(_.action == c.action)) cs else cs :+ c)
+                  .foldLeft(Seq.empty[Card])((cs, c) =>
+                    if (cs.exists(_.action == c.action) && !c.action.isInstanceOf[CardAction]) cs
+                    else cs :+ c)
                   .map(c => ActionRequestBody(c.name, Some(card.action), cardId = Option(c.id)))
                 case _ => Seq(ActionRequestBody(card.name, Some(card.action)))
               }
@@ -120,7 +122,8 @@ trait GameResponseGenerator {
 
             ActionRequest(p.name, p.description, s"game/${gs.uuid}/camp/${p.id}", reqs)
           case _: CampFireAction =>
-            ActionRequest(p.name, p.description, s"game/${gs.uuid}/camp/${p.id}", Seq(ActionRequestBody(p.name, Option(p.action.asInstanceOf[CampFireAction]))))
+            ActionRequest(p.name, p.description, s"game/${gs.uuid}/camp/${p.id}",
+              Seq(ActionRequestBody(p.name, Option(p.action.asInstanceOf[CampFireAction]))))
         }) :+ blockReq
     } else {
       gs.dungeon.currentEncounter.enemies

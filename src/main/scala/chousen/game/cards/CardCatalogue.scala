@@ -453,8 +453,8 @@ trait Utility extends CardBuilder {
 
   def fortify: Card = mkCard("Fortify Armour", "Spend 10 gold to temporarily boost your defenses", FortifyArmour, charges = 4, cost = 10)
   def brewPoison: Card = mkCard("Brew Poison", "Spend 20 gold and gain 2 poison potions", BrewPoison, cost = 20)
-  def findersKeepers: Card = Card(UUID.randomUUID(), "Finders Keepers", "Spend 10 gold and draw any card from your deck", FindersKeepers, cost = 10)
-  def anotherTime: Card = Card(UUID.randomUUID(), "Another Time", "Spend 10 gold and draw any card from your discard pile", AnotherTime, cost = 10)
+  def findersKeepers: Card = Card(UUID.randomUUID(), "Finders Keepers", "Spend 10 gold and draw any non CardAction card from your deck", FindersKeepers, cost = 10)
+  def anotherTime: Card = Card(UUID.randomUUID(), "Another Time", "Spend 20 gold and draw any card from your discard pile", AnotherTime, cost = 20)
 
   def buyTreasure: Card = mkCard("Buy Treasure", "Pay 35 gold to acquire a single treasure card", PurchaseTreasure, cost = 35)
 }
