@@ -71,7 +71,7 @@ trait GameResponseGenerator {
                   .map(c => ActionRequestBody(c.name, Some(card.action), cardId = Option(c.id)))
                 case FindersKeepers => gs.cards.deck
                   .foldLeft(Seq.empty[Card])((cs, c) =>
-                    if (cs.exists(_.action == c.action) && !c.action.isInstanceOf[CardAction] && !c.action.isInstanceOf[EquipAction]) cs
+                    if (cs.exists(_.action == c.action) && !(c.action.isInstanceOf[CardAction] || c.action.isInstanceOf[EquipAction])) cs
                     else cs :+ c)
                   .map(c => ActionRequestBody(c.name, Some(card.action), cardId = Option(c.id)))
                 case _ => Seq(ActionRequestBody(card.name, Some(card.action)))
