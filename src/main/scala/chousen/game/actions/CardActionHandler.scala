@@ -318,7 +318,8 @@ object CardActionHandler extends ActionHandler {
         m = makeMessage(newCards, cards)
       } yield (newCards, m)
 
-      if (!cards.deck.find(_.id == cardId.get).forall(_.action.isInstanceOf[CardAction]))
+      if (!cards.deck.find(_.id == cardId.get)
+        .forall(a => a.action.isInstanceOf[CardAction] || a.action.isInstanceOf[EquipAction]))
         newCards.fold((p, cards, msgs))(ncm => (p, ncm._1, msgs ++ ncm._2))
       else (p, cards, msgs)
   }
