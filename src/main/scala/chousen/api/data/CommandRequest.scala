@@ -151,6 +151,7 @@ case object QuickBlade extends EquipWeapon
 case object RenartsDeceiver extends EquipWeapon
 case object Manamune extends EquipWeapon
 case object TroggsAnnihilator extends EquipWeapon
+case object GreatSword extends EquipWeapon
 case object WandOfDefiance extends EquipWeapon
 
 
