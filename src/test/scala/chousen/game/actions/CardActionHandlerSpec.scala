@@ -228,6 +228,32 @@ class CardActionHandlerSpec extends WordSpec {
       }
     }
 
+    "Given Pick a Card" should {
+      val game: GameState = stateCreator.start(gameState)
+      val cardToFind = CardCatalogue.rummage
+
+      val startedGame: GameState = DeckLens.modify(_ :+ cardToFind)(game)
+
+      val result = CardActionHandler.handle(PickACard, Some(cardToFind.id))(startedGame)
+
+      "States the action was used" in {
+        assert(result.messages.size > startedGame.messages.size)
+      }
+
+      "Place new cards into the Player's hand" in {
+        assert(result.cards.hand.size > startedGame.cards.hand.size)
+      }
+
+      "Place the chosen cards into the Player's hand" in {
+        assert(result.cards.hand.exists(_.id == cardToFind.id))
+      }
+
+      "Removes the chosen card from the deck pile" in {
+        assert(!result.cards.deck.exists(_.id == cardToFind.id))
+      }
+    }
+
+
     "Given Manifest Rage" should {
       val game: GameState = stateCreator.start(gameState)
       val cardToDiscard = CardCatalogue.drain

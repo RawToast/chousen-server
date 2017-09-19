@@ -215,8 +215,9 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     daggerOfDavid, cape,                  // 2 Equipment
 
 
-    findersKeepers, findersKeepers, findersKeepers, findersKeepers,
-    anotherTime, anotherTime, anotherTime, anotherTime,
+    findersKeepers, findersKeepers, findersKeepers,
+    anotherTime, anotherTime, anotherTime,
+    pickACard, pickACard,
 
     bagOfGold, bagOfGold,
     acquire, acquire,   // 16 Card Actions
@@ -248,7 +249,8 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     extinguish, extinguish,
     barrier, fortify,
 
-    findersKeepers, findersKeepers, findersKeepers,
+    findersKeepers, findersKeepers,
+    pickACard,
     anotherTime, anotherTime,
 
     leatherArmour,                  // 2 Equipment
@@ -281,7 +283,8 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     barrier, barrier,
 
 
-    findersKeepers, findersKeepers, findersKeepers,
+    findersKeepers, findersKeepers,
+    pickACard,
     anotherTime,
     bagOfGold, bagOfGold,
 
@@ -306,7 +309,8 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
     buyTreasure, buyTreasure,  // 50g
     findersKeepers, findersKeepers,  // 10g Take any card from DECK
-    anotherTime, anotherTime, anotherTime, // 10g Take any card from DISCARD
+    anotherTime, anotherTime, // 10g Take any card from DISCARD
+    pickACard,
 
     healWounds, healWounds,
     mammonite, mammonite,   // ro skill  -10g, lots of damage
@@ -463,6 +467,7 @@ trait Utility extends CardBuilder {
 
   def brewPoison: Card = mkCard("Brew Poison", "Spend 20 gold and gain 2 poison potions", BrewPoison, cost = 20)
   def findersKeepers: Card = Card(UUID.randomUUID(), "Finders Keepers", "Spend 10 gold and draw any non CardAction card from your deck", FindersKeepers, cost = 10)
+  def pickACard: Card = Card(UUID.randomUUID(), "Pick a Card", "Spend 5 gold and draw any CardAction from your deck", PickACard, cost = 10)
   def anotherTime: Card = Card(UUID.randomUUID(), "Another Time", "Spend 20 gold and draw any card from your discard pile", AnotherTime, cost = 20)
 
   def buyTreasure: Card = mkCard("Buy Treasure", "Pay 35 gold to acquire a single treasure card", PurchaseTreasure, cost = 35)

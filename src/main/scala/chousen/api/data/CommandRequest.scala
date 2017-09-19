@@ -112,6 +112,7 @@ case object BagOfGold extends StandardCardAction
 case object PotOfGold extends StandardCardAction
 case object PurchaseTreasure extends StandardCardAction
 case object FindersKeepers extends StandardCardAction
+case object PickACard extends StandardCardAction
 case object AnotherTime extends StandardCardAction
 
 case object MakeMiasma extends StandardCardAction

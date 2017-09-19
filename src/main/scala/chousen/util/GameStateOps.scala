@@ -75,6 +75,13 @@ trait GameResponseGenerator {
                     else if (!(c.action.isInstanceOf[CardAction] || c.action.isInstanceOf[EquipAction]))  cs :+ c
                     else cs).sortBy(_.name)
                   .map(c => ActionRequestBody(c.name, Some(card.action), cardId = Option(c.id)))
+
+                case PickACard => gs.cards.deck
+                  .foldLeft(Seq.empty[Card])((cs, c) =>
+                    if (cs.exists(_.action == c.action)) cs
+                    else if (c.action.isInstanceOf[CardAction])  cs :+ c
+                    else cs).sortBy(_.name)
+                  .map(c => ActionRequestBody(c.name, Some(card.action), cardId = Option(c.id)))
                 case _ => Seq(ActionRequestBody(card.name, Some(card.action)))
               }
           })
