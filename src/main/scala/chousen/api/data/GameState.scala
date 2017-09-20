@@ -72,3 +72,4 @@ case object Maim extends WeaponEffect
 case object Deceive extends WeaponEffect
 case object Toxic extends WeaponEffect
 case object Protection extends WeaponEffect
+case object Heavy extends WeaponEffect

@@ -253,6 +253,12 @@ class EquipmentActionHandlerSpec extends WordSpec {
       equipWeaponAssertions(result, startedGame)
     }
 
+    "Given Great Sword" should {
+      val result = equipActionHandler.handle(GreatSword, uuid)(startedGame)
+
+      equipWeaponAssertions(result, startedGame)
+    }
+
     "Given Defiant Wand" should {
       val result = equipActionHandler.handle(WandOfDefiance, uuid)(startedGame)
 

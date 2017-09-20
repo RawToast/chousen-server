@@ -36,6 +36,7 @@ object CardActionHandler extends ActionHandler {
       case Transmute => transmute(cardId)
       case ReduceRequirements => reduceRequirements(cardId)
       case FindersKeepers => findersKeepers(cardId)
+      case PickACard => pickACard(cardId)
       case AnotherTime => anotherTime(cardId)
       case Refresh => refresh
       case Armoury => armoury
@@ -320,6 +321,26 @@ object CardActionHandler extends ActionHandler {
 
       if (!cards.deck.find(_.id == cardId.get)
         .forall(a => a.action.isInstanceOf[CardAction] || a.action.isInstanceOf[EquipAction]))
+        newCards.fold((p, cards, msgs))(ncm => (p, ncm._1, msgs ++ ncm._2))
+      else (p, cards, msgs)
+  }
+
+  def pickACard(cardId: Option[UUID]): (Player, Cards, Seq[GameMessage]) => (Player, Cards, Seq[GameMessage]) = {
+    case (p: Player, cards: Cards, msgs: Seq[GameMessage]) =>
+
+      def makeMessage(newCards: Cards, oldCards: Cards): Seq[GameMessage] = {
+        newCards.hand.filter(c => !oldCards.hand.contains(c))
+          .map(c => GameMessage(s"${p.name} finds ${c.name}"))
+
+      }
+
+      lazy val newCards: Option[(Cards, Seq[GameMessage])] = for {
+        id <- cardId
+        newCards = cards.moveToHand(id)
+        m = makeMessage(newCards, cards)
+      } yield (newCards, m)
+
+      if (cards.deck.find(_.id == cardId.get).forall(a => a.action.isInstanceOf[CardAction]))
         newCards.fold((p, cards, msgs))(ncm => (p, ncm._1, msgs ++ ncm._2))
       else (p, cards, msgs)
   }

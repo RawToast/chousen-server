@@ -175,7 +175,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
   def poison(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
 
-    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makePoison(8, turns = 7))(e)
+    val newE = EnemyOptics.EnemyStatusLens.modify(_ :+ StatusBuilder.makePoison(4 + p.experience.level, turns = 7))(e)
 
     (p, Option(newE), msgs)
   }
@@ -190,7 +190,7 @@ class MultiTargetActionHandler(dc: DamageCalculator) extends ActionHandler {
 
   def alkahest(p: Player, e: Enemy, msgs: Seq[GameMessage]) = {
     val newE = EnemyOptics.EnemyStatusLens
-      .modify(_ :+ StatusBuilder.makePoison(10 + p.experience.level + (e.stats.maxHp / 12), turns = 7))(e)
+      .modify(_ :+ StatusBuilder.makePoison(5 + p.experience.level + (e.stats.maxHp / 12), turns = 7))(e)
 
     (p, Option(newE), msgs)
   }

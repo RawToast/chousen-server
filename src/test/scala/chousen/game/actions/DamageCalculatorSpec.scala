@@ -76,6 +76,13 @@ class DamageCalculatorSpec extends WordSpec {
           assert(magicDmg > dmg)
         }
 
+        "Deal more damage if the Player has a weapon with the Heavy effect" in {
+          val magicDmgWeaponPlayer = giveWeaponWithStatus(player, Heavy)
+          val magicDmg = damageCalculator.calculatePlayerDamage(magicDmgWeaponPlayer, enemy)
+
+          assert(magicDmg > dmg)
+        }
+
         "Deal the same damage if the Player has a weapon with the Toxic effect" in {
           val magicDmgWeaponPlayer = giveWeaponWithStatus(player, Toxic)
           val magicDmg = damageCalculator.calculatePlayerDamage(magicDmgWeaponPlayer, enemy)

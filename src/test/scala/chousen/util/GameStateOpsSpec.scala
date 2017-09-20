@@ -1,7 +1,7 @@
 package chousen.util
 
 import chousen.Optics
-import chousen.api.data.GameStateGenerator
+import chousen.api.data.{Card, GameStateGenerator}
 import chousen.game.cards.CardCatalogue
 import org.scalatest.WordSpec
 
@@ -36,6 +36,21 @@ class GameStateOpsSpec extends WordSpec {
 
       "Return the current encounter" in {
         assert(result.currentEncounter == gameState.dungeon.currentEncounter)
+      }
+
+      "Handle complex cards" in {
+
+        val cards: Seq[Card] = Seq(CardCatalogue.pickACard, CardCatalogue.findersKeepers,
+          CardCatalogue.anotherTime, CardCatalogue.essenceBoost, CardCatalogue.reduceRequirements,
+          CardCatalogue.greatSword, CardCatalogue.fireball)
+
+        val initialState = chousen.Optics.HandLens.set(cards)(gameState)
+
+        val result = gameStateOps.toGameResponse(initialState, Seq.empty)
+
+
+        assert(result.cards.hand.size == cards.size)
+
       }
     }
 

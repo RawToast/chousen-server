@@ -45,6 +45,7 @@ class EquipmentActionHandler {
       case Manamune => manamune
       case TroggsAnnihilator => troggsAnni
       case WandOfDefiance => wandOfDef
+      case GreatSword => greatSword
     }
   }
 
@@ -135,6 +136,9 @@ class EquipmentActionHandler {
 
   def troggsAnni(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
     weapon("Trogg's Annihilator", 11, Seq(Deadly, Maim))(p, msgs, uuid)
+
+  def greatSword(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
+    weapon("Great Sword", 9, Seq(Heavy, Heavy))(p, msgs, uuid)
 
   def manamune(p: Player, msgs: Seq[GameMessage], uuid: UUID): (Player, Seq[GameMessage]) =
     weapon("Manamune", 3, Seq(Magic, Magic))(p, msgs, uuid)

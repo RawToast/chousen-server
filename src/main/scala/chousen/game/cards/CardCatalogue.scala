@@ -28,7 +28,10 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
       club, shortSword, cape, ringmail,
 
       // 40, need 20 after this point
-      increaseCharges, reduceRequirements,
+      increaseCharges, reduceRequirements, findersKeepers, anotherTime,
+
+      // More items
+      greatSword,
 
     ).map(c => c.copy(treasure = true))
   
@@ -168,11 +171,14 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
 
     quickStep, quickStep,
-    quickAttack, quickAttack,
-    toxicShiv, toxicShiv,
+    quickAttack,
+    toxicShiv,
 
-    assassinate, assassinate,
+    assassinate,
     windStrike, windStrike, // 8 Abilities
+
+    findersKeepers, findersKeepers,
+    anotherTime,
 
     shortSword, quickBlade, ringmail,  // 2 equip
 
@@ -209,8 +215,9 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     daggerOfDavid, cape,                  // 2 Equipment
 
 
-    findersKeepers, findersKeepers, findersKeepers, findersKeepers,
-    anotherTime, anotherTime, anotherTime, anotherTime,
+    findersKeepers, findersKeepers, findersKeepers,
+    anotherTime, anotherTime, anotherTime,
+    pickACard, pickACard,
 
     bagOfGold, bagOfGold,
     acquire, acquire,   // 16 Card Actions
@@ -242,7 +249,8 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     extinguish, extinguish,
     barrier, fortify,
 
-    findersKeepers, findersKeepers, findersKeepers,
+    findersKeepers, findersKeepers,
+    pickACard,
     anotherTime, anotherTime,
 
     leatherArmour,                  // 2 Equipment
@@ -275,7 +283,8 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
     barrier, barrier,
 
 
-    findersKeepers, findersKeepers, findersKeepers,
+    findersKeepers, findersKeepers,
+    pickACard,
     anotherTime,
     bagOfGold, bagOfGold,
 
@@ -300,7 +309,8 @@ object CardCatalogue extends Potions with PermanentEffects with Utility with Cam
 
     buyTreasure, buyTreasure,  // 50g
     findersKeepers, findersKeepers,  // 10g Take any card from DECK
-    anotherTime, anotherTime, anotherTime, // 10g Take any card from DISCARD
+    anotherTime, anotherTime, // 10g Take any card from DISCARD
+    pickACard,
 
     healWounds, healWounds,
     mammonite, mammonite,   // ro skill  -10g, lots of damage
@@ -386,11 +396,14 @@ trait Magic extends CardBuilder{
   def barrier: Card = mkCard("Barrier", "Creates a magic barrier to protect the user", Barrier, 3)
   def drain: Card = mkCard("Drain", "Drains the health of an enemy, healing the player", Drain, 1)
   def massDrain: Card = mkCard("Mass Drain", "Drains health from multiple enemies and heals the player", MassDrain, 3)
+  def fortify: Card = mkCard("Fortify Armour", "Spend 10 gold to temporarily boost your defenses", FortifyArmour, charges = 2, cost = 10)
 
   def chrysopoeia: Card = mkCard("Chrysopoeia", "Attempt to transmute all enemies into gold. Increased success the less health the enemy has.", Chrysopoeia, 4)
 
   def makeMiasma: Card = mkCard("Make Miasma", "Turns any potions of Poison or Flames into Potions of Miasma", MakeMiasma, 0, Requirements(int = Some(10)))
   def makeAlkahest: Card = mkCard("Make Alkahest", "Turns any potions of Poison into Potions of Alkahest", MakeAlkahest, 0, Requirements(int = Some(12)), cost = 50)
+
+
 }
 
 trait Strength extends CardBuilder{
@@ -404,7 +417,7 @@ trait Strength extends CardBuilder{
   def destruction: Card = mkCard("Destruction", "Destructive attack that lowers an enemies vitality", Destruction, 4)
 
   def mammonite: Card = mkCard("Mammonite", "Attack that costs 5 gold in order to deal high damage", Mammonite, 4, cost = 5)
-  def bankruptcy: Card = mkCard("Bankruptcy", "Fast attack that stuns and uses half the players gold to deal huge damage", Bankruptcy, 1, cost = 2)
+  def bankruptcy: Card = mkCard("Bankruptcy", "Fast attack that stuns and uses half the players gold to deal huge damage", Bankruptcy, 1, cost = 1)
 }
 
 trait Dexterity extends CardBuilder{
@@ -451,9 +464,10 @@ trait Utility extends CardBuilder {
 
   def bagOfGold: Card = mkCard("Bag of Gold", "Gives 30 gold", BagOfGold)
 
-  def fortify: Card = mkCard("Fortify Armour", "Spend 10 gold to temporarily boost your defenses", FortifyArmour, charges = 4, cost = 10)
+
   def brewPoison: Card = mkCard("Brew Poison", "Spend 20 gold and gain 2 poison potions", BrewPoison, cost = 20)
   def findersKeepers: Card = Card(UUID.randomUUID(), "Finders Keepers", "Spend 10 gold and draw any non CardAction card from your deck", FindersKeepers, cost = 10)
+  def pickACard: Card = Card(UUID.randomUUID(), "Pick a Card", "Spend 5 gold and draw any CardAction from your deck", PickACard, cost = 10)
   def anotherTime: Card = Card(UUID.randomUUID(), "Another Time", "Spend 20 gold and draw any card from your discard pile", AnotherTime, cost = 20)
 
   def buyTreasure: Card = mkCard("Buy Treasure", "Pay 35 gold to acquire a single treasure card", PurchaseTreasure, cost = 35)
@@ -531,6 +545,10 @@ trait TreasureCards extends CardBuilder {
   def troggsAnnilator: Card = mkEquip("Trogg's Annihilator",
     "Moderate increase to damage. Deals bonus damage based on both missing and max HP",
     TroggsAnnihilator, Requirements(str = Some(20)))
+
+  def greatSword: Card = mkEquip("Great Sword",
+    "Moderate increase to damage. Strength heavily affects attack damage",
+    GreatSword, Requirements(str = Some(17), dex = Some(17)))
 
   def wandOfDefiance: Card = mkEquip("Wand of Defiance", "Minimal increase to damage, reduces damage taken",
     WandOfDefiance, Requirements(int = Some(15)))
