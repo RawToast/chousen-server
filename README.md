@@ -15,10 +15,10 @@ To start a local server on port 8080: sbt run
 
 ## Dev interface
 
-The basic developer web interface was been removed from this project, which is only a backend server. The [chousen-frontend](https://github.com/RawToast/chousen-frontend) 
-project serves as an example frontend.
+The Twirl based basic developer web interface was removed from this project, which now only contains the backend server. 
+The [chousen-frontend](https://github.com/RawToast/chousen-frontend) project serves as an example frontend.
 
-Latest development frontend on [Heroku](https://intense-crystal-36712.herokuapp.com)
+Latest development frontend on [Heroku](https://bit.ly/chousen)
 
 
 ## Libraries
