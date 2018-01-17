@@ -35,13 +35,10 @@ class GoogleAuthentication(verifier: GoogleIdTokenVerifier) {
 
 
   def authenticate(idToken: String): Option[AuthResponse] = {
-
-   // val optToken: Option[GoogleIdToken] = Option(verifier.verify(idToken)) // can return null
-
     for {
       token: GoogleIdToken <- Option(verifier.verify(idToken))
       payload: GoogleIdToken.Payload <- Option(token.getPayload)
-      gg = payload.getEmailVerified
+      _ = payload.getEmailVerified
       userId = payload.getSubject
     } yield AuthResponse.create(userId, null)
   }

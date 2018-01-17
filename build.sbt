@@ -12,8 +12,7 @@ parallelExecution in Test:= false
 enablePlugins(JavaAppPackaging)
 
 
-val SCALA_VERSION = "2.12.3"
-val FINCH_VERSION = "0.14.0"
+val SCALA_VERSION = "2.12.4"
 val HTTP4S_VERSION = "0.17.0"
 val CIRCE_VERSION = "0.8.0"
 
@@ -31,21 +30,12 @@ libraryDependencies += "com.google.api-client" % "google-api-client" % "1.22.0"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.3" % Test
 libraryDependencies += "org.mockito" % "mockito-core" % "2.9.0" % Test
 
-// libraryDependencies ++= finch
 libraryDependencies ++= http4s
 libraryDependencies ++= circe
 libraryDependencies ++= monocle
 
 // mango
 libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.1.0"
-
-
-
-def finch = Seq(
-    "com.github.finagle" %% "finch-core" % FINCH_VERSION,
-    "com.github.finagle" %% "finch-circe" % FINCH_VERSION,
-    "com.github.finagle" %% "finch-test" % FINCH_VERSION,
-    "com.twitter" %% "twitter-server" % "1.28.0")
 
 
 def http4s = Seq(
@@ -91,7 +81,6 @@ val compilerOptions = Seq(
   "-Ywarn-value-discard"
 )
 val additionalOptions = Seq(
-  //"-Ywarn-unused",
   "-Ywarn-dead-code",
   "-Ywarn-value-discard"
 )

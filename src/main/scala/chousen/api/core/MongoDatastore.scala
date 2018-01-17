@@ -14,7 +14,7 @@
 //
 //import scala.concurrent.ExecutionContext
 //
-//class MongoDatastore(connectionString: String, databaseName: String="heroku_rm14s281", collectionName: String="chousen") {
+//class MongoDatastore(connectionString: String, databaseName: String, collectionName: String) {
 //
 //  implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 //

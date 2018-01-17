@@ -11,7 +11,6 @@ import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
 import chousen.game.status.{PostTurnStatusCalculator, StatusCalculator}
 import fs2.Task
 import io.circe.generic.auto._
-import io.circe.generic.extras.semiauto.deriveEnumerationEncoder
 import org.http4s.{MaybeResponse, Request, Response, Method, Uri, Entity, EntityEncoder}
 import org.http4s.circe._
 import org.scalatest.WordSpec
@@ -87,7 +86,7 @@ class InputServiceSpec extends WordSpec {
     }
 
     "Handling an Equipment request" when {
-      implicit val enumDecoder = deriveEnumerationEncoder[EquipAction]
+//      implicit val enumDecoder = deriveEnumerationEncoder[EquipAction]
       implicit val enc: EntityEncoder[EquipmentActionRequest] = jsonEncoderOf[EquipmentActionRequest]
 
       "When given an valid equipment request" should {
@@ -134,11 +133,7 @@ class InputServiceSpec extends WordSpec {
           assert(result.status.code == 404)
         }
       }
-
-
-
     }
-
 
   }
 }

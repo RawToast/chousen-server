@@ -3,7 +3,11 @@
 [![CircleCI](https://circleci.com/gh/RawToast/chousen-server.svg?style=svg&circle-token=f705bd2bb3a6ac38bc7cb58e0d9964f7545c76a2)](https://circleci.com/gh/RawToast/chousen-server) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ad8c474ac887461fb3d1785cc76888bd)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RawToast/chousen-server&amp;utm_campaign=Badge_Grade)
 [![codecov](https://codecov.io/gh/RawToast/chousen-server/branch/master/graph/badge.svg?token=7wvPNCJNvX)](https://codecov.io/gh/RawToast/chousen-server)
 
-Simple rougelike game built as a restful API using immutable data, type classes, optics, and recursion.
+Simple rougelike / card game built as a restful API using immutable data, optics, and lots of recursion.
+
+I started working on this side project whilst learning Scala to explore various libraries and patterns. As a result,
+this codebase is not in a consistent or tidy state.
+
 
 ## Game Server
 
@@ -11,9 +15,8 @@ To start a local server on port 8080: sbt run
 
 ## Dev interface
 
-The basic developer web interface has been removed from this project, which is now only a backend server. A frontend is available as part of the `chousen-frontend` project.
-
-Latest development API URI on [Heroku](https://immense-bastion-74506.herokuapp.com)
+The basic developer web interface was been removed from this project, which is only a backend server. The [chousen-frontend](https://github.com/RawToast/chousen-frontend) 
+project serves as an example frontend.
 
 Latest development frontend on [Heroku](https://intense-crystal-36712.herokuapp.com)
 

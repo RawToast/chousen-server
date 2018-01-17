@@ -26,10 +26,8 @@ object Http4sServer extends StreamApp {
     val port = Option(System.getProperty("http.port")).getOrElse("8080").toInt
     val host = Option(System.getProperty("http.host")).getOrElse("0.0.0.0")
 
+    // Mongo can be used for persistence
     //    lazy val mongo = new MongoDatastore(
-    //      "mongodb://chousen:chousen@ds123080.mlab.com:23080/?authSource=heroku_rm14s281&authMechanism=SCRAM-SHA-1",
-    //      "heroku_rm14s281",
-    //      "chousen")
 
     val dungeonBuilder: DungeonBuilder = new SimpleDungeonBuilder()
 
@@ -41,7 +39,8 @@ object Http4sServer extends StreamApp {
     val gameStateManager: GameManager[GameState] = new GameStateManager(damageCalculator, postTurnStatusCalc)
 
 
-    val apiKey = "494987922076-btdj0hccs6u15i90modc5lih6dbiltu6.apps.googleusercontent.com"
+    // Note that authentication is not enabled on the frontend
+    val apiKey = "<insert_key_here>.apps.googleusercontent.com"
     val googleAuth = new GoogleAuthentication(
       new GoogleIdTokenVerifier.Builder(GoogleNetHttpTransport.newTrustedTransport, JacksonFactory.getDefaultInstance)
         .setAudience(Collections.singletonList(apiKey))

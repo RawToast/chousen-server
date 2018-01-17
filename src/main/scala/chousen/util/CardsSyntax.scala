@@ -8,7 +8,6 @@ import chousen.game.cards.CardManager
 object CardsSyntax extends CardsSyntax
 
 trait CardsSyntax {
-  //
   implicit class CmSyntax(cs: Cards) {
     def discardCard(c: Card) = {
       CardManager.discard(c)(cs)

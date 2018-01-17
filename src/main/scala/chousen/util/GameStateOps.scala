@@ -103,8 +103,6 @@ trait GameResponseGenerator {
       .foldLeft(Seq.empty[ShortCardResponse])((cs, cr) => if (!cs.exists(_.name == cr.name)) cs :+ cr else cs)
     val newDiscard = gs.cards.discard.map(toShortCardResponse)
       .foldLeft(Seq.empty[ShortCardResponse])((cs, cr) => if (!cs.exists(_.name == cr.name)) cs :+ cr else cs)
-    //    val newDiscard = gs.cards.discard.map(toCardResponse)
-    //    val newPassives = gs.cards.passive.map(toCardResponse)
 
     val weaponResp = gs.cards.equippedCards.weapon.map(toCardResponse)
     val armourResp = gs.cards.equippedCards.armour.map(toCardResponse)
@@ -122,13 +120,13 @@ trait GameResponseGenerator {
 
             def learnFilter(c: Card): Boolean = c.charges.nonEmpty || p.action != LearnSkill
 
-            val reqs = for {
+            val requirements = for {
               c <- gs.cards.hand.filter(learnFilter)
               cid = Option(c.id)
               req = ActionRequestBody(c.name, Option(p.action.asInstanceOf[CampFireAction]), cardId = cid)
             } yield req
 
-            ActionRequest(p.name, p.description, s"game/${gs.uuid}/camp/${p.id}", reqs)
+            ActionRequest(p.name, p.description, s"game/${gs.uuid}/camp/${p.id}", requirements)
           case _: CampFireAction =>
             ActionRequest(p.name, p.description, s"game/${gs.uuid}/camp/${p.id}",
               Seq(ActionRequestBody(p.name, Option(p.action.asInstanceOf[CampFireAction]))))
