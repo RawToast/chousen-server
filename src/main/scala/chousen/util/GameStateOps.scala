@@ -8,14 +8,16 @@ object GameStateOps extends GameStateOps
 
 trait GameStateOps extends GameResponseGenerator {
 
-  implicit class ToCardResponse(gs: GameState){
+  implicit class ToCardResponse(gs: GameState) {
     def asResponse: GameResponse = toGameResponse(gs, Seq.empty)
+
     def asResponse(diff: Seq[GameMessage]): GameResponse = toGameResponse(gs, diff)
   }
 
   implicit class GameStateSyntax(gs: GameState) {
     def addMessage(gameMessage: GameMessage): GameState = gs.copy(messages = gs.messages :+ gameMessage)
   }
+
 }
 
 trait GameResponseGenerator {
@@ -27,11 +29,12 @@ trait GameResponseGenerator {
       max <- c.maxCharges
     } yield s"($charges/$max)"
 
-    def canPlayCard(c :Card):Boolean = if (c.name.contains("Essence")) {
-      if (gs.cards.playedEssence) false else true
-    } else true
+    def canPlayCard(c: Card): Boolean =
+      if (Seq(EssenceOfDexterity, EssenceOfIntelligence, EssenceOfStrength, EssenceOfVitality).contains(c.action)) {
+        if (gs.cards.playedEssence) false else true
+      } else true
 
-    def toCardResponse(card: Card):CardResponse = card.action match {
+    def toCardResponse(card: Card): CardResponse = card.action match {
       case _: SingleTargetAction => CardResponse(card.name, card.description, card.id, mkChargesStr(card), canPlayCard(card),
         ActionRequest(card.name, card.description, s"game/${gs.uuid}/single/${card.id}",
           gs.dungeon.currentEncounter.enemies.toSeq.map(e =>
@@ -41,7 +44,7 @@ trait GameResponseGenerator {
         ActionRequest(card.name, card.description, s"game/${gs.uuid}/multi/${card.id}",
           Seq(ActionRequestBody(card.name, Some(card.action), targetIds = Option(gs.dungeon.currentEncounter.enemies.map(_.id))))))
 
-      case _: SelfAction => CardResponse(card.name, card.description,  card.id, mkChargesStr(card), canPlayCard(card),
+      case _: SelfAction => CardResponse(card.name, card.description, card.id, mkChargesStr(card), canPlayCard(card),
         ActionRequest(card.name, card.description, s"game/${gs.uuid}/self/${card.id}",
           Seq(ActionRequestBody(card.name, Some(card.action)))))
 
@@ -57,29 +60,29 @@ trait GameResponseGenerator {
                   gs.cards.hand
                     .filter(_.charges.nonEmpty)
                     .map(h => ActionRequestBody(h.name, Some(card.action), cardId = Option(h.id))) ++
-                  gs.cards.equippedCards.skills
-                    .filter(_.charges.nonEmpty)
-                    .map(h => ActionRequestBody(h.name, Some(card.action), cardId = Option(h.id)))
+                    gs.cards.equippedCards.skills
+                      .filter(_.charges.nonEmpty)
+                      .map(h => ActionRequestBody(h.name, Some(card.action), cardId = Option(h.id)))
                 case _ => gs.cards.hand
                   .filter(_.id != card.id)
-                  .map(h => ActionRequestBody(h.name, Some(card.action), cardId = Option(h.id)) )
+                  .map(h => ActionRequestBody(h.name, Some(card.action), cardId = Option(h.id)))
               }
             case std: StandardCardAction =>
               std match {
                 case AnotherTime => gs.cards.discard
-                    .foldLeft(Seq.empty[Card])((cs, c) => if (cs.exists(_.action == c.action)) cs else cs :+ c)
+                  .foldLeft(Seq.empty[Card])((cs, c) => if (cs.exists(_.action == c.action)) cs else cs :+ c)
                   .map(c => ActionRequestBody(c.name, Some(card.action), cardId = Option(c.id)))
                 case FindersKeepers => gs.cards.deck
                   .foldLeft(Seq.empty[Card])((cs, c) =>
                     if (cs.exists(_.action == c.action)) cs
-                    else if (!(c.action.isInstanceOf[CardAction] || c.action.isInstanceOf[EquipAction]))  cs :+ c
+                    else if (!(c.action.isInstanceOf[CardAction] || c.action.isInstanceOf[EquipAction])) cs :+ c
                     else cs).sortBy(_.name)
                   .map(c => ActionRequestBody(c.name, Some(card.action), cardId = Option(c.id)))
 
                 case PickACard => gs.cards.deck
                   .foldLeft(Seq.empty[Card])((cs, c) =>
                     if (cs.exists(_.action == c.action)) cs
-                    else if (c.action.isInstanceOf[CardAction])  cs :+ c
+                    else if (c.action.isInstanceOf[CardAction]) cs :+ c
                     else cs).sortBy(_.name)
                   .map(c => ActionRequestBody(c.name, Some(card.action), cardId = Option(c.id)))
                 case _ => Seq(ActionRequestBody(card.name, Some(card.action)))
@@ -88,12 +91,12 @@ trait GameResponseGenerator {
 
         CardResponse(card.name, card.description, card.id, mkChargesStr(card), ars.request.nonEmpty, ars)
       }
-      case _: CampFireAction =>  CardResponse(card.name, card.description,  card.id, mkChargesStr(card), canPlayCard(card),
-                    ActionRequest(card.name, card.description, s"game/${gs.uuid}/camp/${card.id}", Seq.empty))
+      case _: CampFireAction => CardResponse(card.name, card.description, card.id, mkChargesStr(card), canPlayCard(card),
+        ActionRequest(card.name, card.description, s"game/${gs.uuid}/camp/${card.id}", Seq.empty))
 
-      case _: EquipAction => CardResponse(card.name, card.description,  card.id, mkChargesStr(card), canPlayCard(card),
+      case _: EquipAction => CardResponse(card.name, card.description, card.id, mkChargesStr(card), canPlayCard(card),
         ActionRequest(card.name, card.description, s"game/${gs.uuid}/equip/${card.id}",
-          Seq(ActionRequestBody(card.name, action= Option(card.action), id = Option(card.id)))))
+          Seq(ActionRequestBody(card.name, action = Option(card.action), id = Option(card.id)))))
     }
 
     def toShortCardResponse(c: Card) = ShortCardResponse(c.name, c.id, c.action)
@@ -151,12 +154,13 @@ trait GameResponseGenerator {
 case class GameResponse(uuid: UUID, player: Player, cards: CardsResponse, currentEncounter: Battle, actions: Seq[ActionRequest], messages: Seq[String])
 
 case class CardsResponse(hand: Seq[CardResponse], equippedCards: EquippedCardsResponse, inDeck: Seq[ShortCardResponse], inDiscard: Seq[ShortCardResponse])
+
 case class ShortCardResponse(name: String, id: UUID, action: Action)
 
-case class EquippedCardsResponse(weapon: Option[CardResponse]=None, armour: Option[CardResponse]=None, jewelery: Option[CardResponse]=None, skills: Seq[CardResponse])
+case class EquippedCardsResponse(weapon: Option[CardResponse] = None, armour: Option[CardResponse] = None, jewelery: Option[CardResponse] = None, skills: Seq[CardResponse])
 
-case class CardResponse(name: String, description: String, id: UUID, charges: Option[String], playable:Boolean, action: ActionRequest)
+case class CardResponse(name: String, description: String, id: UUID, charges: Option[String], playable: Boolean, action: ActionRequest)
 
 case class ActionRequest(name: String, description: String, uri: String, request: Seq[ActionRequestBody])
 
-case class ActionRequestBody(description:String, action: Option[Action]=None, targetId: Option[UUID]=None, targetIds: Option[Set[UUID]]=None, cardId: Option[UUID]=None, id: Option[UUID]=None)
+case class ActionRequestBody(description: String, action: Option[Action] = None, targetId: Option[UUID] = None, targetIds: Option[Set[UUID]] = None, cardId: Option[UUID] = None, id: Option[UUID] = None)

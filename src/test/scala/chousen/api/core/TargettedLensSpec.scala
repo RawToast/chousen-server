@@ -5,7 +5,7 @@ import chousen.api.data.Enemy
 import chousen.game.core.GameStateOptics
 import org.scalatest.WordSpec
 
-class GameStateOpsSpec extends WordSpec {
+class TargettedLensSpec extends WordSpec {
 
   "TargettedLens" must {
 

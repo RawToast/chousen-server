@@ -135,8 +135,8 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         game = ng.copy(player = sc.calculate(ng.player))
         resp = game.asResponse(g.messages)
         res <- Ok.apply(resp.asJson)
-      } yield res
-      case None => NotFound(g.asJson)
+      } yield res.putHeaders(Header("Access-Control-Allow-Origin", "*"))
+      case None => NotFound(g.asJson).putHeaders(Header("Access-Control-Allow-Origin", "*"))
     }
   }
 
