@@ -61,15 +61,15 @@ class GameStateOpsSpec extends WordSpec {
       val result = gameStateOps.toGameResponse(essencePlayedState, Seq.empty)
 
       "The player still has Essence cards" in {
-        assert(result.cards.hand.exists(_.name.contains("Essence")))
+        assert(result.cards.hand.exists(_.name.contains("Essence of")))
       }
 
       "Disable the Player's Essence cards" in {
-        assert(result.cards.hand.filter(_.name.contains("Essence")).forall(_.playable == false))
+        assert(result.cards.hand.filter(_.name.contains("Essence of")).forall(_.playable == false))
       }
 
       "Leave non Essences playable" in {
-        assert(result.cards.hand.filterNot(_.name.contains("Essence")).exists(_.playable == true))
+        assert(result.cards.hand.filterNot(_.name.contains("Essence of")).exists(_.playable == true))
       }
     }
   }
