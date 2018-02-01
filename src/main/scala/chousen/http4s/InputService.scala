@@ -22,8 +22,14 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
 
   implicit def jsonEnc: EntityEncoder[Json] = jsonEncoderWithPrinter(Printer.noSpaces.copy(dropNullKeys = true))
   implicit def statusEncoder: Encoder[StatusEffect] = deriveEnumerationEncoder[StatusEffect]
-  implicit def actionEncoder: Encoder[Action] = deriveEnumerationEncoder[Action]
 
+  implicit val singleEnumDecoder: Decoder[SingleTargetAction] = deriveEnumerationDecoder[SingleTargetAction]
+
+  implicit val selfEnumDecoder: Decoder[SelfAction] = deriveEnumerationDecoder[SelfAction]
+  implicit val cardEnumDecoder: Decoder[CardAction] = deriveEnumerationDecoder[CardAction]
+  implicit val multiEnumDecoder: Decoder[MultiAction] = deriveEnumerationDecoder[MultiAction]
+  implicit val campEnumDecoder: Decoder[CampFireAction] = deriveEnumerationDecoder[CampFireAction]
+  implicit val equipEnumDecoder: Decoder[EquipAction] = deriveEnumerationDecoder[EquipAction]
 
   val routes: HttpService = {
 
