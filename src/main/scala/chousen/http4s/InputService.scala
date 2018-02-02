@@ -22,8 +22,6 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
 
   implicit def jsonEnc: EntityEncoder[Json] = jsonEncoderWithPrinter(Printer.noSpaces.copy(dropNullKeys = true))
   implicit def statusEncoder: Encoder[StatusEffect] = deriveEnumerationEncoder[StatusEffect]
-//  implicit def actionEncoder: Encoder[Action] = deriveEnumerationEncoder[Action]
-
 
   val routes: HttpService = {
     import io.circe.generic.extras.semiauto._
