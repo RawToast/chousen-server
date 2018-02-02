@@ -2,6 +2,9 @@ package chousen.api.data
 
 import java.util.UUID
 
+import io.circe.{Encoder, Decoder}
+import io.circe.generic.extras.semiauto.{deriveEnumerationEncoder, deriveEnumerationDecoder}
+
 sealed trait CommandRequest
 
 final case class AttackRequest(targetId: UUID) extends CommandRequest
@@ -22,7 +25,10 @@ final case class CampfireActionRequest(action: CampFireAction, cardId: Option[UU
 final case class EquipmentActionRequest(id: UUID, action: EquipAction) extends CommandRequest
 
 sealed trait Action
-
+object Action {
+  implicit def actionEncoder: Encoder[Action] = deriveEnumerationEncoder[Action]
+  implicit def actionDecoder: Decoder[Action] = deriveEnumerationDecoder[Action]
+}
 
 sealed trait SingleTargetAction extends Action
 sealed trait MultiAction extends Action

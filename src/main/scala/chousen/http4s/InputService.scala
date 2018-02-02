@@ -9,6 +9,7 @@ import chousen.game.status.StatusCalculator
 import fs2.Task
 import io.circe.{Decoder, Encoder, Json, Printer}
 import io.circe.generic.auto._
+import io.circe.generic.extras.semiauto.deriveEnumerationEncoder
 import io.circe.syntax._
 import org.http4s.circe.{jsonEncoderWithPrinter, jsonOf}
 import org.http4s.dsl.{->, /, NotFound, NotFoundSyntax, Ok, OkSyntax, POST, Root, _}
@@ -18,14 +19,14 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
 
   private def getIds(uuid: String, cardUuid: String) =
     (UUID.fromString(uuid), UUID.fromString(cardUuid))
-  import io.circe.generic.extras.semiauto._
 
   implicit def jsonEnc: EntityEncoder[Json] = jsonEncoderWithPrinter(Printer.noSpaces.copy(dropNullKeys = true))
   implicit def statusEncoder: Encoder[StatusEffect] = deriveEnumerationEncoder[StatusEffect]
-  implicit def actionEncoder: Encoder[Action] = deriveEnumerationEncoder[Action]
+//  implicit def actionEncoder: Encoder[Action] = deriveEnumerationEncoder[Action]
 
 
   val routes: HttpService = {
+    import io.circe.generic.extras.semiauto._
 
     HttpService {
       // Attacks
@@ -47,6 +48,8 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         }
 
       case req@POST -> Root / "game" / uuid / "single" / cardUuid =>
+        implicit val enumDecoder: Decoder[SingleTargetAction] = deriveEnumerationDecoder[SingleTargetAction]
+
         val (id, cardId) = getIds(uuid, cardUuid)
         val optToken = req.requestToken
 
@@ -55,6 +58,8 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         }
 
       case req@POST -> Root / "game" / uuid / "self" / cardUuid =>
+        implicit val enumDecoder: Decoder[SelfAction] = deriveEnumerationDecoder[SelfAction]
+
         val (id, cardId) = getIds(uuid, cardUuid)
 
         val optToken = req.requestToken
@@ -64,6 +69,8 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         }
 
       case req@POST -> Root / "game" / uuid / "card" / cardUuid =>
+        implicit val enumDecoder: Decoder[CardAction] = deriveEnumerationDecoder[CardAction]
+
         val (id, cardId) = getIds(uuid, cardUuid)
 
         val optToken = req.requestToken
@@ -73,6 +80,8 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         }
 
       case req@POST -> Root / "game" / uuid / "multi" / cardUuid =>
+        implicit val enumDecoder: Decoder[MultiAction] = deriveEnumerationDecoder[MultiAction]
+
         val (id, cardId) = getIds(uuid, cardUuid)
 
         val optToken = req.requestToken
@@ -82,6 +91,8 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         }
 
       case req@POST -> Root / "game" / uuid / "camp" / cardUuid =>
+        implicit val enumDecoder: Decoder[CampFireAction] = deriveEnumerationDecoder[CampFireAction]
+
         val (id, cardId) = getIds(uuid, cardUuid)
 
         val optToken = req.requestToken
@@ -93,6 +104,8 @@ class InputService(ga: GameAccess[Task, Response], gsm: GameManager[GameState], 
         resp.map(_.putHeaders(Header("Access-Control-Allow-Origin", "*")))
 
       case req@POST -> Root / "game" / uuid / "equip" / cardUuid =>
+        implicit val enumDecoder: Decoder[EquipAction] = deriveEnumerationDecoder[EquipAction]
+
         val (id, cardId) = getIds(uuid, cardUuid)
 
         val optToken = req.requestToken

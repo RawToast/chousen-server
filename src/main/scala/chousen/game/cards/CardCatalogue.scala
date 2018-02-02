@@ -371,16 +371,16 @@ trait Potions extends CardBuilder {
 }
 
 trait PermanentEffects extends CardBuilder {
-  def elixirOfStrength: Card = mkCard("Elixir of Strength ", "Permanently increases Strength by 2", ElixirOfStrength)
-  def elixirOfDexterity: Card = mkCard("Elixir of Dexterity ", "Permanently increases Dexterity by 2", ElixirOfDexterity)
-  def elixirOfIntelligence: Card = mkCard("Elixir of Intelligence ", "Permanently increases Intelligence by 2", ElixirOfIntelligence)
-  def elixirOfVitality: Card = mkCard("Elixir of Vitality ", "Permanently increases Vitality by 2", ElixirOfVitality)
-  def rarePepe: Card = mkCard("Rare Pepe ", "Gives the player a chunk of experience", RarePepe)
+  def elixirOfStrength: Card = mkCard("Elixir of Strength", "Permanently increases Strength by 2", ElixirOfStrength)
+  def elixirOfDexterity: Card = mkCard("Elixir of Dexterity", "Permanently increases Dexterity by 2", ElixirOfDexterity)
+  def elixirOfIntelligence: Card = mkCard("Elixir of Intelligence", "Permanently increases Intelligence by 2", ElixirOfIntelligence)
+  def elixirOfVitality: Card = mkCard("Elixir of Vitality", "Permanently increases Vitality by 2", ElixirOfVitality)
+  def rarePepe: Card = mkCard("Rare Pepe", "Gives the player a chunk of experience", RarePepe)
 
-  def essenceOfStrength: Card = mkCard("Essence of Strength ", "Immediately increases Strength, only 1 essence may be played per turn", EssenceOfStrength)
-  def essenceOfDexterity: Card = mkCard("Essence of Dexterity ", "Immediately increases Dexterity, only 1 essence may be played per turn", EssenceOfDexterity)
-  def essenceOfIntelligence: Card = mkCard("Essence of Intelligence ", "Immediately increases Intelligence, only 1 essence may be played per turn", EssenceOfIntelligence)
-  def essenceOfVitality: Card = mkCard("Essence of Vitality ", "Immediately increases Dexterity, only 1 essence may be played per turn", EssenceOfVitality)
+  def essenceOfStrength: Card = mkCard("Essence of Strength", "Immediately increases Strength, only 1 essence may be played per turn", EssenceOfStrength)
+  def essenceOfDexterity: Card = mkCard("Essence of Dexterity", "Immediately increases Dexterity, only 1 essence may be played per turn", EssenceOfDexterity)
+  def essenceOfIntelligence: Card = mkCard("Essence of Intelligence", "Immediately increases Intelligence, only 1 essence may be played per turn", EssenceOfIntelligence)
+  def essenceOfVitality: Card = mkCard("Essence of Vitality", "Immediately increases Dexterity, only 1 essence may be played per turn", EssenceOfVitality)
 }
 
 trait Magic extends CardBuilder{
