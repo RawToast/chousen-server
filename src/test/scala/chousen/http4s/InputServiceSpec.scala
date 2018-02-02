@@ -10,8 +10,9 @@ import chousen.game.core.{GameManager, GameStateManager, RandomGameStateCreator}
 import chousen.game.dungeon.{DungeonBuilder, SimpleDungeonBuilder}
 import chousen.game.status.{PostTurnStatusCalculator, StatusCalculator}
 import fs2.Task
+import io.circe.Encoder
 import io.circe.generic.auto._
-import org.http4s.{MaybeResponse, Request, Response, Method, Uri, Entity, EntityEncoder}
+import org.http4s.{Entity, EntityEncoder, MaybeResponse, Method, Request, Response, Uri}
 import org.http4s.circe._
 import org.scalatest.WordSpec
 
@@ -86,7 +87,8 @@ class InputServiceSpec extends WordSpec {
     }
 
     "Handling an Equipment request" when {
-//      implicit val enumDecoder = deriveEnumerationEncoder[EquipAction]
+      import io.circe.generic.extras.semiauto.deriveEnumerationEncoder
+      implicit val enumDecoder: Encoder[EquipAction] = deriveEnumerationEncoder[EquipAction]
       implicit val enc: EntityEncoder[EquipmentActionRequest] = jsonEncoderOf[EquipmentActionRequest]
 
       "When given an valid equipment request" should {
