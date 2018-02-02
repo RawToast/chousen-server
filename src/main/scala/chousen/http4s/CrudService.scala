@@ -21,11 +21,10 @@ class CrudService(pbga: GameAccess[Task, Response], creator: GameStateCreation, 
 
   val routes: HttpService = {
     import io.circe.generic.extras.semiauto.deriveEnumerationEncoder
-    import io.circe.generic.auto._
 
     implicit def jsonEnc: EntityEncoder[Json] = jsonEncoderWithPrinter(Printer.noSpaces.copy(dropNullKeys = true))
     implicit def statusEncoder: Encoder[StatusEffect] = deriveEnumerationEncoder[StatusEffect]
-    implicit def actionEncoder: Encoder[Action] = deriveEnumerationEncoder[Action]
+    import io.circe.generic.auto._
 
     HttpService {
 
